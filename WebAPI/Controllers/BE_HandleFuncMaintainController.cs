@@ -12,6 +12,7 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using NLog;
 
 namespace WebAPI.Controllers
 {
@@ -21,6 +22,7 @@ namespace WebAPI.Controllers
     public class BE_HandleFuncMaintainController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        protected static Logger logger = LogManager.GetCurrentClassLogger();//20210907唐加，記錄每支功能使用
         /// <summary>
         /// 【後台】功能權限設定
         /// </summary>
@@ -51,14 +53,25 @@ namespace WebAPI.Controllers
             string IDNO = ""; bool isGuest = true;
             Int16 APPKind = 2;
             string Contentjson = "";
-
             #endregion
-            #region 防呆
 
+            #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_HandleFuncMaintain>(Contentjson);
+
+                //20210907唐加，記錄每支功能使用
+                logger.Trace(
+                    "{ReportName:'程式使用紀錄'," +
+                    "LogID" + ":'" + LogID + "'," +
+                    "UserID" + ":'" + apiInput.UserID + "'," +
+                    "BE_ControllerName" + ":'" + "BE_HandleFuncMaintainController" + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "FuncGroupID" + ":'" + Convert.ToInt32(apiInput.FuncGroupID) + "'," +
+                    "Mode" + ":'" + apiInput.Mode + "'," +
+                    "Power" + ":'" + JsonConvert.SerializeObject(apiInput.Power) + "}"
+                    );
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -74,34 +87,27 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR900";
-                    }
-                    
-        
+                    }     
                 }
             }
             #endregion
 
             #region TB
-
             if (flag)
             {
-
                 string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleFunc);
                 SPInput_BE_HandleFunc spInput = new SPInput_BE_HandleFunc()
                 {
                     LogID = LogID,
                     UserID = apiInput.UserID,
-                     FuncGroupID=Convert.ToInt32(apiInput.FuncGroupID),
-                      Mode=apiInput.Mode,
-                       Power=JsonConvert.SerializeObject(apiInput.Power)
-
+                    FuncGroupID=Convert.ToInt32(apiInput.FuncGroupID),
+                    Mode=apiInput.Mode,
+                    Power=JsonConvert.SerializeObject(apiInput.Power)
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_HandleFunc, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleFunc, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-
-
             }
             #endregion
 

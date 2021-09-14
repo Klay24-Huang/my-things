@@ -7,19 +7,26 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
+using System.Data;
 using WebCommon;
+using NLog;//增加NLOG機制
 
 namespace Web.Controllers
 {
     /// <summary>
     /// 報表
     /// </summary>
-    public class ReportController : Controller
+    public class ReportController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
+        //增加NLOG機制
+        //protected static Logger logger = LogManager.GetCurrentClassLogger();
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
 
         #region 整備人員報表查詢
         /// <summary>
@@ -33,6 +40,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MaintainLogReport(string SDate, string EDate, string carid, string objStation, string userID, int? status)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MaintainLogReport");
+
             List<BE_CleanData> lstData = new List<BE_CleanData>();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             DateTime SD, ED;
@@ -96,9 +107,27 @@ namespace Web.Controllers
 
         public ActionResult MaintainLogReportDownload(string SDate, string EDate, string carid, string objStation, string userID, int? status)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MaintainLogReportDownload");
+
             List<BE_CleanDataWithoutPIC> data = new List<BE_CleanDataWithoutPIC>();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             data = new CarClearRepository(connetStr).GetCleanDataWithOutPic(SDate, EDate, carid, objStation, userID, (status.HasValue) ? status.Value : 3, ref lstError);
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'整備人員報表查詢(MaintainLogReportDownload)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{SDate" + ":'" + SDate + "'," +
+                    "EDate" + ":'" + EDate + "'," +
+                    "carid" + ":'" + carid + "'," +
+                    "objStation" + ":'" + objStation + "'," +
+                    "userID" + ":'" + userID + "'," +
+                    "status" + ":'" + ((status.HasValue) ? status.Value : '無') + "'}," +
+                    "RowCount" + ":" + data.Count.ToString() + "}"
+                    );
+
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "帳號", "整備人員", "訂單編號", "車號", "據點", "狀態", "實際取車", "實際還車", "車外清潔", "車內清潔", "車輛救援", "車輛調度", "車輛調度(路邊租還)", "保養", "清潔時幾天未清", "出租次數", "備註" };
@@ -136,8 +165,8 @@ namespace Web.Controllers
                     OrderStatus = "逾時未還車(排程取消)";
                 }
 
-                //  double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00")) ? data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays : -1;
-                //  string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
+                //double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00")) ? data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays : -1;
+                //string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
                 double totalDay = ((data[k].lastCleanTime.ToString("yyyy-MM-dd HH:mm:ss") == "1900-01-01 00:00:00") ? -1 : data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalDays);
                 string totalDayStr = (totalDay == -1) ? "從未清潔" : ((totalDay < 1) ? Math.Round(data[k].BookingStart.Subtract(data[k].lastCleanTime).TotalHours, MidpointRounding.AwayFromZero) + "小時" : Math.Round(totalDay).ToString());
                 if (data[k].OrderStatus < 2)
@@ -148,13 +177,13 @@ namespace Web.Controllers
                 IRow content = sheet.CreateRow(k + 1);
                 content.CreateCell(0).SetCellValue(data[k].Account);
                 content.CreateCell(1).SetCellValue(data[k].UserID);
-                content.CreateCell(2).SetCellValue("H" + data[k].OrderNum.ToString().PadLeft(7, '0'));           //合約
-                content.CreateCell(3).SetCellValue(data[k].CarNo);                                               //車號
-                content.CreateCell(4).SetCellValue(data[k].lend_place);                                          //據點
-                content.CreateCell(5).SetCellValue(OrderStatus);                                                 //狀態
+                content.CreateCell(2).SetCellValue("H" + data[k].OrderNum.ToString().PadLeft(7, '0'));//合約
+                content.CreateCell(3).SetCellValue(data[k].CarNo);//車號
+                content.CreateCell(4).SetCellValue(data[k].lend_place);//據點
+                content.CreateCell(5).SetCellValue(OrderStatus);//狀態
                 if (data[k].OrderStatus < 1 || data[k].OrderStatus == 4)
                 {
-                    content.CreateCell(6).SetCellValue("未取車");  //實際取車
+                    content.CreateCell(6).SetCellValue("未取車");//實際取車
                 }
                 else
                 {
@@ -163,11 +192,11 @@ namespace Web.Controllers
 
                 if (data[k].OrderStatus < 1 || data[k].OrderStatus == 4)
                 {
-                    content.CreateCell(7).SetCellValue("未取車");     //實際還車
+                    content.CreateCell(7).SetCellValue("未取車");//實際還車
                 }
                 else if (data[k].OrderStatus == 1)
                 {
-                    content.CreateCell(7).SetCellValue("未還車");     //實際還車
+                    content.CreateCell(7).SetCellValue("未還車");//實際還車
                 }
                 else if (data[k].OrderStatus == 5)
                 {
@@ -175,11 +204,11 @@ namespace Web.Controllers
                     {
                         if (data[k].BookingEnd < data[k].BookingStart)
                         {
-                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss") + "】");//實際還車
                         }
                         else
                         {
-                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");     //實際還車
+                            content.CreateCell(7).SetCellValue("逾時未還車【系統強還時間：" + data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss") + "】");//實際還車
                         }
                     }
 
@@ -195,17 +224,17 @@ namespace Web.Controllers
                 }
                 else
                 {
-                    content.CreateCell(7).SetCellValue(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車"));    //實際還車
+                    content.CreateCell(7).SetCellValue(data[k].BookingEnd.ToString("yyyy-MM-dd HH:mm:ss").Replace("1900-01-01 00:00:00", "未還車"));//實際還車
                 }
-                content.CreateCell(8).SetCellValue((data[k].outsideClean == 1) ? "✔" : "✖");                                                 //車外清潔
-                content.CreateCell(9).SetCellValue((data[k].insideClean == 1) ? "✔" : "✖");                                                 //車內清潔
-                content.CreateCell(10).SetCellValue((data[k].rescue == 1) ? "✔" : "✖");                                                 //車輛救援
-                content.CreateCell(11).SetCellValue((data[k].dispatch == 1) ? "✔" : "✖");                                                 //車輛調度
-                content.CreateCell(12).SetCellValue((data[k].Anydispatch == 1) ? "✔" : "✖");                                                 //車輛調度(路邊租還)
+                content.CreateCell(8).SetCellValue((data[k].outsideClean == 1) ? "✔" : "✖");//車外清潔
+                content.CreateCell(9).SetCellValue((data[k].insideClean == 1) ? "✔" : "✖");//車內清潔
+                content.CreateCell(10).SetCellValue((data[k].rescue == 1) ? "✔" : "✖");//車輛救援
+                content.CreateCell(11).SetCellValue((data[k].dispatch == 1) ? "✔" : "✖");//車輛調度
+                content.CreateCell(12).SetCellValue((data[k].Anydispatch == 1) ? "✔" : "✖");//車輛調度(路邊租還)
                 content.CreateCell(13).SetCellValue((data[k].Maintenance == 1) ? "✔" : "✖");
                 content.CreateCell(14).SetCellValue(totalDayStr);
                 content.CreateCell(15).SetCellValue(data[k].lastRentTimes);
-                content.CreateCell(16).SetCellValue(data[k].remark);                                                 //備註
+                content.CreateCell(16).SetCellValue(data[k].remark);//備註
             }
 
             // 自動調整欄位大小，但這很耗資源
@@ -233,6 +262,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarFeedBackQuery(string SDate, string EDate, string userID, string carid, string objStation, int? isHandle, int? NowPage)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarFeedBackQuery");
+
             List<BE_FeedBackMainDetail> lstFeedBack = new List<BE_FeedBackMainDetail>();
             FeedBackRepository _repository = new FeedBackRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -300,6 +333,10 @@ namespace Web.Controllers
         }
         public ActionResult FeedBackDownload(string SDate, string EDate, string userID, string carid, string objStation, int? isHandle)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "FeedBackDownload");
+
             List<BE_FeedBackMainDetail> lstFeedBack = new List<BE_FeedBackMainDetail>();
             FeedBackRepository _repository = new FeedBackRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -363,6 +400,20 @@ namespace Web.Controllers
                 }
                 lstFeedBack = _repository.GetCarFeedBackQuery(userID, tSDate, tEDate, tmpIsHandle, tCarID, tStation);
             }
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'車況回饋查詢(FeedBackDownload)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{SDate" + ":'" + SDate + "'," +
+                    "EDate" + ":'" + EDate + "'," +
+                    "carid" + ":'" + carid + "'," +
+                    "objStation" + ":'" + objStation + "'," +
+                    "userID" + ":'" + userID + "'," +
+                    "isHandle" + ":'" + ((isHandle.HasValue) ? isHandle.Value : '無') + "'}," +
+                    "RowCount" + ":" + lstFeedBack.Count.ToString() + "}"
+                    );
+
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "回饋日期", "回饋狀態", "合約NO.", "車號", "ID", "姓名", "手機", "內容", "狀態", "處理結果", "處理者" };
@@ -411,6 +462,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult TradeQuery()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "TradeQuery");
+
             return View();
         }
         #endregion
@@ -439,6 +494,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MonthlyMainQuery(string SDate, string EDate, string userID, int? isHandle)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyMainQuery");
+
             List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -500,6 +559,10 @@ namespace Web.Controllers
         /// <returns></returns>    
         public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyMainQueryDownLoad");
+
             List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -539,6 +602,18 @@ namespace Web.Controllers
             {
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
             }
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'月租總表下載(MonthlyMainQueryDownLoad)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{SDate" + ":'" + SDate + "'," +
+                    "EDate" + ":'" + EDate + "'," +
+                    "userID" + ":'" + userID + "'," +
+                    "isHandle" + ":'" + ((isHandle.HasValue) ? isHandle.Value : '無') + "'}," +
+                    "RowCount" + ":" + lstSubScription.Count.ToString() + "}"
+                    );
+
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
             string[] headerField = { "訂閱方案編號", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間",
@@ -594,6 +669,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MonthlyDetailQuery(string SDate, string EDate, string userID, string OrderNum)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyDetailQuery");
+
             List<BE_MonthlyDetail> lstSubScription = new List<BE_MonthlyDetail>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -636,7 +715,7 @@ namespace Web.Controllers
                     ViewData["outerOfDateRangeMsg"] = "查詢時數使用起迄日超過範圍";
                 }
             }
-            if (isInDateRange || tOrderNum.Length>0 || tUserID.Length > 0)
+            if (isInDateRange || tOrderNum.Length > 0 || tUserID.Length > 0)
             {
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
 
@@ -653,6 +732,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult MonthlyDetailQueryDownload(string SDate, string EDate, string userID, string OrderNum)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonthlyDetailQueryDownload");
+
             List<BE_MonthlyDetail> lstSubScription = new List<BE_MonthlyDetail>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -695,6 +778,17 @@ namespace Web.Controllers
                 lstSubScription = _repository.GetMonthlyDetail(tOrderNum, tUserID, tSDate, tEDate);
             }
 
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'月租報表下載(MonthlyDetailQueryDownload)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{SDate" + ":'" + SDate + "'," +
+                    "EDate" + ":'" + EDate + "'," +
+                    "userID" + ":'" + userID + "'," +
+                    "OrderNum" + ":'" + OrderNum + "'}," +
+                    "RowCount" + ":" + lstSubScription.Count.ToString() + "}"
+                    );
 
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
@@ -753,6 +847,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ParkingCheckInQuery(string OrderNo)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ParkingCheckInQuery");
+
             List<BE_QueryOrderMachiParkData> lstDetail = null;
             if (!string.IsNullOrEmpty(OrderNo))
             {
@@ -770,6 +868,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ChargeParkingDetailQuery()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ChargeParkingDetailQuery");
+
             return View();
         }
 
@@ -782,6 +884,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ExplodeParkingReport(DateTime? SDate, DateTime? EDate, string CarNo)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeParkingReport");
+
             List<BE_RawDataOfMachi> lstRawDataOfMachi = new List<BE_RawDataOfMachi>();
             ParkingRepository _repository = new ParkingRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -812,6 +918,17 @@ namespace Web.Controllers
             }
 
             lstRawDataOfMachi = _repository.GetMachiReport(tSDate, tEDate, CarNo);
+
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'代收停車費明細(ExplodeParkingReport)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{SDate" + ":'" + SDate + "'," +
+                    "EDate" + ":'" + EDate + "'," +
+                    "CarNo" + ":'" + CarNo + "'," +
+                    "RowCount" + ":" + lstRawDataOfMachi.Count.ToString() + "}"
+                    );
 
             int len = lstRawDataOfMachi.Count;
             for (int k = 0; k < len; k++)
@@ -857,6 +974,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult KymcoQuery(int AuditMode, string StartDate, string EndDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "KymcoQuery");
+
             ViewData["AuditMode"] = AuditMode;
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
@@ -865,7 +986,11 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeKymcoQuery(string ExplodeSDate, string ExplodeEDate, int ExplodeAuditMode)
         {
-            List<BE_GetKymcoList> lstRawDataOfMachi = new List<BE_GetKymcoList>();
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeKymcoQuery");
+
+            List<BE_GetKymcoList> lstRawDataOfKymco = new List<BE_GetKymcoList>();
             OtherRepository _repository = new OtherRepository(connetStr);
 
             string tSDate = "", tEDate = "";
@@ -889,22 +1014,34 @@ namespace Web.Controllers
                     header.CreateCell(j).SetCellValue(headerField[j]);
                     //sheet.AutoSizeColumn(j);
                 }
-                lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
-                int len = lstRawDataOfMachi.Count;
+                lstRawDataOfKymco = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
+
+                //增加NLOG機制
+                logger.Trace(
+                        "{ReportName:'光陽維運APP報表(ExplodeKymcoQuery)'," +
+                        "User" + ":'" + Session["User"] + "'," +
+                        "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                        "Condition:{ExplodeSDate" + ":'" + ExplodeSDate + "'," +
+                        "ExplodeEDate" + ":'" + ExplodeEDate + "'," +
+                        "ExplodeAuditMode" + ":'" + ExplodeAuditMode + "'," +
+                        "RowCount" + ":" + lstRawDataOfKymco.Count.ToString() + "}"
+                        );
+
+                int len = lstRawDataOfKymco.Count;
                 for (int k = 0; k < len; k++)
                 {
                     IRow content = sheet.CreateRow(k + 1);
-                    content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].UserID);
-                    content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].UserName);
-                    content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].Area);
-                    content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].TypeK);
-                    content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].CarNo);
-                    content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].MaintainType);
-                    content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DealerCodeValue);
-                    content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].MemoAddr);
-                    content.CreateCell(8).SetCellValue(lstRawDataOfMachi[k].Reason);
-                    content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].Offline);
-                    content.CreateCell(10).SetCellValue(lstRawDataOfMachi[k].UpdTime);
+                    content.CreateCell(0).SetCellValue(lstRawDataOfKymco[k].UserID);
+                    content.CreateCell(1).SetCellValue(lstRawDataOfKymco[k].UserName);
+                    content.CreateCell(2).SetCellValue(lstRawDataOfKymco[k].Area);
+                    content.CreateCell(3).SetCellValue(lstRawDataOfKymco[k].TypeK);
+                    content.CreateCell(4).SetCellValue(lstRawDataOfKymco[k].CarNo);
+                    content.CreateCell(7).SetCellValue(lstRawDataOfKymco[k].MaintainType);
+                    content.CreateCell(5).SetCellValue(lstRawDataOfKymco[k].DealerCodeValue);
+                    content.CreateCell(6).SetCellValue(lstRawDataOfKymco[k].MemoAddr);
+                    content.CreateCell(8).SetCellValue(lstRawDataOfKymco[k].Reason);
+                    content.CreateCell(9).SetCellValue(lstRawDataOfKymco[k].Offline);
+                    content.CreateCell(10).SetCellValue(lstRawDataOfKymco[k].UpdTime);
 
                 }
                 //for (int l = 0; l < headerFieldLen; l++)
@@ -927,19 +1064,31 @@ namespace Web.Controllers
                     header.CreateCell(j).SetCellValue(headerField[j]);
                     //sheet.AutoSizeColumn(j);
                 }
-                lstRawDataOfMachi = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
-                int len = lstRawDataOfMachi.Count;
+                lstRawDataOfKymco = _repository.GetKymcoLists(tAuditMode, tSDate, tEDate);
+
+                //增加NLOG機制
+                logger.Trace(
+                        "{ReportName:'光陽維運APP報表(ExplodeKymcoQuery)'," +
+                        "User" + ":'" + Session["User"] + "'," +
+                        "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                        "Condition:{ExplodeSDate" + ":'" + ExplodeSDate + "'," +
+                        "ExplodeEDate" + ":'" + ExplodeEDate + "'," +
+                        "ExplodeAuditMode" + ":'" + ExplodeAuditMode + "'," +
+                        "RowCount" + ":" + lstRawDataOfKymco.Count.ToString() + "}"
+                        );
+
+                int len = lstRawDataOfKymco.Count;
                 for (int k = 0; k < len; k++)
                 {
                     IRow content = sheet.CreateRow(k + 1);
-                    content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].UserID);
-                    content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].UserName);
-                    content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].Area);
-                    content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].TypeK);
-                    content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].CarNo);
-                    content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DealerCodeValue);
-                    content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].MemoAddr);
-                    content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].UpdTime);
+                    content.CreateCell(0).SetCellValue(lstRawDataOfKymco[k].UserID);
+                    content.CreateCell(1).SetCellValue(lstRawDataOfKymco[k].UserName);
+                    content.CreateCell(2).SetCellValue(lstRawDataOfKymco[k].Area);
+                    content.CreateCell(3).SetCellValue(lstRawDataOfKymco[k].TypeK);
+                    content.CreateCell(4).SetCellValue(lstRawDataOfKymco[k].CarNo);
+                    content.CreateCell(5).SetCellValue(lstRawDataOfKymco[k].DealerCodeValue);
+                    content.CreateCell(6).SetCellValue(lstRawDataOfKymco[k].MemoAddr);
+                    content.CreateCell(7).SetCellValue(lstRawDataOfKymco[k].UpdTime);
 
                 }
                 //for (int l = 0; l < headerFieldLen; l++)
@@ -966,6 +1115,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MotorBatteryStatusQuery(string CarNo, string SendDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MotorBatteryStatusQuery");
+
             if (string.IsNullOrEmpty(SendDate))
             {
                 SendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
@@ -982,6 +1135,10 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeMotorBatteryStatusQuery(string ExplodeCarNo, string ExplodeSendDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeMotorBatteryStatusQuery");
+
             if (string.IsNullOrEmpty(ExplodeSendDate))
             {
                 ExplodeSendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
@@ -1114,13 +1271,21 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult MemberDetailQuery()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MemberDetailQuery");
+
             return View();
         }
         //[HttpPost]
         public ActionResult ExplodeMemberDetailQuery(string StartDate, string EndDate, string[] IDNOSuff, int AuditMode)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeMemberDetailQuery");
+
             //ViewData["IDNOSuff"] = (Id == null) ? "" : string.Join(",", Id);
-            List<BE_GetMemList> lstRawDataOfMachi = new List<BE_GetMemList>();//SP回傳的資料欄位
+            List<BE_GetMemList> lstRawDataOfMember = new List<BE_GetMemList>();//SP回傳的資料欄位
             OtherRepository _repository = new OtherRepository(connetStr);
 
             string tSDate = StartDate;
@@ -1154,21 +1319,33 @@ namespace Web.Controllers
                 header.CreateCell(j).SetCellValue(headerField[j]);
                 //sheet.AutoSizeColumn(j);
             }
-            lstRawDataOfMachi = _repository.GetMemLists(tAuditMode, tSDate, tEDate, IDNoSuffCombind);
-            int len = lstRawDataOfMachi.Count;
+            lstRawDataOfMember = _repository.GetMemLists(tAuditMode, tSDate, tEDate, IDNoSuffCombind);
+
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'會員審核明細報表(ExplodeMemberDetailQuery)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{StartDate" + ":'" + StartDate + "'," +
+                    "EndDate" + ":'" + EndDate + "'," +
+                    "AuditMode" + ":'" + AuditMode + "'," +
+                    "RowCount" + ":" + lstRawDataOfMember.Count.ToString() + "}"
+                    );
+
+            int len = lstRawDataOfMember.Count;
             for (int k = 0; k < len; k++)
             {
                 IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue(lstRawDataOfMachi[k].ID);
-                content.CreateCell(1).SetCellValue(lstRawDataOfMachi[k].MEMRFNBR);
-                content.CreateCell(2).SetCellValue(lstRawDataOfMachi[k].NAME);
-                content.CreateCell(3).SetCellValue(lstRawDataOfMachi[k].HIID);
-                content.CreateCell(4).SetCellValue(lstRawDataOfMachi[k].Group);
-                content.CreateCell(5).SetCellValue(lstRawDataOfMachi[k].DATE_NEW);
-                content.CreateCell(6).SetCellValue(lstRawDataOfMachi[k].DATE);
-                content.CreateCell(7).SetCellValue(lstRawDataOfMachi[k].ITEM);
-                content.CreateCell(8).SetCellValue(lstRawDataOfMachi[k].TYPE);
-                content.CreateCell(9).SetCellValue(lstRawDataOfMachi[k].REASON);
+                content.CreateCell(0).SetCellValue(lstRawDataOfMember[k].ID);
+                content.CreateCell(1).SetCellValue(lstRawDataOfMember[k].MEMRFNBR);
+                content.CreateCell(2).SetCellValue(lstRawDataOfMember[k].NAME);
+                content.CreateCell(3).SetCellValue(lstRawDataOfMember[k].HIID);
+                content.CreateCell(4).SetCellValue(lstRawDataOfMember[k].Group);
+                content.CreateCell(5).SetCellValue(lstRawDataOfMember[k].DATE_NEW);
+                content.CreateCell(6).SetCellValue(lstRawDataOfMember[k].DATE);
+                content.CreateCell(7).SetCellValue(lstRawDataOfMember[k].ITEM);
+                content.CreateCell(8).SetCellValue(lstRawDataOfMember[k].TYPE);
+                content.CreateCell(9).SetCellValue(lstRawDataOfMember[k].REASON);
 
             }
             //for (int l = 0; l < headerFieldLen; l++)
@@ -1194,6 +1371,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ReFund(string IDNO)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ReFund");
+
             ViewData["IDNO"] = IDNO;
             List<BE_GetEasyWalletList> lstData = new MemberRepository(connetStr).GetEasyWalletList(IDNO);
             return View(lstData);
@@ -1201,6 +1382,10 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeReFund(string ExplodeSDate, string ExplodeEDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeReFund");
+
             ViewData["StartDate"] = ExplodeSDate;
             ViewData["EndDate"] = ExplodeEDate;
 
@@ -1220,6 +1405,17 @@ namespace Web.Controllers
                 //sheet.AutoSizeColumn(j);
             }
             lstData = repository.GetEasyWalletOrder(ExplodeSDate, ExplodeEDate);
+
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'悠遊付退款(ExplodeReFund)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{ExplodeSDate" + ":'" + ExplodeSDate + "'," +
+                    "ExplodeEDate" + ":'" + ExplodeEDate + "'," +
+                    "RowCount" + ":" + lstData.Count.ToString() + "}"
+                    );
+
             int len = lstData.Count;
             for (int k = 0; k < len; k++)
             {
@@ -1259,10 +1455,25 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ExportCarSettingData(string isExport, string StationID, string Time_Start, string Time_End)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExportCarSettingData");
+
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             List<BE_CarSettingRecord> lstData = new List<BE_CarSettingRecord>();
             lstData = carStatusCommon.GetCarSettingRecord(StationID, Time_Start, Time_End);
 
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'營運狀態記錄報表(ExportCarSettingData)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{isExport" + ":'" + isExport + "'," +
+                    "StationID" + ":'" + StationID + "'," +
+                    "Time_Start" + ":'" + Time_Start + "'," +
+                    "Time_End" + ":'" + Time_End + "'," +
+                    "RowCount" + ":" + lstData.Count.ToString() + "}"
+                    );
 
             if (isExport == "true")
             {
@@ -1360,10 +1571,26 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarLocationQuery(string IsCar, string Time_Start, string Time_End, string Account)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarLocationQuery");
+
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             List<BE_CarLocationData> lstData = new List<BE_CarLocationData>();
             lstData = carStatusCommon.GetCarLocationData(Time_Start, Time_End, IsCar);
             string carType = (IsCar == "true") ? "汽車" : "機車";
+
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'車輛隨租定位(CarLocationQuery)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{IsCar" + ":'" + ((IsCar == "true") ? "汽車" : "機車") + "'," +
+                    "Time_Start" + ":'" + Time_Start + "'," +
+                    "Time_End" + ":'" + Time_End + "'," +
+                    "Account" + ":'" + Account + "'," +
+                    "RowCount" + ":" + lstData.Count.ToString() + "}"
+                    );
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             ExcelPackage ep = new ExcelPackage();
@@ -1442,6 +1669,123 @@ namespace Web.Controllers
             ViewData["StartDate3"] = "";
             ViewData["EndDate3"] = "";
             ViewData["MEMACCOUNT"] = "";
+            return View();
+        }
+        #endregion
+
+        #region 新北監管平台月報檔案上傳
+        /// <summary>
+        /// 新北監管平台月報檔案上傳 - 20210820 Frank加
+        /// </summary>
+        public ActionResult CarMapFileUpload()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Obsolete]
+        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport,string month, string carType, string Account, string export)
+        {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarMapFileUpload");
+
+            //匯出檔案
+            if (export == "true")
+            {
+                SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
+                SqlTransaction tran;
+                conn.Open();
+                tran = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = conn;
+                cmd.Transaction = tran;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "usp_GetIRentCarMapValue";
+                cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
+                SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
+                SqlParameter fileName = cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50);
+                msg.Direction = ParameterDirection.Output;
+                fileName.Direction = ParameterDirection.Output;
+
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                conn.Dispose();
+
+                if (fileName.Value.ToString() == "")
+                {
+                    ViewData["result"] = "檔案尚未上傳";
+                    return View();
+                }
+
+                var blob = new AzureStorageHandle().DownloadFile("monthlyreport", fileName.Value.ToString());
+                Stream blobStream = blob.OpenRead();
+                return File(blobStream, blob.Properties.ContentType, blob.Name);
+            }
+
+            //上傳檔案
+            if(fileImport != null)
+            {
+                if(fileImport.ContentLength > 0)
+                {
+
+                    using (var reader = new StreamReader(fileImport.InputStream, Encoding.UTF8))
+                    {
+                        string file = reader.ReadToEnd();
+
+                        var subFileName = fileImport.FileName.Substring(fileImport.FileName.IndexOf("."));
+                        var fileName = string.Format("{0}_{1}_{2}_{3}", month, carType, fileImport.FileName.Substring(0, fileImport.FileName.IndexOf(".")), DateTime.Now.ToString("yyyyMMddHHmmss") + subFileName);
+
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/CarMapFileUpload"));
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/CarMapFileUpload"), fileName);
+                        fileImport.SaveAs(path);
+
+                        var flag = new AzureStorageHandle().UploadFileToAzureStorage(fileImport, fileName, "monthlyreport", path);
+
+                        //儲存key值進DB
+                        SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
+                        SqlTransaction tran;
+                        conn.Open();
+                        tran = conn.BeginTransaction();
+                        SqlCommand cmd = new SqlCommand();
+                        cmd.Connection = conn;
+                        cmd.Transaction = tran;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "usp_HandleIRentCarMapKey";
+                        cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
+                        cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50).Value = fileName;
+                        cmd.Parameters.Add("@User", SqlDbType.VarChar, 10).Value = Account;
+                        SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
+                        msg.Direction = ParameterDirection.Output;
+
+                        cmd.ExecuteNonQuery();
+                        tran.Commit();
+                        conn.Close();
+                        conn.Dispose();
+
+
+                        if (flag)
+                        {
+                            ViewData["result"] = "執行成功";
+                        }
+                        else
+                        {
+                            ViewData["result"] = "上傳雲端過程失敗";
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            else
+            {
+                ViewData["result"] = "未上傳任何檔案";
+            }
+            
+            
             return View();
         }
         #endregion

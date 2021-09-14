@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             Int16 APPKind = 2;
             string Contentjson = "";
-            DateTime SD = DateTime.Now, ED = DateTime.Now;
+            //DateTime SD = DateTime.Now, ED = DateTime.Now;
             #endregion
             #region 防呆
 
@@ -71,10 +71,11 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR900";
                     }
-                    else
-                    {
-                        ED = apiInput.EDate.AddHours(23).AddMinutes(59).AddSeconds(59);
-                    }
+                    //20210903唐註解
+                    //else
+                    //{
+                    //    ED = apiInput.EDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    //}
                 }
 
             }
@@ -102,7 +103,7 @@ namespace WebAPI.Controllers
                 SPInput_Banner spInput = new SPInput_Banner()
                 {
                     SDate = apiInput.SDate,
-                    EDate = ED,
+                    EDate = apiInput.EDate,
                     fileName1 = apiInput.fileName1,
                     StationType = apiInput.StationType,
                     URL = apiInput.URL,

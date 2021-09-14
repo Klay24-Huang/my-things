@@ -106,10 +106,9 @@
             //SendObj.contractNo = "3202008260000001";
             SendObj.contractNo = "3202104060000009";
             SendObj.executorId = $("#Account").val();
-
             DoAjaxAfterGoBack_EW(SendObj, "退款悠遊付失敗");
-
         } else {
+            flag = false;
             disabledLoadingAndShowAlert(errMsg);
         }
 
@@ -119,9 +118,7 @@
             SendObj2.merchantOrderNo = merchantOrderNo;
             SendObj2.GIFTNAME = GIFTNAME;
             SendObj2.IDNO = $("#IDNO").val();
-
             DoAjaxAfterGoBack_EW_2(SendObj2, "退款和雲失敗");
-
         } else {
             disabledLoadingAndShowAlert(errMsg);
         }

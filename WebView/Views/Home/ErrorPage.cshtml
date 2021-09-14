@@ -1,0 +1,15 @@
+﻿
+@{ 
+    var ErrorMessage = (ViewData["ErrorMessage"] == null ? "發生錯誤，請洽客服" : ViewData["ErrorMessage"]);
+}
+
+<div class="container">
+    <div class="row">
+
+        <div class="container mt-4 px-0 text-center bg-white status col-8">
+            <img src="~/Assets/icon/graphicEmptyOrderError.svg" />
+            <p class="mt-3" style="font-size:18px">@ErrorMessage</p>
+        </div>
+
+    </div>
+</div>

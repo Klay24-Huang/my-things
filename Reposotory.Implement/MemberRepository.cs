@@ -439,7 +439,7 @@ namespace Reposotory.Implement
             }
             if ("" != term)
             {
-                SQL += " WHERE " + term;// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
+                SQL += " WHERE " + term + " order by A_SYSDT DESC";// " AND SD between @SD AND @ED OR ED between @SD AND @ED ";
             }
             lstAudits = GetObjList<BE_MemberScore>(ref flag, ref lstError, SQL, para, term);
 
@@ -454,6 +454,19 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
             string term = "";
             string SQL = $" EXEC SP_GetMemberScoreFull '" + IDNO + "','" + NAME + "','" + ORDERNO + "','" + SDATE + "','" + EDATE + "'";
+
+            lstAudits = GetObjList<BE_GetMemberScoreFull>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+
+        public List<BE_GetMemberScoreFull> GetMemberScoreFull_EXPORT(string IDNO, string NAME, string ORDERNO, string SDATE, string EDATE)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetMemberScoreFull> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            string SQL = $" EXEC SP_GetMemberScoreFull_EXPORT '" + IDNO + "','" + NAME + "','" + ORDERNO + "','" + SDATE + "','" + EDATE + "'";
 
             lstAudits = GetObjList<BE_GetMemberScoreFull>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
@@ -765,7 +778,8 @@ namespace Reposotory.Implement
             //BE_ScoreBlock obj = null;
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
-            string SQL = " select TOP 1 A.START_DT AS Sdate,A.END_DT AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
+            //string SQL = " select TOP 1 CONVERT(CHAR(10),A.START_DT,120)+' 00:00:00.000' AS Sdate,CONVERT(CHAR(10),A.END_DT,120)+' 00:00:00.000' AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
+            string SQL = " select TOP 1 CONVERT(CHAR(10),A.START_DT,120)+' 00:00:00.000' AS Sdate,CONVERT(CHAR(10),A.END_DT,120)+' 00:00:00.000' AS Edate from TB_MemberScoreBlock A LEFT JOIN tb_memberScoreMain B ON A.MEMIDNO=B.MEMIDNO ";
             int nowCount = 0;
             if (false == string.IsNullOrWhiteSpace(IDNO))
             {

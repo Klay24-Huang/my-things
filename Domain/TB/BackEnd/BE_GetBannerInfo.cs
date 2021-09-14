@@ -14,6 +14,9 @@ namespace Domain.TB.BackEnd
         public DateTime STARTDATE { set; get; }
         public DateTime ENDDATE { set; get; }
         public string PIC_NAME { set; get; } //命名要和sp吐回的一樣
-        public string SEQNO { set; get; } //設為int會出現null錯誤，沒找出為何，所以還是改string
+        public string SEQNO { set; get; }
+        public string Status { set; get; }
+        public string STARTDATE2 { set; get; }
+        public string ENDDATE2 { set; get; }
     }
 }

@@ -26,6 +26,7 @@ using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
 using WebCommon;
 using Prometheus; //20210707唐加prometheus
+using StackExchange.Redis;//20210913唐加redis
 
 namespace WebAPI.Controllers
 {
@@ -35,13 +36,13 @@ namespace WebAPI.Controllers
     public class BindResultController : ApiController
     {
         //唐加prometheus
-        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("BindResult_CallTimes", "the number of call api times");
-        private static readonly Counter ProcessedJobCount2 = Metrics.CreateCounter("BindResult_CallTaishin", "the number of call TaishinApi error");
-        private static readonly Counter ProcessedJobCount3 = Metrics.CreateCounter("BindResult_DoGetCreditCardList", "the number of call DoGetCreditCardList error");
-        private static readonly Counter ProcessedJobCount4 = Metrics.CreateCounter("BindResult_DoDeleteCreditCardAuth", "the number of call DoDeleteCreditCardAuth error");
-        private static readonly Counter ProcessedJobCount5 = Metrics.CreateCounter("BindResult_Error", "the number of call api error");
-        private static readonly Counter ProcessedJobCount6 = Metrics.CreateCounter("BindResult_OrderNoNull", "the number of call api error");
-        private static readonly Counter ProcessedJobCount7 = Metrics.CreateCounter("BindResult_hasFind", "the number of call api error");
+        private static readonly Gauge ProcessedJobCount1 = Metrics.CreateGauge("BindResult_CallTimes", "Num_BindResult_CallTimes");
+        private static readonly Gauge ProcessedJobCount2 = Metrics.CreateGauge("BindResult_CallTaishin", "Num_BindResult_CallTaishin");
+        private static readonly Gauge ProcessedJobCount3 = Metrics.CreateGauge("BindResult_DoGetCreditCardList", "Num_BindResult_DoGetCreditCardList");
+        private static readonly Gauge ProcessedJobCount4 = Metrics.CreateGauge("BindResult_DoDeleteCreditCardAuth", "Num_BindResult_DoDeleteCreditCardAuth");
+        private static readonly Gauge ProcessedJobCount5 = Metrics.CreateGauge("BindResult_Error", "Num_BindResult_Error");
+        private static readonly Gauge ProcessedJobCount6 = Metrics.CreateGauge("BindResult_OrderNoNull", "Num_BindResult_OrderNoNull");
+        private static readonly Gauge ProcessedJobCount7 = Metrics.CreateGauge("BindResult_hasFind", "Num_BindResult_hasFind");
 
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -49,9 +50,21 @@ namespace WebAPI.Controllers
         private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
 
+        //20210913唐加redis，解決azure多執行個體造成prometheus的數值亂跳問題
+        private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
+        private static Lazy<ConnectionMultiplexer> lazyConnection;
+        public BindResultController()
+        {
+            if (lazyConnection == null)
+            {
+                lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+            }
+        }
+
         public Dictionary<string, object> DoBindResult(Dictionary<string, object> value)
         {
-            ProcessedJobCount1.Inc();//唐加prometheus
+            //ProcessedJobCount1.Inc();//唐加prometheus
+            SetCount("Num_BindResult_CallTimes");
 
             #region 初始宣告
             logger.Trace("Init:" + JsonConvert.SerializeObject(value));
@@ -117,7 +130,8 @@ namespace WebAPI.Controllers
                         {
                             flag = false;
                             errCode = "ERR197";
-                            ProcessedJobCount6.Inc();
+                            //ProcessedJobCount6.Inc();
+                            SetCount("Num_BindResult_OrderNoNull");
                         }
                     }
                     logger.Trace("Call:" + JsonConvert.SerializeObject(apiInput) + ",Error:" + errCode);
@@ -149,7 +163,8 @@ namespace WebAPI.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ProcessedJobCount2.Inc();//唐加prometheus
+                    //ProcessedJobCount2.Inc();//唐加prometheus
+                    SetCount("Num_BindResult_CallTaishin");
                     logger.Trace("setRequestParams Error:" + ex.Message);
                 }
                 if (flag)
@@ -179,7 +194,8 @@ namespace WebAPI.Controllers
                     }
                     catch (Exception ex)
                     {
-                        ProcessedJobCount3.Inc();//唐加prometheus
+                        //ProcessedJobCount3.Inc();//唐加prometheus
+                        SetCount("Num_BindResult_DoGetCreditCardList");
                         flag = false;
                         logger.Trace("GetCreditCardList_End:" + JsonConvert.SerializeObject(wsOutput) + ",Error:" + ex.Message);
                     }
@@ -252,7 +268,8 @@ namespace WebAPI.Controllers
                         }
                         catch (Exception ex)
                         {
-                            ProcessedJobCount4.Inc();//唐加prometheus
+                            //ProcessedJobCount4.Inc();//唐加prometheus
+                            SetCount("Num_BindResult_DoDeleteCreditCardAuth");
                             logger.Trace("DoDeleteCreditCardAuth:" + ",Error:" + ex.Message);
                             flag = false;
                             errCode = "ERR195";
@@ -262,7 +279,8 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR195";
-                        ProcessedJobCount7.Inc();//唐加prometheus
+                        //ProcessedJobCount7.Inc();//唐加prometheus
+                        SetCount("Num_BindResult_hasFind");
                     }
 
                     object[][] parms1 = {
@@ -304,7 +322,8 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                ProcessedJobCount5.Inc();//唐加prometheus
+                //ProcessedJobCount5.Inc();//唐加prometheus
+                SetCount("Num_BindResult_Error");
                 logger.Trace("OUTTER_ERROR:" + ",Error:" + ex.Message);
             }
             #region 輸出
@@ -321,5 +340,51 @@ namespace WebAPI.Controllers
             #endregion
         }
 
+        private void SetCount(string memo)
+        {
+            var value = 1;
+            try
+            {
+                ConnectionMultiplexer connection = lazyConnection.Value;
+                IDatabase cache = connection.GetDatabase();
+
+                var key = memo;
+                var cacheString = cache.StringGet(key);
+                if (cacheString.HasValue)
+                {
+                    int.TryParse(cacheString.ToString(), out value);
+                    value++;
+                }
+                cache.StringSet(key, value);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+            switch (memo)
+            {
+                case "Num_BindResult_CallTimes":
+                    ProcessedJobCount1.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_CallTaishin":
+                    ProcessedJobCount2.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_DoGetCreditCardList":
+                    ProcessedJobCount3.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_DoDeleteCreditCardAuth":
+                    ProcessedJobCount4.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_Error":
+                    ProcessedJobCount5.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_OrderNoNull":
+                    ProcessedJobCount6.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_hasFind":
+                    ProcessedJobCount7.Set(value); //宣告Guage才能用set
+                    break;
+            }
+        }
     }
 }

@@ -1,0 +1,1 @@
+2021-09-02 15:17:58.3539|TRACE|Web.Controllers.BaseSafeController|{ReportName:'合約資料查詢_匯出(ContactQueryExplode)',User:'sss',IPAddr:'::1',account:'a',controller_name:a

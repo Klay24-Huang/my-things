@@ -942,7 +942,9 @@ namespace Reposotory.Implement
             BE_OrderDetailData obj = null;
 
             int nowCount = 0;
-            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
+            //20210902 ADD BY ADAM REASON.資安政策有調整view導致沒辦法顯示合約，先修正
+            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail_Contact WITH(NOLOCK)  ";
 
 
             SqlParameter[] para = new SqlParameter[10];
@@ -962,7 +964,7 @@ namespace Reposotory.Implement
             if (IDNO != "")
             {
                 term += (term == "") ? "" : " AND ";
-                term += " IDNO=@IDNO";
+                term += " (IDNO=@IDNO OR CAST(MEMRFNBR AS VARCHAR)=@IDNO)";      //20210902 ADD BY ADAM REASON.暫時解決出租單列印問題
                 para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar,10);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;
@@ -1359,6 +1361,44 @@ namespace Reposotory.Implement
             lstPayment = GetObjList<BE_OrderPaymentData>(ref flag, ref lstError, SQL, para, term);
 
             return lstPayment;
+        }
+
+        /// <summary>
+        /// 取得共同承租人清單
+        /// </summary>
+        /// <param name="OrderNo"></param>
+        /// <param name="Mode"></param>
+        /// <returns></returns>
+        public List<BE_TogetherPassenger> GetTogetherPassengerData(Int64 OrderNo)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_TogetherPassenger> lstData = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT Order_number,MEMCNAME,MEMTEL" +
+                " FROM TB_TogetherPassenger WITH(NOLOCK) ";
+
+
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            term += " Order_number=@OrderNo";
+            para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
+            para[nowCount].Value = OrderNo;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            
+
+            lstData = GetObjList<BE_TogetherPassenger>(ref flag, ref lstError, SQL, para, term);
+
+            return lstData;
         }
     }
 }

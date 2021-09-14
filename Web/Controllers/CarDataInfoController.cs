@@ -31,9 +31,9 @@ namespace Web.Controllers
     /// <summary>
     /// 車輛管理
     /// </summary>
-    public class CarDataInfoController : Controller
+    public class CarDataInfoController : BaseSafeController //20210907唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 車輛中控台
         /// </summary>
@@ -45,6 +45,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarDashBoard(FormCollection collection)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarDashBoard");
+
             Input_CarDashBoard QueryData = null;
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             List<BE_CarDashBoardData> lstData = new List<BE_CarDashBoardData>();
@@ -56,7 +61,6 @@ namespace Web.Controllers
                 {
                     lstData = carStatusCommon.GetDashBoard(QueryData.CarNo, QueryData.StationID, QueryData.ShowType, QueryData.Terms);
                 }
-
             }
 
             if(collection["btnExport"] == "true")
@@ -137,6 +141,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarSetting(string CarNo,string StationID,int ShowType=3)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarSetting");
+
             //BE_CarSettingData
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             ViewData["ShowType"] = ShowType;
@@ -154,13 +163,17 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult CarBind()
         {
-            //GetCarBindData
             return View();
         }
         [HttpPost]
         [Obsolete]
         public ActionResult CarBind(string CarNo,string CID,string BindStatus, string Mode, HttpPostedFileBase fileImport)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarBind");
+
             //GetCarBindData
             string errorLine = "";
             string errorMsg = "";
@@ -328,6 +341,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult CarDataSetting(string isExport,string CarNo, string StationID, int ShowType = 3)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CarDataSetting");
+
             //BE_CarSettingData
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
             ViewData["CarNo"] = CarNo;
@@ -398,6 +416,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ViewCarDetail(string ShowCarNo)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ViewCarDetail");
+
             CarStatusCommon carStatusCommon = new CarStatusCommon(connetStr);
 
             BE_GetCarDetail obj  = null;
@@ -418,6 +441,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ImportMotorData(HttpPostedFileBase fileImport)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ImportMotorData");
+
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;
@@ -561,6 +589,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ImportCarData(HttpPostedFileBase fileImport)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ImportCarData");
+
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;
@@ -592,7 +625,7 @@ namespace Web.Controllers
                     ISheet sheet = workBook.GetSheetAt(0);
                     int sheetLen = sheet.LastRowNum;
                     //20201207唐改大寫
-                    string[] field = { "CARNO", "TSEQNO", "CARTYPE", "SEAT", "FACTORYYEAR", "CARCOLOR", "ENGINENO", "BODYNO", "CCNUM" };
+                    string[] field = { "CARNO", "TSEQNO", "CARTYPE", "SEAT", "FACTORYYEAR", "CARCOLOR", "ENGINENO", "BODYNO", "CCNUM", "HolidayPrice", "WeekdayPrice" };
                     int fieldLen = field.Length;
                     //第一關，判斷位置是否相等
                     for (int i = 0; i < fieldLen; i++)
@@ -615,7 +648,7 @@ namespace Web.Controllers
                         {
                             //20210105_Eric_增加防呆，若全部空白則跳開
                             bool CheckNotAllNull = false;
-                            for (int j = 0; j < 8; j++)
+                            for (int j = 0; j < sheetLen; j++)
                             {
                                 if (false == string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString()))
                                 {
@@ -637,6 +670,8 @@ namespace Web.Controllers
                                     EngineNO = sheet.GetRow(i).GetCell(6).ToString().Replace(" ", ""),
                                     BodyNO = sheet.GetRow(i).GetCell(7).ToString().Replace(" ", ""),
                                     CCNum = Convert.ToInt32(sheet.GetRow(i).GetCell(8).ToString().Replace(" ", "")),
+                                    HolidayPrice = Convert.ToInt32(sheet.GetRow(i).GetCell(9).ToString().Replace(" ", "")),
+                                    WeekdayPrice = Convert.ToInt32(sheet.GetRow(i).GetCell(10).ToString().Replace(" ", "")),
                                     IsMotor = 0,
                                     UserID = UserId,
                                     LogID = 0
@@ -704,6 +739,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ImportCarMachineData(HttpPostedFileBase fileImport)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ImportCarMachineData");
+
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;
@@ -840,6 +880,11 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ImportCarBindData(HttpPostedFileBase fileImport)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ImportCarBindData");
+
             string errorLine = "";
             string errorMsg = "";
             bool flag = true;

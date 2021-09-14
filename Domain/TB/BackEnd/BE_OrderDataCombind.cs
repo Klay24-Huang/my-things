@@ -32,5 +32,10 @@ namespace Domain.TB.BackEnd
         /// 付款資料
         /// </summary>
         public List<BE_OrderPaymentData> PaymentData { set; get; }
+        /// <summary>
+        /// 共同承租人資料
+        /// </summary>
+        public List<BE_TogetherPassenger> TogetherPassenger { set; get; }
+
     }
 }

@@ -188,6 +188,7 @@
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
     <Compile Include="Controllers\BE_AutoPayMoneyController.cs" />
     <Compile Include="Controllers\BE_BannerController.cs" />
+    <Compile Include="Controllers\BE_BannerSortController.cs" />
     <Compile Include="Controllers\BE_BonusQueryController.cs" />
     <Compile Include="Controllers\BE_BookingCarController.cs" />
     <Compile Include="Controllers\BE_CanccelOrderController.cs" />
@@ -256,6 +257,7 @@
     <Compile Include="Controllers\BuyNowToolController.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
+    <Compile Include="Controllers\GetCarMapDataController.cs" />
     <Compile Include="Controllers\GetMapMedalController.cs" />
     <Compile Include="Controllers\GetMemberMedalController.cs" />
     <Compile Include="Controllers\GetMemberScoreController.cs" />
@@ -424,6 +426,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Audit.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_AutoPayMoney.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Banner.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BannerSort.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_Base.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_BookingCancel.cs" />
@@ -488,6 +491,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
+    <Compile Include="Models\Param\BackEnd\Output\OAPI_GetCarMapData.cs" />
     <Compile Include="Models\Param\Bill\Input\IFN_TSIBCardTrade.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_CarRentInCompute.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_GetCarRentPrice.cs" />

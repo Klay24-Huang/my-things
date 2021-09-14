@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -42,6 +43,7 @@ namespace WebCommon
         /// <returns></returns>
         public bool UploadFileToAzureStorage(HttpPostedFileBase file, string ContainerName)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             bool flag = true;
             string file_extension = Path.GetExtension(file.FileName);
             string filename_withExtension = Path.GetFileName(file.FileName);
@@ -56,7 +58,6 @@ namespace WebCommon
 
             // Create the container if it doesn't already exist.
             container.CreateIfNotExists();
-
             container.SetPermissions(
             new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
@@ -70,6 +71,46 @@ namespace WebCommon
                 cloudBlockBlob.UploadFromStream(fileStream);
             }
             
+            return flag;
+        }
+        /// <summary>
+        /// HttpPost File到AzureStorage(可變更名稱)
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="ContainerName"></param>
+        /// <returns></returns>
+        public bool UploadFileToAzureStorage(HttpPostedFileBase file, string fileName, string ContainerName, string path)
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            bool flag = true;
+            string file_extension = Path.GetExtension(fileName);
+            string filename_withExtension = Path.GetFileName(fileName);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Retrieve a reference to a container.
+            //specified container name
+            CloudBlobContainer container = blobClient.GetContainerReference(ContainerName);
+
+            // Create the container if it doesn't already exist.
+            //container.CreateIfNotExists();
+            container.SetPermissions(
+            new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+            //  CloudBlockBlob blockBlob = container.GetBlockBlobReference("myBlob");
+            CloudBlockBlob cloudBlockBlob = container.GetBlockBlobReference(filename_withExtension);
+            cloudBlockBlob.Properties.ContentType = file_extension;
+            
+
+            string filePath = Path.GetFullPath(fileName);
+
+            // Create or overwrite the "myblob" blob with contents from a local file.
+
+            cloudBlockBlob.UploadFromFile(path);
+
+
             return flag;
         }
         /// <summary>
@@ -158,6 +199,27 @@ namespace WebCommon
             }
 
             return flag;
+        }
+
+        public CloudBlockBlob DownloadFile(string ContainerName, string fileName)
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            bool flag = true;
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Retrieve a reference to a container.
+            //specified container name
+            CloudBlobContainer container = blobClient.GetContainerReference(ContainerName);
+
+            container.CreateIfNotExists();
+
+            var blockBlob = container.GetBlockBlobReference(fileName);
+
+            return blockBlob;
         }
     }
 }
