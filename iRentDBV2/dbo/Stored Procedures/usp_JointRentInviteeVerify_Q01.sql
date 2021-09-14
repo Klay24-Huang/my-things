@@ -10,6 +10,7 @@
 　　　　　　 20210906 UPD BY AMBER REASON: 新增是否檢查Token參數
              20210908 UPD BY AMBER REASON: 修正檢核邏輯
 			 20210909 UPD BY AMBER REASON: 修正判斷邀請人數上限需排除重邀的副承租人
+			 20210913 UPD BY AMBER REASON: 加入取消訂單檢核
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeVerify_Q01]
@@ -87,6 +88,19 @@ SET @ProjType='';
 				END
 			END
 		END
+
+		--0.1取消訂單則事先擋掉
+		IF @Error=0
+		BEGIN
+			SET @hasData=0
+			SELECT @hasData=count(1) FROM TB_OrderMain o WITH(NOLOCK) WHERE o.order_number=@OrderNo AND cancel_status=3;
+
+			IF @hasData>0
+			BEGIN
+			SET @Error=1
+			SET @ErrorCode='ERR168'
+			END
+		END 
 
 		--1.判斷會員狀態(已審核、通過手機驗證、非黑名單)
 		IF @Error=0
@@ -249,5 +263,6 @@ SET @ProjType='';
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentInviteeVerify_Q01';
+
 
 

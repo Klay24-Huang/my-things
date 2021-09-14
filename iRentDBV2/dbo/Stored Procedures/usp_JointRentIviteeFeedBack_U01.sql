@@ -7,6 +7,8 @@
 * 作    者 : AMBER
 * 撰寫日期 : 20210901
 * 修改日期 : 20210906 UPD BY AMBER REASON: 新增是否檢查Token參數@CheckToken
+             20210910 UPD BY AMBER REASON: 拒絕邀請不須檢核
+			 20210911 UPD BY AMBER REASON: 調整寫入推播判斷邏輯
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentIviteeFeedBack_U01]
@@ -65,10 +67,13 @@ BEGIN TRY
 
 	IF @Error=0
 	IF  EXISTS(SELECT 1 FROM TB_TogetherPassenger WITH(NOLOCK) WHERE Order_number=@OrderNo AND MEMIDNO=@InviteeId AND ChkType='S') 
-　　BEGIN
-		SELECT @InviterId=o.IDNO FROM TB_OrderMain o WITH(NOLOCK) WHERE order_number=@OrderNo;		　　						
+	BEGIN
+	   SELECT @InviterId=o.IDNO FROM TB_OrderMain o WITH(NOLOCK) WHERE order_number=@OrderNo;	
+	IF @FeedbackType='Y'
+	BEGIN			　　						
 		DECLARE  @ReturnID VARCHAR(20) 	
 		EXEC @Error = usp_JointRentInviteeVerify_Q01 @InviteeId,@OrderNo,@Token,@InviteeId,@LogID,@CheckToken,@ReturnID output,@ErrorCode output,@ErrorMsg output,@SQLExceptionCode output,@SQLExceptionMsg output			  						
+	END
 	END	
 	ELSE
 	BEGIN
@@ -128,6 +133,5 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_JointRentIviteeFeedBack_U01';
 END
-
 
 
