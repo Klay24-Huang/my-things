@@ -41,25 +41,25 @@ namespace WebAPI.Controllers
     public class CreditAuthController : ApiController
     {
         //唐加prometheus
-        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("CreditAuth_CallTimes", "the number of call api times");
-        private static readonly Counter ProcessedJobCount2 = Metrics.CreateCounter("CreditAuth_Fail", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount3 = Metrics.CreateCounter("CreditAuth_Fail_PayType", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount4 = Metrics.CreateCounter("CreditAuth_Fail_OrderNoNull", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount5 = Metrics.CreateCounter("CreditAuth_Fail_OrderNoH", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount6 = Metrics.CreateCounter("CreditAuth_Fail_tmpOrder", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount7 = Metrics.CreateCounter("CreditAuth_Fail_ckTime", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount8 = Metrics.CreateCounter("CreditAuth_Fail_OrderDataLists_Count", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount9 = Metrics.CreateCounter("CreditAuth_Fail_car_mgt_status_15", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount10 = Metrics.CreateCounter("CreditAuth_Fail_car_mgt_status_11", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount11 = Metrics.CreateCounter("CreditAuth_Fail_PicToAzure", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount12 = Metrics.CreateCounter("CreditAuth_Fail_NPR330Save_ID", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount13 = Metrics.CreateCounter("CreditAuth_Fail_CacheStringNull", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount14 = Metrics.CreateCounter("CreditAuth_Fail_getBindingList", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount15 = Metrics.CreateCounter("CreditAuth_Fail_RtnCode_1000", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount16 = Metrics.CreateCounter("CreditAuth_Fail_ResultCode_1000", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount17 = Metrics.CreateCounter("CreditAuth_Fail_hasFind", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount18 = Metrics.CreateCounter("CreditAuth_Fail_sp_ArrearsQueryByNPR330ID", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount19 = Metrics.CreateCounter("CreditAuth_Fail_isGuest", "the number of call api error times");
+        private static readonly Gauge ProcessedJobCount1 = Metrics.CreateGauge("CreditAuth_CallTimes", "NUM_CreditAuth_CallTimes");
+        private static readonly Gauge ProcessedJobCount2 = Metrics.CreateGauge("CreditAuth_Fail", "NUM_CreditAuth_Fail");
+        private static readonly Gauge ProcessedJobCount3 = Metrics.CreateGauge("CreditAuth_Fail_PayType", "NUM_CreditAuth_Fail_PayType");
+        private static readonly Gauge ProcessedJobCount4 = Metrics.CreateGauge("CreditAuth_Fail_OrderNoNull", "NUM_CreditAuth_Fail_OrderNoNull");
+        private static readonly Gauge ProcessedJobCount5 = Metrics.CreateGauge("CreditAuth_Fail_OrderNoH", "NUM_CreditAuth_Fail_OrderNoH");
+        private static readonly Gauge ProcessedJobCount6 = Metrics.CreateGauge("CreditAuth_Fail_tmpOrder", "NUM_CreditAuth_Fail_tmpOrder");
+        private static readonly Gauge ProcessedJobCount7 = Metrics.CreateGauge("CreditAuth_Fail_ckTime", "NUM_CreditAuth_Fail_ckTime");
+        private static readonly Gauge ProcessedJobCount8 = Metrics.CreateGauge("CreditAuth_Fail_OrderDataLists_Count", "NUM_CreditAuth_Fail_OrderDataLists_Count");
+        private static readonly Gauge ProcessedJobCount9 = Metrics.CreateGauge("CreditAuth_Fail_car_mgt_status_15", "NUM_CreditAuth_Fail_car_mgt_status_15");
+        private static readonly Gauge ProcessedJobCount10 = Metrics.CreateGauge("CreditAuth_Fail_car_mgt_status_11", "NUM_CreditAuth_Fail_car_mgt_status_11");
+        private static readonly Gauge ProcessedJobCount11 = Metrics.CreateGauge("CreditAuth_Fail_PicToAzure", "NUM_CreditAuth_Fail_PicToAzure");
+        private static readonly Gauge ProcessedJobCount12 = Metrics.CreateGauge("CreditAuth_Fail_NPR330Save_ID", "NUM_CreditAuth_Fail_NPR330Save_ID");
+        private static readonly Gauge ProcessedJobCount13 = Metrics.CreateGauge("CreditAuth_Fail_CacheStringNull", "NUM_CreditAuth_Fail_CacheStringNull");
+        private static readonly Gauge ProcessedJobCount14 = Metrics.CreateGauge("CreditAuth_Fail_getBindingList", "NUM_CreditAuth_Fail_getBindingList");
+        private static readonly Gauge ProcessedJobCount15 = Metrics.CreateGauge("CreditAuth_Fail_RtnCode_1000", "NUM_CreditAuth_Fail_RtnCode_1000");
+        private static readonly Gauge ProcessedJobCount16 = Metrics.CreateGauge("CreditAuth_Fail_ResultCode_1000", "NUM_CreditAuth_Fail_ResultCode_1000");
+        private static readonly Gauge ProcessedJobCount17 = Metrics.CreateGauge("CreditAuth_Fail_hasFind", "NUM_CreditAuth_Fail_hasFind");
+        private static readonly Gauge ProcessedJobCount18 = Metrics.CreateGauge("CreditAuth_Fail_sp_ArrearsQueryByNPR330ID", "NUM_CreditAuth_Fail_sp_ArrearsQueryByNPR330ID");
+        private static readonly Gauge ProcessedJobCount19 = Metrics.CreateGauge("CreditAuth_Fail_isGuest", "NUM_CreditAuth_Fail_isGuest");
 
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -76,12 +76,22 @@ namespace WebAPI.Controllers
         private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
         private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
 
+        private static Lazy<ConnectionMultiplexer> lazyConnection;
+        public CreditAuthController()
+        {
+            if (lazyConnection == null)
+            {
+                lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+            }
+        }
+
         private CommonFunc baseVerify { get; set; }
 
         [HttpPost]
         public Dictionary<string, object> DoCreditAuth(Dictionary<string, object> value)
         {
-            ProcessedJobCount1.Inc();//唐加prometheus
+            //ProcessedJobCount1.Inc();//唐加prometheus
+            SetCount("NUM_CreditAuth_CallTimes");
 
             #region 初始宣告
             var trace = new TraceCom();
@@ -179,7 +189,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR101";
                     //ProcessedJobCount19.Inc();//唐加prometheus
-                    SetCount("NUM_CreditAuth_Fail_isGuest");//無token
+                    SetCount("NUM_CreditAuth_Fail_isGuest");
                 }
                 #endregion
 
@@ -215,6 +225,7 @@ namespace WebAPI.Controllers
                                 //ProcessedJobCount7.Inc();//唐加prometheus
                                 SetCount("NUM_CreditAuth_Fail_ckTime");//使用者超過15分鐘沒還車
                             }
+
                             trace.traceAdd("ckTime", ckTime);
                         }
 
