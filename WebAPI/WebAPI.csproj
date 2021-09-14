@@ -582,7 +582,6 @@
     <Compile Include="Models\Param\Input\IAPI_OpenDoorCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoorFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_PersonNotice.cs" />
-    <Compile Include="Models\Param\Input\IAPI_PersonNoticeRead.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />
