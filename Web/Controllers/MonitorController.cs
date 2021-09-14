@@ -20,15 +20,19 @@ namespace Web.Controllers
     /// <summary>
     /// 地圖監控
     /// </summary>
-    public class MonitorController : Controller
+    public class MonitorController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 地圖監控
         /// </summary>
         /// <returns></returns>
         public ActionResult Index(int? Mode, string OrderNum, DateTime? start, DateTime? end, string objCar)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MonitorController_Index");
+
             Int16 sMode = 2;
             List<BE_EvTimeLine> lstEv = null;
             if (Mode != null)
@@ -65,12 +69,12 @@ namespace Web.Controllers
             return View(lstEv);
         }
 
-
-
-
-
         public ActionResult ExplodeMapQuery(int ExplodeMode, string ExplodeOrderNum, string ExplodeCarNo, string ExplodeSDATE, string ExplodeEDATE)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeMapQuery");
+
             List<BE_MapList> lstRawDataOfMachi = new List<BE_MapList>();
             EventHandleRepository _repository = new EventHandleRepository(connetStr);
 

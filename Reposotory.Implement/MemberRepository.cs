@@ -459,6 +459,19 @@ namespace Reposotory.Implement
             return lstAudits;
         }
 
+        public List<BE_GetMemberScoreFull> GetMemberScoreFull_EXPORT(string IDNO, string NAME, string ORDERNO, string SDATE, string EDATE)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetMemberScoreFull> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[4]; // term是空就用不到
+            string term = "";
+            string SQL = $" EXEC SP_GetMemberScoreFull_EXPORT '" + IDNO + "','" + NAME + "','" + ORDERNO + "','" + SDATE + "','" + EDATE + "'";
+
+            lstAudits = GetObjList<BE_GetMemberScoreFull>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+
         public List<BE_GetMemberData> GetMemberData_ForScore(string ORDERNO)
         {
             bool flag = true;

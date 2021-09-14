@@ -16,9 +16,9 @@ namespace Web.Controllers
     /// <summary>
     /// 後台管理
     /// </summary>
-    public class ManageController : Controller
+    public class ManageController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 強制刷卡取款
         /// </summary>
@@ -30,6 +30,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult AuthAndPay(string IDNO)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "AuthAndPay");
+
             ViewData["IDNO"] = IDNO;
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
@@ -107,6 +111,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ArrearQuery(string IDNO)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ArrearQuery");
+
             ViewData["IDNO"] = IDNO;
             ViewData["errorLine"] = null;
             ViewData["IsShowMessage"] = null;
@@ -146,7 +154,6 @@ namespace Web.Controllers
                             errorMsg = WebAPIOutput.Message;
                             flag = false;
                         }
-
                     }
                     else
                     {
@@ -164,7 +171,6 @@ namespace Web.Controllers
             if (flag)
             {
                 ViewData["errorLine"] = "ok";
-
             }
             else
             {
@@ -184,12 +190,20 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult HoildayMaintain(int HoildayYear,int Season)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "HoildayMaintain");
+
             ViewData["HoildayYear"] = HoildayYear;
             ViewData["Season"] = Season;
             return View();
         }
         public ActionResult InsCleanOrder()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "InsCleanOrder");
+
             return View();
         }
         ///// <summary>
@@ -206,6 +220,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult UnBindCreditCard()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "UnBindCreditCard");
+
             return View();
         }
         /// <summary>
@@ -214,6 +232,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ResendToHieasyrent()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ResendToHieasyrent");
+
             return View();
         }
 
@@ -228,6 +250,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult APILogQuery(string IPAddress, string StartDate, string EndDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "APILogQuery");
+
             ViewData["IPAddress"] = IPAddress;
             ViewData["StartDate"] = StartDate;
             ViewData["EndDate"] = EndDate;
@@ -237,14 +263,16 @@ namespace Web.Controllers
             return View(lstData);
         }
 
-
-
         /// <summary>
         /// 查詢APILog
         /// </summary>
         /// <returns></returns>
         public ActionResult RealtimeSale()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "RealtimeSale");
+
             List<BE_RealtimeSale> lstData = null;
             APILogRepository repository = new APILogRepository(connetStr);
             lstData = repository.GetRealtimeSale("");
@@ -253,6 +281,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult RealtimeSale( string StartDate)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "RealtimeSale2");
+
             ViewData["StartDate"] = StartDate;
             List<BE_RealtimeSale> lstData = null;
             APILogRepository repository = new APILogRepository(connetStr);

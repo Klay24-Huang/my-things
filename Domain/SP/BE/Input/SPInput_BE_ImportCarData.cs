@@ -48,6 +48,8 @@ namespace Domain.SP.BE.Input
         /// CC數
         /// </summary>
         public int CCNum { set; get; }
+        public int HolidayPrice { set; get; }
+        public int WeekdayPrice { set; get; }
         /// <summary>
         /// 是否是機車
         /// <para>0:否</para>
