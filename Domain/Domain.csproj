@@ -283,6 +283,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_GetPayInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletStoredMoneySet.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetMemberName.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetPayInfoReturnCar.cs" />
@@ -375,6 +376,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_UpSubsMonth.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_GetPayInfo.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletInfo.cs" />
     <Compile Include="SP\Output\Wallet\SPOut_GetPayInfoReturnCar.cs" />
     <Compile Include="SP\Output\Wallet\SPOut_GetWalletStoredMoneySet.cs" />
