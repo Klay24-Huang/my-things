@@ -27,9 +27,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         public Int16 ActionType { get; set; }
 
         /// <summary>
-        /// 推播時間
+        /// 推播時間 20210914 ADD BY ADAM REASON.時間改為字串格式
         /// </summary>
-        public DateTime PushTime { get; set; }
+        public string PushTime { get; set; }
 
         /// <summary>
         /// 主旨
