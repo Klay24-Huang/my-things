@@ -409,9 +409,9 @@ namespace Web.Controllers
         }
         #endregion
 
-        #region 月租總表
+        #region 訂閱制總表查詢
         /// <summary>
-        /// 月租總表
+        /// 訂閱制總表查詢
         /// </summary>
         /// <returns></returns>
         public ActionResult MonthlyMainQuery()
@@ -431,7 +431,7 @@ namespace Web.Controllers
         /// </param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult MonthlyMainQuery(string SDate, string EDate, string userID, int? isHandle)
+        public ActionResult MonthlyMainQuery(string SDate, string EDate, string userID, string carType, int? isHandle)
         {
             List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
@@ -458,6 +458,10 @@ namespace Web.Controllers
             {
                 tUserID = userID;
                 ViewData["userID"] = tUserID;
+            }
+            if (!string.IsNullOrEmpty(carType))
+            {
+                ViewData["carType"] = carType;
             }
 
             bool isInDateRange = false;
@@ -478,6 +482,7 @@ namespace Web.Controllers
             if (isInDateRange || tmpIsHandle < 2 || tUserID.Length > 0)
             {
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
+                lstSubScription = lstSubScription.Where(i => i.IsMoto != int.Parse(carType)).ToList();
             }
 
 
@@ -492,13 +497,14 @@ namespace Web.Controllers
         /// <param name="userID"></param>
         /// <param name="isHandle"></param>
         /// <returns></returns>    
-        public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, int? isHandle)
+        public ActionResult MonthlyMainQueryDownLoad(string SDate, string EDate, string userID, string carType ,int? isHandle)
         {
             List<BE_MonthlyMain> lstSubScription = new List<BE_MonthlyMain>();
             SubScriptionRepository _repository = new SubScriptionRepository(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             int tmpIsHandle = 2;
             string tSDate = "", tEDate = "", tUserID = "";
+
             if (isHandle.HasValue)
             {
                 tmpIsHandle = isHandle.Value;
@@ -532,10 +538,11 @@ namespace Web.Controllers
             if (isInDateRange || tmpIsHandle < 2 || tUserID.Length > 0)
             {
                 lstSubScription = _repository.BE_GetMonthlyMain(userID, tSDate, tEDate, tmpIsHandle);
+                lstSubScription = lstSubScription.Where(i => i.IsMoto != int.Parse(carType)).ToList();
             }
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet = workbook.CreateSheet("搜尋結果");
-            string[] headerField = { "訂閱方案編號", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間",
+            string[] headerField = { "合約狀態", "失效原因", "訂閱方案編號", "訂閱方案群組編號", "合約期數", "方案代碼", "方案名稱", "方案生效時間", "方案結束時間",
                 "IDNO", "汽車－平日", "汽車－假日", "機車","是否開啟自動續約" ,"方案是否綁約","綁約期數" };
             int headerFieldLen = headerField.Length;
 
@@ -547,21 +554,47 @@ namespace Web.Controllers
             }
 
             int len = lstSubScription.Count;
+            string projName = "";
+            int count = 1; //期數
             for (int k = 0; k < len; k++)
             {
+                //期數計算
+                if (projName == "")
+                {
+                    projName = lstSubScription[k].ProjNM;
+                }
+                else if (projName == lstSubScription[k].ProjNM)
+                {
+                    count++;
+
+                    if (count > 6)
+                    {
+                        count = 1;
+                    }
+                }
+                else
+                {
+                    projName = lstSubScription[k].ProjNM;
+                    count = 1;
+                }
+
                 IRow content = sheet.CreateRow(k + 1);
-                content.CreateCell(0).SetCellValue(lstSubScription[k].SEQNO);   //ID
-                content.CreateCell(1).SetCellValue(lstSubScription[k].ProjID);   //ID
-                content.CreateCell(2).SetCellValue(lstSubScription[k].ProjNM);   //ID
-                content.CreateCell(3).SetCellValue(lstSubScription[k].StartDate.ToString("yyyy-MM-dd HH:mm"));  //合約起
-                content.CreateCell(4).SetCellValue(lstSubScription[k].EndDate.ToString("yyyy-MM-dd HH:mm"));    //合約迄
-                content.CreateCell(5).SetCellValue(lstSubScription[k].IDNO);   //ID
-                content.CreateCell(6).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
-                content.CreateCell(7).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
-                content.CreateCell(8).SetCellValue((lstSubScription[k].MotoTotalHours).ToString("f1"));   //機車
-                content.CreateCell(9).SetCellValue(lstSubScription[k].AutomaticRenewal);
-                content.CreateCell(10).SetCellValue(lstSubScription[k].IsTiedUp);
-                content.CreateCell(11).SetCellValue(lstSubScription[k].MonProPeriod);
+                content.CreateCell(0).SetCellValue((lstSubScription[k].useFlag == 0) ? "已失效" : "有效");
+                content.CreateCell(1).SetCellValue((lstSubScription[k].FlagCodeId == 0) ? "-" : (lstSubScription[k].FlagCodeId == 1) ? "當期升轉" : (lstSubScription[k].FlagCodeId == 2) ? "解約" : "人工解約");
+                content.CreateCell(2).SetCellValue(lstSubScription[k].MonthlyRentId); //ID
+                content.CreateCell(3).SetCellValue(lstSubScription[k].SubsId);
+                content.CreateCell(4).SetCellValue(count);
+                content.CreateCell(5).SetCellValue(lstSubScription[k].ProjID);   //ID
+                content.CreateCell(6).SetCellValue(lstSubScription[k].ProjNM);   //ID
+                content.CreateCell(7).SetCellValue(lstSubScription[k].StartDate.ToString("yyyy-MM-dd HH:mm"));  //合約起
+                content.CreateCell(8).SetCellValue(lstSubScription[k].EndDate.ToString("yyyy-MM-dd HH:mm"));    //合約迄
+                content.CreateCell(9).SetCellValue(userID);                      //ID
+                content.CreateCell(10).SetCellValue(lstSubScription[k].WorkDayHours);   //汽車－平日
+                content.CreateCell(11).SetCellValue(lstSubScription[k].HolidayHours);   //汽車－假日
+                content.CreateCell(12).SetCellValue((lstSubScription[k].MotoTotalHours).ToString("f1"));   //機車
+                content.CreateCell(13).SetCellValue(lstSubScription[k].AutomaticRenewal);
+                content.CreateCell(14).SetCellValue(lstSubScription[k].IsTiedUp);
+                content.CreateCell(15).SetCellValue(lstSubScription[k].MonProPeriod);
             }
 
             for (int l = 0; l < headerFieldLen; l++)
