@@ -261,6 +261,7 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\GetPayInfoController.cs" />
     <Compile Include="Controllers\GetPayInfoReturnCarController.cs" />
     <Compile Include="Controllers\GetWalletStoredMoneySetController.cs" />
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
@@ -560,6 +561,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetNews.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayDetail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetPayInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayInfoReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPolygon.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetProject.cs" />
@@ -689,6 +691,7 @@
     <Compile Include="Models\Param\Output\OAPI_GetNews.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPayDetail.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetPayInfo.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPolygon.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetPolygonForWeb.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetProject.cs" />
@@ -748,6 +751,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\OPAI_TypeListParam.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderCancelObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\OrderFinishObj.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\PayModeObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonDataForWeb.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\RentBase.cs" />
