@@ -145,6 +145,8 @@ iRentApi20 Web API版本
 
 20210910 電子錢包取得付款方式(GetPayInfo)增加輸出使用者目前已綁定的付費方式數量(PayModeBindCount)
 
+20210914 錢包儲值-信用卡(WalletStoredByCredit)補上錯誤代碼
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -5672,9 +5674,9 @@ iRentApi20 Web API版本
 
 * 錯誤代碼
 
-| 錯誤代碼 | 說明       |
-| -------- | ---------- |
-| ERR279   | 非錢包會員 |
+| 錯誤代碼 | 說明       |      |
+| -------- | ---------- | ---- |
+| ERR279   | 非錢包會員 |      |
 
 ----
 
@@ -5724,13 +5726,13 @@ iRentApi20 Web API版本
 | ErrorMessage  　　　| 錯誤訊息           | string | Success       |
 | Data          　　　| 資料物件           |        |               |
 
-* Data-StoredMoneySet 回傳參數說明
+* Data 回傳參數說明
 
 | 參數名稱    | 參數說明              |  型態  | 範例             |
 | ----------- | --------------------- | :----: | ---------------- |
 | StroeResult | 儲值結果(1成功,0失敗) |  int   | 1                |
 | StoreMoney  | 儲值金額              |  int   | 100              |
-| Timestamp   | 儲值時間              | string | 2020/03/31 11:24 |
+| Timestamp   | 儲值時間              | string | 2021/09/14 04:46 |
 
 * Output範例
 
@@ -5740,24 +5742,28 @@ iRentApi20 Web API版本
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
-    "ErrorMessage": "Success",,
-	"Data": {
-	   {
-	     "StroeResult": 1,
-	     "StoreMoney": 100
-	     "Timestamp": '2020/03/31 11:24'
-	   }
-	}
+    "ErrorMessage": "Success",
+    "Data": {
+        "StroeResult": 1,
+        "StoreMoney": 100,
+        "Timestamp": "2021/09/14 04:46"
+    }
 }
 
 ```
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                   | 說明             |
-| -------- | -------------------------- | ---------------- |
-| ERR195   | 找不到此卡號               | 找不到此信用卡號 |
-| ERR197   | 刷卡授權失敗，請洽發卡銀行 | 刷卡授權發生錯誤 |
+| 錯誤代碼 | 錯誤訊息                   | 說明                                     |
+| -------- | -------------------------- | ---------------------------------------- |
+| ERR195   | 找不到此卡號               | 找不到此信用卡號                         |
+| ERR197   | 刷卡授權失敗，請洽發卡銀行 | 刷卡授權發生錯誤                         |
+| ERR284   | 儲值金額不得低於下限       | 儲值金額不得低於100元                    |
+| ERR285   | 儲值金額超過上限           | 儲值金額不得大於5萬元                    |
+| ERR282   | 錢包金額超過上限           | 錢包現存餘額上限為5萬元(包括受贈)        |
+| ERR280   | 金流超過上限               | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
+| ERR918   | Api呼叫失敗                | 呼叫台新錢包儲值發生失敗                 |
+| ERR286   | 寫入錢包紀錄發生失敗       | 寫入錢包紀錄發生失敗                     |
 
 ----
 
@@ -5891,15 +5897,15 @@ iRentApi20 Web API版本
 
 * Data-StoredMoneySet 回傳參數說明
 
-| 參數名稱     | 參數說明              |   型態   | 範例                  |
-| ------------ | --------------------- | :------: | --------------------- |
-| StroeResult  | 儲值結果(1成功,0失敗) |   int    | 1                     |
-| StoreMoney   | 儲值金額              |   int    | 100                   |
-| Deadline     | 繳費期限(距今+3小時)  | DateTime | 02:59:59              |
-| ShopBarCode1 | 超商條碼1             |  string  | 1003908SJ             |
-| ShopBarCode2 | 超商條碼2             |  string  | 20944SE031003908SUEPJ |
-| ShopBarCode3 | 超商條碼3             |  string  | 10023984HPDJ3908SJ    |
-| BarCodeUrl   | 條碼圖片網址          |  string  | https://xxx           |
+| 參數名稱     | 參數說明              |  型態  | 範例                  |
+| ------------ | --------------------- | :----: | --------------------- |
+| StroeResult  | 儲值結果(1成功,0失敗) |  int   | 1                     |
+| StoreMoney   | 儲值金額              |  int   | 100                   |
+| Deadline     | 繳費期限(距今+3小時)  | string | 2021/03/31 23:19      |
+| ShopBarCode1 | 超商條碼1             | string | 1003908SJ             |
+| ShopBarCode2 | 超商條碼2             | string | 20944SE031003908SUEPJ |
+| ShopBarCode3 | 超商條碼3             | string | 10023984HPDJ3908SJ    |
+| BarCodeUrl   | 條碼圖片網址          | string | https://xxx           |
 
 * Output範例
 
@@ -5914,7 +5920,7 @@ iRentApi20 Web API版本
 	   {
 	     "StroeResult": 1,
 	     "StoreMoney": 100,
-         "Deadline" : "02:59:59",
+         "Deadline" : "2021/03/31 23:19",
 		 "ShopBarCode1" : "1003908SJ",
 		 "ShopBarCode2" : "20944SE031003908SUEPJ",
 		 "ShopBarCode3" : "10023984HPDJ3908SJ",
