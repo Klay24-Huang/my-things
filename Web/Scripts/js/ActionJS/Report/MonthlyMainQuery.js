@@ -19,7 +19,7 @@
 
     $('table').footable();
 
-    SetDefaultDate();
+    //SetDefaultDate();
 
     $("#dpSDate").flatpickr(
         {
@@ -27,24 +27,24 @@
                 flatpickr("#dpEDate",
                     {
                         enable: [
-                            {
-                                from: dateStr,
-                                to: add_months(dateStr, 1)
-                            },
+                            //{
+                            //    from: dateStr,
+                            //    to: add_months(dateStr, 1)
+                            //},
                         ],
                         onChange: (selectedDates, dateStr, instance) => {
 
-                            var mindate = $.format.date(add_months(dateStr, -1), 'yyyy-MM-dd');
-                            flatpickr("#dpSDate",
-                                {
-                                    enable: [
-                                        {
-                                            from: mindate,
-                                            to: dateStr
-                                        },
-                                    ],
+                            //var mindate = $.format.date(add_months(dateStr, -1), 'yyyy-MM-dd');
+                            //flatpickr("#dpSDate",
+                            //    {
+                            //        enable: [
+                            //            {
+                            //                from: mindate,
+                            //                to: dateStr
+                            //            },
+                            //        ],
 
-                                });
+                            //    });
 
                             
                         }
@@ -58,20 +58,20 @@
                 var mindate = $.format.date(add_months(dateStr, -1), 'yyyy-MM-dd');
                 flatpickr("#dpSDate", {
                     enable: [
-                        {
-                            from: mindate,
-                            to: dateStr
-                        },
+                        //{
+                        //    from: mindate,
+                        //    to: dateStr
+                        //},
                     ],
                     onChange: (selectedDates, dateStr, instance) => {
-                        flatpickr("#dpEDate", {
-                            enable: [
-                                {
-                                    from: dateStr,
-                                    to: add_months(dateStr, 1)
-                                },
-                            ]
-                        });
+                        //flatpickr("#dpEDate", {
+                        //    enable: [
+                        //        {
+                        //            from: dateStr,
+                        //            to: add_months(dateStr, 1)
+                        //        },
+                        //    ]
+                        //});
                     },
                 });
 
@@ -79,17 +79,17 @@
         }
 
     );
-    function SetDefaultDate() {
-        var EndDate = new Date();
-        var StartDate = add_months(EndDate, -1);
-        if ($('#dpSDate').val() == '') {
-            $("#dpSDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
-        }
-        if ($('#dpEDate').val() == '') {
-            $("#dpEDate").val($.format.date(EndDate, 'yyyy-MM-dd'));
+    //function SetDefaultDate() {
+    //    var EndDate = new Date();
+    //    var StartDate = add_months(EndDate, -1);
+    //    if ($('#dpSDate').val() == '') {
+    //        $("#dpSDate").val($.format.date(StartDate, 'yyyy-MM-dd'));
+    //    }
+    //    if ($('#dpEDate').val() == '') {
+    //        $("#dpEDate").val($.format.date(EndDate, 'yyyy-MM-dd'));
 
-        }
-    }
+    //    }
+    //}
     function add_months(dt, n) {
         mydt = new Date(dt);
 
@@ -115,18 +115,19 @@
             }
 
 
-            if (EndDate > MaxDate) {
-                ShowFailMessage("查詢起迄日超過範圍");
-                return false;
-            }
-            else {
-                return true;
-            }
+            //if (EndDate > MaxDate) {
+            //    ShowFailMessage("查詢起迄日超過範圍");
+            //    return false;
+            //}
+            //else {
+            //    return true;
+            //}
+            return true;
         });
 
-    if (outerOfDateRangeMsg !== '') {
-        ShowFailMessage(outerOfDateRangeMsg);
-    }
+    //if (outerOfDateRangeMsg !== '') {
+    //    ShowFailMessage(outerOfDateRangeMsg);
+    //}
 
     
 });
