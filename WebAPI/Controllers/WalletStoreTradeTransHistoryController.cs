@@ -136,7 +136,7 @@ namespace WebAPI.Controllers
                             outputApi.TradeHis = vmList;
 
                         trace.traceAdd("sp_list", sp_list);
-                    }                   
+                    }
                    
                     trace.FlowList.Add("sp呼叫");
                 }

@@ -5342,10 +5342,7 @@ iRentApi20 Web API版本
 
 | 參數名稱    | 參數說明           |  型態  | 範例                 |
 | ----------- | ------------------ | :----: | -------------------- |
-| ORGID       | 組織代號(公司代碼) | string | 01                   |
-| IDNO        | 身分證號           | string | A123456789           |
 | SEQNO       | 帳款流水號         |  int   | 1                    |
-| TaishinNO   | 台新交易編號(IR編) | string | IR2021051736452153XX |
 | TradeYear   | 交易年分           |  int   | 2021                 |
 | TradeDate   | 交易日期           | string | 08/17                |
 | TradeTime   | 交易時間           | string | 20:05                |
