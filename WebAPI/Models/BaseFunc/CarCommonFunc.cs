@@ -2198,7 +2198,8 @@ namespace WebAPI.Models.BaseFunc
                         #endregion
                         #region 清空顧客卡及寫入萬用卡
                         WSOutput_Base wsOut = new WSOutput_Base();
-                        if (flag && webAPI.IsSupportCombineCmd(CID))
+                        //20210916 ADD BY ADAM REASON.先取消組合指令
+                        if (flag && webAPI.IsSupportCombineCmd(CID) && false)
                         {
                             flag = webAPI.CombineCmdReturnCar(CID, ref wsOut);
                             if (false == flag || wsOut.Result == 1)
