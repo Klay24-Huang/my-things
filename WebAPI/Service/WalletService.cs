@@ -234,6 +234,35 @@ namespace WebAPI.Service
             return flag;
         }
 
+        public bool sp_WalletStore(SPInput_WalletStore spInput, ref string errCode) 
+        {
+            bool flag = false;
+            string spName = "usp_WalletStore_U01";
+
+            var lstError = new List<ErrorInfo>();
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_WalletStore, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_WalletStore, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode !="0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count>0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return flag;
+        }
+
     }
 
     public class WalletMap
