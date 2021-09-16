@@ -37,6 +37,10 @@ namespace Domain.TB.BackEnd
         public string mobileBlock { set; get; }
         public string JsonMileStoneDetail { set; get; }
         public List<BE_ScoreBlock> ScoreBlock { set; get; }
+
+        public List<BE_GetBlackLists> BlackLists { set; get; }
+        public string JsonBlackListsDetail { set; get; }
+        public string JsonBlackListsAccount { set; get; }
     }
     
 }

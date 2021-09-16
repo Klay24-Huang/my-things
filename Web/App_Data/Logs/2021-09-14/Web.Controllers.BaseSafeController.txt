@@ -1,0 +1,6 @@
+2021-09-14 16:37:31.0382|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'Audit',IPAddr:'::1}
+2021-09-14 16:37:33.3415|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'AuditDetail',IPAddr:'::1}
+2021-09-14 16:37:42.1040|ERROR|Web.Controllers.BaseSafeController|No connection is active/available to service this operation: GET Number of call AuditDetail; 中止操作被 WSACancelBlockingCall 呼叫打斷。, mc: 1/1/0, mgr: 10 of 10 available, clientName: H-BENSON922-201, IOCP: (Busy=1,Free=999,Min=8,Max=1000), WORKER: (Busy=1,Free=8190,Min=8,Max=8191), v: 2.2.4.27433
+2021-09-14 16:40:03.3122|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'Audit',IPAddr:'::1}
+2021-09-14 16:40:05.6822|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'AuditDetail',IPAddr:'::1}
+2021-09-14 16:40:13.5195|ERROR|Web.Controllers.BaseSafeController|No connection is active/available to service this operation: GET Number of call AuditDetail; 遠端主機已強制關閉一個現存的連線。, mc: 1/1/0, mgr: 10 of 10 available, clientName: H-BENSON922-201, IOCP: (Busy=2,Free=998,Min=8,Max=1000), WORKER: (Busy=1,Free=8190,Min=8,Max=8191), v: 2.2.4.27433

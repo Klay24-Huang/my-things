@@ -143,7 +143,7 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR900";
                         //ProcessedJobCount3.Inc();//唐加prometheus
-                        SetCount("NUM_CreditAuth_Fail_PayType");
+                        SetCount("NUM_CreditAuth_Fail_PayType");//付款方式錯誤，不是租金、罰金/補繳
                     }
                     if (flag)
                     {
@@ -189,7 +189,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR101";
                     //ProcessedJobCount19.Inc();//唐加prometheus
-                    SetCount("NUM_CreditAuth_Fail_isGuest");
+                    SetCount("NUM_CreditAuth_Fail_isGuest");//無token
                 }
                 #endregion
 
@@ -223,9 +223,8 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR245";
                                 //ProcessedJobCount7.Inc();//唐加prometheus
-                                SetCount("NUM_CreditAuth_Fail_ckTime");
+                                SetCount("NUM_CreditAuth_Fail_ckTime");//使用者超過15分鐘沒還車
                             }
-
                             trace.traceAdd("ckTime", ckTime);
                         }
 
@@ -259,7 +258,7 @@ namespace WebAPI.Controllers
                                     flag = false;
                                     errCode = "ERR203";
                                     //ProcessedJobCount8.Inc();//唐加prometheus
-                                    SetCount("NUM_CreditAuth_Fail_OrderDataLists_Count");
+                                    SetCount("NUM_CreditAuth_Fail_OrderDataLists_Count");//找不到符合的訂單編號
                                 }
                             }
                         }
@@ -270,14 +269,14 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR209";
                                 //ProcessedJobCount9.Inc();//唐加prometheus
-                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_15");
+                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_15");//已完成還車付款，請勿重覆付款
                             }
                             else if (OrderDataLists[0].car_mgt_status < 11)
                             {
                                 flag = false;
                                 errCode = "ERR210";
                                 //ProcessedJobCount10.Inc();//唐加prometheus
-                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_11");
+                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_11");//尚未完成還車步驟，無法還車付款
                             }
                             else
                             {
@@ -540,7 +539,7 @@ namespace WebAPI.Controllers
                                 {
                                     flag = true; //先bypass，之後補傳再刪
                                     //ProcessedJobCount11.Inc();//唐加prometheus
-                                    SetCount("NUM_CreditAuth_Fail_PicToAzure");
+                                    SetCount("NUM_CreditAuth_Fail_PicToAzure");//寫還車照片到azure失敗
                                 }
                             }
 
@@ -687,7 +686,7 @@ namespace WebAPI.Controllers
                                     errCode = "ERR111";
                                     flag = false;
                                     //ProcessedJobCount12.Inc();//唐加prometheus
-                                    SetCount("NUM_CreditAuth_Fail_NPR330Save_ID");
+                                    SetCount("NUM_CreditAuth_Fail_NPR330Save_ID");//NPR330Save_ID參數遺漏
                                 }
                             }
                         }
@@ -696,7 +695,7 @@ namespace WebAPI.Controllers
                             errCode = "ERR244";
                             flag = false;
                             //ProcessedJobCount13.Inc();//唐加prometheus
-                            SetCount("NUM_CreditAuth_Fail_CacheStringNull");
+                            SetCount("NUM_CreditAuth_Fail_CacheStringNull");//系統偵測到異常，需重新進入
                         }
                     }
                     #endregion
@@ -857,7 +856,7 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR197";
                                 //ProcessedJobCount15.Inc();//唐加prometheus
-                                SetCount("NUM_CreditAuth_Fail_RtnCode_1000");
+                                SetCount("NUM_CreditAuth_Fail_RtnCode_1000");//刷卡授權失敗，請洽發卡銀行，送去台新就失敗
                             }
                             //修正錯誤偵測
                             if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams.ResultCode != "1000")
@@ -865,7 +864,7 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR197";
                                 //ProcessedJobCount16.Inc();//唐加prometheus
-                                SetCount("NUM_CreditAuth_Fail_ResultCode_1000");
+                                SetCount("NUM_CreditAuth_Fail_ResultCode_1000");//刷卡授權失敗，請洽發卡銀行，送去台新檢查內容後失敗
                             }
                             if (flag)
                             {
@@ -903,7 +902,7 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR195";
                         //ProcessedJobCount17.Inc();//唐加prometheus
-                        SetCount("NUM_CreditAuth_Fail_hasFind");
+                        SetCount("NUM_CreditAuth_Fail_hasFind");//找不到此卡號
                     }
                     #endregion
                 }
@@ -912,7 +911,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR730";
                     //ProcessedJobCount14.Inc();//唐加prometheus
-                    SetCount("NUM_CreditAuth_Fail_getBindingList");
+                    SetCount("NUM_CreditAuth_Fail_getBindingList");//查詢綁定卡號失敗
                 }
                 ds.Dispose();
             }
