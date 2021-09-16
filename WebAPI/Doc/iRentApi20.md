@@ -79,6 +79,14 @@ iRentApi20 Web API版本
 - [GetMotorParkingData 取得機車調度停車場](#GetMotorParkingData)
 - [GetParkingData 取得汽車調度停車場](#GetParkingData)
 
+推播相關
+
+- [News 活動通知](#News)
+- [NewsRead 活動通知讀取](#NewsRead)
+- [PersonNotice 個人訊息](#PersonNotice)
+- [PersonNoticeRead 個人訊息讀取](#PersonNoticeRead)
+- [TestPushService 測試推播工具](#TestPushService)
+
 電子錢包相關
 - [CreditAndWalletQuery 查詢綁卡跟錢包](#CreditAndWalletQuery)
 - [WalletStoreTradeTransHistory 錢包歷史紀錄查詢](#WalletStoreTradeTransHistory)
@@ -102,12 +110,7 @@ iRentApi20 Web API版本
 - [JointRentInviteeModify 案件共同承租人邀請狀態維護](#JointRentInviteeModify)
 - [JointRentIviteeFeedBack 案件共同承租人回應邀請](#JointRentIviteeFeedBack)
 
-推播相關
 
-- [News 活動通知](#News)
-- [NewsRead 活動通知讀取](#NewsRead)
-- [PersonNotice 個人訊息](#PersonNotice)
-- [PersonNoticeRead 個人訊息讀取](#PersonNoticeRead)
 ----------
 # 修改歷程
 
@@ -214,6 +217,10 @@ iRentApi20 Web API版本
 20210901 共同承租人回應邀請(JointRentIviteeFeedBack) 欄位值修正
 
 20210907 增加推播相關
+
+20210910 取得會員狀態(GetMemberStatus)增加是否顯示購買牌卡
+
+20210916 增加測試推播工具(TestPushService)
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -762,6 +769,7 @@ iRentApi20 Web API版本
 | BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                        |  int   | 0          |
 | BLOCK_EDATE     | 停權截止日                                                   | string | 2021/06/01 |
 | CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                     | string | Y          |
+| IsShowBuy       | 是否顯示購買牌卡 (Y:是 N:否)                                 | string | Y          |
 
 * Output範例
 
@@ -797,7 +805,8 @@ iRentApi20 Web API版本
             "Score": 100,
             "BlockFlag": 0,
             "BLOCK_EDATE": "",
-            "CMKStatus": "Y"
+            "CMKStatus": "Y",
+            "IsShowBuy": "Y"
         }
     }
 }
@@ -1562,7 +1571,7 @@ iRentApi20 Web API版本
 | NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
 | NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
 | Data | 資料物件 | | |
-| HasRentCard	| 是否有可租的卡片 | boolean | false |
+| HasRentCard	| 是否有可租的卡片<br>無用欄位 | boolean | false |
 | GetProjectObj | 回傳清單 | List | |
 
 
@@ -6530,15 +6539,13 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明              |  型態  | 範例       |
 | ---------- | --------------------- | :----: | ---------- |
 | NewsID	 | 活動通知流水號		 | int	  | 1000	   |
-| IsNews	 | 是否為新訊息(1:是0:否)| int 	  | 1		   |
-| IsEDM		 | 是否為廣告EDM(1:是0:否)| int   | 1 		   |
-| ActionType | 1:和運 2:系統 3:活動 4:優惠 | int | 4	   |
+| ActionType | 類型					 | int 	  | 4	   |
+| PushTime	 | 推播送出時間			 | DateTime | 2021/09/12 12:43:52 |
 | Title 	 | 主旨					 | string | 9/7凌晨進行定期維護 |
 | Message 	 | 內容					 | string | 		   |
 | URL		 | 外連URL				 | string | 		   |
-| isTop		 | 是否置頂				 | int 	  | 0		   |
-| readFlg	 | 1:已讀 2:未讀		 | int 	  | 1		   |
-
+| readFlg	 | 1:已讀 0:未讀		 | int 	  | 1		   |
+ 
 
 
 
@@ -6552,7 +6559,26 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "NewsObj": []
+        "NewsObj": [
+			{
+                "NewsID": 4,
+                "ActionType": 0,
+                "PushTime": "2021/09/12 12:43:52",
+                "Title": "iRent 春節預約開始",
+                "Message": "一年最期待的出遊就是過年了～\r\n準備帶一家人到中南部到哪走春？\r\n不論去哪 iRent 共享汽車全台各地都載你去~~\r\n同站租還全台各縣市皆有站點\r\n去南台灣曬太陽真的很不錯",
+                "URL": "",
+                "readFlg": 0
+            },
+            {
+                "NewsID": 7,
+                "ActionType": 3,
+                "PushTime": "2021/09/12 12:43:52",
+                "Title": "adam test",
+                "Message": "推播測試123",
+                "URL": "",
+                "readFlg": 1
+            }
+		]
     }
 }
 
@@ -6582,13 +6608,13 @@ iRentApi20 Web API版本
 
 | 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
 | --------- | ---------- | :--: | :----: | ----------- |
-| NewsID    | 活動通知流水號 | Y | int | 10000 |
-
+| NewsID    | 活動通知流水號 | Y | int | 7 |
+  
 * input範例
 
 ```
 {
-    "NewsID": "10000"
+    "NewsID": "7"
 }
 ```
 
@@ -6666,13 +6692,12 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明              |  型態  | 範例       |
 | ---------- | --------------------- | :----: | ---------- |
 | NotificationID | 個人訊息流水號		 | int	  | 1000	   |
-| PushTime	 | 推播時間				 | int 	  | 1		   |
+| PushTime	 | 推播時間				 | DateTime | 2021/09/01 01:33:34 |
 | Title 	 | 主旨					 | string | 9/7凌晨進行定期維護 |
-| Message 	 | 內容					 | string | 		   |
+| Message 	 | 內容					 | string | 測試推播123 |
 | URL		 | 連結URL				 | string | 		   |
-| isTop		 | 是否置頂				 | int 	  | 0		   |
-| readFlg	 | 1:已讀 2:未讀		 | int 	  | 1		   |
-
+| readFlg	 | 1:已讀 0:未讀		 | int 	  | 1		   |
+ 
 
 
 
@@ -6686,7 +6711,155 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "NewsObj": []
+        "PersonNoticeObj": [
+			{
+                "NotificationID": 1320,
+                "PushTime": "2021/09/01 01:33:34",
+                "Title": "[PA]TEST20210831",
+                "Message": "測試推播123",
+                "URL": "",
+                "readFlg": 1
+            },
+			{
+                "NotificationID": 1336,
+                "PushTime": "2021/09/12 23:18:18",
+                "Title": "【共同承租】XXX邀請您共同承租唷！",
+                "Message": "",
+                "URL": "http://apyhfc07:8002/irent/Sharing/Togetherpassenger/invitingStatus?KtwBd%2fMrrFcEG2SMxUTqQz%2faYuMtvxDRc92igY7iR3kbhKkT20CdeHtTQY3oPJMm",
+                "readFlg": 0
+            }
+		]
+    }
+}
+
+```
+## PersonNoticeRead 個人訊息讀取
+
+### [/api/PersonNoticeRead/]
+
+* 20210908新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| NotificationID    | 個人訊息流水號 | Y | int | 7 |
+  
+* input範例
+
+```
+{
+    "NotificationID": "1320"
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+    }
+}
+
+```
+
+## TestPushService 測試推播工具
+
+### [/api/TestPushService/]
+
+* 20210915新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  這個不會放在正式環境
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
+| --------- | ---------- | :--: | :----: | ----------- |
+| PushRegID | 推播註冊碼 | Y | int | 2772 |
+| Title		| 訊息抬頭	 |   | string | 推播測試 |
+| Message	| 訊息內容	 |   | string | 推播測試 |
+| UserName	| 客戶名稱	 |   | string | 測試人員 |
+| Url		| 連結的URL  |   | string | https://www.google.com/ |
+
+  
+* input範例
+
+```
+{
+    "PushRegID":2747,
+    "Title":"推播測試",
+    "Message":"推播測試",
+    "UserName":"A等鴿",
+    "Url":""
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
+| ------------------- | ------------------ | :----: | ------------- |
+| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode     　　　| 錯誤碼             | string | 000000        |
+| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| Data          　　　| 資料物件           |        |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
     }
 }
 
@@ -8034,6 +8207,7 @@ iRentApi20 Web API版本
 }
 
 ```
+
 
 
 
