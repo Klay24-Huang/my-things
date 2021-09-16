@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR197";
                             //ProcessedJobCount6.Inc();
-                            SetCount("Num_BindResult_OrderNoNull");
+                            SetCount("Num_BindResult_OrderNoNull");//刷卡授權失敗，請洽發卡銀行
                         }
                     }
                     logger.Trace("Call:" + JsonConvert.SerializeObject(apiInput) + ",Error:" + errCode);
@@ -269,7 +269,7 @@ namespace WebAPI.Controllers
                         catch (Exception ex)
                         {
                             //ProcessedJobCount4.Inc();//唐加prometheus
-                            SetCount("Num_BindResult_DoDeleteCreditCardAuth");
+                            SetCount("Num_BindResult_DoDeleteCreditCardAuth");//找不到此卡號
                             logger.Trace("DoDeleteCreditCardAuth:" + ",Error:" + ex.Message);
                             flag = false;
                             errCode = "ERR195";
@@ -280,7 +280,7 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR195";
                         //ProcessedJobCount7.Inc();//唐加prometheus
-                        SetCount("Num_BindResult_hasFind");
+                        SetCount("Num_BindResult_hasFind");//找不到此卡號
                     }
 
                     object[][] parms1 = {

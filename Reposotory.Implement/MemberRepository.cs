@@ -805,5 +805,54 @@ namespace Reposotory.Implement
             //return obj;
             return lstAudits;
         }
+
+
+        public List<BE_GetBlackLists> GetBlackLists(string StartDate, string EndDate, string MobilePhone)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetBlackLists> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " EXEC usp_BE_GetBlackList '" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
+                "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
+                "','" + MobilePhone + "'";
+
+            lstAudits = GetObjList<BE_GetBlackLists>(ref flag, ref lstError, SQL, para, term);
+            return lstAudits;
+        }
+
+
+        public List<BE_GetBlackListsDetail> GetBlackListsDetail(string StartDate, string EndDate, string MobilePhone)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetBlackListsDetail> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " EXEC usp_BE_GetBlackListDetail '" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
+                "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
+                "','" + MobilePhone + "'";
+
+            lstAudits = GetObjList<BE_GetBlackListsDetail>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
+
+        public List<BE_GetBlackListAccount> GetBlackListsAccount(string StartDate, string EndDate, string MobilePhone)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_GetBlackListAccount> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+            string SQL = " EXEC usp_BE_GetBlackListAccount '" + (StartDate == "" ? "" : StartDate + " 00:00:00") +
+                "','" + (EndDate == "" ? "" : EndDate + " 23:59:59") +
+                "','" + MobilePhone + "'";
+
+            lstAudits = GetObjList<BE_GetBlackListAccount>(ref flag, ref lstError, SQL, para, term);
+
+            return lstAudits;
+        }
     }
 }
