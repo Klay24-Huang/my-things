@@ -147,6 +147,8 @@ iRentApi20 Web API版本
 
 20210914 錢包儲值-信用卡(WalletStoredByCredit)補上錯誤代碼
 
+20210916 移除錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -5671,12 +5673,6 @@ iRentApi20 Web API版本
 	}
 }
 ```
-
-* 錯誤代碼
-
-| 錯誤代碼 | 說明       |      |
-| -------- | ---------- | ---- |
-| ERR279   | 非錢包會員 |      |
 
 ----
 

@@ -6,7 +6,7 @@
 * 程式功能 : 錢包儲值-設定資訊
 * 作    者 : AMBER
 * 撰寫日期 : 20210909
-* 修改日期 : 
+* 修改日期 : 20210916 UPD BY AMBER REASON: 調整資料撈取邏輯
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetWalletStoredMoneySet_Q01]
@@ -74,7 +74,6 @@ BEGIN TRY
 	END
 
 	IF @Error=0   
-	    IF  EXISTS (SELECT 1 FROM TB_UserWallet w WITH(NOLOCK) WHERE IDNO=@IDNO AND Status=2)
 		BEGIN
 			IF  @StoreType <> 0
 			BEGIN
@@ -87,25 +86,21 @@ BEGIN TRY
 			SELECT 
 			@StoreType AS StoreType,
 			CASE @StoreType WHEN '3' THEN l.Code0 ELSE '' END AS StoreTypeDetail,
-			w.Amount AS WalletBalance,
-			l.Code2-w.Amount AS Rechargeable,
+			ISNULL(w.WalletBalance,0) AS WalletBalance,
+			l.Code2-ISNULL(w.WalletBalance,0) AS Rechargeable,
 			l.Code1 AS StoreLimit,
 			l.Code2 AS StoreMax,
 			QuickBtns = 
 		    (SELECT STRING_AGG(Code1,',') WITHIN GROUP (ORDER BY Code2)
 			FROM TB_WalletCodeTable WHERE  Code3=@StoreType AND CodeGroup='StoreOption' AND UseFlg=1 AND (Code0=c.Code3 OR Code3 IN (1,2)) ),
 			CASE  c.Code2 WHEN '' THEN 0 ELSE 1 END AS defSet
-			FROM TB_UserWallet w WITH(NOLOCK)
-			JOIN TB_MemberData m WITH(NOLOCK) ON w.IDNO=m.MEMIDNO 
+			FROM TB_MemberData m WITH(NOLOCK)
+			LEFT JOIN TB_UserWallet w WITH(NOLOCK)  ON w.IDNO=m.MEMIDNO 			
 			JOIN #StoreLimit l ON 1=1
-			LEFT JOIN TB_WalletCodeTable c ON l.Code0=c.Code3 
+			LEFT JOIN TB_WalletCodeTable c ON l.Code0=c.Code3
 			WHERE m.MEMIDNO=@IDNO;
 		END
-		ELSE
-		BEGIN
-		   	SET @Error=1;
-		    SET @ErrorCode='ERR279';
-		END		
+
 	IF @Error=1
 	BEGIN
 		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
