@@ -1,28 +1,25 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Subscription;
+using Domain.SP.Output.Subscription;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using Domain.WebAPI.output.Taishin;
+using Newtonsoft.Json;
+using NLog;
+using OtherService;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
+using WebAPI.Models.BillFunc;
+using WebAPI.Models.Param.CusFun.Input;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-using System.Data;
-using WebAPI.Models.BillFunc;
-using Domain.SP.Input.Bill;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using Domain.WebAPI.output.Taishin;
-using Domain.SP.Input.Subscription;
-using Domain.SP.Output.Subscription;
-using WebAPI.Models.Param.CusFun.Input;
-using Domain.WebAPI.Input.HiEasyRentAPI;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using OtherService;
-using NLog;
 
 namespace WebAPI.Controllers
 {
@@ -318,6 +315,7 @@ namespace WebAPI.Controllers
 
         #endregion
 
+        #region 購買月租
         [Route("api/BuyNow/DoAddMonth")]
         [HttpPost()]
         public async Task<Dictionary<string, object>> DoAddMonth([FromBody] Dictionary<string, object> value)
@@ -338,7 +336,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BuyNow_DoAddMonth";
+            string funName = "BuyNow_DoAddMonthController";
             Int64 LogID = 0;
             var apiInput = new IAPI_BuyNow_AddMonth();
             var outputApi = new OAPI_BuyNow_Base();
@@ -379,9 +377,9 @@ namespace WebAPI.Controllers
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
                     //必填檢查
-                    if(flag)
+                    if (flag)
                     {
-                        if(string.IsNullOrWhiteSpace(apiInput.MonProjID) ||
+                        if (string.IsNullOrWhiteSpace(apiInput.MonProjID) ||
                            apiInput.MonProPeriod == 0)
                         {
                             flag = false;
@@ -600,22 +598,22 @@ namespace WebAPI.Controllers
 
                             #endregion
 
-                            throw new Exception("TSIBTrade Fail");                            
+                            throw new Exception("TSIBTrade Fail");
                         }
 
                         trace.FlowList.Add("信用卡交易");
                     }
 
-                    
+
 
                     #endregion
 
                     #region 後續api處理
                     if (flag)
                     {
-                        flag = buyNxtCom.exeNxt(MerchantTradeNo,TransactionNo);
+                        flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
-                        trace.FlowList.Add("後續api處理");                            
+                        trace.FlowList.Add("後續api處理");
                     }
                     #endregion
 
@@ -640,13 +638,13 @@ namespace WebAPI.Controllers
                                     Amount = ProdPrice
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
-                                trace.traceAdd("Contract", new { spin, xFlag, xerrCode,xerrMsg });
+                                trace.traceAdd("Contract", new { spin, xFlag, xerrCode, xerrMsg });
                                 trace.FlowList.Add("履保處理");
-                            }                           
+                            }
                         }
                         catch (Exception ex)
                         {
-                            
+
                         }
                     }
                     #endregion
@@ -725,7 +723,7 @@ namespace WebAPI.Controllers
                                     InvoicePrice = ProdPrice,
                                     InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
                                 };
-                                
+
                                 xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
                                 if (!xflag)
                                 {
@@ -774,7 +772,7 @@ namespace WebAPI.Controllers
 
                     #endregion
 
-                    outputApi.PayResult = flag ? 1 : 0;                    
+                    outputApi.PayResult = flag ? 1 : 0;
                 }
 
                 #endregion
@@ -793,7 +791,9 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
+        #endregion
 
+        #region 月租升轉
         [Route("api/BuyNow/DoUpMonth")]
         [HttpPost()]
         public async Task<Dictionary<string, object>> DoUpMonth([FromBody] Dictionary<string, object> value)
@@ -814,7 +814,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BuyNow_DoUpMonth";
+            string funName = "BuyNow_DoUpMonthController";
             Int64 LogID = 0;
             var apiInput = new IAPI_BuyNow_UpMonth();
             var outputApi = new OAPI_BuyNow_Base();
@@ -829,7 +829,7 @@ namespace WebAPI.Controllers
             int ProdPrice_nxt = 0;
             int ProdPrice = 0;
             int IsMoto = 0;
-            
+
             string TransactionNo = "";
             string CreditCardNo = "";
             string AuthCode = "";
@@ -979,7 +979,7 @@ namespace WebAPI.Controllers
                             ShortDays = apiInput.ShortDays
                         };
                         var monObjs_ori = msp.sp_GetMonSetInfo(spin_ori, ref sp_errCode);
-                        if(monObjs_ori != null && monObjs_ori.Count() > 0)
+                        if (monObjs_ori != null && monObjs_ori.Count() > 0)
                         {
                             var fItem = monObjs_ori.FirstOrDefault();
                             if (fItem.PeriodPrice > 0)
@@ -1014,7 +1014,7 @@ namespace WebAPI.Controllers
                     if (ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
-                        
+
                         #region 刷卡狀態-共用
 
                         string spErrCode = "";
@@ -1082,7 +1082,7 @@ namespace WebAPI.Controllers
                     #region 後續api處理
 
                     if (flag)
-                    {                       
+                    {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
                         trace.FlowList.Add("後續api處理");
@@ -1121,7 +1121,7 @@ namespace WebAPI.Controllers
 
                     #region 發票
 
-                    
+
                     try
                     {
                         WebAPIInput_MonthlyRentSave wsInput = new WebAPIInput_MonthlyRentSave()
@@ -1207,7 +1207,7 @@ namespace WebAPI.Controllers
                         logger.Trace(ex.Message);
                     }
 
-                    
+
 
                     #endregion
 
@@ -1229,7 +1229,9 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
+        #endregion
 
+        #region 月租欠費
         [Route("api/BuyNow/DoPayArrs")]
         [HttpPost()]
         public async Task<Dictionary<string, object>> DoPayArrs([FromBody] Dictionary<string, object> value)
@@ -1250,7 +1252,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BuyNow_DoPayArrs";
+            string funName = "BuyNow_DoPayArrsController";
             Int64 LogID = 0;
             var apiInput = new IAPI_BuyNow_PayArrs();
             var outputApi = new OAPI_BuyNow_Base();
@@ -1372,7 +1374,7 @@ namespace WebAPI.Controllers
                     #region 載入後續Api所需資料
 
                     string MonthlyRentIds = "";
-                    if(apiInput.MonthlyRentIds!= null && apiInput.MonthlyRentIds.Count() > 0)
+                    if (apiInput.MonthlyRentIds != null && apiInput.MonthlyRentIds.Count() > 0)
                     {
                         MonthlyRentIds = String.Join(",", apiInput.MonthlyRentIds);
                     }
@@ -1406,7 +1408,7 @@ namespace WebAPI.Controllers
                             //SetNow = apiInput.SetNow
                         };
                         sp_re = msp.sp_GetArrsSubsList(spin, ref sp_errCode);
-                        if (sp_re != null && sp_re.Arrs != null && sp_re.Arrs.Count()>0)
+                        if (sp_re != null && sp_re.Arrs != null && sp_re.Arrs.Count() > 0)
                         {
                             var allArrs = sp_re.Arrs.Where(x => x.PeriodPayPrice > 0).Select(y => y.PeriodPayPrice).Sum();
                             ProdPrice = allArrs;
@@ -1424,7 +1426,7 @@ namespace WebAPI.Controllers
                     if (ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
-                        
+
                         #region 刷卡狀態-共用
 
                         string spErrCode = "";
@@ -1445,7 +1447,7 @@ namespace WebAPI.Controllers
                             //寫入刷卡狀態-未送
                             var xsp_re = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
 
-                            flag = mscom.MonArrears_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode); 
+                            flag = mscom.MonArrears_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
 
@@ -1560,7 +1562,7 @@ namespace WebAPI.Controllers
                                 PAYMEMO = "月租訂閱制"
                             });
                             wsInput.tbMonthlyRentProjData = new List<WebAPIInput_MonthlyRentProjData>();
-                            for (int i=0;i<sp_re.Arrs.Count;i++)
+                            for (int i = 0; i < sp_re.Arrs.Count; i++)
                             {
                                 wsInput.tbMonthlyRentProjData.Add(new WebAPIInput_MonthlyRentProjData()
                                 {
@@ -1645,6 +1647,6 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-    
+        #endregion
     }
 }
