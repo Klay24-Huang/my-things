@@ -455,6 +455,7 @@
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarDataSetting.js" />
     <Content Include="Scripts\js\ActionJS\CarDataInfo\CarSetting.js" />
     <Content Include="Scripts\js\ActionJS\ContactManage\ContactMaintainNew.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\BlackList.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\DeleteMember.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\MedalMileStone.js" />
     <Content Include="Scripts\js\ActionJS\MemberManage\MemberScore.js" />
@@ -743,6 +744,9 @@
     <Content Include="Content\example\ParkingExample_Moto.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\example\BlackListImport.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="Scripts\js\bootstrap.bundle.js.map" />
     <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
@@ -870,6 +874,7 @@
     <Content Include="Views\Report\IrentPaymentDetail.cshtml" />
     <Content Include="Views\Report\IrentPaymentHistory.cshtml" />
     <Content Include="Views\Report\CarMapFileUpload.cshtml" />
+    <Content Include="Views\MemberManage\BlackList.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

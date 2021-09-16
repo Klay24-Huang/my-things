@@ -94,6 +94,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMasterCardData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ImportMotoData.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_IneInsMileStone.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_InsBlackList.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsCarReturnError.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsCleanOrder.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsertChargeParking.cs" />
@@ -401,6 +402,9 @@
     <Compile Include="TB\BackEnd\BE_FeedBackMain.cs" />
     <Compile Include="TB\BackEnd\BE_FeedBackMainDetail.cs" />
     <Compile Include="TB\BackEnd\BE_GetBannerInfo.cs" />
+    <Compile Include="TB\BackEnd\BE_GetBlackListAccount.cs" />
+    <Compile Include="TB\BackEnd\BE_GetBlackLists.cs" />
+    <Compile Include="TB\BackEnd\BE_GetBlackListsDetail.cs" />
     <Compile Include="TB\BackEnd\BE_GetCleanFixQueryForWeb.cs" />
     <Compile Include="TB\BackEnd\BE_GetEasyWalletList.cs" />
     <Compile Include="TB\BackEnd\BE_GetFullOrderData.cs" />

@@ -118,6 +118,7 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR197";
                             ProcessedJobCount6.Inc();
+                            SetCount("Num_BindResult_OrderNoNull");//刷卡授權失敗，請洽發卡銀行
                         }
                     }
                     logger.Trace("Call:" + JsonConvert.SerializeObject(apiInput) + ",Error:" + errCode);
@@ -149,7 +150,8 @@ namespace WebAPI.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ProcessedJobCount2.Inc();//唐加prometheus
+                    //ProcessedJobCount2.Inc();//唐加prometheus
+                    SetCount("Num_BindResult_CallTaishin");
                     logger.Trace("setRequestParams Error:" + ex.Message);
                 }
                 if (flag)
@@ -179,7 +181,8 @@ namespace WebAPI.Controllers
                     }
                     catch (Exception ex)
                     {
-                        ProcessedJobCount3.Inc();//唐加prometheus
+                        //ProcessedJobCount3.Inc();//唐加prometheus
+                        SetCount("Num_BindResult_DoGetCreditCardList");
                         flag = false;
                         logger.Trace("GetCreditCardList_End:" + JsonConvert.SerializeObject(wsOutput) + ",Error:" + ex.Message);
                     }
@@ -252,7 +255,8 @@ namespace WebAPI.Controllers
                         }
                         catch (Exception ex)
                         {
-                            ProcessedJobCount4.Inc();//唐加prometheus
+                            //ProcessedJobCount4.Inc();//唐加prometheus
+                            SetCount("Num_BindResult_DoDeleteCreditCardAuth");//找不到此卡號
                             logger.Trace("DoDeleteCreditCardAuth:" + ",Error:" + ex.Message);
                             flag = false;
                             errCode = "ERR195";
@@ -262,7 +266,8 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR195";
-                        ProcessedJobCount7.Inc();//唐加prometheus
+                        //ProcessedJobCount7.Inc();//唐加prometheus
+                        SetCount("Num_BindResult_hasFind");//找不到此卡號
                     }
 
                     object[][] parms1 = {
@@ -304,7 +309,8 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                ProcessedJobCount5.Inc();//唐加prometheus
+                //ProcessedJobCount5.Inc();//唐加prometheus
+                SetCount("Num_BindResult_Error");
                 logger.Trace("OUTTER_ERROR:" + ",Error:" + ex.Message);
             }
             #region 輸出
@@ -321,5 +327,51 @@ namespace WebAPI.Controllers
             #endregion
         }
 
+        private void SetCount(string memo)
+        {
+            var value = 1;
+            try
+            {
+                ConnectionMultiplexer connection = lazyConnection.Value;
+                IDatabase cache = connection.GetDatabase();
+
+                var key = memo;
+                var cacheString = cache.StringGet(key);
+                if (cacheString.HasValue)
+                {
+                    int.TryParse(cacheString.ToString(), out value);
+                    value++;
+                }
+                cache.StringSet(key, value);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+            switch (memo)
+            {
+                case "Num_BindResult_CallTimes":
+                    ProcessedJobCount1.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_CallTaishin":
+                    ProcessedJobCount2.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_DoGetCreditCardList":
+                    ProcessedJobCount3.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_DoDeleteCreditCardAuth":
+                    ProcessedJobCount4.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_Error":
+                    ProcessedJobCount5.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_OrderNoNull":
+                    ProcessedJobCount6.Set(value); //宣告Guage才能用set
+                    break;
+                case "Num_BindResult_hasFind":
+                    ProcessedJobCount7.Set(value); //宣告Guage才能用set
+                    break;
+            }
+        }
     }
 }
