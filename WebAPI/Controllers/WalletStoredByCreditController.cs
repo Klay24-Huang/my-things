@@ -326,8 +326,6 @@ namespace WebAPI.Controllers
                             errMsg = output.Message;
                         }
 
-                        #region 錢包儲值失敗處理
-                        #endregion
 
                         #region 寫入錢包紀錄
                         if (flag)
