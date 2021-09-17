@@ -200,6 +200,7 @@
     <Compile Include="Controllers\BE_CheckUserGroupController.cs" />
     <Compile Include="Controllers\BE_ContactSettingCheckController.cs" />
     <Compile Include="Controllers\BE_ContactSettingController.cs" />
+    <Compile Include="Controllers\BE_DeleteBlackListController.cs" />
     <Compile Include="Controllers\BE_DeleteMemberScoreController.cs" />
     <Compile Include="Controllers\BE_FeedBackHandleController.cs" />
     <Compile Include="Controllers\BE_GetCarCurrentStatus.cs" />
@@ -437,6 +438,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_CheckUserGroup.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ContactSetting.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_ContactSettingCheck.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_DeleteBlackList.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_DeleteMemberScore.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_FeedBackHandle.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />

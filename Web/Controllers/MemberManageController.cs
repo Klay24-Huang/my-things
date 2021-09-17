@@ -20,8 +20,8 @@ using Web.Models.Enum;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using Prometheus;//20210707唐加prometheus
-using StackExchange.Redis;//20210913唐加redis
+//using Prometheus;//20210707唐加prometheus
+//using StackExchange.Redis;//20210913唐加redis
 
 namespace Web.Controllers
 {
@@ -35,15 +35,15 @@ namespace Web.Controllers
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
 
         //20210913唐加redis，解決azure多執行個體造成prometheus的數值亂跳問題
-        private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
-        private static Lazy<ConnectionMultiplexer> lazyConnection;
-        public MemberManageController()
-        {
-            if (lazyConnection == null)
-            {
-                lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
-            }
-        }
+        //private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
+        //private static Lazy<ConnectionMultiplexer> lazyConnection;
+        //public MemberManageController()
+        //{
+        //    if (lazyConnection == null)
+        //    {
+        //        lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+        //    }
+        //}
 
         //唐加prometheus，20210913改用Gauge
         //private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail");
@@ -53,7 +53,7 @@ namespace Web.Controllers
         //        // Here you specify only the names of the labels.
         //        LabelNames = new[] { "method", "server" }
         //    });
-        private static readonly Gauge EnterCounte = Metrics.CreateGauge("BENSON_AuditDetail", "Number of call AuditDetail");
+        //private static readonly Gauge EnterCounte = Metrics.CreateGauge("BENSON_AuditDetail", "Number of call AuditDetail");
 
         #region 會員審核及明細
         /// <summary>
@@ -111,7 +111,7 @@ namespace Web.Controllers
             //唐加prometheus，20210913改呼叫SetAuditDetailCount透過redis計算後再給prometheus
             //EnterCounte.Inc();
             //EnterCounte.WithLabels(Request.HttpMethod, Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).Inc();//WEBSITE_INSTANCE_ID是抓azure主機的環境變數
-            SetAuditDetailCount();
+            //SetAuditDetailCount();
 
             if (UserName != null && Session["Account"] != null)
             {
@@ -1638,28 +1638,28 @@ namespace Web.Controllers
         }
         #endregion
 
-        private void SetAuditDetailCount()
-        {
-            var value = 1;
-            try
-            {
-                ConnectionMultiplexer connection = lazyConnection.Value;
-                IDatabase cache = connection.GetDatabase();
+        //private void SetAuditDetailCount()
+        //{
+        //    var value = 1;
+        //    try
+        //    {
+        //        ConnectionMultiplexer connection = lazyConnection.Value;
+        //        IDatabase cache = connection.GetDatabase();
 
-                var key = "Number of call AuditDetail";
-                var cacheString = cache.StringGet(key);
-                if (cacheString.HasValue)
-                {
-                    int.TryParse(cacheString.ToString(), out value);
-                    value++;
-                }
-                cache.StringSet(key, value);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex.Message);
-            }
-            EnterCounte.Set(value); //宣告Guage才能用set
-        }
+        //        var key = "Number of call AuditDetail";
+        //        var cacheString = cache.StringGet(key);
+        //        if (cacheString.HasValue)
+        //        {
+        //            int.TryParse(cacheString.ToString(), out value);
+        //            value++;
+        //        }
+        //        cache.StringSet(key, value);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //    }
+        //    EnterCounte.Set(value); //宣告Guage才能用set
+        //}
     }
 }
