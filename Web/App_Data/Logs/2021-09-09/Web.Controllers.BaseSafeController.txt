@@ -1,0 +1,12 @@
+2021-09-09 09:37:48.3621|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:38:01.5751|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:38:04.7297|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:40:39.6341|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:40:50.1948|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:40:56.5586|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:40:57.9409|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:45:40.1824|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:46:04.1267|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 09:46:19.2291|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 10:21:05.5476|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'',Account:'',ActionName:'BannerSet',IPAddr:'::1}
+2021-09-09 10:21:21.3955|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'BannerSet',IPAddr:'::1}

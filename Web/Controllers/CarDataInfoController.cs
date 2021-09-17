@@ -944,7 +944,7 @@ namespace Web.Controllers
                             bool CheckNotAllNull = false;
                             for (int j = 0; j < 6; j++)
                             {
-                                if (sheet.GetRow(i).GetCell(j) != null && (false == string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString())))
+                                if (sheet.GetRow(i) != null && sheet.GetRow(i).GetCell(j) != null && (false == string.IsNullOrWhiteSpace(sheet.GetRow(i).GetCell(j).ToString()) || false == string.IsNullOrEmpty(sheet.GetRow(i).GetCell(j).ToString())))
                                 {
                                     CheckNotAllNull = true;
                                     break;
