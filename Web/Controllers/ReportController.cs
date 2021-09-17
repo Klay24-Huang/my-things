@@ -1710,7 +1710,7 @@ namespace Web.Controllers
                 cmd.CommandText = "usp_GetIRentCarMapValue";
                 cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
                 SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
-                SqlParameter fileName = cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50);
+                SqlParameter fileName = cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 200);
                 msg.Direction = ParameterDirection.Output;
                 fileName.Direction = ParameterDirection.Output;
 
@@ -1763,7 +1763,7 @@ namespace Web.Controllers
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = "usp_HandleIRentCarMapKey";
                         cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
-                        cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50).Value = fileName;
+                        cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 200).Value = fileName;
                         cmd.Parameters.Add("@User", SqlDbType.VarChar, 10).Value = Account;
                         SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
                         msg.Direction = ParameterDirection.Output;
