@@ -189,7 +189,8 @@ function getaccount(detail, Mobile) {
             "<td>" + obj[index].MEMIDNO + "</td>" +
             "<td>" + obj[index].MEMCNAME + "</td>" +
             "<td>" + obj[index].MEMADDR + "</td>" +
-            "<td>" + obj[index].MEMTEL + "</td>";
+            "<td>" + obj[index].MEMTEL + "</td>"+
+            "<td>" + obj[index].TIMES + "</td>";
     }
 }
 
