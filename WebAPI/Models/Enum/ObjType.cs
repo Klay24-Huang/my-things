@@ -742,7 +742,8 @@ namespace WebAPI.Models.Enum
             /// <summary>
             /// 訂單安心服務資格及價格查詢
             /// </summary>
-            GetOrderInsuranceInfo
+            GetOrderInsuranceInfo,
+            BE_BannerSort
         }
         /// <summary>
         /// 取出SPName
