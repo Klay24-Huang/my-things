@@ -27,7 +27,7 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 進行中的訂單查詢
+    /// 訂單列表
     /// </summary>
     public class BookingQueryController : ApiController
     {
@@ -184,7 +184,7 @@ namespace WebAPI.Controllers
                                 HolidayPerHour = OrderDataLists[i].PRICE_H,
                                 Insurance = OrderDataLists[i].Insurance,
                                 InsuranceBill = OrderDataLists[i].InsurancePurePrice,
-                                InsurancePerHour = OrderDataLists[i].InsurancePerHours,
+                                InsurancePerHour = OrderDataLists[i].InsurancePerHours + OrderDataLists[i].JointInsurancePerHour,   // 20210831 UPD BY YEH REASON:安心服務每小時金額要加上共同承租人每小時安心服務價格
                                 Operator = OrderDataLists[i].OperatorICon,
                                 OperatorScore = OrderDataLists[i].Score,
                                 OrderNo = string.Format("H{0}", OrderDataLists[i].order_number.ToString().PadLeft(7, '0')),
@@ -221,8 +221,9 @@ namespace WebAPI.Controllers
                                 CarLatitude = OrderDataLists[i].CarLatitude,
                                 CarLongitude = OrderDataLists[i].CarLongitude,
                                 OpenDoorDeadLine = (string.IsNullOrWhiteSpace(OrderDataLists[i].OpenDoorDeadLine)) ? "" : Convert.ToDateTime(OrderDataLists[i].OpenDoorDeadLine).ToString("yyyy-MM-dd HH:mm:ss"),
+                                RenterType = OrderDataLists[i].RenterType   // 20210830 UPD BY YEH REASON:增加承租人類型
                             };
-                            obj.MileageBill = billCommon.CarMilageCompute(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20 , new List<Holiday>());
+                            obj.MileageBill = billCommon.CarMilageCompute(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>());
 
                             if (obj.ProjType == 4)  //機車
                             {
@@ -290,14 +291,17 @@ namespace WebAPI.Controllers
                             {
                                 Int64 xOrderNo = Convert.ToInt64(x.OrderNo.Replace("H", string.Empty));
                                 var mlist = subsMons.Where(y => y.OrderNo == xOrderNo).ToList();
-                                if (mlist != null && mlist.Count() > 0) {
+                                if (mlist != null && mlist.Count() > 0)
+                                {
                                     var f = mlist.FirstOrDefault();
                                     x.ProjName = f.MonProjNM;
-                                    if (x.ProjType == 4){
+                                    if (x.ProjType == 4)
+                                    {
                                         if (x.MotorBasePriceObj != null)
                                             x.MotorBasePriceObj.PerMinutesPrice = Convert.ToSingle(f.WDRateForMoto);//置換訂閱制價格
                                     }
-                                    else {
+                                    else
+                                    {
                                         x.WorkdayPerHour = Convert.ToInt32(f.WDRateForCar);//置換訂閱制價格
                                         x.HolidayPerHour = Convert.ToInt32(f.HDRateForCar);//置換訂閱制價格
                                     }
@@ -307,7 +311,6 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-
             #endregion
 
             #region 寫入錯誤Log

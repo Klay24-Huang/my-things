@@ -369,7 +369,8 @@ namespace WebAPI.Controllers
                             RSOC_S = orderFinishDataLists[0].RSOC_S,
                             RSOC_E = orderFinishDataLists[0].RSOC_E,
                             RewardPoint = orderFinishDataLists[0].RewardPoint,
-                            TotalRewardPoint = orderFinishDataLists[0].TotalRewardPoint
+                            TotalRewardPoint = orderFinishDataLists[0].TotalRewardPoint,
+                            RenterType = orderFinishDataLists[0].RenterType
                         };
                     }
                 }

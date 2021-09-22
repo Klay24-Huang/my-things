@@ -4,6 +4,7 @@
 	[CarTypeGroupCode] VARCHAR(10) NOT NULL DEFAULT '',
     [CarTypeName] NVARCHAR(100) NOT NULL DEFAULT N'', 
 	[CarTypeImg] NVARCHAR(100) NOT NULL DEFAULT N'',
+    [InsurancePerHours] [float] NOT NULL,
 	[Seat] TINYINT NOT NULL DEFAULT 4,
 	[isMoto] TINYINT NOT NULL DEFAULT 0,
 	[use_flag] [tinyint] NOT NULL DEFAULT (1),

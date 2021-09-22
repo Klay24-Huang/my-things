@@ -1,48 +1,21 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_BookingStart]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_BookingStart
+* 系    統 : IRENT
+* 程式功能 : 汽車取車
+* 作    者 : ERIC
+* 撰寫日期 : 2020924
+* 修改日期 : 20210217;和天霖確認轉乘優惠規則：
+						1.實際租金=0，就沒有轉乘優惠
+						2.不論月租/折抵的狀況如何，車輛租金要>0才可計算轉乘優惠，用(車輛租金-轉乘優惠金額)來判斷
+			 20210720 ADD BY ADAM REASON.7/21後轉乘優惠改為60元
+			 20210831 UPD BY YEH REASON:增加共同承租人判斷
+			 20210901 UPD BY YEH REASON:調整共同承租人判斷
 
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_BookingStart]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:Eric 
-** Date:2020/9/24 上午 05:03:30 
-**
-*****************************************************************
-** Change History
-*****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/9/24 上午 05:03:30    |  Eric|          First Release
-**			 |			  |
-*****************************************************************/
+* Example  : 
+***********************************************************************************************/
+
 CREATE PROCEDURE [dbo].[usp_BookingStart]
 	@IDNO                   VARCHAR(10)           ,	--帳號
 	@OrderNo                BIGINT                ,	--訂單編號
@@ -70,14 +43,25 @@ DECLARE @CarNo VARCHAR(10);
 DECLARE @ProjType INT;
 DECLARE @RentNowActiveType TINYINT;
 DECLARE @NowActiveOrderNum BIGINT;
-DECLARE @IsMotor INT;					--是否為機車
-DECLARE @PrevOrderNo INT;				--上一筆訂單編號
-DECLARE @PrevIsMotor INT;				--上一筆是否為機車
-DECLARE @PrevRentPrice INT;				--上一筆租金
-DECLARE @PrevFinalStopTime DATETIME;	--上一筆還車時間
-DECLARE @PrevFinalPrice INT;			--上一筆實際費用
-DECLARE @PrevTransDiscount INT;			--上一筆轉乘優惠金額
-DECLARE @TransferPrice INT;				--轉乘優惠金額
+DECLARE @IsMotor INT;					-- 是否為機車
+DECLARE @PrevOrderNo INT;				-- 上一筆訂單編號
+DECLARE @PrevIsMotor INT;				-- 上一筆是否為機車
+DECLARE @PrevRentPrice INT;				-- 上一筆租金
+DECLARE @PrevFinalStopTime DATETIME;	-- 上一筆還車時間
+DECLARE @PrevFinalPrice INT;			-- 上一筆實際費用
+DECLARE @PrevTransDiscount INT;			-- 上一筆轉乘優惠金額
+DECLARE @TransferPrice INT;				-- 轉乘優惠金額
+DECLARE @CarTypeGroupCode VARCHAR(20);	-- 車型簡碼
+DECLARE @MainInsurancePerHour INT;		-- 主承租人每小時安心服務價格
+DECLARE @JointInsurancePerHour INT;		-- 共同承租人每小時安心服務價格
+DECLARE @JointCount INT;				-- 共同承租人數
+DECLARE @JointInsurancePrice INT;		-- 共同承租人費用
+DECLARE @UseInsurance INT;				-- 使用安心服務(1:可;0:不可)
+DECLARE @MainInsuLV INT;				-- 主承租人安心服務等級
+DECLARE @TotalInsurancePerHour INT;		-- 每小時安心服務總金額
+DECLARE @TotalInsurancePrice INT;		-- 安心服務預計金額
+DECLARE @StartDate DATETIME;			-- 預計取車時間
+DECLARE @StopDate DATETIME;				-- 預計還車時間
 
 /*初始設定*/
 SET @Error=0;
@@ -89,7 +73,6 @@ SET @SQLExceptionMsg='';
 SET @FunName='usp_BookingStart';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @hasData=0;
 SET @Descript=N'使用者操作【取車】';
 SET @RentNowActiveType=5;
@@ -111,6 +94,15 @@ SET @PrevRentPrice=0;
 SET @PrevTransDiscount=0;
 SET @PrevFinalPrice=0;
 SET @TransferPrice=0;
+SET @CarTypeGroupCode='';
+SET @MainInsurancePerHour=0;
+SET @JointInsurancePerHour=0;
+SET @JointCount=0;
+SET @JointInsurancePrice=0;
+SET @UseInsurance=0;
+SET @MainInsuLV=0;
+SET @TotalInsurancePerHour=0;
+SET @TotalInsurancePrice=0;
 
 BEGIN TRY
 	IF @Token='' OR @IDNO='' OR @OrderNo=0
@@ -170,13 +162,13 @@ BEGIN TRY
 		FROM [dbo].[TB_BookingStatusOfUser] WITH(NOLOCK)
 		WHERE IDNO=@IDNO;
 
-		IF @RentNowActiveType NOT IN(0,5) AND @NowActiveOrderNum>0
+		IF @RentNowActiveType NOT IN (0,5) AND @NowActiveOrderNum>0
 		BEGIN
 			--20210104 ADD BY ADAM REASON.針對還在目前案件做判斷
 			IF EXISTS(SELECT order_number FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@NowActiveOrderNum AND car_mgt_status=16)
 			BEGIN
 				--已還車要更新
-				UPDATE TB_BookingStatusOfUser SET @NowActiveOrderNum=0 WHERE IDNO=@IDNO;
+				UPDATE TB_BookingStatusOfUser SET @NowActiveOrderNum=0,UPDTime=@NowTime WHERE IDNO=@IDNO;
 				SET @NowActiveOrderNum=0;
 			END
 			ELSE
@@ -254,13 +246,20 @@ BEGIN TRY
 				--20210217;和天霖確認轉乘優惠規則：
 				--1.實際租金=0，就沒有轉乘優惠
 				--2.不論月租/折抵的狀況如何，車輛租金要>0才可計算轉乘優惠，用(車輛租金-轉乘優惠金額)來判斷
+				--20210720 ADD BY ADAM REASON.7/21後轉乘優惠改為60元
+				DECLARE @TransferPriceMax INT=46
+				IF dbo.GET_TWDATE()>'2021-07-21'
+				BEGIN
+					SET @TransferPriceMax = 60
+				END
+
 				IF @PrevFinalPrice > 0
 				BEGIN
 					IF @PrevRentPrice > 0
 					BEGIN
-						IF (@PrevRentPrice-@PrevTransDiscount) >= 46
+						IF (@PrevRentPrice-@PrevTransDiscount) >= @TransferPriceMax
 						BEGIN
-							SET @TransferPrice = 46;
+							SET @TransferPrice = @TransferPriceMax;
 						END
 						ELSE
 						BEGIN
@@ -269,26 +268,6 @@ BEGIN TRY
 					END
 				END
 			END
-
-			-- 20210106 ADD BY ADAM REASON.因為現有合約會帶錯里程，這段邏輯先mark起來
-			-- 20201220 by EDWARD 因車機有時候回傳錯誤的[取車里程]，所以暫時查詢上一筆合約的還車里程來取代[取車里程]
-			--declare @pre_end_mile float=0
-			--set @pre_end_mile = isnull((select top 1 D.end_mile 
-			--							  from IRENT_V2..TB_OrderMain C with(nolock)
-			--							  join IRENT_V2..TB_OrderDetail D with(nolock) ON D.order_number=C.order_number
-			--							 where C.CarNo=@CarNo and D.final_start_time<@NowTime
-			--							 order by D.final_start_time desc),0)
-			--if (@NowMileage<>@pre_end_mile)
-			--if @pre_end_mile>0 and ABS(@NowMileage-@pre_end_mile)>3  -- 差距超過3公里時才用上一筆合約的還車里程來取代
-			--begin
-			--	set @SQLExceptionMsg = @CarNo+' ('+cast(@OrderNo as varchar)+') 錯誤的[取車里程]:'+cast(@NowMileage as varchar) +'=>'+cast(@pre_end_mile as varchar)
-			--	insert into TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
-			--	values (@FunName,'ErrMil',@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
-			--	-- select top 50 * from TB_ErrorLog with(nolock) where ErrorCode ='ErrMil' order by DTime desc
-			--	set @NowMileage=@pre_end_mile
-			--end
-			-- end of 錯誤的[取車里程]
-
 
 			--寫入訂單明細
 			INSERT INTO TB_OrderDetail(order_number,already_lend_car,final_start_time,start_mile)
@@ -310,11 +289,11 @@ BEGIN TRY
 				SET car_mgt_status=4,
 					Insurance=@Insurance,
 					init_TransDiscount=@TransferPrice	--20201201 ADD BY ADAM REASON增加轉乘優惠
-				WHERE order_number=@OrderNo	
+				WHERE order_number=@OrderNo;
 			END
 
 			--更新主控表
-			UPDATE [dbo].[TB_BookingStatusOfUser]
+			UPDATE TB_BookingStatusOfUser
 			SET RentNowActiveType=@ProjType,
 				NowActiveOrderNum=@OrderNo,
 				UPDTime=@NowTime
@@ -337,6 +316,92 @@ BEGIN TRY
 				INSERT INTO TB_OrderDataByMotor(OrderNo,P_lat,P_lon,P_LBA,P_RBA,P_MBA,P_TBA)
 				SELECT @OrderNo,Latitude,Longitude,deviceLBA,deviceRBA,deviceMBA,device3TBA 
 				FROM TB_CarStatus WITH(NOLOCK) WHERE CarNo=@CarNo
+			END
+
+			-- 20210831 UPD BY YEH REASON:增加共同承租人判斷
+			SET @hasData=0;
+			SELECT @hasData=COUNT(*) FROM TB_TogetherPassenger WITH(NOLOCK) WHERE Order_number=@OrderNo;
+			IF @hasData > 0
+			BEGIN
+				-- 將尚未回應的邀請人狀態改為取消
+				UPDATE TB_TogetherPassenger
+				SET ChkType='N',
+					UPTime=@NowTime
+				WHERE Order_number=@OrderNo
+				AND ChkType='S';
+
+				-- 非機車才可以用安心服務
+				IF @ProjType <> 4
+				BEGIN
+					-- 使用者選要使用安心服務，則先設定為使用，後續再判斷訂單是否可使用
+					IF @Insurance = 1
+					BEGIN
+						SET @UseInsurance=1;
+					END
+
+					-- 取得主承租人安心服務等級
+					SELECT @MainInsuLV=InsuranceLevel FROM TB_BookingInsuranceOfUser WITH(NOLOCK) WHERE IDNO=@IDNO;
+
+					-- 判斷主承租人是否可使用安心服務，LEVEL>=4就不能用
+					IF @MainInsuLV >= 4
+					BEGIN
+						SET @UseInsurance=0;
+					END
+					ELSE
+					BEGIN
+						-- 判斷副承租人是否可使用安心服務，有人LEVEL>=4就不能用
+						SET @hasData=0;
+						SELECT @hasData=COUNT(*) FROM TB_TogetherPassenger A WITH(NOLOCK)
+						INNER JOIN TB_BookingInsuranceOfUser B WITH(NOLOCK) ON B.IDNO=A.MEMIDNO
+						WHERE A.Order_number=@OrderNo AND A.ChkType='Y' AND B.InsuranceLevel >= 4;
+
+						IF @hasData > 0
+						BEGIN
+							SET @UseInsurance=0;
+						END
+					END
+
+					-- 使用安心服務，才取各項金額來加總計算
+					IF @UseInsurance = 1
+					BEGIN
+						-- 取車型簡碼
+						SELECT @CarTypeGroupCode=D.CarTypeGroupCode FROM TB_Car A WITH(NOLOCK)
+						INNER JOIN TB_CarType B WITH(NOLOCK) ON B.CarType=A.CarType
+						INNER JOIN TB_CarTypeGroupConsist C WITH(NOLOCK) ON C.CarType=B.CarType
+						INNER JOIN TB_CarTypeGroup D WITH(NOLOCK) ON D.CarTypeGroupID=C.CarTypeGroupID
+						WHERE CarNo=@CarNo;
+
+						-- 取主承租人每小時安心服務價格
+						SELECT @MainInsurancePerHour=InsurancePerHours FROM TB_InsuranceInfo WITH(NOLOCK) WHERE InsuranceLevel=@MainInsuLV AND CarTypeGroupCode=@CarTypeGroupCode;
+
+						-- 取共同承租人每小時安心服務價格
+						SELECT @JointInsurancePerHour=InsurancePerHours FROM TB_InsuranceInfoOther WITH(NOLOCK) WHERE CarTypeGroupCode=@CarTypeGroupCode;
+		
+						-- 取有同意的共同承租人數
+						SELECT @JointCount=COUNT(*) FROM TB_TogetherPassenger WITH(NOLOCK) WHERE Order_number=@OrderNo AND ChkType='Y';
+
+						-- 每小時安心服務總金額 = 主承租人每小時安心服務價格 + 共同承租人數 * 共同承租人每小時安心服務價格
+						SET @TotalInsurancePerHour = @MainInsurancePerHour + (@JointCount * @JointInsurancePerHour);
+
+						-- 取得訂單起訖時間
+						SELECT @StartDate=start_time,@StopDate=stop_time FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo;
+				
+						-- 計算安心服務預估金額
+						SELECT @TotalInsurancePrice=dbo.FN_CarRentCompute(@StartDate, @StopDate, @TotalInsurancePerHour * 10, @TotalInsurancePerHour * 10, 10, 0);
+					END
+				END
+				
+				-- 寫入共同承租人檔
+				INSERT INTO TB_SavePassenger (Order_number,MEMIDNO,MEMCNAME,MEMTEL,InsurancePerHours,HistFlg,MKTime,UPTime)
+				SELECT Order_number,MEMIDNO,MEMCNAME,MEMTEL,@JointInsurancePerHour,1,@NowTime,@NowTime
+				FROM TB_TogetherPassenger WITH(NOLOCK) 
+				WHERE Order_number=@OrderNo AND ChkType='Y';
+
+				-- 更新回訂單檔
+				UPDATE TB_OrderMain 
+				SET Insurance=@UseInsurance,
+					InsurancePurePrice=@TotalInsurancePrice
+				WHERE order_number=@OrderNo;
 			END
 
 			COMMIT TRAN;
@@ -374,19 +439,4 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingStart';
-
-
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingStart';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'取車', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingStart';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingStart';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BookingStart';

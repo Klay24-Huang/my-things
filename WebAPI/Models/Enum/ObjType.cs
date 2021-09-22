@@ -719,7 +719,30 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthReturnList,
             BE_Banner,//20210316唐加
             BE_InsertChargeParkingData,//20210511唐加
-            BE_BannerSort
+            /// <summary>
+            /// 共同承租人邀請清單查詢
+            /// </summary>
+            GetJointRentInviteeList,
+            /// <summary>
+            /// 共同承租人邀請清單維護
+            /// </summary>
+            JointRentInviteeModify,
+            /// <summary>
+            /// 共同承租人邀請檢核
+            /// </summary>
+            JointRentInviteeVerify,
+            /// <summary>
+            /// 共同承租人邀請
+            /// </summary>
+            JointRentInvitation,
+            /// <summary>
+            /// 共同承租人邀請回饋
+            /// </summary>
+            JointRentIviteeFeedBack,
+            /// <summary>
+            /// 訂單安心服務資格及價格查詢
+            /// </summary>
+            GetOrderInsuranceInfo
         }
         /// <summary>
         /// 取出SPName
@@ -847,7 +870,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BookingDelete";
                     break;
                 case SPType.GetOrderList:
-                    SPName = "usp_OrderListQuery_20210524"; //20210524 ADD BY ADAM REASON.增加儀表板電量
+                    SPName = "usp_OrderListQuery";  // 20210830 UPD BY YEH REASON:增加承租人類型
                     break;
                 case SPType.GetCancelOrder:
                     SPName = "usp_GetCancelOrderList";
@@ -904,7 +927,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_DonePayRentBillNew_20210517";     //20210523 ADD BY ADAM REASON.
                     break;
                 case SPType.BE_ContactFinish:
-                    SPName = "usp_BE_ContactFinish";    // 20210812 UPD BY YEH REASON:SP已同步，指回原版本
+                    SPName = "usp_BE_ContactFinish";    // 20210907 UPD BY YEH SP已同步，指回原版本
                     break;
                 case SPType.DonePayBack:
                     SPName = "usp_DonePayBack_V2";
@@ -1306,7 +1329,28 @@ namespace WebAPI.Models.Enum
                 case SPType.BE_CancelCleanOrder:
                     SPName = "usp_BE_CancelCleanOrder";
                     break;
+                #endregion
+                #region 共同承租人
+                case SPType.GetJointRentInviteeList:
+                    SPName = "usp_JointRentInviteeList_Q01";
+                    break;
+                case SPType.JointRentInviteeModify:
+                    SPName = "usp_JointRentInviteeModify_U01";
+                    break;
+                case SPType.JointRentInviteeVerify:
+                    SPName = "usp_JointRentInviteeVerify_Q01";
+                    break;
+                case SPType.JointRentInvitation:
+                    SPName = "usp_JointRentInvitation_I01";
+                    break;
+                case SPType.JointRentIviteeFeedBack:
+                    SPName = "usp_JointRentIviteeFeedBack_U01";
+                    break;
+                case SPType.GetOrderInsuranceInfo:
+                    SPName = "usp_GetOrderInsuranceInfo";
+                    break;
                     #endregion
+
             }
             return SPName;
         }
