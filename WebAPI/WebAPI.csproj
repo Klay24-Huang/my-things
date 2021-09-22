@@ -272,6 +272,7 @@
     <Compile Include="Controllers\JointRentIviteeFeedBackController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\NewsReadController.cs" />
+    <Compile Include="Controllers\NoticeReadController.cs" />
     <Compile Include="Controllers\PersonNoticeReadController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />

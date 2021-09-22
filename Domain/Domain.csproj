@@ -219,6 +219,7 @@
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTransferStoreValueLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
     <Compile Include="SP\Input\Other\SPInput_NewsRead_I01.cs" />
+    <Compile Include="SP\Input\Other\SPInput_NoticeRead_I01.cs" />
     <Compile Include="SP\Input\Other\SPInput_PersonNotificationRead_I01.cs" />
     <Compile Include="SP\Input\Other\SPInput_TestPushService_I01.cs" />
     <Compile Include="SP\Input\PolygonList\SpInput_GetAlliRentStation.cs" />
