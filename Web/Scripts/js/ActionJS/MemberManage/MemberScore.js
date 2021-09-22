@@ -462,5 +462,5 @@ function DoDel(Id) {
     obj.SEQ = SEQ;
     obj.UserID = Account;
 
-    DoAjaxAfterReload(obj, "BE_DeleteMemberScore", "修改花生錯誤");
+    DoAjaxAfterReload(obj, "BE_DeleteMemberScore", "修改發生錯誤");
 }
