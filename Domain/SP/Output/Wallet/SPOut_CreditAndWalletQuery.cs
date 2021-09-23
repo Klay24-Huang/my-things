@@ -1,12 +1,6 @@
-﻿using System.Collections.Generic;
-using WebAPI.Models.Param.Output.PartOfParam;
-
-namespace WebAPI.Models.Param.Output
+﻿namespace Domain.SP.Output.Wallet
 {
-    /// <summary>
-    /// 查詢綁卡及錢包
-    /// </summary>
-    public class OAPI_CreditAndWalletQuery
+    public class SPOut_CreditAndWalletQuery : SPOutput_Base
     {
         /// <summary>
         /// 付費方式
@@ -16,28 +10,18 @@ namespace WebAPI.Models.Param.Output
         public int PayMode { get; set; }
 
         /// <summary>
-        /// 是否有綁定
-        /// <para>0:無</para>
-        /// <para>1:有</para>
+        /// 錢包狀態
+        /// <para>1:未啟用</para>
+        /// <para>2:啟用</para>
+        /// <para>3:凍結</para>
+        /// <para>4:註記刪除</para>
         /// </summary>
-        public int HasBind { set; get; } = 0;
+        public string WalletStatus { get; set; }
 
         /// <summary>
-        /// 是否有錢包
-        /// <para>0:無</para>
-        /// <para>1:有</para>
+        /// 錢包餘額
         /// </summary>
-        public int HasWallet { set; get; } = 0;
-
-        /// <summary>
-        /// 錢包剩餘金額
-        /// </summary>
-        public int TotalAmount { set; get; }
-
-        /// <summary>
-        /// 信用卡列表
-        /// </summary>
-        public List<CreditCardBindList> BindListObj { set; get; }
+        public int WalletAmout { get; set; }
 
         /// <summary>
         /// 發票寄送方式
