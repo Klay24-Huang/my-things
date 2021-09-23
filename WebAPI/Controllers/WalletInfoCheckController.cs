@@ -140,13 +140,11 @@ namespace WebAPI.Controllers
                     if (sp1_list != null && sp1_list.Count() > 0)
                     {
                         var fItem = sp1_list.FirstOrDefault();
-                        outputApi.WalletAmount = fItem.WalletAmount;
-                        outputApi.MonTransIn = Convert.ToInt32(fItem.MonTransIn);
 
                         if (!string.IsNullOrWhiteSpace(inPhoneNo))
-                            outputApi.Name_Phone = fItem.MemPhone;
+                            outputApi.Name_Phone = fItem.ShowValue;
                         else
-                            outputApi.Name_Phone = fItem.MemNm;
+                            outputApi.Name_Phone = fItem.ShowValue;
                     }
 
                     if (sp1ErrCode != "0000")

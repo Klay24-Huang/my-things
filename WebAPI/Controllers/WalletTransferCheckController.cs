@@ -80,22 +80,22 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO_Phone) || apiInput.Amount == 0)
+                    if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO_Phone) )
                     {
                         flag = false;
-                        errMsg = "參數遺漏";
-                        errCode = "ERR257";//參數遺漏
+                        errMsg = "未輸入主要查詢KEY值";
+                        errCode = "ERR257";//未輸入主要查詢KEY值
                     }
                     else
                     {
-                        if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))
+                        if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))//判斷是否為全部數字
                             inPhoneNo = intPhoneNo.ToString();
                         else
                             inIDNO = apiInput.IDNO_Phone;
                     }
 
-                    trace.FlowList.Add("防呆");
-                    trace.traceAdd("InCk", new { flag, errCode, errMsg});
+                    trace.FlowList.Add("判斷輸入為電話或身分證");
+                    trace.traceAdd("InputCheck", new { flag, errCode, errMsg});
                 }
 
                 #endregion
@@ -162,8 +162,8 @@ namespace WebAPI.Controllers
                     {
                         var sp2In = new SPInput_WalletTransferCheck()
                         {
-                            IDNO = inIDNO,//被贈人
-                            PhoneNo = inPhoneNo,//被贈人
+                            IDNO = inIDNO,//受贈人
+                            PhoneNo = inPhoneNo,//受贈人
                             LogID = LogID,
                         };
                         var sp2_list = wsp.sp_WalletTransferCheck(sp2In, ref sp2ErrCode);
@@ -171,9 +171,9 @@ namespace WebAPI.Controllers
                         {
                             CkTo = sp2_list.FirstOrDefault();
                             if (!string.IsNullOrWhiteSpace(inPhoneNo))
-                                outputApi.Name_Phone = CkTo.MemPhone;
+                                outputApi.ShowValue = CkTo.ShowValue;
                             else
-                                outputApi.Name_Phone = CkTo.MemNm;
+                                outputApi.ShowValue = CkTo.ShowName;
                         }
                         else
                             CkTo = null;
@@ -192,6 +192,7 @@ namespace WebAPI.Controllers
 
                     #region 商業邏輯檢查
 
+                    /*
                     if(flag)
                     {
                         if (CkFrom != null && CkTo != null)
@@ -203,7 +204,6 @@ namespace WebAPI.Controllers
                                 errMsg = "轉贈金額超過錢包金額";
                                 errCode = "ERR281";
                             }
-
                             //被轉贈人錢包總額是否超過5萬
                             if (flag)
                             {
@@ -226,14 +226,16 @@ namespace WebAPI.Controllers
                                 }
                             }
                             trace.FlowList.Add("商業邏輯檢查");
+                            
                         }
                     }
+                    */
 
-                    #endregion                                              
+                    #endregion
                 }
 
                 outputApi.CkResult = flag ? 1 : 0;
-                outputApi.Amount = apiInput.Amount;
+               // outputApi.Amount = apiInput.Amount; --2021/09/23 UPD BY YANKEY 不須判斷錢包餘額
 
                 #endregion
             }

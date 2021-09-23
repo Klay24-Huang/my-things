@@ -7,12 +7,16 @@
         /// </summary>
         public int CkResult { get; set; } = 0;
         /// <summary>
-        /// 名稱或電話號碼
+        /// 受贈者名稱
         /// </summary>
-        public string Name_Phone { get; set; }
+        public string ShowName { get; set; }
         /// <summary>
-        /// 轉贈金額
+        /// 顯示ID或電話號碼
         /// </summary>
-        public int Amount { get; set; }
+        public string ShowValue { get; set; }
+        /// <summary>
+        /// 受贈人ID
+        /// </summary>
+        public int IDNO { get; set; }
     }
 }
