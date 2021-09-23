@@ -291,6 +291,7 @@
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletStoreTradeTransHistory.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_SetWalletTrade.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletPay.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletTransferCheck.cs" />
     <Compile Include="SP\MA\Input\SPInpupt_MA_CleanCarStart.cs" />
