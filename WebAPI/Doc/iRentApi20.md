@@ -149,6 +149,8 @@ iRentApi20 Web API版本
 
 20210916 移除錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
 
+20210922 查詢綁卡跟錢包(CreditAndWalletQuery)增加輸出欄位
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -255,7 +257,7 @@ iRentApi20 Web API版本
 | MEMMSG         | 活動及優惠訊息通知 (Y:是 N:否)                               | string | N                                                            |
 | CARDNO         | 卡號                                                         | string | 459863745                                                    |
 | UNIMNO         | 統編                                                         | string | 03089008                                                     |
-| MEMSENDCD      | 發票寄送方式<br />1:捐贈;2:email;3:二聯;4:三聯;5:手機條碼;6:自然人憑證 |  int   | 5                                                            |
+| MEMSENDCD      | 發票寄送方式<br />1:捐贈;<br />2:email;<br />3:二聯;<br />4:三聯;<br />5:手機條碼;<br />6:自然人憑證 |  int   | 5                                                            |
 | CARRIERID      | 發票載具                                                     | string | /N37H2JD                                                     |
 | NPOBAN         | 愛心碼                                                       | string | 885                                                          |
 | HasCheckMobile | 是否通過手機驗證(0:否;1:是)                                  |  int   | 1                                                            |
@@ -263,7 +265,7 @@ iRentApi20 Web API版本
 | HasBindSocial  | 是否綁定社群(0:否;1:是)                                      |  int   | 0                                                            |
 | HasVaildEMail  | 是否已驗證EMAIL(0:否;1:是)                                   |  int   | 1                                                            |
 | Audit          | 審核狀態 0:未審核 1:審核通過 2:審核不通過                    |  int   | 1                                                            |
-| IrFlag         | 目前註冊進行至哪個步驟<br />-1驗證完手機 、0：設置密碼、1：其他 |  int   | 1                                                            |
+| IrFlag         | 目前註冊進行至哪個步驟<br />-1驗證完手機 、<br />0：設置密碼、<br />1：其他 |  int   | 1                                                            |
 | PayMode        | 付費方式 0:信用卡                                            |  int   | 0                                                            |
 | RentType       | 可租車類別<br />0:無法;1:汽車;2:機車;3:全部                  |  int   | 3                                                            |
 | ID_pic         | 身份證                                                       |  int   | 0                                                            |
@@ -5245,26 +5247,32 @@ iRentApi20 Web API版本
 | NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           |        |               |
-| BindListObj  | 資料物件           |  list  |               |
+| Data         | 資料物件           | object |               |
 
 * Data 回傳參數說明
 
 | 參數名稱     | 參數說明            |  型態  | 範例          |
 | ------------ | ------------------  | :----: | ------------- |
+| PayMode | 付費方式 (0:信用卡 1:和雲錢包) | int | 0 |
 | HasBind      | 是否有綁定(0:無,1有)| int    | 1             |
-| HasWallet    | 是否有錢包(0:無,1有)| int    | 1             |
-| TotalAmount | 錢包剩餘金額        | int    | 20000         |
+| HasWallet    | 是否有錢包(0:無,1有)| int    | 0            |
+| TotalAmount | 錢包剩餘金額        | int    | 0         |
+| BindListObj | 信用卡列表 | list |  |
+| MEMSENDCD | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 | int | 5 |
+| UNIMNO | 統編 | string |  |
+| CARRIERID | 手機條碼 | string | /N37H2JD |
+| NPOBAN | 愛心碼 | string |  |
+| AutoStored | 是否同意自動儲值 (0:不同意 1:同意) | int | 0 |
 
 * BindListObj 回傳參數說明
 
-| 參數名稱        | 參數說明                         |  型態  | 範例   |
-| --------------- | -------------------------------- | :----: | ------ |
-| BankNo          | 銀行帳號                         | string | 待確認 |
-| CardNumber      | 信用卡卡號(後四碼)               | string | 1234   |
-| CardName        | 信用卡自訂名稱                   | string | 待確認 |
-| AvailableAmount | 剩餘額度                         | string | 待確認 |
-| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | 待確認 |
+| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
+| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
+| BankNo          | 銀行帳號                         | string |                                                       |
+| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
+| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
+| AvailableAmount | 剩餘額度                         | string |                                                       |
+| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
 
 * Output範例
 
@@ -5276,18 +5284,24 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-		"HasBind": 1,
-		"HasWallet": 1,
-		"TotalAmount": 20000,
-		"BindListObj": [
-		  {
-		    "BankNo": "待確認",
-			"CardNumber": "1234",
-			"CardName": "待確認",
-			"AvailableAmount": "待確認",
-			"CardToken": "待確認"
-		  }
-		]	
+        "PayMode": 0,
+        "HasBind": 1,
+        "HasWallet": 0,
+        "TotalAmount": 0,
+        "BindListObj": [
+            {
+                "BankNo": "",
+                "CardNumber": "432102******1234",
+                "CardName": "商業銀行",
+                "AvailableAmount": "",
+                "CardToken": "db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456"
+            }
+        ],
+        "MEMSENDCD": 5,
+        "UNIMNO": "",
+        "CARRIERID": "/N37H2JD",
+        "NPOBAN": "",
+        "AutoStored": 0
     }
 }
 ```
