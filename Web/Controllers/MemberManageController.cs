@@ -1481,11 +1481,13 @@ namespace Web.Controllers
                 bool flag = true;
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 string errCode = "";
+                string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
                 CommonFunc baseVerify = new CommonFunc();
                 SPInput_BE_InsBlackList data = new SPInput_BE_InsBlackList()
                 {
                     Mode = 0,
-                    Mobile = MobilePhone
+                    Mobile = MobilePhone,
+                    USERID = UserId
                 };
                 SPOutput_Base SPOutput = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsBlackList", data, ref SPOutput, ref lstError);
@@ -1497,7 +1499,7 @@ namespace Web.Controllers
                 }
                 else
                 {
-                    ViewData["errorLine"] = "新增失敗";
+                    ViewData["errorLine"] = SPOutput.ErrorMsg;
                 }
 
                 return View();
