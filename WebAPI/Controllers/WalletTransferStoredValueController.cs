@@ -221,7 +221,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 商業邏輯檢查
-
+                    /*
                     if (flag)
                     {
                         if (apiInput.Amount > CkFrom.WalletAmount)
@@ -252,7 +252,7 @@ namespace WebAPI.Controllers
                         }                        
                         trace.FlowList.Add("商業邏輯檢查");
                     }
-
+                    */
                     #endregion
                 }
 

@@ -89,7 +89,8 @@ namespace WebAPI.Controllers
                     else
                     {
                         if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))//判斷是否為全部數字
-                            inPhoneNo = intPhoneNo.ToString();
+                            //inPhoneNo = intPhoneNo.ToString();
+                            inPhoneNo = apiInput.IDNO_Phone;
                         else
                             inIDNO = apiInput.IDNO_Phone;
                     }
@@ -174,6 +175,8 @@ namespace WebAPI.Controllers
                                 outputApi.ShowValue = CkTo.ShowValue;
                             else
                                 outputApi.ShowValue = CkTo.ShowName;
+                            outputApi.ShowName = CkTo.ShowName;
+                            outputApi.IDNO = CkTo.IDNO;
                         }
                         else
                             CkTo = null;

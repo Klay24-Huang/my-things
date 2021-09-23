@@ -17,6 +17,6 @@
         /// <summary>
         /// 受贈人ID
         /// </summary>
-        public int IDNO { get; set; }
+        public string IDNO { get; set; }
     }
 }
