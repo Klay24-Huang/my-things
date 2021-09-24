@@ -1,12 +1,9 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Car;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.Subscription;
 using Domain.TB;
-using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,7 +13,6 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
@@ -57,7 +53,9 @@ namespace WebAPI.Controllers
             var InUseMonth = new List<SPOut_GetNowSubs>();//使用中月租
             string IDNO = "";
             var _MotorRentObj = new List<OAPI_MotorRent_Param>();
+            var Score = 100;  // 20210924 UPD BY YEH REASON:會員積分，預設100
             #endregion
+
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
@@ -89,39 +87,20 @@ namespace WebAPI.Controllers
             }
             #endregion
 
+            #region TB
             #region Token判斷
-            //if (flag && isGuest == false)
-            //{
-            //    string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-            //    SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-            //    {
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_Base spOut = new SPOutput_Base();
-            //    SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            //}
-
             if (flag && isGuest == false)
             {
-                var token_in = new IBIZ_TokenCk
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                if (errCode == "ERR101")    //訪客機制BYPASS
                 {
-                    LogID = LogID,
-                    Access_Token = Access_Token
-                };
-                var token_re = cr_com.TokenCk(token_in);
-                if (token_re != null)
-                {
-                    IDNO = token_re.IDNO ?? "";
+                    flag = true;
+                    errCode = "000000";
                 }
             }
-
             #endregion
 
-            #region TB
-
+            #region 取得機車使用中訂閱制月租
             //取得機車使用中訂閱制月租
             if (flag)
             {
@@ -137,26 +116,65 @@ namespace WebAPI.Controllers
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
-                        InUseMonth = sp_list.Where(x=>x.IsMoto == 1 || x.IsMix == 1).ToList();
+                        InUseMonth = sp_list.Where(x => x.IsMoto == 1 || x.IsMix == 1).ToList();
                 }
             }
+            #endregion
+
+            #region 取得會員積分
+            // 20210924 UPD BY YEH REASON:取得會員積分
+            if (flag && !string.IsNullOrEmpty(IDNO))    // IDNO有值才撈積分
+            {
+                string spName = "usp_GetMemberScore_Q1";
+
+                object[][] parms1 = {
+                        new object[] {
+                            IDNO,
+                            1,
+                            10,
+                            LogID
+                        }
+                    };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (ds1.Tables.Count != 3)
+                {
+                    if (ds1.Tables.Count == 1)  // SP有回錯誤訊息以SP為主
+                    {
+                        baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR999";
+                        errMsg = returnMessage;
+                    }
+                }
+                else
+                {
+                    baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+
+                    if (flag)
+                    {
+                        if (ds1.Tables[0].Rows.Count > 0)
+                            Score = Convert.ToInt32(ds1.Tables[0].Rows[0]["SCORE"]);
+                        else
+                            Score = 0;
+                    }
+                }
+            }
+            #endregion
 
             if (flag)
             {
-                //_repository = new StationAndCarRepository(connetStr);
-                //List<MotorRentObj> AllCars = new List<MotorRentObj>();
-                //if (apiInput.ShowALL == 1)
-                //{
-                //    AllCars = _repository.GetAllMotorRent();
-                //}
-                //else
-                //{
-                //    AllCars = _repository.GetAllMotorRent(apiInput.Latitude.Value, apiInput.Longitude.Value, apiInput.Radius.Value);
-                //}
-
-
                 // 20210622 UPD BY YEH REASON:因應積分<60分只能用定價專案，取資料改去SP處理
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetMotorRent);
+                string SPName = "usp_GetMotorRent";
                 SPInput_GetMotorRent spInput = new SPInput_GetMotorRent
                 {
                     IDNO = IDNO,
@@ -173,56 +191,45 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref MotorList, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
-                //春節限定，將R140專案移除
-                var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
-
-                if(tempList != null && tempList.Count()>0)
-                    _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(tempList);               
-
-                if (_MotorRentObj != null && _MotorRentObj.Count() > 0)
+                if (flag)
                 {
-                    #region 加入月租資訊
-                    if (InUseMonth != null && InUseMonth.Count() > 0)
-                    {
-                        var finalOut = new List<OAPI_MotorRent_Param>();
-                        var f = InUseMonth.FirstOrDefault();
-
-                        _MotorRentObj.ForEach(x => {
-                            
-                            x.MonthlyRentId = f.MonthlyRentId;
-                            x.MonProjNM = f.MonProjNM;
-                            x.CarWDHours = f.WorkDayHours;
-                            x.CarHDHours = f.HolidayHours;
-                            x.MotoTotalMins = Convert.ToInt32(f.MotoTotalMins);
-                            x.WDRateForCar = f.WorkDayRateForCar;
-                            x.HDRateForCar = f.HoildayRateForCar;
-                            x.WDRateForMoto = f.WorkDayRateForMoto;
-                            x.HDRateForMoto = f.HoildayRateForMoto;
-
-                            /* 20210709 ADD BY ADAM REASON.因有兩個點的問題故先隱藏
-                            finalOut.Add(x);
-                            InUseMonth.ForEach(y =>
-                            {
-                                var newItem = objUti.Clone(x);
-                                newItem.MonthlyRentId = y.MonthlyRentId;
-                                newItem.MonProjNM = y.MonProjNM;
-                                newItem.CarWDHours = y.WorkDayHours;
-                                newItem.CarHDHours = y.HolidayHours;
-                                newItem.MotoTotalMins = Convert.ToInt32(y.MotoTotalMins);
-                                newItem.WDRateForCar = y.WorkDayRateForCar;
-                                newItem.HDRateForCar = y.HoildayRateForCar;
-                                newItem.WDRateForMoto = y.WorkDayRateForMoto;
-                                newItem.HDRateForMoto = y.HoildayRateForMoto;
-                                finalOut.Add(newItem);
-                            });*/
-                        });
-                        //_MotorRentObj = finalOut;
-                    }
+                    #region 春節專案使用
+                    //春節限定，將R140專案移除
+                    var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
                     #endregion
-                    OAnyRentAPI.MotorRentObj = _MotorRentObj;
-                }                
+
+                    if (tempList != null && tempList.Count() > 0)
+                        _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(tempList);
+
+                    if (_MotorRentObj != null && _MotorRentObj.Count() > 0)
+                    {
+                        #region 加入月租資訊
+                        if (Score >= 60)    // 20210924 UPD BY YEH REASON:積分>=60才可使用訂閱制
+                        {
+                            if (InUseMonth != null && InUseMonth.Count() > 0)
+                            {
+                                var f = InUseMonth.FirstOrDefault();
+
+                                _MotorRentObj.ForEach(x =>
+                                {
+                                    x.MonthlyRentId = f.MonthlyRentId;
+                                    x.MonProjNM = f.MonProjNM;
+                                    x.CarWDHours = f.WorkDayHours;
+                                    x.CarHDHours = f.HolidayHours;
+                                    x.MotoTotalMins = Convert.ToInt32(f.MotoTotalMins);
+                                    x.WDRateForCar = f.WorkDayRateForCar;
+                                    x.HDRateForCar = f.HoildayRateForCar;
+                                    x.WDRateForMoto = f.WorkDayRateForMoto;
+                                    x.HDRateForMoto = f.HoildayRateForMoto;
+                                });
+                            }
+                        }
+                        #endregion
+                        OAnyRentAPI.MotorRentObj = _MotorRentObj;
+                    }
+                }
             }
-            
+
             #endregion
 
             #region 寫入錯誤Log
