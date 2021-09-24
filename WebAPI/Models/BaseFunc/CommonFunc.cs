@@ -1,23 +1,21 @@
-﻿using Domain.SP.Input;
+﻿using Domain.Common;
+using Domain.SP.Input;
+using Domain.SP.Input.Common;
 using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using Domain.TB;
+using Newtonsoft.Json;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Web;
-using WebCommon;
-using System.ServiceModel.Channels;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Output;
-using Domain.Common;
-using static WebAPI.Models.BaseFunc.CommonFunc;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Domain.SP.Input.Common;
-using Domain.SP.Output.Common;
+using WebCommon;
 
 namespace WebAPI.Models.BaseFunc
 {
@@ -28,6 +26,8 @@ namespace WebAPI.Models.BaseFunc
     public class CommonFunc
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
+        #region 要驗證的類型
         /// <summary>
         /// 要驗證的類型
         /// </summary>
@@ -58,6 +58,9 @@ namespace WebAPI.Models.BaseFunc
             /// </summary>
             UniCode
         }
+        #endregion
+
+        #region 基本防呆
         /// <summary>
         /// 基本防呆
         /// </summary>
@@ -102,7 +105,8 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
-        public bool baseCheck(Dictionary<string, object> value,ref string Contentjson, ref string errCode, string funName)
+
+        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName)
         {
             bool flag = true;
             Int16 IsSystem = 0;
@@ -117,14 +121,14 @@ namespace WebAPI.Models.BaseFunc
                 //判斷有沒有para這個參數
                 try
                 {
-                    if (value== null)
+                    if (value == null)
                     {
                         flag = false;
                         errCode = "ERR902";
                     }
                     else
                     {
-                        Contentjson= JsonConvert.SerializeObject(value);
+                        Contentjson = JsonConvert.SerializeObject(value);
                     }
                 }
                 catch (Exception ex)
@@ -143,6 +147,7 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+
         /// <summary>
         /// 基本判斷（含token）
         /// </summary>
@@ -153,7 +158,7 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="Access_token_string"></param>
         /// <param name="AccessToken"></param>
         /// <returns></returns>
-        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName,string Access_token_string,ref string AccessToken)
+        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName, string Access_token_string, ref string AccessToken)
         {
             bool flag = true;
             Int16 IsSystem = 0;
@@ -173,12 +178,12 @@ namespace WebAPI.Models.BaseFunc
                 }
                 else
                 {
-                    if(Access_tokens[0].ToUpper()!= "BEARER")
+                    if (Access_tokens[0].ToUpper() != "BEARER")
                     {
                         flag = false;
                         errCode = "ERR001";
                     }
-                    else if(string.IsNullOrEmpty(Access_tokens[1]))
+                    else if (string.IsNullOrEmpty(Access_tokens[1]))
                     {
                         flag = false;
                         errCode = "ERR001";
@@ -225,6 +230,7 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+
         /// <summary>
         /// 僅需驗證token
         /// </summary>
@@ -277,6 +283,7 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+
         /// <summary>
         /// 基本判斷（含token）, 若無Token當訪客
         /// </summary>
@@ -291,7 +298,7 @@ namespace WebAPI.Models.BaseFunc
         ///     <para>False:會員，需驗證token</para>
         /// </param>
         /// <returns></returns>
-        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName, string Access_token_string, ref string AccessToken,ref bool isGuest)
+        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName, string Access_token_string, ref string AccessToken, ref bool isGuest)
         {
             bool flag = true;
             Int16 IsSystem = 0;
@@ -383,7 +390,7 @@ namespace WebAPI.Models.BaseFunc
         /// <para>false:否</para>
         /// </param>
         /// <returns></returns>
-        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName, string Access_token_string, ref string AccessToken, ref bool isGuest,bool needInput)
+        public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName, string Access_token_string, ref string AccessToken, ref bool isGuest, bool needInput)
         {
             bool flag = true;
             Int16 IsSystem = 0;
@@ -456,9 +463,12 @@ namespace WebAPI.Models.BaseFunc
 
                 }
             }
-            
+
             return flag;
         }
+        #endregion
+
+        #region 判斷日期
         /// <summary>
         /// 判斷日期
         /// </summary>
@@ -466,51 +476,52 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="IEDate">結束日期</param>
         /// <param name="errCode">錯誤代碼</param>
         /// <returns>boolean</returns>
-        public bool CheckDate(string ISDate,string IEDate,ref string errCode,ref DateTime SDate,ref DateTime EDate)
+        public bool CheckDate(string ISDate, string IEDate, ref string errCode, ref DateTime SDate, ref DateTime EDate)
         {
             bool flag = true; ;
-         
 
-                //判斷日期
-                if (flag)
+
+            //判斷日期
+            if (flag)
+            {
+                if (string.IsNullOrWhiteSpace(ISDate) == false && string.IsNullOrWhiteSpace(IEDate) == false)
                 {
-                    if (string.IsNullOrWhiteSpace(ISDate) == false && string.IsNullOrWhiteSpace(IEDate) == false)
+                    flag = DateTime.TryParse(ISDate, out SDate);
+                    if (flag)
                     {
-                        flag = DateTime.TryParse(ISDate, out SDate);
+                        flag = DateTime.TryParse(IEDate, out EDate);
                         if (flag)
                         {
-                            flag = DateTime.TryParse(IEDate, out EDate);
-                            if (flag)
+                            if (SDate >= EDate)
                             {
-                                if (SDate >= EDate)
-                                {
-                                    flag = false;
-                                    errCode = "ERR153";
-                                }
-                                else
-                                {
-                                    if (DateTime.Now > SDate)
-                                    {
-                                        flag = false;
-                                        errCode = "ERR154";
-                                    }
-
-                                }
-
+                                flag = false;
+                                errCode = "ERR153";
                             }
                             else
                             {
-                                errCode = "ERR152";
+                                if (DateTime.Now > SDate)
+                                {
+                                    flag = false;
+                                    errCode = "ERR154";
+                                }
+
                             }
+
                         }
                         else
                         {
-                            errCode = "ERR151";
+                            errCode = "ERR152";
                         }
                     }
+                    else
+                    {
+                        errCode = "ERR151";
+                    }
                 }
+            }
             return flag;
         }
+
         /// <summary>
         /// 顯示天
         /// </summary>
@@ -526,6 +537,9 @@ namespace WebAPI.Models.BaseFunc
             dateDiff = ts.Days.ToString() + "天" + ts.Hours.ToString() + "小時" + ts.Minutes.ToString() + "分鐘";// + ts.Seconds.ToString() + "秒";
             return dateDiff;
         }
+        #endregion
+
+        #region 正規化比對
         /// <summary>
         /// 正規化比對
         /// </summary>
@@ -542,7 +556,9 @@ namespace WebAPI.Models.BaseFunc
             Match m = r.Match(sourceStr);
             return m.Success;
         }
+        #endregion
 
+        #region 寫入API呼叫記錄
         /// <summary>
         /// 寫入API呼叫記錄
         /// </summary>
@@ -552,7 +568,7 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="errCode"></param>
         /// <param name="LogID"></param>
         /// <returns></returns>
-        public bool InsAPLog(string apiInput, string ClientIP, string funName, ref string errCode,ref Int64 LogID)
+        public bool InsAPLog(string apiInput, string ClientIP, string funName, ref string errCode, ref Int64 LogID)
         {
             bool flag = true;
             try
@@ -636,12 +652,15 @@ namespace WebAPI.Models.BaseFunc
             catch (Exception ex)
             {
                 //寫入檔案
-               // writeErrorFile(funName, errCode, 1, "", "", ex.HResult.ToString(), ex.Message);
+                // writeErrorFile(funName, errCode, 1, "", "", ex.HResult.ToString(), ex.Message);
             }
             return flag;
 
 
         }
+        #endregion
+
+        #region 空白檢查
         /// <summary>
         /// 
         /// </summary>
@@ -650,7 +669,7 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="errCode"></param>
         /// <param name="funName"></param>
         /// <returns></returns>
-        public bool CheckISNull(string[] checkList, string[] errList, ref string errCode, string funName,Int64 LogID)
+        public bool CheckISNull(string[] checkList, string[] errList, ref string errCode, string funName, Int64 LogID)
         {
             bool flag = (errCode == "000000") ? true : false;
             if (flag)
@@ -669,11 +688,49 @@ namespace WebAPI.Models.BaseFunc
 
             if (false == flag)
             {
-                flag = InsErrorLog(funName, errCode,0,LogID, 0, 0, "");
+                flag = InsErrorLog(funName, errCode, 0, LogID, 0, 0, "");
                 flag = false;
             }
             return flag;
         }
+
+        /// <summary>
+        /// 基本防呆
+        /// </summary>
+        /// <param name="checkList">需檢核的參數</param>
+        /// <param name="errList">檢核失敗所對應的參數列表</param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <param name="funName">呼叫的功能</param>
+        /// <param name="ErrType">錯誤類型</param>
+        /// <param name="LogID">LogID</param>
+        /// <returns></returns>
+        public bool CheckISNull(string[] checkList, string[] errList, ref string errCode, string funName, Int16 ErrType, Int64 LogID)
+        {
+            bool flag = (errCode == "000000") ? true : false;
+            if (flag)
+            {
+                int len = checkList.Length;
+                for (int i = 0; i < len; i++)
+                {
+                    if (string.IsNullOrEmpty(checkList[i]))
+                    {
+                        flag = false;
+                        errCode = errList[i];
+                        break;
+                    }
+                }
+            }
+
+            if (false == flag)
+            {
+                flag = InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                flag = false;
+            }
+            return flag;
+        }
+        #endregion
+
+        #region 身份證驗證公式
         /// <summary>
         /// 身份證驗證公式
         /// </summary>
@@ -748,6 +805,9 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+        #endregion
+
+        #region 統一編號驗證公式
         /// <summary>
         /// 統一編號驗證公式
         /// </summary>
@@ -800,6 +860,7 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+
         public int cc(int n)
         {
             if (n > 9)
@@ -811,6 +872,9 @@ namespace WebAPI.Models.BaseFunc
             }
             return n;
         }
+        #endregion
+
+        #region 取出正規化表示法
         /// <summary>
         /// 取出正規化表示法
         /// </summary>
@@ -857,6 +921,9 @@ namespace WebAPI.Models.BaseFunc
             }
             return param;
         }
+        #endregion
+
+        #region 隨機亂碼
         /// <summary>
         /// 隨機亂碼
         /// </summary>
@@ -882,6 +949,9 @@ namespace WebAPI.Models.BaseFunc
 
             return returnStr;
         }
+        #endregion
+
+        #region 產生簡訊驗證碼
         /// <summary>
         /// 產生簡訊驗證碼
         /// </summary>
@@ -893,8 +963,10 @@ namespace WebAPI.Models.BaseFunc
             Random rnd = new Random();
             int maxLen = max.ToString().Length;
             return rnd.Next(min, max).ToString().PadLeft(maxLen, '0');
-
         }
+        #endregion
+
+        #region 判斷如果null就回傳空字串，否則就回傳值
         /// <summary>
         /// 判斷如果null就回傳空字串，否則就回傳值
         /// </summary>
@@ -904,7 +976,9 @@ namespace WebAPI.Models.BaseFunc
         {
             return (string.IsNullOrWhiteSpace(Source) ? "" : Source);
         }
+        #endregion
 
+        #region 由token取出idno
         /// <summary>
         /// 由token取出idno
         /// </summary>
@@ -914,13 +988,12 @@ namespace WebAPI.Models.BaseFunc
         /// <param name="lstError"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool GetIDNOFromToken(string Access_Token,Int64 LogID,ref string IDNO,ref List<ErrorInfo> lstError,ref string errCode )
+        public bool GetIDNOFromToken(string Access_Token, Int64 LogID, ref string IDNO, ref List<ErrorInfo> lstError, ref string errCode)
         {
             bool flag = true;
             string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
             SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
             {
-
                 LogID = LogID,
                 Token = Access_Token
             };
@@ -934,6 +1007,9 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+        #endregion
+
+        #region 取出對應的交易類別文字
         /// <summary>
         /// 取出對應的交易類別文字
         /// </summary>
@@ -951,7 +1027,7 @@ namespace WebAPI.Models.BaseFunc
         /// <returns></returns>
         public string GetTransTypeName(string TransType)
         {
-       
+
             string TransTypeName = "";
             switch (TransType)
             {
@@ -985,6 +1061,9 @@ namespace WebAPI.Models.BaseFunc
             }
             return TransTypeName;
         }
+        #endregion
+
+        #region 產生輸出結果
         /// <summary>
         /// 產生輸出結果
         /// </summary>
@@ -1064,6 +1143,9 @@ namespace WebAPI.Models.BaseFunc
         {
 
         }
+        #endregion
+
+        #region 取得Client IP
         /// <summary>
         /// 取得Client IP
         /// </summary>
@@ -1101,42 +1183,9 @@ namespace WebAPI.Models.BaseFunc
                 return null;
             }
         }
+        #endregion
 
-        /// <summary>
-        /// 基本防呆
-        /// </summary>
-        /// <param name="checkList">需檢核的參數</param>
-        /// <param name="errList">檢核失敗所對應的參數列表</param>
-        /// <param name="errCode">錯誤代碼</param>
-        /// <param name="funName">呼叫的功能</param>
-        /// <param name="ErrType">錯誤類型</param>
-        /// <param name="LogID">LogID</param>
-        /// <returns></returns>
-        public bool CheckISNull(string[] checkList, string[] errList, ref string errCode, string funName, Int16 ErrType, Int64 LogID)
-        {
-            bool flag = (errCode == "000000") ? true : false;
-            if (flag)
-            {
-                int len = checkList.Length;
-                for (int i = 0; i < len; i++)
-                {
-                    if (string.IsNullOrEmpty(checkList[i]))
-                    {
-                        flag = false;
-                        errCode = errList[i];
-                        break;
-                    }
-                }
-            }
-
-            if (false == flag)
-            {
-                flag = InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
-                flag = false;
-            }
-            return flag;
-        }
-
+        #region 寫入錯誤到TABLE
         /// <summary>
         /// 寫入錯誤到TB
         /// </summary>
@@ -1197,6 +1246,9 @@ namespace WebAPI.Models.BaseFunc
             }
             return flag;
         }
+        #endregion
+
+        #region 取出錯誤訊息
         /// <summary>
         /// 取出錯誤訊息
         /// </summary>
@@ -1213,6 +1265,7 @@ namespace WebAPI.Models.BaseFunc
             }
             return Message;
         }
+
         /// <summary>
         /// 取出錯誤訊息（多語系）
         /// </summary>
@@ -1236,6 +1289,7 @@ namespace WebAPI.Models.BaseFunc
             }
             return Message;
         }
+        #endregion
 
         #region SQL相關
         /// <summary>

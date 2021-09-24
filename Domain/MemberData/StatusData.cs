@@ -106,5 +106,16 @@ namespace Domain.MemberData
         /// <para>N：不需重新確認</para>
         /// </summary>
         public string CMKStatus { get; set; }
+
+        /// <summary>
+        /// 是否顯示購買牌卡
+        /// <para>Y:是</para>
+        /// <para>N:否</para>
+        /// </summary>
+        public string IsShowBuy { get; set; }
+        /// <summary>
+        /// 是否有推播訊息 20210917 ADD BY ADAM
+        /// </summary>
+        public string HasNoticeMsg { get; set; }
     }
 }

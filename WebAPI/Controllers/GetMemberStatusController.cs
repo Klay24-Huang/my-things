@@ -72,10 +72,11 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
+            #region Token判斷
             //Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                string CheckTokenName = "usp_CheckTokenReturnID";
                 SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
                 {
                     LogID = LogID,
@@ -90,10 +91,11 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
+            #endregion
 
             if (flag)
             {
-                string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberStatus);
+                string spName = "usp_GetMemberStatus";
                 SPInput_MemberStatus spMemberStatusInput = new SPInput_MemberStatus()
                 {
                     IDNO = IDNO,
