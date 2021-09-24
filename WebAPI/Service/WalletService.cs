@@ -275,10 +275,7 @@ namespace WebAPI.Service
                 re = (from a in sour
                       select new OAPI_WalletStoreTradeTrans
                       {
-                          ORGID = a.ORGID,
-                          IDNO = a.IDNO,
                           SEQNO = a.SEQNO,
-                          TaishinNO = a.TaishinNO,
                           TradeYear = Convert.ToDateTime(a.TradeDate).Year,
                           TradeDate = Convert.ToDateTime(a.TradeDate).ToString("MM/dd"),
                           TradeTime = Convert.ToDateTime(a.TradeDate).ToString("HH:mm"),  

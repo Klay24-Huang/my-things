@@ -7,9 +7,5 @@
         /// </summary>
         public string IDNO_Phone { get; set; }
 
-        /// <summary>
-        /// 轉贈金額
-        /// </summary>
-        public int Amount { get; set; }
     }
 }
