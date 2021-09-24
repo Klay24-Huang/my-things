@@ -1455,10 +1455,10 @@ namespace Web.Controllers
 
         [HttpPost]
         [Obsolete]
-        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport,string month, string carType, string Account, string export)
+        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport, string month, string carType, string Account, string export)
         {
             //匯出檔案
-            if(export == "true")
+            if (export == "true")
             {
                 SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
                 SqlTransaction tran;
@@ -1491,9 +1491,9 @@ namespace Web.Controllers
             }
 
             //上傳檔案
-            if(fileImport != null)
+            if (fileImport != null)
             {
-                if(fileImport.ContentLength > 0)
+                if (fileImport.ContentLength > 0)
                 {
 
                     using (var reader = new StreamReader(fileImport.InputStream, Encoding.UTF8))
@@ -1551,10 +1551,120 @@ namespace Web.Controllers
             {
                 ViewData["result"] = "未上傳任何檔案";
             }
-            
-            
+
+
             return View();
         }
         #endregion
+
+        #region 和雲錢包歷程明細查詢
+        /// <summary>
+        /// 和雲錢包歷程明細查詢 - 20210923 Frank加
+        /// </summary>
+        public ActionResult WalletDetailQuery()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult WalletDetailQuery(string IDNO, string SD, string ED, string export)
+        {
+            List<BE_WalletDetailQuery> obj = new List<BE_WalletDetailQuery>();
+            WalletRepository repository = new WalletRepository(connetStr);
+            obj = repository.GetWalletHistory(IDNO, SD, ED);
+
+            string tradeType = "";
+            string tradeKey = "";
+
+            if (export == "true")
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage ep = new ExcelPackage();
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
+
+                int col = 1;
+                int row = 2;
+                MemoryStream fileStream = new MemoryStream();
+
+                sheet.Cells[1, col++].Value = "交易時間";
+                sheet.Cells[1, col++].Value = "交易項目";
+                sheet.Cells[1, col++].Value = "交易金額";
+
+
+                foreach (var i in obj)
+                {
+
+                    #region 重新定義交易明細
+                    switch (i.TradeType)
+                    {
+                        case "Pay_Car":
+                            tradeType = "付款—租汽車";
+                            tradeKey = $"合約編號：{i.TradeKey}";
+                            break;
+
+                        case "Pay_Motor":
+                            tradeType = "付款—租機車";
+                            tradeKey = $"合約編號：{i.TradeKey}";
+                            break;
+
+                        case "Pay_Monthly":
+                            tradeType = "訂閱制方案";
+                            tradeKey = $"{i.TradeKey}";
+                            break;
+
+                        case "Store_Credit":
+                            tradeType = "儲值";
+                            tradeKey = $"信用卡後四碼：{i.TradeKey}";
+                            break;
+
+                        case "Store_Shop":
+                            tradeType = "儲值";
+                            tradeKey = $"{i.TradeKey}";
+                            break;
+
+                        case "Store_Account":
+                            tradeType = "儲值";
+                            tradeKey = $"{i.TradeKey}";
+                            break;
+
+                        case "Store_Return":
+                            tradeType = "合約退款";
+                            tradeKey = $"合約編號：{i.TradeKey}";
+                            break;
+
+                        case "Store_Trans":
+                            tradeType = "儲值金轉入";
+                            tradeKey = $"轉贈人：{i.TradeKey}";
+                            break;
+
+                        case "Give_Trans":
+                            tradeType = "儲值金轉贈";
+                            tradeKey = $"受贈人：{i.TradeKey}";
+                            break;
+
+                        case "Withdraw":
+                            tradeType = "儲值金提領";
+                            tradeKey = "";
+                            break;
+                    }
+                    #endregion
+
+                    col = 1;
+                    sheet.Cells[row, col++].Value = i.TradeDate.ToString("yyyy-MM-dd HH:mm:ss");
+                    sheet.Cells[row, col++].Value = tradeType + Environment.NewLine + tradeKey;
+                    sheet.Cells[row, col++].Value = i.TradeAMT;
+                    row++;
+                }
+
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"和雲錢包歷程明細查詢_{IDNO}_{DateTime.Now.ToString("yyyyMMdd")}.xlsx");
+
+            }
+
+            return View(obj);
+            #endregion
+        }
     }
 }
