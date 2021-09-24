@@ -567,6 +567,8 @@
     <Build Include="dbo\Stored Procedures\usp_GetMonthlyPayInvData.sql" />
     <Build Include="dbo\Stored Procedures\usp_AlertMailLog_U01.sql" />
     <Build Include="dbo\User Defined Types\TY_AlertMailLog.sql" />
+    <Build Include="dbo\Tables\TB_PersonNotificationRLog.sql" />
+    <Build Include="dbo\Stored Procedures\usp_PersonNoticeRead_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMemberCMK.sql" />
     <Build Include="dbo\Tables\TB_NYRefundList.sql" />
     <Build Include="dbo\Tables\TB_MotorChangeBattHis.sql" />

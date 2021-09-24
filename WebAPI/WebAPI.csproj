@@ -266,6 +266,9 @@
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
+    <Compile Include="Controllers\NewsReadController.cs" />
+    <Compile Include="Controllers\NoticeReadController.cs" />
+    <Compile Include="Controllers\PersonNoticeReadController.cs" />
     <Compile Include="Controllers\RecieveTsacController.cs" />
     <Compile Include="Controllers\BindResultController.cs" />
     <Compile Include="Controllers\BindUUCardJobController.cs" />
@@ -579,11 +582,13 @@
     <Compile Include="Models\Param\Input\IAPI_MotorCmd.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorData.cs" />
     <Compile Include="Models\Param\Input\IAPI_MotorRent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_NewsRead.cs" />
     <Compile Include="Models\Param\Input\IAPI_NormalRent.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoor.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoorCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_OpenDoorFinish.cs" />
     <Compile Include="Models\Param\Input\IAPI_PersonNotice.cs" />
+    <Compile Include="Models\Param\Input\IAPI_PersonNoticeRead.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReadCard.cs" />
     <Compile Include="Models\Param\Input\IAPI_ReceiveCMDBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_RefrashToken.cs" />
