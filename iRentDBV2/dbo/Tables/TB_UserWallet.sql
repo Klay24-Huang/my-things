@@ -12,6 +12,8 @@
     [LastTransDate] DATETIME NULL, 
     [LastStoreTransId] VARCHAR(50) NOT NULL DEFAULT '', 
     [LastTransId] VARCHAR(50) NOT NULL DEFAULT '', 
+    [WalletBalance] INT NOT NULL, 
+    [StoreAmount] INT NOT NULL, 
     CONSTRAINT [PK_TB_UserWallet] PRIMARY KEY ([WalletAccountID], [WalletMemberID], [IDNO]) 
 )
 

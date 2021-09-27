@@ -484,7 +484,7 @@
     <Content Include="Scripts\js\ActionJS\News\BannerInfoAdd.js" />
     <Content Include="Scripts\js\ActionJS\News\BannerInfoMaintain.js" />
     <Content Include="Scripts\js\ActionJS\News\BannerSet.js" />
-    <Content Include="Scripts\js\ActionJS\Report\WalletDetailQuery.js" />
+    <Content Include="Scripts\js\ActionJS\MemberManage\WalletDetailQuery.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\ChargeParkingSetting.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\PolygonMaintain.js" />
     <Content Include="Scripts\js\ActionJS\StationAndParking\StationInfoAdd.js" />
@@ -830,7 +830,7 @@
     <Content Include="Views\Report\IrentPaymentDetail.cshtml" />
     <Content Include="Views\Report\IrentPaymentHistory.cshtml" />
     <Content Include="Views\Report\CarMapFileUpload.cshtml" />
-    <Content Include="Views\Report\WalletDetailQuery.cshtml" />
+    <Content Include="Views\MemberManage\WalletDetailQuery.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
