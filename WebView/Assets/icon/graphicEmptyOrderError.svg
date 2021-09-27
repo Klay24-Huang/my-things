@@ -1,0 +1,55 @@
+<svg width="248" height="112" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <filter x="-30.7%" y="-36.2%" width="165.2%" height="177.1%" filterUnits="objectBoundingBox" id="a">
+            <feOffset dy="2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur stdDeviation="6" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
+            <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" in="shadowBlurOuter1" result="shadowMatrixOuter1"/>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+        <filter x="-15.1%" y="-6.3%" width="123.4%" height="117.6%" filterUnits="objectBoundingBox" id="b">
+            <feOffset dx="-2" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
+            <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0" in="shadowBlurOuter1"/>
+        </filter>
+        <filter x="-12.1%" y="-52.6%" width="124.2%" height="181.8%" filterUnits="objectBoundingBox" id="e">
+            <feOffset dy="-2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
+            <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0" in="shadowBlurOuter1"/>
+        </filter>
+        <path d="M16.769 7.174S16.018.9 9.356.001h53.266s5.89 1.409 6.53 9.222v69.805l-39.579.64c-.378.03-.758.038-1.137.022-6.535-.265-11.69-5.651-11.667-12.191V7.174z" id="c"/>
+        <path d="M32.027 62.548h51.929s3.8 1.364 3.417 7.644c-.382 6.28-7.044 9.476-7.044 9.476H29.59s5.125-3.01 5.191-8.89c.067-5.88-2.755-8.23-2.755-8.23z" id="f"/>
+        <linearGradient x1="40.282%" y1="28.593%" x2="50%" y2="65.349%" id="d">
+            <stop stop-opacity="0" offset="0%"/>
+            <stop stop-opacity=".209" offset="100%"/>
+        </linearGradient>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g filter="url(#a)" transform="rotate(-15 146.564 -240.139)" fill-rule="nonzero">
+            <path d="M10.96 0S5.007-.263 5.007 7.16V8.76s.717 5.261-4.83 7.905h16.667l-.031-10.912S16.093.001 10.96.001z" fill="#FBFCFE"/>
+            <use fill="#000" filter="url(#b)" xlink:href="#c"/>
+            <use fill="#FFF" xlink:href="#c"/>
+            <path d="M17.16 70.246c.28 1.613 2.413 7.275 7.76 8.675 2.462.645 5.333 1.271 7.689.307a5.427 5.427 0 0 0 1.884-1.205 3.858 3.858 0 0 0 .067-5.053 7.284 7.284 0 0 0-1.778-1.302c-1.893-1.107-4.204-2.92-6.484-2.974-2.28-.053-6.978.805-9.138 1.552z" fill="url(#d)" opacity=".255"/>
+            <path d="M32.027 62.548s-6.098-.605-6.16 7.666c-.063 8.272 5.475 6.667 5.475 6.667l1.174-.067s7.368-5.084 3.39-10.693c0-.013-1.63-3.289-3.88-3.573z" fill="#F0F2F5"/>
+            <path d="M32.68 63.721s-5.484-.555-5.542 6.898c-.058 7.453 4.929 5.991 4.929 5.991l1.053-.058s6.631-4.578 3.053-9.626c0-.023-1.47-2.965-3.493-3.205z" fill="#000" opacity=".021"/>
+            <use fill="#000" filter="url(#e)" xlink:href="#f"/>
+            <use fill="#FFF" xlink:href="#f"/>
+            <g transform="translate(25.556 15.556)">
+                <rect fill="#1DA6D0" x="1.111" width="35.862" height="4.444" rx="2.222"/>
+                <rect fill="#DDF2F8" x=".767" y="11.111" width="35.862" height="4.444" rx="2.222"/>
+                <rect fill-opacity=".5" fill="#CED4DE" x=".423" y="22.222" width="35.862" height="4.444" rx="2.222"/>
+                <rect fill-opacity=".5" fill="#CED4DE" x=".079" y="33.333" width="35.862" height="4.444" rx="2.222"/>
+            </g>
+        </g>
+        <g transform="translate(139 20)">
+            <circle fill="#D7000F" cx="24" cy="18" r="18"/>
+            <path d="m3.638 29.331 3.826-5.795 4 6.928-6.932.416a1 1 0 0 1-.894-1.549z" fill="#D7000F"/>
+            <g transform="translate(22 10)" fill="#FFF">
+                <path d="M2.046 0A1.497 1.497 0 0 1 3.54 1.582l-.483 8.42C3.025 10.562 2.561 11 2 11a1.05 1.05 0 0 1-1.049-.999L.538 1.583A1.51 1.51 0 0 1 2.046 0z"/>
+                <circle cx="2" cy="14.5" r="1.5"/>
+            </g>
+        </g>
+    </g>
+</svg>

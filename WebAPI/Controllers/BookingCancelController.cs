@@ -1,15 +1,15 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Booking;
-using Domain.SP.Input.Common;
+using Domain.SP.Input.Notification;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
+using Domain.SP.Output.Booking;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
@@ -45,15 +45,11 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
-
             string IDNO = "";
-
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -85,11 +81,9 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR900";
                             }
-                          
                         }
                     }
                 }
-
             }
             //不開放訪客
             if (flag)
@@ -101,49 +95,75 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
             #region TB
+            #region Token判斷
             //Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
 
             //開始做取消預約
             if (flag)
             {
                 SPInput_BookingCancel spInput = new SPInput_BookingCancel()
                 {
-                     OrderNo= tmpOrder,
-                      IDNO=IDNO,
-                       LogID=LogID,
-                        Token=Access_Token
+                    OrderNo = tmpOrder,
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    Token = Access_Token
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.BookingCancel);
+                string SPName = "usp_BookingCancel";
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BookingCancel, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BookingCancel, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                List<SPOutput_BookingCancel> ListOut = new List<SPOutput_BookingCancel>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-         
-            }
 
+                if (flag)
+                {
+                    #region 共同承租人發推播通知
+                    if (ListOut != null && ListOut.Count > 0)
+                    {
+                        string notificationBaseUrl = ConfigurationManager.AppSettings["JointRentInviteeNotificationBaseUrl"].Trim();
+                        string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
+                        string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
+
+                        foreach (var list in ListOut)
+                        {
+                            string ReqParam = AESEncrypt.EncryptAES128("OrderNo=" + list.Order_number.ToString() + "&InviteeId=" + list.MEMIDNO, KEY, IV);
+                            string urlEncodeString = HttpUtility.UrlEncode(ReqParam);
+
+                            var title = string.Format("【共同承租】{0}{1}",list.MEMCNAME, "取消邀請了唷!!");
+
+                            string spName = "usp_InsPersonNotification_I01";
+                            SPInput_InsPersonNotification SPinput = new SPInput_InsPersonNotification
+                            {
+                                OrderNo = list.Order_number,
+                                IDNO = list.MEMIDNO,
+                                NType = 19,
+                                STime = DateTime.Now.AddSeconds(10),
+                                Title = title,
+                                Message = title,
+                                url = $"{notificationBaseUrl}?{urlEncodeString}",
+                                imageurl = "",
+                                LogID = LogID
+                            };
+                            SPOutput_Base SPout = new SPOutput_Base();
+                            flag = new SQLHelper<SPInput_InsPersonNotification, SPOutput_Base>(connetStr).ExecuteSPNonQuery(spName, SPinput, ref SPout, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                        }
+                    }
+                    #endregion
+                }
+            }
             #endregion
 
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }

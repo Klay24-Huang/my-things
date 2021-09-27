@@ -219,15 +219,12 @@
                     <div class="row no-gutters border border-secondary border-bottom-0">
                         <div class="col-12 p-1 row">
                             <label class="table-label col-12">其他駕駛人</label>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
-                            <div class="col-4"><span style="font-size:0.8rem"></span></div>
+                            @for (var i = 0; i < Model.TogetherPassenger.Count; i++)
+                            {
+                               <div class="col-4">
+                                <span style="font-size:0.8rem">@(Model.TogetherPassenger[i].MEMCNAME + " " + Model.TogetherPassenger[i].MEMTEL)</span>
+                               </div>
+                            }
                         </div>
                     </div>
                     <div class="row no-gutters border border-secondary border-bottom-0">

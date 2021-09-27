@@ -12,6 +12,8 @@ using System.Web.Mvc;
 using WebCommon;    //20210316 ADD BY ADAM
 using System.Text;
 using NLog;
+using Newtonsoft.Json;
+using Web.Models.Params.Search.Input;
 
 namespace Web.Controllers
 {

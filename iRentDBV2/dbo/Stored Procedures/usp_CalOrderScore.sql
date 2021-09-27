@@ -1,13 +1,20 @@
-/****************************************************************
-** 用　　途：計算訂單的會員積分
-*****************************************************************
-** Change History
-*****************************************************************
-** 20210531 ADD BY YEH
-** 20210707 UPD BY YEH REASON:企劃說還車超過2021/7/7 12:00:00才開始計算
-** 20210722 UPD BY YEH REASON:主動取消，前車用車中取消訂單不扣分
-** 20210729 UPD BY YEH REASON:TB_MemberScoreDetail增加ORI_SCORE
-*****************************************************************/
+/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_CalOrderScore
+* 系    統 : IRENT
+* 程式功能 : 計算訂單的會員積分
+* 作    者 : YEH
+* 撰寫日期 : 20210531
+* 修改日期 : 20210707 UPD BY YEH REASON:企劃說還車超過2021/7/7 12:00:00才開始計算
+			 20210722 UPD BY YEH REASON:在可取車區間內取消不扣分
+			 20210722 UPD BY YEH REASON:主動取消，前車用車中取消訂單不扣分
+			 20210729 UPD BY YEH REASON:TB_MemberScoreDetail增加ORI_SCORE
+			 20210914 UPD BY YEH REASON:逾時判斷增加條件
+
+* Example  : 
+***********************************************************************************************/
+
 CREATE PROCEDURE [dbo].[usp_CalOrderScore]
 	@OrderNo			BIGINT					,	-- 訂單編號
 	@Action				VARCHAR(1)				,	-- 來源(A:取消預約 B:正常還車 C:後台強還)
@@ -197,7 +204,8 @@ BEGIN TRY
 					END
 
 					-- 逾時還車
-					IF @final_stop_time > @stop_time	-- 實際換車時間 > 預計還車時間
+					-- 20210914 UPD BY YEH REASON:逾時判斷增加條件
+					IF (@final_stop_time > @stop_time OR @final_stop_time > @fine_Time)	-- 實際還車時間 > 預計還車時間 OR 實際還車時間 > 逾時時間
 					BEGIN
 						SET @hasData = 0;
 						-- 取該訂單是否有被預扣分數
@@ -304,7 +312,8 @@ BEGIN TRY
 						END
 
 						-- 逾時還車
-						IF @final_stop_time > @stop_time	-- 實際換車時間 > 預計還車時間
+						-- 20210914 UPD BY YEH REASON:逾時判斷增加條件
+						IF (@final_stop_time > @stop_time OR @final_stop_time > @fine_Time)	-- 實際還車時間 > 預計還車時間 OR 實際還車時間 > 逾時時間
 						BEGIN
 							SET @hasData = 0;
 							-- 取該訂單是否有被預扣分數
@@ -455,4 +464,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalOrderScore';
 GO
-

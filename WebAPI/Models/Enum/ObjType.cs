@@ -728,6 +728,7 @@ namespace WebAPI.Models.Enum
             BE_Banner,//20210316唐加
             BE_InsertChargeParkingData,//20210511唐加
             BE_BannerSort,
+            /// <summary>
             /// 共同承租人邀請清單查詢
             /// </summary>
             GetJointRentInviteeList,
@@ -750,7 +751,7 @@ namespace WebAPI.Models.Enum
             /// <summary>
             /// 訂單安心服務資格及價格查詢
             /// </summary>
-            GetOrderInsuranceInfo
+            GetOrderInsuranceInfo,
         }
         /// <summary>
         /// 取出SPName

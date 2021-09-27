@@ -6,7 +6,7 @@
 * 程式功能 : 取得共同承租邀請清單
 * 作    者 : Umeko
 * 撰寫日期 : 20210825
-* 修改日期 :
+* 修改日期 : 20210914 UPD BY Umeko REASON: 修改使用中的訂單的回傳清單
 Example :
 ***********************************************************************************************/
 
@@ -73,12 +73,53 @@ BEGIN TRY
 		END
 	END
 
+	--IF @Error=0
+	--BEGIN
+		--Declare @car_mgt_status int = -1,@cancel_status int=-1, @booking_status int=-1
+		--Select @car_mgt_status = car_mgt_status,@cancel_status = cancel_status,@booking_status = booking_status
+		--From [dbo].[TB_OrderMain] with(nolock)
+		--Where order_number  = @OrderNo
+	--	
+	--	--找不到訂單
+	--	IF @car_mgt_status = -1
+	--	Begin
+	--			SET @Error=1;
+	--			SET @ErrorCode='ERR101';
+	--	End
+
+	--	IF @Error=0
+	--	Begin	
+	--		--訂單已取消
+	--		IF @cancel_status = 3
+	--		Begin
+	--				SET @Error=1;
+	--				SET @ErrorCode='ERR101';
+	--		End
+	--	End
+	--END
+
 	--輸出訂單資訊
 	IF @Error=0
 	BEGIN
-		Select APPUSEID,MEMIDNO,MEMCNAME,ChkType  
-		From TB_TogetherPassenger with(nolock)
-		Where [Order_number] = @OrderNo
+		Declare @car_mgt_status int = -1,@cancel_status int=-1, @booking_status int=-1
+		
+		Select @car_mgt_status = car_mgt_status,@cancel_status = cancel_status,@booking_status = booking_status
+		From [dbo].[TB_OrderMain] with(nolock)
+		Where order_number  = @OrderNo
+
+		--已取車的訂單
+		IF @car_mgt_status >= 4 And @car_mgt_status < 16 And @booking_status < 5
+		Begin
+				Select APPUSEID,MEMIDNO,MEMCNAME,ChkType  
+				From TB_TogetherPassenger with(nolock)
+				Where [Order_number] = @OrderNo And ChkType = 'Y'
+		End
+		Else
+		Begin
+			Select APPUSEID,MEMIDNO,MEMCNAME,ChkType  
+			From TB_TogetherPassenger with(nolock)
+			Where [Order_number] = @OrderNo
+		End
 	END
 
 	--寫入錯誤訊息

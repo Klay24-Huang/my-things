@@ -1,0 +1,4 @@
+2021-09-13 11:30:04.9824|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'Audit',IPAddr:'::1}
+2021-09-13 11:30:07.8123|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'AuditDetail',IPAddr:'::1}
+2021-09-13 11:30:10.4463|ERROR|Web.Controllers.BaseSafeController|No connection is active/available to service this operation: GET Number of call AuditDetail; 中止操作被 WSACancelBlockingCall 呼叫打斷。, mc: 1/1/0, mgr: 10 of 10 available, clientName: H-BENSON922-201, IOCP: (Busy=0,Free=1000,Min=8,Max=1000), WORKER: (Busy=1,Free=8190,Min=8,Max=8191), v: 2.2.4.27433
+2021-09-13 11:30:39.8250|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'Audit',IPAddr:'::1}

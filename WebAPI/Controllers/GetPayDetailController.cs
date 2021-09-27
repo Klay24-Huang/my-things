@@ -404,7 +404,11 @@ namespace WebAPI.Controllers
                                     TotalRentMinutes += Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
                                 var ov_re = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
                                 if (ov_re != null)
+                                {
                                     TotalRentMinutes += Convert.ToInt32(Math.Floor(ov_re.Item1 + ov_re.Item2));
+                                    //20210913 ADD BY ADAM REASON.補上全部逾時分鐘數加總
+                                    TotalFineRentMinutes = Convert.ToInt32(Math.Floor(ov_re.Item1 + ov_re.Item2));
+                                }
                             }
                             else
                             {
