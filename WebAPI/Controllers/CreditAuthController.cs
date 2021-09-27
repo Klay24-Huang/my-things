@@ -498,7 +498,7 @@ namespace WebAPI.Controllers
                         if (flag)
                         {
                             //string SPName = new ObjType().GetSPName(ObjType.SPType.DonePayRentBill);
-                            string SPName = "usp_DonePayRentBillNew_20210923";
+                            string SPName = "usp_DonePayRentBillNew_U2";
 
                             //20201201 ADD BY ADAM REASON.換電獎勵
                             SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
