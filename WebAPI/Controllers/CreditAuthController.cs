@@ -206,7 +206,7 @@ namespace WebAPI.Controllers
                     };
 
                     trace.traceAdd("PayInput", PayInput);
-
+                    //訂單
                     if (apiInput.PayType == 0)
                     {
                         //#region 還車時間檢查 
@@ -465,8 +465,9 @@ namespace WebAPI.Controllers
                             //台新錢包扣款
                             if (apiInput.CheckoutMode == 1)
                             {
-                                string TradeType = (OrderDataLists[0].ProjType == 4) ? "Pay_Motor" : "pay_Car";
-                                flag = PayWalletFlow(tmpOrder, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
+                                string TradeType = (OrderDataLists[0].ProjType == 4) ? "Pay_Motor" : "Pay_Car";
+                                var orderPayForWallet = PayWalletFlow(tmpOrder, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
+                                flag = orderPayForWallet.flag;
                                 trace.traceAdd("PayWalletFlow", new { flag, PayInput, errCode });
                             }
                         }
@@ -572,8 +573,8 @@ namespace WebAPI.Controllers
                             apiOutput = new OAPI_CreditAuth();
                             apiOutput.RewardPoint = RewardPoint;
                         }
-                    }
-                    else if (apiInput.PayType == 1)
+                    }//欠費
+                    else if (apiInput.PayType == 1) 
                     {
                         // 20210220;增加快取機制，當資料存在快取記憶體中，就不再執行並回錯誤訊息。
                         var KeyString = string.Format("{0}-{1}", "CreditAuthController", apiInput.OrderNo);
@@ -1039,8 +1040,10 @@ namespace WebAPI.Controllers
         }
 
 
-        private bool PayWalletFlow(long OrderNo, int Amount, string IDNO, string TradeType, bool breakAutoStore, string funName, long LogID, string Access_Token, ref string errCode)
+        private (bool flag, SPInput_WalletPay paymentInfo) PayWalletFlow(long OrderNo, int Amount, string IDNO, string TradeType, bool breakAutoStore, string funName, long LogID, string Access_Token, ref string errCode)
         {
+            (bool flag, SPInput_WalletPay paymentInfo) result = (false, new SPInput_WalletPay());
+
             //扣款金額
             int PayAmount = 0;
             //取得錢包狀態
@@ -1049,7 +1052,7 @@ namespace WebAPI.Controllers
             {
                 //未開通
                 errCode = "ERR932";
-                return false;
+                return result;
             }
 
             //錢包於餘<訂單金額
@@ -1091,9 +1094,9 @@ namespace WebAPI.Controllers
         /// <param name="IDNO">扣款帳號</param>
         /// <param name="OrderNo">扣款訂單編號</param>
         /// <returns></returns>
-        private bool DoWalletPay(int Amount, string IDNO, long OrderNo, string TradeType, string PRGName, long LogID, string Access_Token, ref string errCode)
+        private (bool flag, SPInput_WalletPay paymentInfo) DoWalletPay(int Amount, string IDNO, long OrderNo, string TradeType, string PRGName, long LogID, string Access_Token, ref string errCode)
         {
-            bool flag = false;
+            (bool flag, SPInput_WalletPay paymentInfo) result = (false, new SPInput_WalletPay());
 
             DateTime NowTime = DateTime.Now;
             var wsp = new WalletSp();
@@ -1106,21 +1109,22 @@ namespace WebAPI.Controllers
             string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
             WebAPIOutput_PayTransaction taishinResponse = null;
 
-            flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
+            result.flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
 
-            if (flag)
+            if (result.flag)
             {
                 //設定錢包付款參數寫入
                 SPInput_WalletPay spInput = SetForWalletPayLog(wallet, taishinResponse,
                     IDNO, OrderNo, LogID, Access_Token, NowTime, TradeType, PRGName);
 
-                flag = wsp.sp_WalletPay(spInput, ref errCode);
+                result.flag = wsp.sp_WalletPay(spInput, ref errCode);
+                result.paymentInfo = spInput;
             }
             else
             {
-                errCode = "";//扣款失敗
+                errCode = "ERR933";//扣款失敗
             }
-            return flag;
+            return result;
         }
 
 
@@ -1159,9 +1163,9 @@ namespace WebAPI.Controllers
                     }).FirstOrDefault();
             }
 
-            PayModeObj WalletInfo = apiOutput.PayModeList.Where(t => t.PayMode == 1).FirstOrDefault();
+            PayModeObj WalletInfo = apiOutput?.PayModeList.Where(t => t.PayMode == 1).FirstOrDefault();
 
-            if (WalletInfo.HasBind == 1)
+            if (WalletInfo?.HasBind == 1)
             {
                 re.flag = true;
                 re.WalletInfo = WalletInfo;
