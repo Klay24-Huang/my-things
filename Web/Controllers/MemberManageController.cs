@@ -1486,6 +1486,11 @@ namespace Web.Controllers
 
             }
 
+            //保留查詢條件
+            ViewData["userID"] = IDNO;
+            ViewData["SD"] = SD;
+            ViewData["ED"] = ED;
+
             return View(obj);
             #endregion
         }
