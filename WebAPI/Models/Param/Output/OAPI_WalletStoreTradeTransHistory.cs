@@ -13,23 +13,11 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_WalletStoreTradeTrans
     {
         /// <summary>
-        /// 組織代號(公司代碼)Key
-        /// </summary>
-        public string ORGID { get; set; }
-        /// <summary>
-        /// 身分證號Key
-        /// </summary>
-        public string IDNO { get; set; }
-        /// <summary>
-        /// 帳款流水號(by會員)Key
+        /// 帳款流水號 Key
         /// </summary>
         public int SEQNO { get; set; }
         /// <summary>
         /// 台新交易編號(IR編)Key
-        /// </summary>
-        public string TaishinNO { get; set; }
-        /// <summary>
-        /// 交易年分
         /// </summary>
         public int TradeYear { get; set; }
         /// <summary>

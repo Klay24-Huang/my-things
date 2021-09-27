@@ -498,6 +498,7 @@
     <Compile Include="TB\BackEnd\BE_StationDetailCombind.cs" />
     <Compile Include="TB\BackEnd\BE_UserGroup.cs" />
     <Compile Include="TB\BackEnd\BE_MemberInvoiceSettingData.cs" />
+    <Compile Include="TB\BackEnd\BE_WalletDetailQuery.cs" />
     <Compile Include="TB\BackEnd\iRentCarBase.cs" />
     <Compile Include="TB\BackEnd\iRentManager.cs" />
     <Compile Include="TB\BannerData.cs" />

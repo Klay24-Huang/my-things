@@ -41,6 +41,7 @@
     [MEMONEW2] NVARCHAR(50) NOT NULL DEFAULT (''), 
     [MEMUPDT] [datetime] NULL,
 	[APPLYDT] [datetime] NULL,
+    [AutoStored] INT NULL, 
     CONSTRAINT [PK_TB_MemberData] PRIMARY KEY CLUSTERED ([MEMIDNO] ASC)
 );
 
