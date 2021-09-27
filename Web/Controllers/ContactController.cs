@@ -10,11 +10,16 @@ using WebCommon;
 
 namespace Web.Controllers
 {
-    public class ContactController : Controller
+    public class ContactController : BaseSafeController //20210907唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public ActionResult returnCarNew(string OrderNum,string p)
         {
+            //20210907唐加，記錄每支功能使用
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "returnCarNew");
+
             BE_OrderDataCombind obj = null;
             ContactRepository repository = new ContactRepository(connetStr);
             Int64 tmpOrder = 0;
@@ -69,7 +74,8 @@ namespace Web.Controllers
                         //20210315 ADD BY ADAM REASON.合約參數改為AES加密
                         Data = repository.GetOrderDetail(tmpOrder,IDNO),
                         PickCarImage = repository.GetOrdeCarImage(tmpOrder, 0, false),
-                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false)
+                        ReturnCarImage = repository.GetOrdeCarImage(tmpOrder, 1, false),
+                        TogetherPassenger = repository.GetTogetherPassengerData(tmpOrder)
                     };
 
                     List<BE_AuditImage> lstAudits = new MemberRepository(connetStr).GetAuditImage(obj.Data.IDNO);

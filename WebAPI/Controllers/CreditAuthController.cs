@@ -41,25 +41,25 @@ namespace WebAPI.Controllers
     public class CreditAuthController : ApiController
     {
         //唐加prometheus
-        private static readonly Counter ProcessedJobCount1 = Metrics.CreateCounter("CreditAuth_CallTimes", "the number of call api times");
-        private static readonly Counter ProcessedJobCount2 = Metrics.CreateCounter("CreditAuth_Fail", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount3 = Metrics.CreateCounter("CreditAuth_Fail_PayType", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount4 = Metrics.CreateCounter("CreditAuth_Fail_OrderNoNull", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount5 = Metrics.CreateCounter("CreditAuth_Fail_OrderNoH", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount6 = Metrics.CreateCounter("CreditAuth_Fail_tmpOrder", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount7 = Metrics.CreateCounter("CreditAuth_Fail_ckTime", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount8 = Metrics.CreateCounter("CreditAuth_Fail_OrderDataLists_Count", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount9 = Metrics.CreateCounter("CreditAuth_Fail_car_mgt_status_15", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount10 = Metrics.CreateCounter("CreditAuth_Fail_car_mgt_status_11", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount11 = Metrics.CreateCounter("CreditAuth_Fail_PicToAzure", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount12 = Metrics.CreateCounter("CreditAuth_Fail_NPR330Save_ID", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount13 = Metrics.CreateCounter("CreditAuth_Fail_CacheStringNull", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount14 = Metrics.CreateCounter("CreditAuth_Fail_getBindingList", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount15 = Metrics.CreateCounter("CreditAuth_Fail_RtnCode_1000", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount16 = Metrics.CreateCounter("CreditAuth_Fail_ResultCode_1000", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount17 = Metrics.CreateCounter("CreditAuth_Fail_hasFind", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount18 = Metrics.CreateCounter("CreditAuth_Fail_sp_ArrearsQueryByNPR330ID", "the number of call api error times");
-        private static readonly Counter ProcessedJobCount19 = Metrics.CreateCounter("CreditAuth_Fail_isGuest", "the number of call api error times");
+        private static readonly Gauge ProcessedJobCount1 = Metrics.CreateGauge("CreditAuth_CallTimes", "NUM_CreditAuth_CallTimes");
+        private static readonly Gauge ProcessedJobCount2 = Metrics.CreateGauge("CreditAuth_Fail", "NUM_CreditAuth_Fail");
+        private static readonly Gauge ProcessedJobCount3 = Metrics.CreateGauge("CreditAuth_Fail_PayType", "NUM_CreditAuth_Fail_PayType");
+        private static readonly Gauge ProcessedJobCount4 = Metrics.CreateGauge("CreditAuth_Fail_OrderNoNull", "NUM_CreditAuth_Fail_OrderNoNull");
+        private static readonly Gauge ProcessedJobCount5 = Metrics.CreateGauge("CreditAuth_Fail_OrderNoH", "NUM_CreditAuth_Fail_OrderNoH");
+        private static readonly Gauge ProcessedJobCount6 = Metrics.CreateGauge("CreditAuth_Fail_tmpOrder", "NUM_CreditAuth_Fail_tmpOrder");
+        private static readonly Gauge ProcessedJobCount7 = Metrics.CreateGauge("CreditAuth_Fail_ckTime", "NUM_CreditAuth_Fail_ckTime");
+        private static readonly Gauge ProcessedJobCount8 = Metrics.CreateGauge("CreditAuth_Fail_OrderDataLists_Count", "NUM_CreditAuth_Fail_OrderDataLists_Count");
+        private static readonly Gauge ProcessedJobCount9 = Metrics.CreateGauge("CreditAuth_Fail_car_mgt_status_15", "NUM_CreditAuth_Fail_car_mgt_status_15");
+        private static readonly Gauge ProcessedJobCount10 = Metrics.CreateGauge("CreditAuth_Fail_car_mgt_status_11", "NUM_CreditAuth_Fail_car_mgt_status_11");
+        private static readonly Gauge ProcessedJobCount11 = Metrics.CreateGauge("CreditAuth_Fail_PicToAzure", "NUM_CreditAuth_Fail_PicToAzure");
+        private static readonly Gauge ProcessedJobCount12 = Metrics.CreateGauge("CreditAuth_Fail_NPR330Save_ID", "NUM_CreditAuth_Fail_NPR330Save_ID");
+        private static readonly Gauge ProcessedJobCount13 = Metrics.CreateGauge("CreditAuth_Fail_CacheStringNull", "NUM_CreditAuth_Fail_CacheStringNull");
+        private static readonly Gauge ProcessedJobCount14 = Metrics.CreateGauge("CreditAuth_Fail_getBindingList", "NUM_CreditAuth_Fail_getBindingList");
+        private static readonly Gauge ProcessedJobCount15 = Metrics.CreateGauge("CreditAuth_Fail_RtnCode_1000", "NUM_CreditAuth_Fail_RtnCode_1000");
+        private static readonly Gauge ProcessedJobCount16 = Metrics.CreateGauge("CreditAuth_Fail_ResultCode_1000", "NUM_CreditAuth_Fail_ResultCode_1000");
+        private static readonly Gauge ProcessedJobCount17 = Metrics.CreateGauge("CreditAuth_Fail_hasFind", "NUM_CreditAuth_Fail_hasFind");
+        private static readonly Gauge ProcessedJobCount18 = Metrics.CreateGauge("CreditAuth_Fail_sp_ArrearsQueryByNPR330ID", "NUM_CreditAuth_Fail_sp_ArrearsQueryByNPR330ID");
+        private static readonly Gauge ProcessedJobCount19 = Metrics.CreateGauge("CreditAuth_Fail_isGuest", "NUM_CreditAuth_Fail_isGuest");
 
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -76,12 +76,22 @@ namespace WebAPI.Controllers
         private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
         private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
 
+        private static Lazy<ConnectionMultiplexer> lazyConnection;
+        public CreditAuthController()
+        {
+            if (lazyConnection == null)
+            {
+                lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+            }
+        }
+
         private CommonFunc baseVerify { get; set; }
 
         [HttpPost]
         public Dictionary<string, object> DoCreditAuth(Dictionary<string, object> value)
         {
-            ProcessedJobCount1.Inc();//唐加prometheus
+            //ProcessedJobCount1.Inc();//唐加prometheus
+            SetCount("NUM_CreditAuth_CallTimes");
 
             #region 初始宣告
             var trace = new TraceCom();
@@ -132,7 +142,8 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR900";
-                        ProcessedJobCount3.Inc();//唐加prometheus
+                        //ProcessedJobCount3.Inc();//唐加prometheus
+                        SetCount("NUM_CreditAuth_Fail_PayType");//付款方式錯誤，不是租金、罰金/補繳
                     }
                     if (flag)
                     {
@@ -142,7 +153,8 @@ namespace WebAPI.Controllers
                             {
                                 flag = false;
                                 errCode = "ERR900";
-                                ProcessedJobCount4.Inc();//唐加prometheus
+                                //ProcessedJobCount4.Inc();//唐加prometheus
+                                SetCount("NUM_CreditAuth_Fail_OrderNoNull");
                             }
                             else
                             {
@@ -150,7 +162,8 @@ namespace WebAPI.Controllers
                                 {
                                     flag = false;
                                     errCode = "ERR900";
-                                    ProcessedJobCount5.Inc();//唐加prometheus
+                                    //ProcessedJobCount5.Inc();//唐加prometheus
+                                    SetCount("NUM_CreditAuth_Fail_OrderNoH");
                                 }
                                 if (flag)
                                 {
@@ -161,7 +174,8 @@ namespace WebAPI.Controllers
                                         {
                                             flag = false;
                                             errCode = "ERR900";
-                                            ProcessedJobCount6.Inc();//唐加prometheus
+                                            //ProcessedJobCount6.Inc();//唐加prometheus
+                                            SetCount("NUM_CreditAuth_Fail_tmpOrder");
                                         }
                                     }
                                 }
@@ -174,7 +188,8 @@ namespace WebAPI.Controllers
                 {
                     flag = false;
                     errCode = "ERR101";
-                    ProcessedJobCount19.Inc();//唐加prometheus
+                    //ProcessedJobCount19.Inc();//唐加prometheus
+                    SetCount("NUM_CreditAuth_Fail_isGuest");//無token
                 }
                 #endregion
 
@@ -207,9 +222,9 @@ namespace WebAPI.Controllers
                             {
                                 flag = false;
                                 errCode = "ERR245";
-                                ProcessedJobCount7.Inc();//唐加prometheus
+                                //ProcessedJobCount7.Inc();//唐加prometheus
+                                SetCount("NUM_CreditAuth_Fail_ckTime");//使用者超過15分鐘沒還車
                             }
-
                             trace.traceAdd("ckTime", ckTime);
                         }
 
@@ -242,7 +257,8 @@ namespace WebAPI.Controllers
                                 {
                                     flag = false;
                                     errCode = "ERR203";
-                                    ProcessedJobCount8.Inc();//唐加prometheus
+                                    //ProcessedJobCount8.Inc();//唐加prometheus
+                                    SetCount("NUM_CreditAuth_Fail_OrderDataLists_Count");//找不到符合的訂單編號
                                 }
                             }
                         }
@@ -252,13 +268,15 @@ namespace WebAPI.Controllers
                             {
                                 flag = false;
                                 errCode = "ERR209";
-                                ProcessedJobCount9.Inc();//唐加prometheus
+                                //ProcessedJobCount9.Inc();//唐加prometheus
+                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_15");//已完成還車付款，請勿重覆付款
                             }
                             else if (OrderDataLists[0].car_mgt_status < 11)
                             {
                                 flag = false;
                                 errCode = "ERR210";
-                                ProcessedJobCount10.Inc();//唐加prometheus
+                                //ProcessedJobCount10.Inc();//唐加prometheus
+                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_11");//尚未完成還車步驟，無法還車付款
                             }
                             else
                             {
@@ -520,7 +538,8 @@ namespace WebAPI.Controllers
                                 catch (Exception ex)
                                 {
                                     flag = true; //先bypass，之後補傳再刪
-                                    ProcessedJobCount11.Inc();//唐加prometheus
+                                    //ProcessedJobCount11.Inc();//唐加prometheus
+                                    SetCount("NUM_CreditAuth_Fail_PicToAzure");//寫還車照片到azure失敗
                                 }
                             }
 
@@ -667,7 +686,8 @@ namespace WebAPI.Controllers
                                 {
                                     errCode = "ERR111";
                                     flag = false;
-                                    ProcessedJobCount12.Inc();//唐加prometheus
+                                    //ProcessedJobCount12.Inc();//唐加prometheus
+                                    SetCount("NUM_CreditAuth_Fail_NPR330Save_ID");//NPR330Save_ID參數遺漏
                                 }
                             }
                         }
@@ -675,7 +695,8 @@ namespace WebAPI.Controllers
                         {
                             errCode = "ERR244";
                             flag = false;
-                            ProcessedJobCount13.Inc();//唐加prometheus
+                            //ProcessedJobCount13.Inc();//唐加prometheus
+                            SetCount("NUM_CreditAuth_Fail_CacheStringNull");//系統偵測到異常，需重新進入
                         }
                     }
                     #endregion
@@ -696,7 +717,8 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
-                ProcessedJobCount2.Inc();//唐加prometheus
+                //ProcessedJobCount2.Inc();//唐加prometheus
+                SetCount("NUM_CreditAuth_Fail");
             }
 
             if (string.IsNullOrWhiteSpace(trace.BaseMsg))
@@ -834,14 +856,16 @@ namespace WebAPI.Controllers
                             {
                                 flag = false;
                                 errCode = "ERR197";
-                                ProcessedJobCount15.Inc();//唐加prometheus
+                                //ProcessedJobCount15.Inc();//唐加prometheus
+                                SetCount("NUM_CreditAuth_Fail_RtnCode_1000");//刷卡授權失敗，請洽發卡銀行，送去台新就失敗
                             }
                             //修正錯誤偵測
                             if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams.ResultCode != "1000")
                             {
                                 flag = false;
                                 errCode = "ERR197";
-                                ProcessedJobCount16.Inc();//唐加prometheus
+                                //ProcessedJobCount16.Inc();//唐加prometheus
+                                SetCount("NUM_CreditAuth_Fail_ResultCode_1000");//刷卡授權失敗，請洽發卡銀行，送去台新檢查內容後失敗
                             }
                             if (flag)
                             {
@@ -878,7 +902,8 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = "ERR195";
-                        ProcessedJobCount17.Inc();//唐加prometheus
+                        //ProcessedJobCount17.Inc();//唐加prometheus
+                        SetCount("NUM_CreditAuth_Fail_hasFind");//找不到此卡號
                     }
                     #endregion
                 }
@@ -886,7 +911,8 @@ namespace WebAPI.Controllers
                 {
                     flag = false;
                     errCode = "ERR730";
-                    ProcessedJobCount14.Inc();//唐加prometheus
+                    //ProcessedJobCount14.Inc();//唐加prometheus
+                    SetCount("NUM_CreditAuth_Fail_getBindingList");//查詢綁定卡號失敗
                 }
                 ds.Dispose();
             }
@@ -947,7 +973,8 @@ namespace WebAPI.Controllers
             else
             {
                 errMsg = returnMessage;
-                ProcessedJobCount18.Inc();//唐加prometheus
+                //ProcessedJobCount18.Inc();//唐加prometheus
+                SetCount("NUM_CreditAuth_Fail_sp_ArrearsQueryByNPR330ID");
             }
                 
             return saveDetail;
@@ -990,5 +1017,87 @@ namespace WebAPI.Controllers
             return re;
         }
 
+        private void SetCount(string memo)
+        {
+            var value = 1;
+            try
+            {
+                ConnectionMultiplexer connection = lazyConnection.Value;
+                IDatabase cache = connection.GetDatabase();
+
+                var key = memo;
+                var cacheString = cache.StringGet(key);
+                if (cacheString.HasValue)
+                {
+                    int.TryParse(cacheString.ToString(), out value);
+                    value++;
+                }
+                cache.StringSet(key, value);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+            }
+            switch (memo)
+            {
+                case "NUM_CreditAuth_CallTimes":
+                    ProcessedJobCount1.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail":
+                    ProcessedJobCount2.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_PayType":
+                    ProcessedJobCount3.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_OrderNoNull":
+                    ProcessedJobCount4.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_OrderNoH":
+                    ProcessedJobCount5.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_tmpOrder":
+                    ProcessedJobCount6.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_ckTime":
+                    ProcessedJobCount7.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_OrderDataLists_Count":
+                    ProcessedJobCount8.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_car_mgt_status_15":
+                    ProcessedJobCount9.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_car_mgt_status_11":
+                    ProcessedJobCount10.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_PicToAzure":
+                    ProcessedJobCount11.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_NPR330Save_ID":
+                    ProcessedJobCount12.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_CacheStringNull":
+                    ProcessedJobCount13.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_getBindingList":
+                    ProcessedJobCount14.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_RtnCode_1000":
+                    ProcessedJobCount15.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_ResultCode_1000":
+                    ProcessedJobCount16.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_hasFind":
+                    ProcessedJobCount17.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_sp_ArrearsQueryByNPR330ID":
+                    ProcessedJobCount18.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_isGuest":
+                    ProcessedJobCount19.Set(value); //宣告Guage才能用set
+                    break;
+            }
+        }
     }
 }

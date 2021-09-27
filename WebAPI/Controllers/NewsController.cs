@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost]
-        public Dictionary<string, object> DoPersonNotice(Dictionary<string, object> value)
+        public Dictionary<string, object> DoNews(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -99,7 +99,8 @@ namespace WebAPI.Controllers
                     LogID = LogID
                 };
                 List<NewsObj> lstOut = new List<NewsObj>();
-                string spName = new ObjType().GetSPName(ObjType.SPType.News);
+                //string spName = new ObjType().GetSPName(ObjType.SPType.News);
+                string spName = "usp_GetNews";
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_GetNews, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetNews, SPOutput_Base>(connetStr);
                 DataSet ds = new DataSet();
@@ -108,8 +109,8 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     outputApi = new OAPI_GetNews();
-                    outputApi.NewObj = new List<NewsObj>();
-                    outputApi.NewObj = lstOut;
+                    outputApi.NewsObj = new List<NewsObj>();
+                    outputApi.NewsObj = lstOut;
                 }
             }
             #endregion

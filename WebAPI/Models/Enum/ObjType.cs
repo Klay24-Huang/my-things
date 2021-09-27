@@ -448,6 +448,14 @@ namespace WebAPI.Models.Enum
             /// 更新會員條款 20210810 ADD BY YEH
             /// </summary>
             SetMemberCMK,
+	    /// <summary>
+            /// 個人推播讀取 20210904 ADD BY ADAM
+            /// </summary>
+            PersonNoticeRead,
+            /// <summary>
+            /// 活動通知讀取 20210907 ADD BY ADAM
+            /// </summary>
+            NewsRead,
             #region 渣渣
             /// <summary>
             /// 個人訊息
@@ -701,6 +709,10 @@ namespace WebAPI.Models.Enum
             /// 獲取車機當前狀態資料 20210608 ADD BY FRANK
             /// </summary>
             BE_GetCarCurrentStatus,
+            /// <summary>
+            /// 獲取新北監管平台車輛資料 20210901 ADD BY FRANK
+            /// </summary>
+            GetCarMapData,
             #endregion
             #region 整備人員
             MA_CheckCarStatusByReturn,
@@ -715,6 +727,7 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthReturnList,
             BE_Banner,//20210316唐加
             BE_InsertChargeParkingData,//20210511唐加
+            BE_BannerSort
         }
         /// <summary>
         /// 取出SPName
@@ -1067,8 +1080,17 @@ namespace WebAPI.Models.Enum
                 case SPType.GetMotorRent:  // 取得路邊機車 20210622 ADD BY YEH
                     SPName = "usp_GetMotorRent";
                     break;
+                case SPType.GetCarMapData:  //取得新北監管平台車輛資料 20210901 ADD BY FRANK
+                    SPName = "usp_GetCarMapData";
+                    break;
                 case SPType.SetMemberCMK:  // 更新會員條款 20210810 ADD BY YEH
                     SPName = "usp_SetMemberCMK";
+                    break;
+                case SPType.PersonNoticeRead:   //個人推播讀取 20210904 ADD BY ADAM
+                    SPName = "usp_PersonNoticeRead_I01";
+                    break;
+                case SPType.NewsRead:   //活動通知讀取 20210907 ADD BY ADAM 
+                    SPName = "usp_NewsRead_I01";
                     break;
                 #region 渣渣
                 case SPType.PersonNotice:
@@ -1286,6 +1308,9 @@ namespace WebAPI.Models.Enum
                     break;
                 case SPType.BE_GetCarCurrentStatus:        // 獲取當前車機狀態資料 20210608 ADD BY FRANK
                     SPName = "usp_BE_GetCarCurrentStatus";
+                    break;
+                case SPType.BE_BannerSort:       
+                    SPName = "usp_BE_BannerSort";
                     break;
                 #endregion
                 #region 整備人員

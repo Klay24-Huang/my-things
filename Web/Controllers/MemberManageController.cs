@@ -20,26 +20,40 @@ using Web.Models.Enum;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using Prometheus;//20210707唐加prometheus
+//using Prometheus;//20210707唐加prometheus
+//using StackExchange.Redis;//20210913唐加redis
 
 namespace Web.Controllers
 {
     /// <summary>
     /// 會員管理
     /// </summary>
-    public class MemberManageController : Controller
+    public class MemberManageController : BaseSafeController //20210902唐改繼承BaseSafeController，寫nlog //Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         string StorageBaseURL = (System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["StorageBaseURL"].ToString();
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
 
-        //唐加prometheus
-        private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail",
-            new CounterConfiguration
-            {
-                // Here you specify only the names of the labels.
-                LabelNames = new[] { "method", "server" }
-            });
+        //20210913唐加redis，解決azure多執行個體造成prometheus的數值亂跳問題
+        //private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
+        //private static Lazy<ConnectionMultiplexer> lazyConnection;
+        //public MemberManageController()
+        //{
+        //    if (lazyConnection == null)
+        //    {
+        //        lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+        //    }
+        //}
+
+        //唐加prometheus，20210913改用Gauge
+        //private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail");
+        //private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail",
+        //    new CounterConfiguration
+        //    {
+        //        // Here you specify only the names of the labels.
+        //        LabelNames = new[] { "method", "server" }
+        //    });
+        //private static readonly Gauge EnterCounte = Metrics.CreateGauge("BENSON_AuditDetail", "Number of call AuditDetail");
 
         #region 會員審核及明細
         /// <summary>
@@ -53,6 +67,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult Audit(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "Audit");
+
             ViewData["AuditMode"] = AuditMode;
             ViewData["AuditType"] = AuditType;
             ViewData["StartDate"] = StartDate;
@@ -86,9 +104,14 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult AuditDetail(string AuditIDNO, string UserName)
         {
-            //唐加prometheus
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "AuditDetail");
+
+            //唐加prometheus，20210913改呼叫SetAuditDetailCount透過redis計算後再給prometheus
             //EnterCounte.Inc();
-            EnterCounte.WithLabels(Request.HttpMethod,"NO1").Inc();
+            //EnterCounte.WithLabels(Request.HttpMethod, Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).Inc();//WEBSITE_INSTANCE_ID是抓azure主機的環境變數
+            //SetAuditDetailCount();
 
             if (UserName != null && Session["Account"] != null)
             {
@@ -105,7 +128,6 @@ namespace Web.Controllers
                 int index = wsoutput.Data.ToList().FindIndex(delegate (WebAPIOutput_NPR172QueryData data)
                 {
                     return data.MEMIDNO == AuditIDNO;
-
                 });
                 if (index > -1)
                 {
@@ -161,7 +183,6 @@ namespace Web.Controllers
                     });
                 }
             }
-
 
             Data.SameMobile = new List<BE_SameMobileData>();
             Data.mobileBlock = "";//20210310唐加
@@ -406,6 +427,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ModifyMember(int AuditMode, int AuditType, string StartDate, string EndDate, int AuditReuslt, string UserName, string IDNO, string[] IDNOSuff, string AuditError, string MEMRFNBR)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ModifyMember");
+
             ViewData["AuditMode"] = AuditMode;
             ViewData["AuditType"] = AuditType;
             ViewData["StartDate"] = StartDate;
@@ -441,6 +466,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ModifyMemberDetail(string AuditIDNO, string UserName, string Mobile, string Power, string MEMEMAIL, string HasVaildEMail, string MEMMSG)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ModifyMemberDetail");
+
             if (UserName != null && Session["Account"] != null)
             {
                 List<BE_AuditImage> lstAuditsxx = new MemberRepository(connetStr).UpdateMemberData(AuditIDNO, UserName, Mobile, Power, MEMEMAIL, HasVaildEMail, MEMMSG, Session["Account"].ToString());
@@ -751,10 +780,18 @@ namespace Web.Controllers
 
         public ActionResult AuditHistory(string IDNO)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "AuditHistory");
+
             return View();
         }
         public ActionResult CredentialsView(string IDNO)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "CredentialsView");
+
             return View();
         }
 
@@ -765,6 +802,10 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult ViewSameMobile()
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ViewSameMobile");
+
             MemberRepository repository = new MemberRepository(connetStr);
             List<BE_SameMobileData> lstData = repository.GetSameMobile();
             return View(lstData);
@@ -783,6 +824,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ChangePassword(string IDNO, string Password)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ChangePassword");
+
             List<BE_GetAuditList> lstData = new List<BE_GetAuditList>();
             try
             {
@@ -814,6 +859,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult DeleteMember(string IDNO, string IRent_Only, string Account, string DeleteMember_check)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "DeleteMember");
+
             MemberRepository repository = new MemberRepository(connetStr);
             if (DeleteMember_check == "true")
             {
@@ -874,6 +923,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ChangeID(string TARGET_ID, string AFTER_ID, string Account)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ChangeID");
+
             MemberRepository repository = new MemberRepository(connetStr);
             if (repository.IsMemberExist(TARGET_ID))
             {
@@ -896,6 +949,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MedalMileStone(string AuditMode, string IDNO, string ChoiceSelect, HttpPostedFileBase fileImport, string MEMO_CONTENT)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MedalMileStone");
+
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
 
@@ -1084,6 +1141,10 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult MemberScore(string AuditMode, string IDNO, string MEMNAME, string ORDERNO, string ORDERNO_I, string StartDate, string EndDate, string ChoiceSelect_2, string MEMSCORE, string sonmemo, FormCollection collection, HttpPostedFileBase fileImport)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "MemberScore");
+
             ViewData["IDNO"] = IDNO;
             ViewData["AuditMode"] = AuditMode;
             ViewData["MEMNAME"] = MEMNAME;
@@ -1247,7 +1308,7 @@ namespace Web.Controllers
                                         break;
                                     }
                                 }
-                            }                     
+                            }
                             //通過第一關 
                             if (flag)
                             {
@@ -1327,6 +1388,10 @@ namespace Web.Controllers
         }
         public ActionResult ExplodeMemberScore(string AuditMode, string ExplodeSDate, string ExplodeEDate, string ExplodeIDNO, string ExplodeNAME, string ExplodeORDER)
         {
+            BaseSafeController himsSafe = new BaseSafeController();
+            himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
+                , "ExplodeMemberScore");
+
             ViewData["IDNO"] = ExplodeIDNO;
             ViewData["AuditMode"] = AuditMode;
             ViewData["MEMNAME"] = ExplodeNAME;
@@ -1350,7 +1415,7 @@ namespace Web.Controllers
                 header.CreateCell(j).SetCellValue(headerField[j]);
                 //sheet.AutoSizeColumn(j);
             }
-            lstData = repository.GetMemberScoreFull(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
+            lstData = repository.GetMemberScoreFull_EXPORT(ExplodeIDNO, ExplodeNAME, ExplodeORDER, ExplodeSDate, ExplodeEDate);
             int len = lstData.Count;
             for (int k = 0; k < len; k++)
             {
@@ -1377,5 +1442,224 @@ namespace Web.Controllers
             return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "會員積分清單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
         }
         #endregion
+
+        #region 手機黑名單
+        public ActionResult BlackList()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult BlackList(string Mode, string StartDate, string EndDate, string MobilePhone, HttpPostedFileBase fileImport)
+        {
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["MobilePhone"] = MobilePhone;
+
+            if (Mode == "0")
+            {
+                BE_AuditDetailCombind Data = new BE_AuditDetailCombind();
+                List<BE_GetBlackLists> lstData = new MemberRepository(connetStr).GetBlackLists(StartDate, EndDate, MobilePhone);
+                List<BE_GetBlackListsDetail> lstDataDetail = new MemberRepository(connetStr).GetBlackListsDetail(StartDate, EndDate, MobilePhone);
+                List<BE_GetBlackListAccount> lstDataAccount = new MemberRepository(connetStr).GetBlackListsAccount(StartDate, EndDate, MobilePhone);
+
+                //Newtonsoft.Json序列化
+                string jsonData = JsonConvert.SerializeObject(lstDataDetail);
+                string jsonDataAccount = JsonConvert.SerializeObject(lstDataAccount);
+
+                Data.BlackLists = new List<BE_GetBlackLists>();
+                Data.BlackLists = lstData;
+                //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+                //Data.MileStoneDetail = lstMileStoneDetail;
+                Data.JsonBlackListsDetail = jsonData;
+                Data.JsonBlackListsAccount = jsonDataAccount;
+
+                //return View(lstData);
+                return View(Data);
+            }
+            else if (Mode == "1")
+            {
+                bool flag = true;
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                SPInput_BE_InsBlackList data = new SPInput_BE_InsBlackList()
+                {
+                    Mode = 0,
+                    Mobile = MobilePhone
+                };
+                SPOutput_Base SPOutput = new SPOutput_Base();
+                flag = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsBlackList", data, ref SPOutput, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorLine"] = "新增失敗";
+                }
+
+                return View();
+            }
+            else
+            {
+                string errorMsg = "";
+                bool flag = true;
+
+                List<SPInput_BE_InsBlackList> lstData = new List<SPInput_BE_InsBlackList>();
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                if (fileImport != null)
+                {
+                    if (fileImport.ContentLength > 0)
+                    {
+                        string fileName = string.Concat(new string[]{
+                            "BlackListImport",
+                            ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                            "_",
+                            DateTime.Now.ToString("yyyyMMddHHmmss"),
+                            ".xlsx"
+                        });
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/BlackListImport"));
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/BlackListImport"), fileName);
+                        fileImport.SaveAs(path);
+                        IWorkbook workBook = new XSSFWorkbook(path);
+                        ISheet sheet = workBook.GetSheetAt(0);
+                        int sheetLen = sheet.LastRowNum;
+                        string[] field = { "手機號碼", "新增或刪除" };
+                        int fieldLen = field.Length;
+                        //第一關，判斷位置是否相等
+                        for (int i = 0; i < fieldLen; i++)
+                        {
+                            ICell headCell = sheet.GetRow(0).GetCell(i);
+                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                            {
+                                errorMsg = "標題列不相符";
+                                flag = false;
+                                break;
+                            }
+                        }
+
+                        if (flag)
+                        {
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                if ((sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")) != "新增" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")) != "刪除")
+                                {
+                                    errorMsg = string.Format("第{0}筆資料有錯誤：{1}", i.ToString(), "未填寫或填錯新增刪除");
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //通過第一關 
+                        if (flag)
+                        {
+                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                SPInput_BE_InsBlackList data = new SPInput_BE_InsBlackList()
+                                {
+                                    Mode = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")=="新增" ? 0 : 1,
+                                    Mobile = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    USERID = UserId
+                                };
+
+                                SPOutput_Base SPOutput = new SPOutput_Base();
+                                flag = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsBlackList", data, ref SPOutput, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                if (flag == false)
+                                {
+                                    //errorLine = i.ToString();
+                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), SPOutput.ErrorMsg);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errorMsg = "請上傳要匯入的資料";
+                    }
+                }
+                else
+                {
+                    flag = false;
+                    errorMsg = "請上傳要匯入的資料";
+                }
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorLine"] = errorMsg;
+                }
+                return View();
+            }
+        }
+        public ActionResult ExplodeBlackList(string ExplodeSDate, string ExplodeEDate, string ExplodeMobilePhone)
+        {
+            List<BE_GetBlackLists> lstBlackList = new List<BE_GetBlackLists>();
+            MemberRepository _repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "手機號碼", "黑名單加入日期", "黑名單加入時間" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+            }
+            lstBlackList = _repository.GetBlackLists(ExplodeSDate, ExplodeEDate, ExplodeMobilePhone);
+
+            int len = lstBlackList.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstBlackList[k].Mobile);
+                content.CreateCell(1).SetCellValue(lstBlackList[k].CreateDate.Substring(0,10));
+                content.CreateCell(2).SetCellValue(lstBlackList[k].CreateDate.Substring(10));
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "手機黑名單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        #endregion
+
+        //private void SetAuditDetailCount()
+        //{
+        //    var value = 1;
+        //    try
+        //    {
+        //        ConnectionMultiplexer connection = lazyConnection.Value;
+        //        IDatabase cache = connection.GetDatabase();
+
+        //        var key = "Number of call AuditDetail";
+        //        var cacheString = cache.StringGet(key);
+        //        if (cacheString.HasValue)
+        //        {
+        //            int.TryParse(cacheString.ToString(), out value);
+        //            value++;
+        //        }
+        //        cache.StringSet(key, value);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //    }
+        //    EnterCounte.Set(value); //宣告Guage才能用set
+        //}
     }
 }

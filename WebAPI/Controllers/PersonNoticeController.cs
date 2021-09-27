@@ -50,19 +50,25 @@ namespace WebAPI.Controllers
             Int16 tmpType = 0;
             #endregion
             #region 防呆
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest,false);
 
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_PersonNotice>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
+                Contentjson = "Not Input";
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
                 //類型判斷
                 if (flag)
                 {
-                    if (apiInput.type == null)
+                    if (apiInput == null)
+                    {
+                        apiInput = new IAPI_PersonNotice();
+                        apiInput.type = 0;
+                    }
+                    else if (apiInput.type == null)
                     {
                         apiInput.type = 0;
                     }

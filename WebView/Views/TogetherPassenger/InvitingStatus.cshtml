@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "InvitingStatus";
+    @Styles.Render("~/Assets/css/TogetherPassenger.css")
+    var chkType = ViewData["chkType"].ToString();
+    string name = "";
+    string phone = "";
+    if(TempData["MEMCNAME"].ToString().Length > 2)
+    {
+        name = TempData["MEMCNAME"].ToString().Remove(1, TempData["MEMCNAME"].ToString().Length - 2);
+        for(var i = 0; i < TempData["MEMCNAME"].ToString().Length -2; i++)
+        {
+            name = name.Insert(1, "O");
+        }
+    }
+    else
+    {
+        name = TempData["MEMCNAME"].ToString().Remove(1,1);
+        name = name.Insert(1, "O");
+    }
+
+    phone = TempData["MEMTEL"].ToString().Remove(4, 3).Insert(4, "***");
+    //var chkType = "S";
+}
+
+<div class="container">
+    <div class="row">
+
+        <!-- <div class="container head col-12 border-bottom">
+            <div class="row d-flex justify-content-around">
+                <div class="col-12 py-2 shadow-sm d-flex justify-content-center position-relative">
+                    <a href="#" class="back"></a>
+                    公告
+                </div>
+            </div>
+        </div> -->
+
+        <div class="container title">
+            <div class="row d-flex justify-content-center">
+                <div class="col-8 py-3 d-flex justify-content-center">
+                    確認共同承租人邀請
+                </div>
+            </div>
+        </div>
+
+        <div class="container inviter col-8">
+            <div class="row border shadow">
+                <div class="col-12 border-bottom inviter_title py-3">
+                    邀請人
+                </div>
+                <div class="col-12 py-3 inviter_content d-flex flex-column align-items-center">
+                    <p class="m-0" id="inviter_name">@name</p>
+                    <p id="inviter_phone">@phone</p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container content my-4 px-0 col-8">
+            <p class="mb-1">合約編號：@("H"+TempData["OrderNo"])</p>
+            <p class="mb-1">取車地點：@TempData["Station"]</p>
+            <p class="mb-1">車型：@TempData["CarNo"]</p>
+            <p class="mb-1">預計取車時間：@TempData["StartDate"]</p>
+            <p class="mb-1">預計還車時間：@TempData["EndDate"]</p>
+        </div>
+
+        <div class="col-12">
+            @switch (chkType)
+            {
+                case "Y":
+                    <div class="result_area">
+                        <div class="container mt-4 px-0 text-center status col-8">
+                            <img src="~/Assets/icon/icon64Success.svg" />
+                            <p class="mt-1" style=" color: rgb(29,166,208)">已接受</p>
+                        </div>
+                    </div>
+                    break;
+                case "N":
+                    <div class="result_area">
+                        <div class="container mt-4 px-0 text-center status col-8">
+                            <img src="~/Assets/icon/icon64Fail.svg" />
+                            <p class="mt-1" style=" color: rgb(215,0,15)">已拒絕</p>
+                        </div>
+                    </div>
+                    break;
+                case "F":
+                    <div class="result_area">
+                        <div class="container mt-4 px-0 text-center status col-8">
+                            <img src="~/Assets/icon/icon64Cancal.svg" />
+                            <p class="mt-1"style=" color: rgb(159,164,172)">已取消</p>
+                        </div>
+                    </div>
+                    break;
+                default:
+                    <div class="check_area">
+                        <div class="container mt-5 px-0 text-center checkContract col-8">
+                            <p class="mb-1">我已確認<a href="@("https://irentv2-as-backend-web-test.azurewebsites.net/Contact/returnCarNew/?p=" + ViewData["EncryptString"])" class="text-dark" id="contract" target="_blank">租車合約</a>無誤</p>
+                        </div>
+                        <form action="~/TogetherPassenger/InvitingStatus" id="frmInviteeResponse" method="post">
+                            <input type="hidden" value="@TempData["OrderNo"]" name="OrderNo" />
+                            <input type="hidden" value="" id="accept" name="accept" />
+                            <input type="button" value="接受" id="btn_accept" class="d-block container py-2 mt-1 bg-danger text-center text-white rounded-pill border-0 col-8" />
+                            <input type="button" value="拒絕" id="btn_refuse" class="d-block container my-3 px-0 text-center bg-white col-8 border-0" />
+                        </form>
+                    </div>
+                    break;
+            }
+
+        </div>
+
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Assets/js/TogetherPassenger.js")

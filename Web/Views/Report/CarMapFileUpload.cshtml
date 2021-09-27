@@ -1,0 +1,92 @@
+﻿@{
+    var result = ViewData["result"] == null ? "" : ViewData["result"];
+}
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    @using (Html.BeginForm("CarMapFileUpload", "Report", FormMethod.Post, new { id = "frmCarMapFileUpload", @class = "form-horizontal", enctype= "multipart/form-data" }))
+    {
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                查詢條件
+            </div>
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                月份
+                            </div>
+                            <div class="col-md-3">
+                                <select name="Month" id="Month" class="custom-select datePicker">
+                                    <option value="01">一月</option>
+                                    <option value="02">二月</option>
+                                    <option value="03">三月</option>
+                                    <option value="04">四月</option>
+                                    <option value="05">五月</option>
+                                    <option value="06">六月</option>
+                                    <option value="07">七月</option>
+                                    <option value="08">八月</option>
+                                    <option value="09">九月</option>
+                                    <option value="10">十月</option>
+                                    <option value="11">十一月</option>
+                                    <option value="12">十二月</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                車種
+                            </div>
+                            <div class="col-md-3">
+                                <select name="carType" id="carType" class="custom-select">
+                                    <option value="car">汽車</option>
+                                    <option value="motor">機車</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                檔案匯入
+                            </div>
+                            <div class="col-md-3">
+                                <input type="file" id="fileImport" name="fileImport" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-5 offset-md-2">
+                                <button type="submit" id="upload" name="upload" class="btn btn-primary">上傳</button>
+                                <button type="submit" id="export" name="export" class="btn btn-primary ml-2" value="true">匯出</button>
+                                <button type="button" id="Clear" name="Clear" class="btn btn-outline-primary ml-2">清除</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+        </div>
+        <!--end card-->
+    }
+ </div>
+
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header text-white bg-primary">
+            執行結果：@result
+        </div>
+    </div>
+</div>

@@ -21,5 +21,9 @@ namespace Domain.SP.Input.Other
         /// JWT TOKEN
         /// </summary>
         public string Token { set; get; }
+        /// <summary>
+        /// 個人推播流水號
+        /// </summary>
+        public Int64? NotificationID { set; get; } = 0;
     }
 }

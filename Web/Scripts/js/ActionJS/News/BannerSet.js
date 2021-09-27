@@ -1,4 +1,27 @@
-﻿$(document).ready(function () {
+﻿var NowEditID = 0;
+
+$(document).ready(function () {
+
+    //$("#sstable").tablesort();
+    //$('thead th.date').data('sortBy', function (th, td, sorter) {
+    //    return new Date(td.text());
+    //});
+
+    $.tablesorter.addParser({
+        id: "num", //指定一個唯一的ID  
+        is: function (s) {
+            return false;
+        },
+        format: function (s) {
+            //對 xx時xx分xx秒 資料的處理
+            var hourNum = parseInt(s.substring(0, 9).replace("-",""));
+            //console.log('Q:'+s)
+            //console.log('A:' +hourNum)
+            return hourNum;
+        },
+        type: "numeric" //按數值排序  
+    });
+    $("#sstable").tablesorter({ headers: { 2: { sorter: false }, 1: { sorter: false }, 5: { sorter: false }, 3: { sorter: "num" }, 4: { sorter: "num" } } });
 
     SetStation($("#Banner"), $("#BannerName"));
 
@@ -9,6 +32,14 @@
 
     $("#btnSend").on("click", function () {
         ShowLoading("資料查詢中");
+        var obj = new Object();
+        var terms = new Array();
+        $("input[name=terms]:checked").each(function () {
+            terms.push($(this).val());
+        });
+        obj.Terms = terms;
+        var json = JSON.stringify(obj);
+        $("#queryData").val(json);
         $("#frmBannerSetting").submit();
     });
     $("#btnAdd").on("click", function () {
@@ -24,18 +55,98 @@
             }
         });
     }
+
+    $(".mouse").mouseover(function(){
+        $(this).css("cursor", "Pointer");
+    })
 });
 function goMaintain(SEQNO) {
-    console.log('qq:' + SEQNO)
-    console.log('qqaa:' + typeof (SEQNO))
+    //console.log('qq:' + SEQNO)
+    //console.log('qqaa:' + typeof (SEQNO))
 
     //var a = parseInt(SEQNO);
     //console.log('www:' + a)
     //console.log('rrrr:' + typeof (a))
     $("#MaintainBanner").val(SEQNO);
-    console.log('oooooo:' + $("#MaintainBanner").val())
+    //console.log('oooooo:' + $("#MaintainBanner").val())
     $("#frmBannerMaintain").submit();
 }
 function GoAddNew() {
     window.location.href = "BannerInfoAdd";
+}
+
+//function DoEdit(Id) {
+//    if (NowEditID > 0) {
+//        $("#Queue_" + NowEditID).empty().hide();
+//        $("#btnReset_" + NowEditID).hide();
+//        $("#btnSave_" + NowEditID).hide();
+//        $("#btnEdit_" + NowEditID).show();
+//    }
+//    NowEditID = Id;
+//    $("#Queue_" + Id).show();
+//    $("#btnReset_" + Id).show();
+//    $("#btnSave_" + Id).show();
+//    $("#btnEdit_" + Id).hide();
+//}
+//function DoReset(Id) {
+//    $("#Queue_" + Id).val("").hide();
+
+//    $("#btnReset_" + Id).hide();
+//    $("#btnSave_" + Id).hide();
+//    $("#btnEdit_" + Id).show();
+//    NowEditID = 0;
+//}
+//function DoSave(Id) {
+//    Queue = $("#Queue_" + Id).val();
+//    var Account = $("#Account").val();
+
+//    ShowLoading("資料處理中");
+
+//    var obj = new Object();
+//    obj.UserID = Account;
+//    obj.SEQNO = Id;
+//    obj.Queue = Queue;
+//    DoAjaxAfterReload(obj, "BE_BannerSort", "修改使用者者發生錯誤");
+//}
+
+
+function DoEdit() {
+    $(".Queue").show();
+    $("#btnReset").show();
+    $("#btnSave").show();
+    $("#btnEdit").hide();
+    $("#btnSend").hide();
+    $("#btnAdd").hide();
+}
+function DoReset() {
+    $(".Queue").val("").hide();
+
+    $("#btnReset").hide();
+    $("#btnSave").hide();
+    $("#btnEdit").show();
+    $("#btnSend").show();
+    $("#btnAdd").show();
+}
+function DoSave() {
+    var aa = "";
+    var $selects = $('select[name="Queue"]');
+    for (var i = 0; i < $selects.length; i++) {
+        var $options = $("option:selected", $selects[i]);
+        aa += $options.val() + ',';
+        //console.log($options.val());
+        //console.log("text" + i + "=" + $options.text());
+    }
+    //console.log(aa)
+    $("#btnSend").show();
+    $("#btnAdd").show();
+
+    var Account = $("#Account").val();
+
+    ShowLoading("資料處理中");
+
+    var obj = new Object();
+    obj.UserID = Account;
+    //obj.SEQNO = Id;
+    obj.Queue = aa;
+    DoAjaxAfterReload(obj, "BE_BannerSort", "修改使用者者發生錯誤");
 }

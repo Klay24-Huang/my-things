@@ -1,0 +1,184 @@
+2021-09-10 10:26:56.1733 | INFO | WebView.Controllers.TogetherPassengerController | 進入程式 
+
+2021-09-10 10:26:56.2999 | INFO | WebView.Controllers.TogetherPassengerController | 進入程式 
+
+2021-09-10 10:26:56.3119 | INFO | WebView.Controllers.TogetherPassengerController | 發送請求前 
+
+2021-09-10 10:26:56.3957 | INFO | WebView.Repository.TogethePassengerRepository | 匿名物件生成 
+
+2021-09-10 10:26:56.6588 | INFO | WebView.Repository.TogethePassengerRepository | 轉為json 
+
+2021-09-10 10:26:56.6927 | INFO | WebView.Repository.TogethePassengerRepository | 準備發response 
+
+2021-09-10 10:27:55.3006 | INFO | WebView.Repository.TogethePassengerRepository | 獲取response 
+
+2021-09-10 10:29:02.6819 | INFO | WebView.Repository.TogethePassengerRepository | 成功轉換成result 
+
+2021-09-10 10:29:02.7198 | INFO | WebView.Controllers.TogetherPassengerController |  
+
+2021-09-10 10:29:02.7198 | INFO | WebView.Controllers.TogetherPassengerController | 發送請求後 
+
+2021-09-10 10:29:08.7593 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 10:29:15.7969 | INFO | WebView.Controllers.TogetherPassengerController | 進入程式 
+
+2021-09-10 10:29:15.7969 | INFO | WebView.Controllers.TogetherPassengerController | 進入程式 
+
+2021-09-10 10:29:15.8128 | INFO | WebView.Controllers.TogetherPassengerController | 發送請求前 
+
+2021-09-10 10:29:15.8128 | INFO | WebView.Repository.TogethePassengerRepository | 匿名物件生成 
+
+2021-09-10 10:29:15.8318 | INFO | WebView.Repository.TogethePassengerRepository | 轉為json 
+
+2021-09-10 10:29:15.8397 | INFO | WebView.Repository.TogethePassengerRepository | 準備發response 
+
+2021-09-10 10:29:33.7697 | INFO | WebView.Repository.TogethePassengerRepository | 獲取response 
+
+2021-09-10 10:29:33.7901 | INFO | WebView.Repository.TogethePassengerRepository | 成功轉換成result 
+
+2021-09-10 10:29:33.7901 | INFO | WebView.Controllers.TogetherPassengerController |  
+
+2021-09-10 10:29:33.8091 | INFO | WebView.Controllers.TogetherPassengerController | 發送請求後 
+
+2021-09-10 10:29:34.9598 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 10:31:41.0631 | INFO | WebView.Controllers.TogetherPassengerController | 進入程式 
+
+2021-09-10 10:31:41.1000 | INFO | WebView.Controllers.TogetherPassengerController | 進入程式 
+
+2021-09-10 10:31:41.1070 | INFO | WebView.Controllers.TogetherPassengerController | 發送請求前 
+
+2021-09-10 10:31:41.1758 | INFO | WebView.Repository.TogethePassengerRepository | 匿名物件生成 
+
+2021-09-10 10:31:41.3663 | INFO | WebView.Repository.TogethePassengerRepository | 轉為json 
+
+2021-09-10 10:31:41.4002 | INFO | WebView.Repository.TogethePassengerRepository | 準備發response 
+
+2021-09-10 10:31:49.0996 | INFO | WebView.Repository.TogethePassengerRepository | 獲取response 
+
+2021-09-10 10:31:49.1876 | INFO | WebView.Repository.TogethePassengerRepository | 成功轉換成result 
+
+2021-09-10 10:31:49.2086 | INFO | WebView.Controllers.TogetherPassengerController | 同時段有合約或預約，不能邀請哦！ 
+
+2021-09-10 10:31:49.2225 | INFO | WebView.Controllers.TogetherPassengerController | 發送請求後 
+
+2021-09-10 10:32:13.1142 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 13:09:47.4848 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 13:09:47.5317 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 13:09:48.3335 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 13:09:48.4043 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 13:09:55.0651 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 13:11:48.5519 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 13:11:48.6091 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 13:11:49.4644 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 13:11:49.5500 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 13:11:51.1858 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 13:12:07.9894 | INFO | WebView.Controllers.TogetherPassengerController | 圈存結果 :  
+
+2021-09-10 13:12:09.8717 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 13:13:03.3127 | INFO | WebView.Controllers.TogetherPassengerController | 圈存結果 :  
+
+2021-09-10 13:14:13.3195 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 13:34:18.5523 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 13:34:18.6033 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 13:34:19.5691 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 13:34:19.6404 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 13:34:23.4870 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 13:34:23.5097 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 13:34:23.5297 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 13:34:23.9178 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 13:34:23.9936 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 13:34:26.6709 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 13:34:52.3773 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 13:34:52.3943 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 13:34:52.4611 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 13:34:52.5409 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 13:35:15.3188 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 13:35:24.8303 | INFO | WebView.Controllers.TogetherPassengerController | 圈存結果 :  
+
+2021-09-10 13:35:26.7273 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 13:36:00.8491 | INFO | WebView.Controllers.TogetherPassengerController | 圈存結果 :  
+
+2021-09-10 13:36:04.9678 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 13:49:00.2166 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 13:49:00.2635 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 13:49:01.2416 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 13:49:01.3264 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 13:49:04.8271 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 13:49:04.8510 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 13:49:06.3069 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 13:49:06.6769 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 13:49:06.7497 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 13:49:08.3499 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 13:49:23.0675 | INFO | WebView.Controllers.TogetherPassengerController | 圈存結果 :  
+
+2021-09-10 13:49:24.7522 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 16:54:35.0472 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 16:54:35.0990 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 16:54:35.9901 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 16:54:36.0700 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 16:54:39.6263 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 16:55:44.8767 | INFO | WebView.Controllers.TogetherPassengerController | 圈存結果 :  
+
+2021-09-10 16:55:53.3260 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
+2021-09-10 17:05:47.4595 | INFO | WebView.Controllers.TogetherPassengerController | 傳入Url參數:KtwBd/MrrFcEG2SMxUTqQ0t1FcXedyF/dtqaNMyHAztEtOIrdP6MIbG/zR6l6ymy 
+
+2021-09-10 17:05:47.5134 | INFO | WebView.Controllers.TogetherPassengerController | 傳入參數:12213028 & G221795414 
+
+2021-09-10 17:05:48.3995 | INFO | WebView.Controllers.TogetherPassengerController | 受邀人狀態確認成功 
+
+2021-09-10 17:05:48.4773 | INFO | WebView.Controllers.TogetherPassengerController | 訂單資料獲取成功 
+
+2021-09-10 17:05:52.9800 | INFO | WebView.Controllers.TogetherPassengerController | 預約資料獲取成功 
+
+2021-09-10 17:06:03.5995 | INFO | WebView.Controllers.TogetherPassengerController | 圈存結果 : 同時段有合約或預約，不能邀請哦！ 
+
+2021-09-10 17:06:11.7516 | INFO | WebView.Controllers.TogetherPassengerController | 請求失敗 
+
