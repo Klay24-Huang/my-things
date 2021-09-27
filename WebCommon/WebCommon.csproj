@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AESEncrypt.cs" />
+    <Compile Include="ApiPost.cs" />
     <Compile Include="AzureStorageHandle.cs" />
     <Compile Include="ErrorInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

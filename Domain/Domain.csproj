@@ -712,6 +712,7 @@
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_ECRefund.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetPaymentInfo.cs" />
+    <Compile Include="WebAPI\output\IRentAPIOutput_Generic.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebCommon\WebCommon.csproj">

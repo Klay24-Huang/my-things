@@ -37,6 +37,11 @@ using Domain.SP.Output.Wallet;
 using System.Linq;
 using Domain.WebAPI.Input.Taishin.Wallet;
 using Domain.WebAPI.output.Taishin.Wallet;
+using WebAPI.Service;
+using Domain.SP.Input.OtherService.Common;
+using OtherService.Common;
+using Newtonsoft.Json.Linq;
+using Domain.WebAPI.output;
 
 namespace WebAPI.Controllers
 {
@@ -80,7 +85,7 @@ namespace WebAPI.Controllers
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
         private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
-
+        private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();
         private CommonFunc baseVerify { get; set; }
 
         [HttpPost]
@@ -461,7 +466,7 @@ namespace WebAPI.Controllers
                             if (apiInput.CheckoutMode == 1)
                             {
                                 string TradeType = (OrderDataLists[0].ProjType == 4) ? "Pay_Motor" : "pay_Car";
-                                flag = PayWalletFlow(tmpOrder, Amount, IDNO, TradeType,true, funName, LogID, Access_Token,ref errCode);
+                                flag = PayWalletFlow(tmpOrder, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
                                 trace.traceAdd("PayWalletFlow", new { flag, PayInput, errCode });
                             }
                         }
@@ -981,7 +986,7 @@ namespace WebAPI.Controllers
                 errMsg = returnMessage;
                 ProcessedJobCount18.Inc();//唐加prometheus
             }
-                
+
             return saveDetail;
         }
 
@@ -1002,7 +1007,7 @@ namespace WebAPI.Controllers
 
         private bool CkFinalStopTime(string final_stop_time)
         {
-            
+
             if (DateTime.TryParse(final_stop_time, out DateTime FD))
             {
                 if (DateTime.Now.Subtract(FD).TotalMinutes < 15)
@@ -1034,7 +1039,7 @@ namespace WebAPI.Controllers
         }
 
 
-        private bool PayWalletFlow(long OrderNo ,int Amount, string IDNO,string TradeType, bool breakAutoStore,string funName, long LogID, string Access_Token, ref string errCode)
+        private bool PayWalletFlow(long OrderNo, int Amount, string IDNO, string TradeType, bool breakAutoStore, string funName, long LogID, string Access_Token, ref string errCode)
         {
             //扣款金額
             int PayAmount = 0;
@@ -1043,24 +1048,24 @@ namespace WebAPI.Controllers
             if (!WalletStatus.flag)
             {
                 //未開通
-                errCode = "ERR";
+                errCode = "ERR932";
                 return false;
             }
-            
+
             //錢包於餘<訂單金額
-            if(WalletStatus.WalletInfo.Balance < Amount)
+            if (WalletStatus.WalletInfo.Balance < Amount)
             {
                 //如果自動儲值是on
-                if(breakAutoStore && WalletStatus.WalletInfo.AutoStoreFlag == 1)
+                if (breakAutoStore && WalletStatus.WalletInfo.AutoStoreFlag == 1)
                 {
                     //儲值.....儲值金額(訂單-錢包)
                     var storeAmount = Amount - WalletStatus.WalletInfo.Balance;
 
-                    bool storeSataus = false;
+                    bool storeSataus = WalletStoreByCredit(storeAmount,Access_Token,funName,ref errCode);
 
-                    if(storeSataus)
+                    if (storeSataus)
                     {
-                        return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, true, funName, LogID, Access_Token ,ref errCode);
+                        return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
                     }
                     else
                     {
@@ -1077,7 +1082,7 @@ namespace WebAPI.Controllers
                 PayAmount = Amount;
             }
             //扣款
-            return DoWalletPay(Amount, IDNO, OrderNo, TradeType, funName, LogID, Access_Token, ref errCode);
+            return DoWalletPay(PayAmount, IDNO, OrderNo, TradeType, funName, LogID, Access_Token, ref errCode);
         }
         /// <summary>
         /// 錢包扣款
@@ -1086,28 +1091,30 @@ namespace WebAPI.Controllers
         /// <param name="IDNO">扣款帳號</param>
         /// <param name="OrderNo">扣款訂單編號</param>
         /// <returns></returns>
-        private bool DoWalletPay(int Amount,string IDNO, long OrderNo,string TradeType,string PRGName, long LogID, string Access_Token, ref string errCode)
+        private bool DoWalletPay(int Amount, string IDNO, long OrderNo, string TradeType, string PRGName, long LogID, string Access_Token, ref string errCode)
         {
             bool flag = false;
-            
-            DateTime NowTime = DateTime.Now;
 
+            DateTime NowTime = DateTime.Now;
+            var wsp = new WalletSp();
+            //設定錢包付款參數
             WebAPI_PayTransaction wallet = SetForWalletPay(IDNO, OrderNo, Amount, NowTime);
-            
+
             var body = JsonConvert.SerializeObject(wallet);
             TaishinWallet WalletAPI = new TaishinWallet();
             string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
             string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
             WebAPIOutput_PayTransaction taishinResponse = null;
-            
+
             flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
-            
-            if(flag)
+
+            if (flag)
             {
+                //設定錢包付款參數寫入
                 SPInput_WalletPay spInput = SetForWalletPayLog(wallet, taishinResponse,
                     IDNO, OrderNo, LogID, Access_Token, NowTime, TradeType, PRGName);
 
-                flag = sp_WalletPay(spInput, ref errCode);
+                flag = wsp.sp_WalletPay(spInput, ref errCode);
             }
             else
             {
@@ -1116,34 +1123,6 @@ namespace WebAPI.Controllers
             return flag;
         }
 
-        public bool sp_WalletPay(SPInput_WalletPay spInput, ref string errCode)
-        {
-            bool flag = false;
-
-            string spName = "usp_WalletPay_I01";
-            var lstError = new List<ErrorInfo>();
-            var spOut = new SPOutput_Base();
-
-            SQLHelper<SPInput_WalletPay, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_WalletPay, SPOutput_Base>(connetStr);
-            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-
-            if (flag)
-            {
-                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
-                {
-                    flag = false;
-                    errCode = spOut.ErrorCode;
-                }
-            }
-            else
-            {
-                if (lstError.Count > 0)
-                {
-                    errCode = lstError[0].ErrorCode;
-                }
-            }
-            return flag;
-        }
 
         private (bool flag, PayModeObj WalletInfo) GetWalletInfo(string IDNO, long LogID, string Access_Token)
         {
@@ -1168,7 +1147,7 @@ namespace WebAPI.Controllers
             DataSet ds = new DataSet();
             bool flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref PayMode, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-            
+
             if (flag && PayMode.Count > 0)
             {
                 apiOutput = PayMode
@@ -1182,7 +1161,7 @@ namespace WebAPI.Controllers
 
             PayModeObj WalletInfo = apiOutput.PayModeList.Where(t => t.PayMode == 1).FirstOrDefault();
 
-            if(WalletInfo.HasBind == 1)
+            if (WalletInfo.HasBind == 1)
             {
                 re.flag = true;
                 re.WalletInfo = WalletInfo;
@@ -1192,14 +1171,14 @@ namespace WebAPI.Controllers
 
         }
 
-        private string GetWalletAccountId(string IDNO,int cnt)
+        private string GetWalletAccountId(string IDNO, int cnt)
         {
             return $"{IDNO}Wallet{cnt.ToString().PadLeft(4, '0')}";
         }
 
         private int GetWalletHistoryMode(string TradeType)
         {
-            switch(TradeType)
+            switch (TradeType)
             {
                 case "pay_Arrears":
                     return 5;
@@ -1256,7 +1235,7 @@ namespace WebAPI.Controllers
         /// <param name="PRGName"></param>
         /// <returns></returns>
         private SPInput_WalletPay SetForWalletPayLog(WebAPI_PayTransaction wallet, WebAPIOutput_PayTransaction taishinResponse
-            ,string IDNO, long OrderNo,long LogID,string Access_Token,DateTime NowTime,string TradeType,string PRGName)
+            , string IDNO, long OrderNo, long LogID, string Access_Token, DateTime NowTime, string TradeType, string PRGName)
         {
             return new SPInput_WalletPay()
             {
@@ -1277,5 +1256,60 @@ namespace WebAPI.Controllers
             };
 
         }
+
+        ////信用卡錢包儲值
+        public bool WalletStoreByCredit(int StoreMoney, string Access_Token, string FunName, ref string errCode)
+        {
+            IAPI_WalletStoredByCredit Input =
+                new IAPI_WalletStoredByCredit { StoreMoney = StoreMoney };
+
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+
+            bool flag = false;
+
+            string url = $@"{AzureAPIBaseURL}api/WalletStoredByCredit";
+
+            var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoredByCredit>(Input, url, Access_Token);
+            try
+            {
+                if (resault.Succ)
+                {
+                    RTime = DateTime.Now;
+                    JsonSerializer serializer = new JsonSerializer();
+                    var p =
+                        (IRentAPIOutput_Generic<OAPI_WalletStoredByCredit>)serializer.Deserialize(new JTokenReader(resault.Data), typeof(IRentAPIOutput_Generic<OAPI_WalletStoredByCredit>));
+                    if (p.result == 1)
+                    {
+                        flag = (p.Data.StroeResult == 1) ? true : false;
+                    }
+                    else
+                    {
+                        errCode = p.ErrorCode;
+                    }
+                }
+                else
+                {
+                    errCode = (!string.IsNullOrWhiteSpace(resault.errCode)) ? resault.errCode : "";
+                }
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(Input),
+                    WebAPIName = FunName,
+                    WebAPIOutput = JsonConvert.SerializeObject(resault),
+                    WebAPIURL = url
+                };
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+            return flag;
+        }
+
+
     }
 }
