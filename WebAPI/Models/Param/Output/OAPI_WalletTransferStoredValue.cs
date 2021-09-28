@@ -11,5 +11,9 @@ namespace WebAPI.Models.Param.Output
         /// 轉贈結果 (1成功0失敗)
         /// </summary>
         public int TranResult { get; set; }
+        /// <summary>
+        /// 時間戳章
+        /// </summary>
+        public string SystemTime { get; set; }
     }
 }

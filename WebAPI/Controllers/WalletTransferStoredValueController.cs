@@ -8,6 +8,7 @@ using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -25,6 +26,7 @@ namespace WebAPI.Controllers
     /// <summary>
     /// 錢包轉贈
     /// </summary>
+    /// 2021-09-28 UPD BY YANKEY 調整日期輸出格式
     public class WalletTransferStoredValueController : ApiController
     {
         private string connetStr    = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -109,7 +111,10 @@ namespace WebAPI.Controllers
                                 if (flag)
                                     IDNO_To = apiInput.IDNO;
                                 else
+                                {
+                                    errMsg = "身分證格式錯誤";
                                     errCode = "ERR103";
+                                }
                             }
                         }
                     }
@@ -151,7 +156,7 @@ namespace WebAPI.Controllers
                     else
                     {
                         flag = false;
-                        errMsg = "查無對應之會員";
+                        errMsg = "贈與人ID查無會員資料";
                         errCode = "ERR915";//查無對應之會員
                         CkFrom = null;
                     }
@@ -374,7 +379,9 @@ namespace WebAPI.Controllers
                     #endregion
                 }
                 #endregion
-
+                //2021-09-28 UPD BY YANKEY 調整日期輸出格式
+                //apiOutput.SystemTime = DateTime.Now.ToString("G", CultureInfo.CreateSpecificCulture("zh-CN"));    //Display:"2021/9/28 15:36:52"
+                apiOutput.SystemTime = DateTime.Now.ToString("s");                                                  //Display:"2021-09-28T15:41:03"
                 apiOutput.TranResult = flag ? 1 : 0;
             }
             catch (Exception ex)
