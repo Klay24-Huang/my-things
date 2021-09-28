@@ -235,6 +235,7 @@
     <Compile Include="Controllers\BE_HandleUserGroupController.cs" />
     <Compile Include="Controllers\BE_HandleUserMaintainController.cs" />
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
+    <Compile Include="Controllers\BE_InsBlackListController.cs" />
     <Compile Include="Controllers\BE_InsCleanOrderController.cs" />
     <Compile Include="Controllers\BE_InsertChargeParkingController.cs" />
     <Compile Include="Controllers\BE_IrentPaymentDetailController.cs" />
@@ -469,6 +470,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleTransParking_Moto.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleUserMaintain.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HiEasyRetry.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsBlackList.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsCleanOrder.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_InsertChargeParking.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_IrentPaymentDetail.cs" />

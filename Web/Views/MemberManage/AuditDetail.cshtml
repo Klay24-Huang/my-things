@@ -1780,7 +1780,7 @@
                             </td>
                             <td scope="col">@(obj.MileStone[i].MKTime)</td>
                             @*<td scope="col"><button type="button" class="btn btn-info" data-toggle="modal" data-target="#milestonedetail_modal">@(obj.MileStone[i].Detail)</button></td>*@
-                            <td scope="col"><button type="button" class="btn btn-info" onclick="aa(@MileStoneDetail,'@(obj.MileStone[i].ActionName)')" data-toggle="modal" data-target="#milestonedetail_modal">@(obj.MileStone[i].Detail)</button></td>
+                            <td scope="col"><button type="button" class="btn btn-info" onclick="mileStoneDetail(@MileStoneDetail,'@(obj.MileStone[i].ActionName)')" data-toggle="modal" data-target="#milestonedetail_modal">@(obj.MileStone[i].Detail)</button></td>
                         </tr>
                                     //aa[i] = obj.MileStone[i].ActionName; //抓不到
                                     //termsList.Add(obj.MileStone[i].ActionName);
@@ -1951,6 +1951,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
+                    <button type="button" id="btnAdd" name="btnAdd" class="btn btn-info">加入黑名單</button>
                 </div>
             </div>
         </div>

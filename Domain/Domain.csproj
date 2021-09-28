@@ -345,6 +345,7 @@
     <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
     <Compile Include="SP\Output\PolygonList\SPOut_GetAlliRentStation.cs" />
     <Compile Include="SP\Output\Project\SPOutput_GetStationCarTypeOfMutiStation.cs" />
+    <Compile Include="SP\Output\Register\SPOuput_CheckMobileUse.cs" />
     <Compile Include="SP\Output\Register\SPOuput_GetMemberMobile.cs" />
     <Compile Include="SP\Output\Register\SPOutput_GetVerifyCode.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
