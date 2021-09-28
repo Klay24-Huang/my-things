@@ -133,7 +133,7 @@ namespace WebAPI.Controllers
                 #region 取錢包會員資料&儲值金額限制檢核
                 if (flag)
                 {
-                    flag = walletService.CheckStoreAmtLimit(apiInput, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    flag = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref flag, ref errCode);
                 }
                 #endregion
 

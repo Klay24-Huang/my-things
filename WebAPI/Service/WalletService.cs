@@ -44,7 +44,7 @@ namespace WebAPI.Service
     public class WalletService
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        public bool CheckStoreAmtLimit(int StoreMoney, string IDNO, long LogID, string Access_Token, ref bool flag, ref string errCode) where T : class
+        public bool CheckStoreAmtLimit(int StoreMoney, string IDNO, long LogID, string Access_Token, ref bool flag, ref string errCode) 
         {
             
             CommonFunc baseVerify = new CommonFunc();

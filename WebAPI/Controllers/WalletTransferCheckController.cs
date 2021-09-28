@@ -171,10 +171,13 @@ namespace WebAPI.Controllers
                         if (sp2_list != null && sp2_list.Count() > 0) 
                         {
                             CkTo = sp2_list.FirstOrDefault();
+                            /*
                             if (!string.IsNullOrWhiteSpace(inPhoneNo))
                                 outputApi.ShowValue = CkTo.ShowValue;
                             else
                                 outputApi.ShowValue = CkTo.ShowName;
+                            */
+                            outputApi.ShowValue = CkTo.ShowValue;
                             outputApi.ShowName = CkTo.ShowName;
                             outputApi.IDNO = CkTo.IDNO;
                         }

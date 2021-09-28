@@ -8,6 +8,7 @@ using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -25,13 +26,14 @@ namespace WebAPI.Controllers
     /// <summary>
     /// 錢包轉贈
     /// </summary>
+    /// 2021-09-28 UPD BY YANKEY 調整日期輸出格式
     public class WalletTransferStoredValueController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string APIToken = ConfigurationManager.AppSettings["TaishinWalletAPIToken"].ToString();
-        private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
-        private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
-        private string BaseURL = ConfigurationManager.AppSettings["TaishinWalletBaseURL"].ToString();
+        private string connetStr    = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string APIToken     = ConfigurationManager.AppSettings["TaishinWalletAPIToken"].ToString();
+        private string APIKey       = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
+        private string MerchantId   = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+        private string BaseURL      = ConfigurationManager.AppSettings["TaishinWalletBaseURL"].ToString();
 
         [HttpPost]
         public Dictionary<string, object> DoWalletPayTransaction(Dictionary<string, object> value)
@@ -83,15 +85,17 @@ namespace WebAPI.Controllers
                     apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_WalletTransferStoredValue>(Contentjson);
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
                     if (apiInput.Amount <= 0)
                     {
                         flag = false;
                         errCode = "ERR900";
+                        errMsg = "轉贈金額不可為0";
                     }
                     if (flag)
                     {
 
-                        if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO_Phone) || apiInput.Amount == 0)
+                        if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO))
                         {
                             flag = false;
                             errMsg = "參數遺漏";
@@ -99,35 +103,27 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))
+                            if (Int32.TryParse(apiInput.IDNO, out int intPhoneNo))
                                 PhoneNo_To = intPhoneNo.ToString();
                             else
                             {
-                                flag = baseVerify.checkIDNO(apiInput.IDNO_Phone);
+                                flag = baseVerify.checkIDNO(apiInput.IDNO);
                                 if (flag)
-                                    IDNO_To = apiInput.IDNO_Phone;
+                                    IDNO_To = apiInput.IDNO;
                                 else
+                                {
+                                    errMsg = "身分證格式錯誤";
                                     errCode = "ERR103";
+                                }
                             }
                         }
                     }
                 }
                 //不開放訪客
-                if (flag)
+                if (isGuest)
                 {
-                    if (isGuest)
-                    {
-                        flag = false;
-                        errCode = "ERR101";
-                    }
-                }
-                else
-                {
-                    if (isGuest)
-                    {
-                        flag = false;
-                        errCode = "ERR101";
-                    }
+                    flag = false;
+                    errCode = "ERR101";
                 }
                 #endregion
 
@@ -141,8 +137,8 @@ namespace WebAPI.Controllers
 
                 #region 轉贈前確認
 
-                var CkFrom = new SPOut_WalletTransferCheck();
-                var CkTo = new SPOut_WalletTransferCheck();
+                var CkFrom  = new SPOut_WalletTransferCheck(); //贈與人
+                var CkTo    = new SPOut_WalletTransferCheck(); //受贈人
                 if (flag)
                 {
                     string sp1ErrCode = "", sp2ErrCode = "";
@@ -160,8 +156,8 @@ namespace WebAPI.Controllers
                     else
                     {
                         flag = false;
-                        errMsg = "贈與人不存在";
-                        errCode = "ERR915";//資料不存在
+                        errMsg = "贈與人ID查無會員資料";
+                        errCode = "ERR915";//查無對應之會員
                         CkFrom = null;
                     }
 
@@ -186,8 +182,8 @@ namespace WebAPI.Controllers
                     {
                         var sp2In = new SPInput_WalletTransferCheck()
                         {
-                            IDNO = IDNO_To,//被贈人
-                            PhoneNo = PhoneNo_To,//被贈人
+                            IDNO = IDNO_To,//受贈人
+                            PhoneNo = PhoneNo_To,//受贈人
                             LogID = LogID,
                         };
                         var sp2_list = wsp.sp_WalletTransferCheck(sp2In, ref sp2ErrCode);
@@ -221,13 +217,12 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 商業邏輯檢查
-                    /*
                     if (flag)
                     {
                         if (apiInput.Amount > CkFrom.WalletAmount)
                         {
                             flag = false;
-                            errMsg = "轉贈金額超過錢包金額";
+                            errMsg = "錢包餘額不足";
                             errCode = "ERR281";
                         }
 
@@ -236,7 +231,7 @@ namespace WebAPI.Controllers
                             if ((apiInput.Amount + CkTo.WalletAmount) > 50000)
                             {
                                 flag = false;
-                                errMsg = "錢包金額超過上限";
+                                errMsg = "轉贈後對方餘額超過上限";
                                 errCode = "ERR282";
                             }
                         }
@@ -246,13 +241,12 @@ namespace WebAPI.Controllers
                             if ((apiInput.Amount + CkTo.MonTransIn) > 300000)
                             {
                                 flag = false;
-                                errMsg = "金流超過上限";
+                                errMsg = "轉贈後對方金流超過當月上限";
                                 errCode = "ERR280";
                             }
                         }                        
                         trace.FlowList.Add("商業邏輯檢查");
                     }
-                    */
                     #endregion
                 }
 
@@ -268,7 +262,7 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         Token = Access_Token
                     };
-                    SPOutput_GetWalletInfo SPOutput = new SPOutput_GetWalletInfo();
+                    SPOutput_GetWalletInfo SPOutput = new SPOutput_GetWalletInfo();//取得會員錢包帳號
                     SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo> sqlHelp = new SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo>(connetStr);
                     flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
                     baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
@@ -296,7 +290,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("受贈人錢包");
                     trace.traceAdd("GetWalletInfoByTrans", new { SPTransInput, SPTransOutput });
 
-                    #region 台新錢包
+                    #region 台新錢包轉贈
 
                     WebAPIOutput_TransferStoreValueCreateAccount output = null;
                     if (flag)
@@ -385,7 +379,9 @@ namespace WebAPI.Controllers
                     #endregion
                 }
                 #endregion
-
+                //2021-09-28 UPD BY YANKEY 調整日期輸出格式
+                //apiOutput.SystemTime = DateTime.Now.ToString("G", CultureInfo.CreateSpecificCulture("zh-CN"));    //Display:"2021/9/28 15:36:52"
+                apiOutput.SystemTime = DateTime.Now.ToString("s");                                                  //Display:"2021-09-28T15:41:03"
                 apiOutput.TranResult = flag ? 1 : 0;
             }
             catch (Exception ex)

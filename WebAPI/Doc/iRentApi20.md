@@ -79,7 +79,7 @@ iRentApi20 Web API版本
 - [GetPayInfo 取得付款方式](#GetPayInfo)
 - [WalletTransferStoredValue 錢包轉贈](#WalletTransferStoredValue)
 - [WalletTransferTCheck 轉贈對象確認](#WalletTransferTargetCheck)
-- [SetPaymentSettings 設定預設支付方式](#SetPaymentSettings)
+- [SetDefPayMode 設定預設支付方式](#SetDefPayMode)
 - [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
 
 ----------
@@ -150,6 +150,8 @@ iRentApi20 Web API版本
 20210916 移除錢包儲值-設定資訊(GetWalletStoredMoneySet)錯誤代碼
 
 20210922 查詢綁卡跟錢包(CreditAndWalletQuery)增加輸出欄位
+
+20210928 新增設定預設支付方式(SetDefPayMode)
 
 20210928 錢包儲值-虛擬帳號(WalletStoreVisualAccount) 參數調整、錢包儲值-商店條碼(WalletStoreShop) 新增輸入欄位
 
@@ -5915,7 +5917,7 @@ iRentApi20 Web API版本
 | ------------ | --------------------- | :----: | --------------------- |
 | StroeResult  | 儲值結果(1成功,0失敗) |  int   | 1                     |
 | StoreMoney   | 儲值金額              |  int   | 500                   |
-| PayDeadline  | 繳費期限(距今+3小時)  | string | 2021/03/31 23:19      |
+| PayDeadline  | 繳費期限(距今+10分鐘)  | string | 2021/03/31 23:19      |
 | ShopBarCode1 | 超商條碼1             | string | 1003908SJ             |
 | ShopBarCode2 | 超商條碼2             | string | 20944SE031003908SUEPJ |
 | ShopBarCode3 | 超商條碼3             | string | 10023984HPDJ3908SJ    |
@@ -6218,11 +6220,11 @@ iRentApi20 Web API版本
 
 ----
 
-## SetPaymentSettings 設定預設支付方式
+## SetDefPayMode 設定預設支付方式
 
-### [/api/SetPaymentSettings/]
+### [/api/SetDefPayMode/]
 
-* 20210901新增文件
+* 20210928新增文件
 
 * ASP.NET Web API (REST API)
 
@@ -6240,28 +6242,28 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
-| ---------- | ---------------- | ---- | :----: | ---------- |
-| Setting    | 設定預設支付方式 | Y    |  int   | 1          |
+| 參數名稱 | 參數說明                           | 必要 | 型態 | 範例 |
+| -------- | ---------------------------------- | ---- | :--: | ---- |
+| PayMode  | 支付方式<br>0:信用卡<br>1:和雲錢包 | Y    | int  | 0    |
 
 * input範例
 
 ```
 {
-  "Setting" : 1
+    "PayMode": 0
 }
-
 ```
 
 * Output回傳參數說明
 
-| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
-| ------------------- | ------------------ | :----: | ------------- |
-| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode     　　　| 錯誤碼             | string | 000000        |
-| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
 
 
 * Output範例
@@ -6272,9 +6274,9 @@ iRentApi20 Web API版本
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
-    "ErrorMessage": "Success"
+    "ErrorMessage": "Success",
+    "Data": {}
 }
-
 ```
 
 ----
