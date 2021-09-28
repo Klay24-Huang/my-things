@@ -1455,10 +1455,10 @@ namespace Web.Controllers
 
         [HttpPost]
         [Obsolete]
-        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport,string month, string carType, string Account, string export)
+        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport, string month, string carType, string Account, string export)
         {
             //匯出檔案
-            if(export == "true")
+            if (export == "true")
             {
                 SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
                 SqlTransaction tran;
@@ -1491,9 +1491,9 @@ namespace Web.Controllers
             }
 
             //上傳檔案
-            if(fileImport != null)
+            if (fileImport != null)
             {
-                if(fileImport.ContentLength > 0)
+                if (fileImport.ContentLength > 0)
                 {
 
                     using (var reader = new StreamReader(fileImport.InputStream, Encoding.UTF8))
@@ -1551,10 +1551,12 @@ namespace Web.Controllers
             {
                 ViewData["result"] = "未上傳任何檔案";
             }
-            
-            
+
+
             return View();
         }
         #endregion
+
+
     }
 }
