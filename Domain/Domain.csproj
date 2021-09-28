@@ -294,6 +294,7 @@
     <Compile Include="SP\Input\Wallet\SPInput_WalletStore.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_SetWalletTrade.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletPay.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletTransferCheck.cs" />
     <Compile Include="SP\MA\Input\SPInpupt_MA_CleanCarStart.cs" />
@@ -712,6 +713,7 @@
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_ECRefund.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetPaymentInfo.cs" />
+    <Compile Include="WebAPI\output\IRentAPIOutput_Generic.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebCommon\WebCommon.csproj">
