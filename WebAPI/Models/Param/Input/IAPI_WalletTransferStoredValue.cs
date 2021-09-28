@@ -10,7 +10,7 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 身分證或手機號碼(受贈人)
         /// </summary>
-        public string IDNO_Phone { get; set; }
+        public string IDNO { get; set; }
 
         /// <summary>
         /// 轉贈金額

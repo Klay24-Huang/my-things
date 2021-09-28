@@ -5908,7 +5908,7 @@ iRentApi20 Web API版本
 | ------------ | --------------------- | :----: | --------------------- |
 | StroeResult  | 儲值結果(1成功,0失敗) |  int   | 1                     |
 | StoreMoney   | 儲值金額              |  int   | 100                   |
-| Deadline     | 繳費期限(距今+3小時)  | string | 2021/03/31 23:19      |
+| Deadline     | 繳費期限(距今+10分鐘) | string | 2021/03/31 23:19      |
 | ShopBarCode1 | 超商條碼1             | string | 1003908SJ             |
 | ShopBarCode2 | 超商條碼2             | string | 20944SE031003908SUEPJ |
 | ShopBarCode3 | 超商條碼3             | string | 10023984HPDJ3908SJ    |
