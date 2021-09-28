@@ -1048,14 +1048,14 @@ namespace WebAPI.Controllers
             int PayAmount = 0;
             //取得錢包狀態
             var WalletStatus = GetWalletInfo(IDNO, LogID, Access_Token);
-            if (!WalletStatus.flag)
+            result.flag = WalletStatus.flag;
+            if (!result.flag)
             {
                 //未開通
                 errCode = "ERR932";
                 return result;
             }
-
-            //錢包於餘<訂單金額
+            //錢包餘額<訂單金額
             if (WalletStatus.WalletInfo.Balance < Amount)
             {
                 //如果自動儲值是on
@@ -1064,7 +1064,7 @@ namespace WebAPI.Controllers
                     //儲值.....儲值金額(訂單-錢包)
                     var storeAmount = Amount - WalletStatus.WalletInfo.Balance;
 
-                    bool storeSataus = WalletStoreByCredit(storeAmount,Access_Token,funName,ref errCode);
+                    bool storeSataus = WalletStoreByCredit(storeAmount, Access_Token, funName, ref errCode);
 
                     if (storeSataus)
                     {
@@ -1072,20 +1072,36 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
-                        return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, false, funName, LogID, Access_Token, ref errCode);
+                        if (TradeType != "Pay_Arrear")
+                        {
+                            return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, false, funName, LogID, Access_Token, ref errCode);
+                        }
                     }
                 }
-                else
-                {
-                    PayAmount = WalletStatus.WalletInfo.Balance;
-                }
+                
+                PayAmount = WalletStatus.WalletInfo.Balance;
             }
             else //錢包餘額>=訂單金額
             {
                 PayAmount = Amount;
             }
+
+            //欠費金額判斷
+            if (TradeType == "Pay_Arrear")
+            {
+                //欠費一定要全繳
+                result.flag = IsWalletPayAmountEnough(PayAmount, Amount);
+                if (!result.flag)
+                {
+                    //餘額不足
+                    errCode = "ERR934";
+                    return result;
+                }
+            }
             //扣款
             return DoWalletPay(PayAmount, IDNO, OrderNo, TradeType, funName, LogID, Access_Token, ref errCode);
+            
+
         }
         /// <summary>
         /// 錢包扣款
@@ -1098,21 +1114,30 @@ namespace WebAPI.Controllers
         {
             (bool flag, SPInput_WalletPay paymentInfo) result = (false, new SPInput_WalletPay());
 
+            result.flag = IsWalletPayAmountEnough(Amount,0);
+
+            if (!result.flag)
+            {
+                errCode = "ERR934";
+                return result;
+            }
+
             DateTime NowTime = DateTime.Now;
-            var wsp = new WalletSp();
             //設定錢包付款參數
             WebAPI_PayTransaction wallet = SetForWalletPay(IDNO, OrderNo, Amount, NowTime);
-
-            var body = JsonConvert.SerializeObject(wallet);
-            TaishinWallet WalletAPI = new TaishinWallet();
-            string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
             WebAPIOutput_PayTransaction taishinResponse = null;
-
-            result.flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
 
             if (result.flag)
             {
+                var body = JsonConvert.SerializeObject(wallet);
+                TaishinWallet WalletAPI = new TaishinWallet();
+                string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                result.flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
+            }
+            if (result.flag)
+            {
+                var wsp = new WalletSp();
                 //設定錢包付款參數寫入
                 SPInput_WalletPay spInput = SetForWalletPayLog(wallet, taishinResponse,
                     IDNO, OrderNo, LogID, Access_Token, NowTime, TradeType, PRGName);
@@ -1184,7 +1209,7 @@ namespace WebAPI.Controllers
         {
             switch (TradeType)
             {
-                case "pay_Arrears":
+                case "Pay_Arrear":
                     return 5;
                 case "pay_Car":
                 case "Pay_Motor":
@@ -1262,10 +1287,10 @@ namespace WebAPI.Controllers
         }
 
         ////信用卡錢包儲值
-        public bool WalletStoreByCredit(int StoreMoney, string Access_Token, string FunName, ref string errCode)
+        public bool WalletStoreByCredit(int storeMoney, string accessToken, string funName, ref string errCode)
         {
             IAPI_WalletStoredByCredit Input =
-                new IAPI_WalletStoredByCredit { StoreMoney = StoreMoney };
+                new IAPI_WalletStoredByCredit { StoreMoney = storeMoney };
 
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             DateTime MKTime = DateTime.Now;
@@ -1275,7 +1300,7 @@ namespace WebAPI.Controllers
 
             string url = $@"{AzureAPIBaseURL}api/WalletStoredByCredit";
 
-            var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoredByCredit>(Input, url, Access_Token);
+            var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoredByCredit>(Input, url, accessToken);
             try
             {
                 if (resault.Succ)
@@ -1295,7 +1320,7 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    errCode = (!string.IsNullOrWhiteSpace(resault.errCode)) ? resault.errCode : "";
+                    errCode = resault.errCode;
                 }
             }
             finally
@@ -1305,7 +1330,7 @@ namespace WebAPI.Controllers
                     MKTime = MKTime,
                     UPDTime = RTime,
                     WebAPIInput = JsonConvert.SerializeObject(Input),
-                    WebAPIName = FunName,
+                    WebAPIName = funName,
                     WebAPIOutput = JsonConvert.SerializeObject(resault),
                     WebAPIURL = url
                 };
@@ -1314,6 +1339,11 @@ namespace WebAPI.Controllers
             return flag;
         }
 
-
+        private bool IsWalletPayAmountEnough(int payAmount,int baseAmount )
+        {
+            if(baseAmount == 0)
+                return (payAmount > baseAmount);
+            return payAmount >= baseAmount;
+        }
     }
 }
