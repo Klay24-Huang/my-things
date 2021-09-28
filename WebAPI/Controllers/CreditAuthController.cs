@@ -1264,8 +1264,8 @@ namespace WebAPI.Controllers
         ////信用卡錢包儲值
         public bool WalletStoreByCredit(int StoreMoney, string Access_Token, string FunName, ref string errCode)
         {
-            IAPI_WalletStoredByCredit Input =
-                new IAPI_WalletStoredByCredit { StoreMoney = StoreMoney };
+            IAPI_WalletStoreBase Input =
+                new IAPI_WalletStoreBase { StoreMoney = StoreMoney };
 
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             DateTime MKTime = DateTime.Now;
@@ -1275,7 +1275,7 @@ namespace WebAPI.Controllers
 
             string url = $@"{AzureAPIBaseURL}api/WalletStoredByCredit";
 
-            var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoredByCredit>(Input, url, Access_Token);
+            var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoreBase>(Input, url, Access_Token);
             try
             {
                 if (resault.Succ)
