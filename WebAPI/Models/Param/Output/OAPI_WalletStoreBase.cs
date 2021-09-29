@@ -5,15 +5,17 @@ using System.Web;
 
 namespace WebAPI.Models.Param.Output
 {
-    public class OAPI_WalletTransferStoredValue
+    public class OAPI_WalletStoreBase
     {
         /// <summary>
-        /// 轉贈結果 (1成功0失敗)
+        /// 儲值結果(1:成功 0:失敗)
         /// </summary>
-        public int TranResult { get; set; }
+        public int StroeResult { get; set; }
+
         /// <summary>
-        /// 時間戳章
+        /// 儲值金額
         /// </summary>
-        public string SystemTime { get; set; }
+        public int StoreMoney { get; set; }
+      
     }
 }

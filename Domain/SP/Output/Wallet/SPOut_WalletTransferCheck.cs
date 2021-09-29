@@ -23,7 +23,7 @@ namespace Domain.SP.Output.Wallet
         /// <summary>
         /// 會員手機號碼
         /// </summary>
-        public string ShowValue { get; set; }/*
+        public string ShowValue { get; set; }
         /// <summary>
         /// 錢包剩餘金額
         /// </summary>
@@ -36,6 +36,6 @@ namespace Domain.SP.Output.Wallet
         /// 當月轉出總金額
         /// </summary>
         public decimal MonTransOut { get; set; }
-        */
+        
     }
 }

@@ -36,11 +36,49 @@ using Domain.WebAPI.output.HiEasyRentAPI;
 using NLog;
 using Domain.SP.Output.Wallet;
 using Domain.SP.Input.Wallet;
+using Domain.SP.Input.OtherService.Taishin;
+using WebAPI.Models.Param.Input;
 
 namespace WebAPI.Service
 {
     public class WalletService
     {
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        public bool CheckStoreAmtLimit(int StoreMoney, string IDNO, long LogID, string Access_Token, ref bool flag, ref string errCode) 
+        {
+            
+            CommonFunc baseVerify = new CommonFunc();
+            string spName = "usp_GetWallet_Q01";
+            SPInput_GetWallet spInput = new SPInput_GetWallet()
+            {
+                IDNO = IDNO,
+                LogID = LogID,
+                Token = Access_Token
+            };
+            SPOutput_GetWallet sPOutput_GetWallet = new SPOutput_GetWallet();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SQLHelper<SPInput_GetWallet, SPOutput_GetWallet> sqlHelp = new SQLHelper<SPInput_GetWallet, SPOutput_GetWallet>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref sPOutput_GetWallet, ref lstError);
+            baseVerify.checkSQLResult(ref flag, sPOutput_GetWallet.Error, sPOutput_GetWallet.ErrorCode, ref lstError, ref errCode);
+
+            if (flag && sPOutput_GetWallet != null)
+            {
+                //錢包現存餘額上限為5萬元
+                if (StoreMoney + sPOutput_GetWallet.WalletBalance > 50000)
+                {
+                    flag = false;
+                    errCode = "ERR282";
+                }
+                //錢包單月儲值(包括受贈)上限為30萬元
+                else if (StoreMoney + sPOutput_GetWallet.MonthlyTransAmount > 300000)
+                {
+                    flag = false;
+                    errCode = "ERR280";
+                }
+            }
+
+            return flag;
+        }
     }
 
     public class WalletSp
@@ -166,9 +204,9 @@ namespace WebAPI.Service
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                    if (ds1.Tables.Count >= 3) 
+                    if (ds1.Tables.Count >= 3)
                     {
-                        var CheckoutModes = objUti.ConvertToList<SPOut_GetPayInfoReturnCar_CheckoutModes>(ds1.Tables[0]);        
+                        var CheckoutModes = objUti.ConvertToList<SPOut_GetPayInfoReturnCar_CheckoutModes>(ds1.Tables[0]);
                         var PayInfos = objUti.ConvertToList<SPOut_GetPayInfoReturnCar_PayInfo>(ds1.Tables[1]);
                         if (CheckoutModes != null && CheckoutModes.Count() > 0)
                             re.CheckoutModes = CheckoutModes;
@@ -234,7 +272,7 @@ namespace WebAPI.Service
             return flag;
         }
 
-        public bool sp_WalletStore(SPInput_WalletStore spInput, ref string errCode) 
+        public bool sp_WalletStore(SPInput_WalletStore spInput, ref string errCode)
         {
             bool flag = false;
             string spName = "usp_WalletStore_U01";
@@ -246,7 +284,7 @@ namespace WebAPI.Service
 
             if (flag)
             {
-                if (spOutput.Error == 1 || spOutput.ErrorCode !="0000")
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
                 {
                     flag = false;
                     errCode = spOutput.ErrorCode;
@@ -254,7 +292,7 @@ namespace WebAPI.Service
             }
             else
             {
-                if (lstError.Count>0)
+                if (lstError.Count > 0)
                 {
                     errCode = lstError[0].ErrorCode;
                 }
@@ -292,6 +330,40 @@ namespace WebAPI.Service
             return flag;
         }
 
+        /// <summary>
+        /// 台新虛擬帳號產生紀錄
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_WalletStoreVisualAccount(SPInput_InsWalletStoreVisualAccountLog spInput, ref string errCode)
+        {
+            bool flag = false;
+            string spName = "usp_InsWalletStoreVisualAccountLog_I01";
+
+            var lstError = new List<ErrorInfo>();
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_InsWalletStoreVisualAccountLog, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsWalletStoreVisualAccountLog, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return flag;
+        }
 
     }
 
@@ -308,12 +380,12 @@ namespace WebAPI.Service
                           SEQNO = a.SEQNO,
                           TradeYear = Convert.ToDateTime(a.TradeDate).Year,
                           TradeDate = Convert.ToDateTime(a.TradeDate).ToString("MM/dd"),
-                          TradeTime = Convert.ToDateTime(a.TradeDate).ToString("HH:mm"),  
+                          TradeTime = Convert.ToDateTime(a.TradeDate).ToString("HH:mm"),
                           TradeTypeNm = a.CodeName,
                           TradeNote = a.TradeNote,
                           TradeAMT = Convert.ToInt32(a.TradeAMT),
                           ShowFLG = 1
-                      }).ToList(); 
+                      }).ToList();
             }
 
             return re;

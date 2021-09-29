@@ -1,4 +1,12 @@
-﻿/***********************************************************************************************
+﻿/****** Object:  StoredProcedure [dbo].[usp_GetWalletStoreTradeTransHistory_Q1]    Script Date: 2021/9/28 上午 10:28:39 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+/***********************************************************************************************
 * Serve    : sqyhi03az.database.windows.net
 * Database : IRENT_V2
 * 程式名稱 : usp_GetWalletStoreTradeTransHistory_Q1
@@ -7,6 +15,7 @@
 * 作    者 : eason
 * 撰寫日期 : 20210817
 * 修改日期 : 20210903 UPD BY AMBER REASON: 調整F_INFNO改為抓取TaishinNO(台新交易IR編)欄位
+20210910 UPD BY YANKEY REASON: 調整Key值欄位、TradeNote輸出文字
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetWalletStoreTradeTransHistory_Q1]
@@ -20,6 +29,7 @@ CREATE PROCEDURE [dbo].[usp_GetWalletStoreTradeTransHistory_Q1]
 AS
 BEGIN
     SET NOCOUNT ON
+
 	DECLARE @Error INT = 0
     DECLARE	@ErrorCode VARCHAR(6) = '0000'	
     DECLARE	@ErrorMsg  		   NVARCHAR(100) = 'SUCCESS'	
@@ -41,31 +51,23 @@ BEGIN
 			set @ErrorMsg = 'LogID必填'
 			SET @ErrorCode = 'ERR254'
 		END
-
-		if @Error = 0
+		ELSE IF @IDNO = ''
+		BEGIN
+			SET @Error=1
+			set @ErrorMsg = 'IDNO必填'
+			SET @ErrorCode = 'ERR256'
+		END
+		ELSE if @SD is null or @ED is null
 		begin
-			IF @IDNO = ''
-			BEGIN
-				SET @Error=1
-				set @ErrorMsg = 'IDNO必填'
-				SET @ErrorCode = 'ERR256'
-			END
+		    set @Error = 1
+			set @ErrorMsg = 'SD, ED 必填'
+			set @ErrorCode = 'ERR257' --參數遺漏
 		end
 
 		if @Error = 0
 		begin
-		   if @SD is null or @ED is null
-		   begin
-		      set @Error = 1
-			  set @ErrorMsg = 'SD, ED 必填'
-			  set @ErrorCode = 'ERR257' --參數遺漏
-		   end
-		end
-
-		if @Error = 0
-		begin
-		  	set @SD = DATEADD(second, DATEPART(SECOND, @SD)*-1,@SD)--去秒數
-	        set @ED = DATEADD(second, DATEPART(SECOND, @ED)*-1,@ED)--去秒數
+		set @SD = DATEADD(second, DATEPART(SECOND, @SD)*-1,@SD)--去秒數
+	    set @ED = DATEADD(second, DATEPART(SECOND, @ED)*-1,@ED)--去秒數
 
 			 declare @days int = datediff(day,@SD,@ED)
 			 if @days > 90
@@ -79,29 +81,33 @@ BEGIN
 		IF @Error = 0
 		BEGIN
 		   select distinct 
-		   tm.ORGID, tm.IDNO, tm.SEQNO, tm.TaishinNO --key保留
+		   tm.SEQNO --key保留
+		   --tm.ORGID, tm.IDNO, tm.SEQNO, tm.TaishinNO --key保留
 		   ,tm.TradeType, tm.TradeKey 
 		   ,tm.TradeDate
-		   ,CardNo = isnull((select top 1  --卡號末4碼
-			   SUBSTRING(b.CardNumber, len(b.CardNumber)-3,len(b.CardNumber)) 
-			   from TB_MemberCardBinding b with(nolock)
-			   where b.IDNO = tm.IDNO and b.IsValid = 1),'')
+		   ,CardNo = isnull(
+				(
+					select top 1  --卡號末4碼
+						SUBSTRING(b.CardNumber, len(b.CardNumber)-3,len(b.CardNumber)) 
+				   from TB_MemberCardBinding b with(nolock)
+				   where b.IDNO = tm.IDNO and b.IsValid = 1
+			   ),'')
            ,c.Code0, c.CodeName, c.Negative
-		   ,tm.TradeAMT, td.PayType		
-		   into #Tmp_TradeMain
+		   ,tm.TradeAMT--, td.PayType		
+		   into #Tmp_TradeMain		--寫入暫存
 		   from TB_WalletTradeMain tm with(nolock)
-		   left join TB_WalletTradeDetail td with(nolock) 
-		   on td.ORGID = tm.ORGID and td.IDNO = tm.IDNO and td.SEQNO = tm.SEQNO and td.TaishinNO = tm.TaishinNO
+		   --left join TB_WalletTradeDetail td with(nolock) on td.ORGID = tm.ORGID and td.IDNO = tm.IDNO and td.SEQNO = tm.SEQNO and td.TaishinNO = tm.TaishinNO
 		   join TB_WalletCodeTable c with(nolock) on c.CodeGroup = 'TradeType' and c.Code0 = tm.TradeType
 		   where tm.ShowFLG = 1 and tm.IDNO = @IDNO 
 		   and tm.TradeDate >= @SD and tm.TradeDate <= @ED
 
 		   declare @TmpCount int = 0
-		   select @TmpCount = COUNT(*) from #Tmp_TradeMain
+		   select @TmpCount = COUNT(1) from #Tmp_TradeMain
 		   if @TmpCount > 0
 		   begin
 		      select distinct
-			   t.ORGID, t.IDNO, t.SEQNO, t.TaishinNO --key保留
+				t.SEQNO --key保留
+			   --t.ORGID, t.IDNO, t.SEQNO, t.TaishinNO --key保留
 			   ,t.TradeType, t.TradeKey 
 			   ,t.TradeDate
 			   ,t.CardNo  
@@ -114,17 +120,17 @@ BEGIN
 			      when t.Code0 = 'Store_Account' then '虛擬帳號轉帳'
 				  when t.Code0 = 'Store_Shop' then '超商繳款'
 				  when t.Code0 = 'Store_Return' then '合約退款'
-				  when t.Code0 = 'Store_Trans' then  ('轉贈人 '+
-				    (select dbo.FN_BlockName((select top 1 me.MEMCNAME from TB_MemberData me where me.MEMIDNO = t.TradeKey),'O')) --姓名
+				  when t.Code0 = 'Store_Trans' then  ('轉入 '+
+				    (select dbo.FN_BlockName((select top 1 me.MEMCNAME from TB_MemberData me with(nolock)  where me.MEMIDNO = t.TradeKey),'O')) --姓名
 				  )				  
-				  when t.Code0 = 'Withdraw' then '電子錢包提領'
+				  when t.Code0 = 'Withdraw' then '餘額提領'
 				  when t.Code0 = 'Pay_Car' then 'H'+ CAST(t.TradeKey as nvarchar)--單號
 				  when t.Code0 = 'Pay_Motor' then 'H'+ CAST(t.TradeKey as nvarchar)--單號
 				  when t.Code0 = 'Pay_Monthly' then(
-					   select top 1 mr.ProjNM from SYN_MonthlyRent mr where MonthlyRentId = CAST(t.TradeKey as bigint))
-				  when t.Code0 = 'Cancel' then '電子錢包付款取消'
-				  when t.Code0 = 'Give_Trans' then ('電子錢包贈與 ' +
-				    (select dbo.FN_BlockName((select top 1 me.MEMCNAME from TB_MemberData me where me.MEMIDNO = t.TradeKey),'O')) --姓名			     
+					   select top 100 mr.ProjNM from SYN_MonthlyRent mr with(nolock)  where MonthlyRentId = CAST(t.TradeKey as bigint))
+				  when t.Code0 = 'Cancel' then '付款取消'
+				  when t.Code0 = 'Give_Trans' then ('轉出 ' +
+				    (select dbo.FN_BlockName((select top 1 me.MEMCNAME from TB_MemberData me with(nolock) where me.MEMIDNO = t.TradeKey),'O')) --姓名			     
 				  )
 				  else '其他' end     
 			   )
@@ -155,7 +161,8 @@ BEGIN
 	SELECT @ErrorCode[ErrorCode], @ErrorMsg[ErrorMsg], @SQLExceptionCode[SQLExceptionCode], @SQLExceptionMsg[SQLExceptionMsg], @Error[Error]
 
 	drop table if exists #Tmp_TradeMain
-END
 
+END
+GO
 
 

@@ -5,10 +5,10 @@ using System.Web;
 
 namespace WebAPI.Models.Param.Input
 {
-    public class IAPI_WalletStoredByCredit
+    public class IAPI_WalletStoreBase
     {
         /// <summary>
-        /// 要儲值的金額
+        /// 儲值的金額
         /// </summary>
         public int StoreMoney { set; get; }
     }
