@@ -1262,6 +1262,7 @@ namespace WebAPI.Controllers
         /// <param name="NowTime"></param>
         /// <param name="TradeType"></param>
         /// <param name="PRGName"></param>
+        /// <param name="InputSource"></param>
         /// <returns></returns>
         private SPInput_WalletPay SetForWalletPayLog(WebAPI_PayTransaction wallet, WebAPIOutput_PayTransaction taishinResponse
             , string IDNO, long OrderNo, long LogID, string Access_Token, DateTime NowTime, string TradeType, string PRGName)
@@ -1281,7 +1282,8 @@ namespace WebAPI.Controllers
                 TransId = taishinResponse.Result.TransId,
                 TradeType = TradeType,
                 PRGName = PRGName,
-                Mode = GetWalletHistoryMode(TradeType)
+                Mode = GetWalletHistoryMode(TradeType),
+                InputSource = 1
             };
 
         }
