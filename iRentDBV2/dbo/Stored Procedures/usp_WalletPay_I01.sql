@@ -22,6 +22,7 @@ CREATE PROCEDURE [dbo].[usp_WalletPay_I01]
 		@TradeType						VARCHAR(20)           , --交易類別名稱
 		@PRGName						VARCHAR(50)           , --程式Name
 		@Mode								TINYINT						, --交易類別代號(0:消費;1:儲值;2:轉贈給他人;3:受他人轉贈;4:退款;5:欠費繳交)
+		@InputSource                  TINYINT                      ,--輸入來源(1:APP;2:Web)
 		@Token								VARCHAR(1024)       , --JWT TOKEN
 		@LogID								BIGINT						, --執行的api log
 		@ErrorCode 						VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -62,25 +63,36 @@ SET @WalletAccountID =ISNULL (@WalletAccountID,'');
 SET @Token =ISNULL (@Token,'');
 
 BEGIN TRY
-  IF @Token='' OR @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID='' OR @OrderNO = '0'
-  BEGIN
-  SET @Error=1;
-  SET @ErrorCode='ERR900'
-  END
-		 
+  IF @InputSource = 1
+  Begin
+	  IF @Token='' OR @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID='' OR @OrderNO = '0'
+	  BEGIN
+	  SET @Error=1;
+	  SET @ErrorCode='ERR900'
+	  END
+  End
+  Else
+  Begin
+	  IF @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID='' OR @OrderNO = '0'
+	  BEGIN
+	  SET @Error=1;
+	  SET @ErrorCode='ERR900'
+	  END
+  End
   --0.再次檢核token
-  IF @Error=0
+ 
+  IF @Error=0 And @InputSource = 1
   BEGIN
     SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
     IF @hasData=0
     BEGIN
-    SET @Error=1;
-    SET @ErrorCode='ERR101';
+		SET @Error=1;
+		SET @ErrorCode='ERR101';
     END
     ELSE
 	BEGIN
-	SET @hasData=0;
-	SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+		SET @hasData=0;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 	END 
     IF @hasData=0
 	BEGIN
@@ -91,8 +103,15 @@ BEGIN TRY
 
   IF @Error=0
 	BEGIN
-		Declare @PRGID int = 0
-		Select @PRGID = APIID From TB_APIList with(nolock) Where APIName = @PRGName
+		Declare @PRGID varchar(10) = '0'
+		IF @InputSource = 1
+		Begin
+			Select @PRGID = Convert(varchar(10),APIID) From TB_APIList with(nolock) Where APIName = @PRGName
+		End
+		Else
+		Begin
+			Set @PRGID = Left(@PRGName,10)
+		End
 		--寫入錢包歷程
 		INSERT INTO TB_WalletHistory(IDNO,WalletMemberID,WalletAccountID,Mode,Amount,TransDate,TransId,StoreTransId)
 		VALUES(@IDNO,@WalletMemberID,@WalletAccountID,@Mode,@Amount,@TransDate,@TransId,@StoreTransId);

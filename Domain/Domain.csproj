@@ -283,6 +283,7 @@
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_AutoStoreSetting.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_CreditAndWalletQuery.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWallet.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetPayInfo.cs" />

@@ -183,6 +183,7 @@
     <Compile Include="Controllers\AnyRentController.cs" />
     <Compile Include="Controllers\AreaListController.cs" />
     <Compile Include="Controllers\ArrearsQueryController.cs" />
+    <Compile Include="Controllers\AutoStoreSettingController.cs" />
     <Compile Include="Controllers\BatExchangeStationController.cs" />
     <Compile Include="Controllers\BE_AuditController.cs" />
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
@@ -503,6 +504,7 @@
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_AutoStoreSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindUUCardJob.cs" />
