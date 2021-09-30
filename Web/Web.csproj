@@ -831,6 +831,7 @@
     <Content Include="Views\Report\IrentPaymentHistory.cshtml" />
     <Content Include="Views\Report\CarMapFileUpload.cshtml" />
     <Content Include="Views\MemberManage\WalletDetailQuery.cshtml" />
+    <Content Include="Views\MemberManage\WalletWithdraw.cshtml" />
     <None Include="Web.backend-web-test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

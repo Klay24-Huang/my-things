@@ -1494,5 +1494,26 @@ namespace Web.Controllers
             return View(obj);
             #endregion
         }
+
+        #region 和雲錢包餘額提領
+        /// <summary>
+        /// 和雲錢包餘額提領 - 20210927 Frank加
+        /// </summary>
+        public ActionResult WalletWithdraw()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult WalletWithdraw(string IDNO, string cashAmount, string handleFee, string invoiceMode)
+        {
+            if(handleFee == "on")
+            {
+                return View();
+            }
+            
+            return View();
+        }
+        #endregion
     }
 }

@@ -1,0 +1,93 @@
+﻿
+@{
+
+}
+
+<!--查詢介面-->
+<div class="container mt-4">
+    <!--card start-->
+    @using (Html.BeginForm("WalletWithdraw", "MemberManage", FormMethod.Post, new { id = "frmWalletWithdraw", @class = "form-horizontal", enctype = "multipart/form-data" }))
+    {
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                和雲錢包餘額提領
+            </div>
+            <ul class="list-group list-group-flush">
+                <!--每一個li是一項查詢條件-->
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                會員帳號
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="IDNO" id="IDNO" value="@((ViewData["userID"]==null)?"":ViewData["userID"].ToString())">
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                提領金額
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" name="cashAmount" id="cashAmount" value="@((ViewData["cashAmount"]==null)?"":ViewData["cashAmount"].ToString())">
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                是否扣除手續費
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="handleFee" id="handleFee">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                發票開立方式
+                            </div>
+                            <div class="col-md-3">
+                                <select class="custom-select" name="invoiceMode" id="invoiceMode">
+                                    <option value="1">捐贈</option>
+                                    <option value="2">會員載具</option>
+                                    <option value="3">二聯式發票</option>
+                                    <option value="4">三聯式發票</option>
+                                    <option value="5">手機條碼</option>
+                                    <option value="6">自然人憑證</option>
+                                </select>                       
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-5 offset-md-2">
+                                <button type="submit" id="checkBtn" name="checkBtn" class="btn btn-primary">確認</button>
+                                <button type="button" id="Clear" name="Clear" class="btn btn-outline-primary ml-2">清除</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <input type="hidden" id="Account" name="Account" value="@((Session["Account"]==null)?"":Session["Account"].ToString())" />
+        </div>
+        <!--end card-->
+    }
+</div>
+<!--查詢介面結束-->
