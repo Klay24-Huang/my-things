@@ -4,9 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebCommon;
 
 namespace Reposotory.Implement
@@ -25,7 +22,7 @@ namespace Reposotory.Implement
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<BE_OrderHistoryData> lstOrderHistory= null;
+            List<BE_OrderHistoryData> lstOrderHistory = null;
 
 
             int nowCount = 0;
@@ -34,7 +31,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[10];
             string term = "";
 
-            if (OrderNo >0)
+            if (OrderNo > 0)
             {
                 term += (term == "") ? "" : " AND ";
                 term += " OrderNum=@OrderNo";
@@ -158,7 +155,7 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (string.IsNullOrEmpty(SD) == false && SD!="")
+            if (string.IsNullOrEmpty(SD) == false && SD != "")
             {
                 if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
@@ -208,7 +205,7 @@ namespace Reposotory.Implement
 
             return lstOrderPart;
         }
-        public List<BE_GetCleanFixQueryForWeb> GetCleanFixQueryForWeb(Int64 OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED,string Mode)
+        public List<BE_GetCleanFixQueryForWeb> GetCleanFixQueryForWeb(Int64 OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED, string Mode)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -260,14 +257,14 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (Mode != "" )
+            if (Mode != "")
             {
                 term += (term == "") ? "" : " AND ";
                 term += " spec_status=@spec_status";
                 para[nowCount] = new SqlParameter("@spec_status", SqlDbType.VarChar, 20);
                 para[nowCount].Value = Mode;
                 para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++; 
+                nowCount++;
             }
             if (string.IsNullOrEmpty(SD) == false && SD != "")
             {
@@ -312,7 +309,7 @@ namespace Reposotory.Implement
                 SQL += " WHERE " + term;
 
             }
-      
+
             SQL += " ORDER BY OrderNum ASC;";
 
             lstOrderPart = GetObjList<BE_GetCleanFixQueryForWeb>(ref flag, ref lstError, SQL, para, term);
@@ -335,7 +332,7 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_GetOrderQueryForWeb> lstOrderPart = null;
-       
+
 
             int nowCount = 0;
             string SQL = "SELECT OrderNum,IDNO,[CarNo],[car_mgt_status],cancel_status,StationName,SD,ED,FS,FE ";
@@ -355,11 +352,11 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (IDNO !="")
+            if (IDNO != "")
             {
                 term += (term == "") ? "" : " AND ";
                 term += " IDNO=@IDNO";
-                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar,20);
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
                 para[nowCount].Value = IDNO;
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
@@ -382,7 +379,7 @@ namespace Reposotory.Implement
                 para[nowCount].Direction = ParameterDirection.Input;
                 nowCount++;
             }
-            if (string.IsNullOrEmpty(SD) == false && SD!="")
+            if (string.IsNullOrEmpty(SD) == false && SD != "")
             {
                 if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
@@ -425,10 +422,10 @@ namespace Reposotory.Implement
             {
                 SQL += term2;
             }
-            SQL+= " ORDER BY OrderNum ASC;";
+            SQL += " ORDER BY OrderNum ASC;";
 
             lstOrderPart = GetObjList<BE_GetOrderQueryForWeb>(ref flag, ref lstError, SQL, para, term);
-  
+
 
             return lstOrderPart;
         }
@@ -446,17 +443,17 @@ namespace Reposotory.Implement
         /// <para>false:合約</para>
         /// </param>
         /// <returns></returns>
-        public List<BE_OrderDetailData> GetOrderExplodeData(Int64 OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED,bool IsBooking)
+        public List<BE_OrderDetailData> GetOrderExplodeData(Int64 OrderNo, string IDNO, string StationID, string CarNo, string SD, string ED, bool IsBooking)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_OrderDetailData> lstOrder = null;
-    
+
             int nowCount = 0;
             string SQL = "SELECT *  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
 
             SqlParameter[] para = new SqlParameter[10];
-            string term =(IsBooking)?"": " CMS>=4 ";
+            string term = (IsBooking) ? "" : " CMS>=4 ";
             string term2 = "";
 
             if (OrderNo > 0)
@@ -499,9 +496,10 @@ namespace Reposotory.Implement
             {
                 if (string.IsNullOrEmpty(ED) == false && ED != "")
                 {
-                    if(term!="" || term2 != "") {
+                    if (term != "" || term2 != "")
+                    {
                         term2 += " AND ";
-                        }
+                    }
                     term2 += "  ((SD between @SD AND @ED) OR (ED between @SD AND @ED))";
                     para[nowCount] = new SqlParameter("@SD", SqlDbType.VarChar, 20);
                     para[nowCount].Value = SD;
@@ -554,7 +552,7 @@ namespace Reposotory.Implement
                 }
                 SQL += term2;
             }
-      
+
 
             SQL += " ORDER BY OrderNo ASC;";
 
@@ -563,7 +561,7 @@ namespace Reposotory.Implement
                 term = term2;
             }
             lstOrder = GetObjList<BE_OrderDetailData>(ref flag, ref lstError, SQL, para, term);
-     
+
             return lstOrder;
         }
 
@@ -928,56 +926,24 @@ namespace Reposotory.Implement
             return obj;
         }
 
+        #region 後台訂單明細使用
         /// <summary>
         /// 後台訂單明細使用 20210315 ADD BY ADAM REASON.增加IDNO查詢
         /// </summary>
         /// <param name="OrderNo"></param>
         /// <param name="IDNO"></param>
         /// <returns></returns>
-        public BE_OrderDetailData GetOrderDetail(Int64 OrderNo,string IDNO)
+        public BE_OrderDetailData GetOrderDetail(Int64 OrderNo, string IDNO)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_OrderDetailData> lstOrder = null;
             BE_OrderDetailData obj = null;
 
-            int nowCount = 0;
-            //string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail WITH(NOLOCK)  ";
-            //20210902 ADD BY ADAM REASON.資安政策有調整view導致沒辦法顯示合約，先修正
-            string SQL = "SELECT *,AesEncode=''  FROM VW_BE_GetOrderFullDetail_Contact WITH(NOLOCK)  ";
-
-
-            SqlParameter[] para = new SqlParameter[10];
+            // 20210930 UPD BY YEH REASON:因應共同承租人要查看合約，因此將取資料邏輯搬至SP處理
+            SqlParameter[] para = new SqlParameter[0];
+            string SQL = string.Format("EXEC usp_BE_GetOrderDetail '{0}','{1}'", OrderNo, IDNO);
             string term = "";
-
-
-            if (OrderNo > 0)
-            {
-                term += (term == "") ? "" : " AND ";
-                term += " OrderNo=@OrderNo";
-                para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
-                para[nowCount].Value = OrderNo;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-
-            if (IDNO != "")
-            {
-                term += (term == "") ? "" : " AND ";
-                term += " (IDNO=@IDNO OR CAST(MEMRFNBR AS VARCHAR)=@IDNO)";      //20210902 ADD BY ADAM REASON.暫時解決出租單列印問題
-                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar,10);
-                para[nowCount].Value = IDNO;
-                para[nowCount].Direction = ParameterDirection.Input;
-                nowCount++;
-            }
-
-            if ("" != term)
-            {
-                SQL += " WHERE " + term;
-
-            }
-
-            SQL += " ORDER BY OrderNo ASC;";
 
             lstOrder = GetObjList<BE_OrderDetailData>(ref flag, ref lstError, SQL, para, term);
             if (lstOrder != null)
@@ -991,6 +957,7 @@ namespace Reposotory.Implement
 
             return obj;
         }
+        #endregion
 
         /// <summary>
         /// 取出出還車照
@@ -1029,6 +996,7 @@ namespace Reposotory.Implement
             return lstCarImage;
         }
 
+        #region 取出出還車照
         /// <summary>
         /// 取出出還車照
         /// </summary>
@@ -1084,6 +1052,7 @@ namespace Reposotory.Implement
 
             return lstCarImage;
         }
+        #endregion
 
         /// <summary>
         /// 判斷強還時是不是已經有其他車取車，以判斷要不要清空車機
@@ -1132,7 +1101,7 @@ namespace Reposotory.Implement
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
             int nowCount = 0;
-            if (OrderNo>0)
+            if (OrderNo > 0)
             {
                 term = "  OrderNo = @OrderNo";
                 para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
@@ -1155,6 +1124,7 @@ namespace Reposotory.Implement
 
             return tmp;
         }
+
         //20210129廢棄
         //public BE_GetOrderModifyDataNewV2 GetModifyDataNew(Int64 OrderNo)
         //{
@@ -1162,16 +1132,10 @@ namespace Reposotory.Implement
         //    List<ErrorInfo> lstError = new List<ErrorInfo>();
         //    List<BE_GetOrderModifyDataNewV2> lstOrderData = null;
         //    string SQL = "SELECT VW.*,ISNULL(Main.[TaishinTradeNo],'') AS TaishinTradeNo,ISNULL(Main.ArrearAMT,0) AS ArrearAMT ,ISNULL(PriceMinutes.BaseMinutes,0) AS BaseMinutes,Main.ArrearCardToken,Main.MerchantTradeNo";
-
         //    SQL +=" FROM VW_BE_GetOrderModifyInfoNew AS VW WITH(NOLOCK)";
-    
         //    SQL += " LEFT JOIN VW_BE_GetNPR330DataNew AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
         //    SQL += " LEFT JOIN TB_Car As Car WITH(NOLOCK) ON Car.CarNo = VW.CarNo ";
         //     SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
-            
-            
-
-
         //    SqlParameter[] para = new SqlParameter[2];
         //    string term = "";
         //    int nowCount = 0;
@@ -1183,21 +1147,19 @@ namespace Reposotory.Implement
         //        para[nowCount].Direction = ParameterDirection.Input;
         //        nowCount++;
         //    }
-
         //    if ("" != term)
         //    {
         //        SQL += " WHERE " + term + "  ";
         //    }
-
         //    lstOrderData = GetObjList<BE_GetOrderModifyDataNewV2>(ref flag, ref lstError, SQL, para, term);
         //    BE_GetOrderModifyDataNewV2 tmp = null;
         //    if (lstOrderData.Count > 0)
         //    {
         //        tmp = lstOrderData[0];
         //    }
-
         //    return tmp;
         //}
+
         public BE_GetOrderModifyDataNewV2 GetModifyDataNew(Int64 OrderNo)
         {
             bool flag = false;
@@ -1210,9 +1172,6 @@ namespace Reposotory.Implement
             SQL += " LEFT JOIN VW_BE_GetNPR330DataNew AS Main WITH(NOLOCK) ON VW.IDNO=Main.IDNO AND Main.IRENTORDNO=@OrderNo AND Main.NCarNo=VW.CarNo ";
             SQL += " LEFT JOIN TB_Car As Car WITH(NOLOCK) ON Car.CarNo = VW.CarNo ";
             SQL += " LEFT JOIN TB_PriceByMinutes AS PriceMinutes WITH(NOLOCK) ON VW.ProjID = PriceMinutes.ProjID AND PriceMinutes.CarType = Car.CarType ";
-
-
-
 
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
@@ -1259,7 +1218,6 @@ namespace Reposotory.Implement
             string term = "";
             if (null != UserID)
             {
-
                 if (UserID != "")
                 {
                     if ("" != term) { term += " AND "; }
@@ -1268,7 +1226,6 @@ namespace Reposotory.Implement
                     para[0] = new SqlParameter("@UserID", SqlDbType.VarChar, 50);
                     para[0].Value = UserID;
                     para[0].Direction = ParameterDirection.Input;
-
                 }
                 if ("" != term)
                 {
@@ -1294,7 +1251,6 @@ namespace Reposotory.Implement
             int nowCount = 0;
             string SQL = "UPDATE TB_OrderDetail SET ";
 
-
             SqlParameter[] para = new SqlParameter[2];
             string term = "";
 
@@ -1304,7 +1260,6 @@ namespace Reposotory.Implement
             para[nowCount].Value = parkingSpace;
             para[nowCount].Direction = ParameterDirection.Input;
             nowCount++;
-
 
             term += " WHERE order_number=@OrderNo";
             para[nowCount] = new SqlParameter("@OrderNo", SqlDbType.BigInt);
@@ -1317,7 +1272,6 @@ namespace Reposotory.Implement
 
             return flag;
         }
-
 
         /// <summary>
         /// 取出出還車照
@@ -1341,7 +1295,6 @@ namespace Reposotory.Implement
                 ",amount AS PayAmount " +
                 "FROM TB_Trade WITH(NOLOCK)  ";
 
-
             SqlParameter[] para = new SqlParameter[1];
             string term = "";
             term += " OrderNo=@OrderNo";
@@ -1353,7 +1306,6 @@ namespace Reposotory.Implement
             if ("" != term)
             {
                 SQL += " WHERE " + term;
-
             }
 
             SQL += " ORDER BY process_date DESC;";
@@ -1363,6 +1315,7 @@ namespace Reposotory.Implement
             return lstPayment;
         }
 
+        #region 取得共同承租人清單
         /// <summary>
         /// 取得共同承租人清單
         /// </summary>
@@ -1374,11 +1327,10 @@ namespace Reposotory.Implement
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<BE_TogetherPassenger> lstData = null;
-
             int nowCount = 0;
-            string SQL = "SELECT Order_number,MEMCNAME,MEMTEL" +
-                " FROM TB_TogetherPassenger WITH(NOLOCK) ";
 
+            // 20210930 UPD BY YEH REASON:要從確認後TABLE取資料
+            string SQL = "SELECT Order_number,MEMCNAME,MEMTEL FROM TB_SavePassenger WITH(NOLOCK) ";
 
             SqlParameter[] para = new SqlParameter[1];
             string term = "";
@@ -1388,17 +1340,15 @@ namespace Reposotory.Implement
             para[nowCount].Direction = ParameterDirection.Input;
             nowCount++;
 
-            if ("" != term)
+            if (term != "")
             {
                 SQL += " WHERE " + term;
-
             }
-
-            
 
             lstData = GetObjList<BE_TogetherPassenger>(ref flag, ref lstError, SQL, para, term);
 
             return lstData;
         }
+        #endregion
     }
 }

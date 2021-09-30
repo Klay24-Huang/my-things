@@ -581,6 +581,7 @@
     <Build Include="dbo\Stored Procedures\usp_GetOrderInsuranceInfo.sql" />
     <Build Include="dbo\Stored Procedures\usp_JointRentIviteeFeedBack_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_TestPushService_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_GetOrderDetail.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

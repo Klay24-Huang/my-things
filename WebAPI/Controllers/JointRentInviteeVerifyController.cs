@@ -97,7 +97,7 @@ namespace WebAPI.Controllers
                     if (!baseVerify.checkIDNO(apiInput.QueryId) && !baseVerify.regexStr(apiInput.QueryId, CommonFunc.CheckType.Mobile))
                     {
                         flag = false;
-                        errCode = "ERR902";
+                        errCode = "ERR936";
                     }
                 }
             }

@@ -225,6 +225,8 @@ iRentApi20 Web API版本
 
 20210910 取得會員狀態(GetMemberStatus)增加是否顯示購買牌卡
 
+20210928 共同承租人邀請檢核(JointRentInviteeVerify) 新增錯誤代碼
+
 # Header參數相關說明
 | KEY | VALUE |
 | -------- | -------- |
@@ -6466,6 +6468,7 @@ iRentApi20 Web API版本
 | ERR919   | 對方不能租車，請對方確認會員狀態哦！       |
 | ERR920   | 同時段有合約或預約，不能邀請哦！           |
 | ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+| ERR936   | 格式不符，請重新輸入哦！                   | 輸入格式不符                               |
 
 ## JointRentInvitation 案件共同承租人邀請
 

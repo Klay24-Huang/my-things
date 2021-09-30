@@ -11,6 +11,7 @@
              20210908 UPD BY AMBER REASON: 修正檢核邏輯
 			 20210909 UPD BY AMBER REASON: 修正判斷邀請人數上限需排除重邀的副承租人
 			 20210913 UPD BY AMBER REASON: 加入取消訂單檢核
+			 20210928 UPD BY AMBER REASON: 修正邀請人數檢核
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_JointRentInviteeVerify_Q01]
@@ -224,7 +225,7 @@ SET @ProjType='';
 			SET @hasData=0			
 			SELECT @hasData=count(1) FROM TB_TogetherPassenger  WITH(NOLOCK) WHERE Order_number=@OrderNo AND MEMIDNO <> @InviteeId --20210909 UPD BY AMBER REASON: 修正判斷邀請人數上限需排除重邀的副承租人
 
-			IF @hasData>@Seat-1
+			IF @hasData>=@Seat-1
 					BEGIN
 						SET @Error=1
 						SET @ErrorCode='ERR921'
