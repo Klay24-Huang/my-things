@@ -1,0 +1,4 @@
+2021-09-29 11:04:44.3728|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'ImportCarBindData',IPAddr:'::1}
+2021-09-29 11:07:39.3707|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'ImportCarBindData',IPAddr:'::1}
+2021-09-29 11:25:52.8586|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'ImportCarBindData',IPAddr:'::1}
+2021-09-29 11:36:39.0649|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'ImportCarBindData',IPAddr:'::1}

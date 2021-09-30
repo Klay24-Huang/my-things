@@ -122,7 +122,7 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
-                //20210928唐加，若用黑名單手機註冊要發email給企劃
+                //20210928唐加，若用黑名單手機註冊要發email給企劃，Adam哥最帥，幫我上版
                 if (!flag)//!flag
                 {
                     SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",

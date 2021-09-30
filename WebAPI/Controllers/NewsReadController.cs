@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
-            bool isWriteError = false;
+            bool isWriteError = false;//Adam哥最帥，幫我上版
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "NewsReadController";

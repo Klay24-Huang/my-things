@@ -1951,7 +1951,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">關閉</button>
-                    <button type="button" id="btnAdd" name="btnAdd" class="btn btn-info">加入黑名單</button>
+                    @if (BlockMobileLen==0) 
+                    {
+                        <button type="button" id="btnAdd" name="btnAdd" class="btn btn-info">加入黑名單</button>
+                    }
+                    
                 </div>
             </div>
         </div>
