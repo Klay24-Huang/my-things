@@ -2,10 +2,12 @@
 using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Wallet;
+using Domain.TB.BackEnd;
 using Domain.WebAPI.Input.Taishin.Wallet;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
 using OtherService;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -36,8 +38,9 @@ namespace WebAPI.Controllers
         /// <returns></returns>
         ///
         [HttpPost]
-        public void doBE_WalletWithdraw(Dictionary<string, object> value)
+        public Dictionary<string, object> doBE_WalletWithdraw(Dictionary<string, object> value)
         {
+            #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
@@ -49,53 +52,85 @@ namespace WebAPI.Controllers
             string funName = "BE_WalletWithdrawController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_BE_GetOrderModifyInfo apiInput = null;
-            OAPI_BE_GetOrderModifyInfo apiOutput = null;
+            IAPI_BE_WalletWithdraw apiInput = null;
+            NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
+            bool isGuest = true;
+            string Contentjson = "";
+            #endregion
+
+            #region 防呆
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            if (flag)
+            {
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_WalletWithdraw>(Contentjson);
+                //寫入API Log
+                string ClientIP = baseVerify.GetClientIp(Request);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
+                string[] checkList = { apiInput.UserID, apiInput.IDNO, apiInput.cashAmount };
+                string[] errList = { "ERR900", "ERR900", "ERR900" };
+                //1.判斷必填
+                flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+                #endregion
+            }
+
+            #region TB
+            if (flag)
+            {
+                flag = WithdrawWalletFlow(0, int.Parse(apiInput.cashAmount), apiInput.IDNO, "Withdraw", funName, LogID, Access_Token, ref errCode).flag;
+            }
+            #endregion
+
+            #region 寫入錯誤Log
+            if (false == flag && false == isWriteError)
+            {
+                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+            }
+            #endregion
+            #region 輸出
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+            return objOutput;
+            #endregion
 
         }
 
-        private (bool flag, SPInput_WalletPay paymentInfo) WithdrawWalletFlow(long OrderNo, int Amount, string IDNO, string TradeType, string funName, long LogID, string Access_Token, ref string errCode)
+        private (bool flag, BE_UserWalletInfo wallet) WithdrawWalletFlow(long OrderNo, int Amount, string IDNO, string TradeType, string funName, long LogID, string Access_Token, ref string errCode)
         {
-            (bool flag, SPInput_WalletPay paymentInfo) result = (false, new SPInput_WalletPay());
+           
+            (bool flag, BE_UserWalletInfo wallet) result = (false, new BE_UserWalletInfo());
 
-            //扣款金額
-            int PayAmount = 0;
-            //取得錢包狀態
-            var WalletStatus = GetWalletInfo(IDNO, LogID, Access_Token);
-            result.flag = WalletStatus.flag;
-            if (!result.flag)
+            WalletRepository repository = new WalletRepository(connetStr);
+            BE_UserWalletInfo wallet = new BE_UserWalletInfo();
+            wallet = (repository.GetUserWallet(IDNO).Count > 0) ? repository.GetUserWallet(IDNO)[0] : null;
+
+            if (wallet == null)
             {
-                //未開通
+                //未申請錢包
                 errCode = "ERR932";
                 return result;
             }
-            //錢包餘額<訂單金額
-            if (WalletStatus.WalletInfo.Balance < Amount)
+
+            //提領金額
+            int WithdrawAmount = 0;
+
+            //錢包剩餘儲值金額>=提領金額
+            if (wallet.StoreAmount >= Amount)
             {
-                PayAmount = WalletStatus.WalletInfo.Balance;
+                WithdrawAmount = Amount;
             }
-            else //錢包餘額>=訂單金額
+            else //錢包剩餘儲值金額<提領金額
             {
-                PayAmount = Amount;
+                //餘額不足
+                errCode = "ERR934";
+                return result;
             }
 
-            //欠費金額判斷
-            if (TradeType == "Pay_Arrear")
-            {
-                //欠費一定要全繳
-                result.flag = IsWalletPayAmountEnough(PayAmount, Amount);
-                if (!result.flag)
-                {
-                    //餘額不足
-                    errCode = "ERR934";
-                    return result;
-                }
-            }
+
             //扣款
-            return DoWalletPay(PayAmount, IDNO, OrderNo, TradeType, funName, LogID, Access_Token, ref errCode);
+            return DoWalletPay(WithdrawAmount, IDNO, OrderNo, TradeType, funName, LogID, Access_Token, ref errCode);
 
 
         }
@@ -106,9 +141,9 @@ namespace WebAPI.Controllers
         /// <param name="IDNO">扣款帳號</param>
         /// <param name="OrderNo">扣款訂單編號</param>
         /// <returns></returns>
-        private (bool flag, SPInput_WalletPay paymentInfo) DoWalletPay(int Amount, string IDNO, long OrderNo, string TradeType, string PRGName, long LogID, string Access_Token, ref string errCode)
+        private (bool flag, BE_UserWalletInfo wallet) DoWalletPay(int Amount, string IDNO, long OrderNo, string TradeType, string PRGName, long LogID, string Access_Token, ref string errCode)
         {
-            (bool flag, SPInput_WalletPay paymentInfo) result = (false, new SPInput_WalletPay());
+            (bool flag, BE_UserWalletInfo wallet) result = (false, new BE_UserWalletInfo());
 
             result.flag = IsWalletPayAmountEnough(Amount, 0);
 
@@ -131,6 +166,7 @@ namespace WebAPI.Controllers
                 string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
                 result.flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
             }
+
             if (result.flag)
             {
                 var wsp = new WalletSp();
@@ -139,7 +175,6 @@ namespace WebAPI.Controllers
                     IDNO, OrderNo, LogID, Access_Token, NowTime, TradeType, PRGName);
 
                 result.flag = wsp.sp_WalletPay(spInput, ref errCode);
-                result.paymentInfo = spInput;
             }
             else
             {
@@ -148,70 +183,10 @@ namespace WebAPI.Controllers
             return result;
         }
 
-        private (bool flag, PayModeObj WalletInfo) GetWalletInfo(string IDNO, long LogID, string Access_Token)
-        {
-            var lstError = new List<ErrorInfo>();
-            //string errMsg = "Success"; //預設成功
-            string errCode = "000000"; //預設成功
-            OAPI_GetPayInfo apiOutput = null;
-            (bool flag, PayModeObj WalletInfo) re = (false, new PayModeObj());
-
-            string SPName = "usp_GetPayInfo_Q1";
-            SPInput_GetPayInfo spInput = new SPInput_GetPayInfo()
-            {
-                LogID = LogID,
-                Token = Access_Token,
-                IDNO = IDNO
-            };
-
-            SPOutput_Base spOut = new SPOutput_Base();
-            SQLHelper<SPInput_GetPayInfo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetPayInfo, SPOutput_Base>(connetStr);
-            List<SPOutput_GetPayInfo> PayMode = new List<SPOutput_GetPayInfo>();
-
-            DataSet ds = new DataSet();
-            bool flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref PayMode, ref ds, ref lstError);
-            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-
-            if (flag && PayMode.Count > 0)
-            {
-                apiOutput = PayMode
-                    .Select(t => new OAPI_GetPayInfo
-                    {
-                        DefPayMode = t.DefPayMode,
-                        PayModeBindCount = t.PayModeBindCount,
-                        PayModeList = System.Text.Json.JsonSerializer.Deserialize<List<PayModeObj>>(PayMode[0].PayModeList)
-                    }).FirstOrDefault();
-            }
-
-            PayModeObj WalletInfo = apiOutput?.PayModeList.Where(t => t.PayMode == 1).FirstOrDefault();
-
-            if (WalletInfo?.HasBind == 1)
-            {
-                re.flag = true;
-                re.WalletInfo = WalletInfo;
-            }
-            //usp_WalletPay_I01
-            return re;
-
-        }
 
         private string GetWalletAccountId(string IDNO, int cnt)
         {
             return $"{IDNO}Wallet{cnt.ToString().PadLeft(4, '0')}";
-        }
-
-        private int GetWalletHistoryMode(string TradeType)
-        {
-            switch (TradeType)
-            {
-                case "Pay_Arrear":
-                    return 5;
-                case "pay_Car":
-                case "Pay_Motor":
-                default:
-                    return 0;
-            }
-
         }
 
         private bool IsWalletPayAmountEnough(int payAmount, int baseAmount)
@@ -283,9 +258,9 @@ namespace WebAPI.Controllers
                 TransId = taishinResponse.Result.TransId,
                 TradeType = TradeType,
                 PRGName = PRGName,
-                Mode = GetWalletHistoryMode(TradeType)
+                Mode = 4,
+                InputSource = 2
             };
-
         }
     }
 }

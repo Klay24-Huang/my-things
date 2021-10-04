@@ -238,6 +238,7 @@
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_InsCleanOrderController.cs" />
     <Compile Include="Controllers\BE_InsertChargeParkingController.cs" />
+    <Compile Include="Controllers\BE_InsWalletInvoiceInfoController.cs" />
     <Compile Include="Controllers\BE_IrentPaymentDetailController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
     <Compile Include="Controllers\BE_NewsHandleController.cs" />
@@ -481,6 +482,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDFuncGroup.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDUserGroup.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_WalletWithdraw.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_HandlePolygon.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
@@ -506,6 +508,7 @@
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_AutoStoreSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BE_InsWalletInvoiceInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindUUCardJob.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
