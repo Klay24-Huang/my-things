@@ -339,7 +339,7 @@ namespace Web.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CarDataSetting(string isExport,string CarNo, string StationID, int ShowType = 3)
+        public ActionResult CarDataSetting(string isExport,string CarNo, string StationID, string stationType, int ShowType = 3)
         {
             //20210907唐加，記錄每支功能使用
             BaseSafeController himsSafe = new BaseSafeController();
@@ -353,6 +353,11 @@ namespace Web.Controllers
             ViewData["ShowType"] = ShowType;
             List<BE_GetPartOfCarDataSettingData> lstData = new List<BE_GetPartOfCarDataSettingData>();
             lstData = carStatusCommon.GetCarDataSettingData(CarNo, StationID, ShowType);
+
+            if(stationType != "1")
+            {
+                lstData = lstData.Where(i => i.NormalStation == int.Parse(stationType)).ToList();
+            }
 
             if(isExport == "true")
             {
@@ -368,8 +373,11 @@ namespace Web.Controllers
                 sheet.Cells[1, col++].Value = "營運狀態";
                 sheet.Cells[1, col++].Value = "CID";
                 sheet.Cells[1, col++].Value = "目前庫位";
+                sheet.Cells[1, col++].Value = "下線原因";
                 sheet.Cells[1, col++].Value = "所屬庫位";
                 sheet.Cells[1, col++].Value = "備註";
+                sheet.Cells[1, col++].Value = "上/下線時間";
+                sheet.Cells[1, col++].Value = "操作者帳號";
 
                 int row = 2;
                 
@@ -397,8 +405,11 @@ namespace Web.Controllers
                     sheet.Cells[row, col++].Value = NowStr;
                     sheet.Cells[row, col++].Value = i.CID;
                     sheet.Cells[row, col++].Value = i.NowStationName;
+                    sheet.Cells[row, col++].Value = i.OfflineReason;
                     sheet.Cells[row, col++].Value = i.StationName;
                     sheet.Cells[row, col++].Value = i.Memo;
+                    sheet.Cells[row, col++].Value = i.UPDTime.ToString("yyyy-MM-dd HH:mm:ss");
+                    sheet.Cells[row, col++].Value = i.UserNo + " " + i.UserName;
                     row++;
                 }
 

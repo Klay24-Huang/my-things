@@ -47,7 +47,14 @@
                             </div>
                             <div class="col-md-3">
                                 <input class="form-control" type="text" name="StationID" id="StationID" value="@StationID" />
-
+                            </div>
+                            <div class="col-md-2">
+                                <select class="custom-select" id="stationType" name="stationType" onchange="IsExportOnly()">
+                                    <option value="1">ALL</option>
+                                    <option value="4">機車路邊租還</option>
+                                    <option value="3">汽車路邊租還</option>
+                                    <option value="0">汽車同站租還</option>
+                                </select>
                             </div>
                         </div>
                     </div>

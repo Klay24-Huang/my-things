@@ -70,5 +70,9 @@ namespace Domain.TB.BackEnd
         /// 操作者姓名
         /// </summary>
         public string UserName { get; set; }
+        /// <summary>
+        /// 車輛庫位類型
+        /// </summary>
+        public int NormalStation { get; set; }
     }
 }

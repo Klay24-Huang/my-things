@@ -94,6 +94,14 @@ function CarOffline(Id) {
     $("#btnSettingOnline_" + Id).hide();
 }
 
+function IsExportOnly() {
+    if ($("#stationType").val() == "1") {
+        $("#btnSend").attr("disabled", false);
+    } else {
+        $("#btnSend").attr("disabled", true);
+    }
+}
+
 function DoSave(Id) {
     var Account = $("#Account").val();
     var SMemo = $("#Memo_" + Id).val();
