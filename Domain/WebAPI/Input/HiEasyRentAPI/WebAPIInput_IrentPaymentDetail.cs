@@ -12,7 +12,7 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         public string sig { get; set; } //= "B0356BE0C53A9E8E5037EB5EAA1E7AEDC448BB0D";
         public int MODE { get; set; }
         public string SPSD { set; get; }
-        public string SPED { set; get; }
+        public string SPED { set; get; }//
         public string SPSD2 { set; get; }
         public string SPED2 { set; get; }
         public string SPSD3 { get; set; }

@@ -2132,7 +2132,7 @@ namespace OtherService
         {
             bool flag = false;
 
-            output = DoNPR390Query5(input).Result;
+            output = DoNPR390Query5(input).Result;//
             if (output.Result)
             {
                 flag = true;

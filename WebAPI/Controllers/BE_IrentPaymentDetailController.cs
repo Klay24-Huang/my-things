@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "BE_IrentPaymentDetail";
-            //Int64 LogID = 0;
+            Int64 LogID = 0;
             //Int16 ErrType = 0;
             IAPI_BE_IrentPaymentDetail apiInput = null;
             //OAPI_BE_IrentPaymentDetail apiOutput = null;
@@ -50,14 +50,14 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_IrentPaymentDetail>(Contentjson);
-                ////寫入API Log
-                //string ClientIP = baseVerify.GetClientIp(Request);
-                //flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+                //寫入API Log
+                string ClientIP = baseVerify.GetClientIp(Request);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                //string[] checkList = { apiInput.UserID };
-                //string[] errList = { "ERR900" };
-                ////1.判斷必填
-                //flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+                string[] checkList = { apiInput.UserID };
+                string[] errList = { "ERR900" };
+                //1.判斷必填
+                flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
             }
             #endregion
 
@@ -155,7 +155,7 @@ namespace WebAPI.Controllers
                 {
                     MODE = apiInput.MODE,
                     SPSD = apiInput.SPSD,
-                    SPED = apiInput.SPED,
+                    SPED = apiInput.SPED,//
                     SPSD2 = apiInput.SPSD2,
                     SPED2 = apiInput.SPED2,
                     SPSD3 = apiInput.SPSD3,
