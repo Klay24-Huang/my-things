@@ -54,5 +54,21 @@ namespace Domain.TB.BackEnd
         /// 目前據點
         /// </summary>
         public string nowStationID { set; get; }
+        /// <summary>
+        /// 車輛下線原因
+        /// </summary>
+        public string OfflineReason { get; set; }
+        /// <summary>
+        /// 車輛下線時間
+        /// </summary>
+        public DateTime UPDTime { get; set; }
+        /// <summary>
+        /// 操作者編號
+        /// </summary>
+        public string UserNo { get; set; }
+        /// <summary>
+        /// 操作者姓名
+        /// </summary>
+        public string UserName { get; set; }
     }
 }

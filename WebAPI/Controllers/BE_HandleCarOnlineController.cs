@@ -89,7 +89,8 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     CarNo = apiInput.CarNo.Replace(" ", ""),
                     Online=apiInput.Online,
-                    UserID = apiInput.UserID
+                    UserID = apiInput.UserID,
+                    OffLineReason = apiInput.OffLineReason
 
 
                 };
