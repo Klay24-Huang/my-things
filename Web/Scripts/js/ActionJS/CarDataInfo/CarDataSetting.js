@@ -184,8 +184,8 @@ function SetOnline(Id, Cmd) {
 
         var json = JSON.stringify(obj);
         console.log(json);
-        var site = "http://localhost:2061/api/" + "BE_HandleCarOnline";
-        //var site = jsHost + "BE_HandleCarOnline";
+        //var site = "http://localhost:2061/api/" + "BE_HandleCarOnline";
+        var site = jsHost + "BE_HandleCarOnline";
         console.log("site:" + site);
         $.ajax({
             url: site,
