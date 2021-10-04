@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_DeleteBlackList>(Contentjson);
-                //寫入API Log
+                //寫入 API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
             }

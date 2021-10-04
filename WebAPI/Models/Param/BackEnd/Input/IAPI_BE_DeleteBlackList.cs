@@ -7,7 +7,7 @@ namespace WebAPI.Models.Param.BackEnd.Input
 {
     public class IAPI_BE_DeleteBlackList
     {
-        public string MOBILE { get; set; }
+        public string MOBILE { get; set; }//
         public string USERID { get; set; }
     }
 }
