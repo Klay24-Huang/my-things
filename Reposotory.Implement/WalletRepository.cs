@@ -89,5 +89,35 @@ namespace Reposotory.Implement
 
             return lst;
         }
+
+        public List<BE_UserWalletInfo> GetUserWallet(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<BE_UserWalletInfo> lst = null;
+            SqlParameter[] param = new SqlParameter[1];
+            string term = "";
+            string SQL = "SELECT IDNO,Status,StoreAmount,ReceivedAmount,WalletBalance FROM TB_UserWallet";
+            int nowCount = 0;
+
+            if (string.IsNullOrWhiteSpace(IDNO) == false)
+            {
+                param[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                param[nowCount].Value = IDNO;
+                param[nowCount].Direction = ParameterDirection.Input;
+                term += " IDNO=@IDNO";
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+
+            }
+
+            lst = GetObjList<BE_UserWalletInfo>(ref flag, ref lstError, SQL, param, term);
+
+            return lst;
+        }
     }
 }

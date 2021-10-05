@@ -155,6 +155,8 @@ iRentApi20 Web API版本
 
 20210928 錢包儲值-虛擬帳號(WalletStoreVisualAccount) 參數調整、錢包儲值-商店條碼(WalletStoreShop) 新增輸入欄位
 
+20210929 自動儲值設定(AutoStoreSetting)參數調整
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -6306,7 +6308,7 @@ iRentApi20 Web API版本
 
 ### [/api/AutoStoreSetting/]
 
-* 20210901新增文件
+* 20210929新增文件
 
 * ASP.NET Web API (REST API)
 
@@ -6324,28 +6326,28 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
-| ---------- | ---------------- | ---- | :----: | ---------- |
-| Setting    | 設定是否同意     | Y    |  int   | 1          |
+| 參數名稱   | 參數說明                            | 必要 | 型態 | 範例 |
+| ---------- | ----------------------------------- | ---- | :--: | ---- |
+| AutoStored | 是否同意自動儲值<br>0:不同意 1:同意 | Y    | int  | 0    |
 
 * input範例
 
 ```
 {
-  "Setting" : 1
+    "AutoStored": 0
 }
-
 ```
 
 * Output回傳參數說明
 
-| 參數名稱      　　　| 參數說明           |  型態  | 範例          |
-| ------------------- | ------------------ | :----: | ------------- |
-| Result        　　　| 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode     　　　| 錯誤碼             | string | 000000        |
-| NeedRelogin   　　　| 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade   　　　| 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage  　　　| 錯誤訊息           | string | Success       |
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
 
 * Output範例
 
@@ -6355,7 +6357,8 @@ iRentApi20 Web API版本
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
-    "ErrorMessage": "Success"
+    "ErrorMessage": "Success",
+    "Data": {}
 }
-
 ```
+
