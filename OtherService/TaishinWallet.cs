@@ -19,6 +19,10 @@ using System.Text;
 using System.Threading.Tasks;
 using WebCommon;
 using NLog;
+using Domain.WebAPI.output.Taishin;
+using System.Collections.Specialized;
+using System.Web;
+
 
 namespace OtherService
 {
@@ -45,7 +49,38 @@ namespace OtherService
         private string ReturnStoreValue = ConfigurationManager.AppSettings["ReturnStoreValue"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
+        private string StoreShopBaseURL = ConfigurationManager.AppSettings["TaishinWalletStoreShopBaseURL"].ToString(); //超商錢包儲值BaseUrl
+        private string GetCvsPayToken = ConfigurationManager.AppSettings["GetCvsPayToken"].ToString();          //台新超商APIToken
+        private string CreateCvsPayInfo = ConfigurationManager.AppSettings["CreateCvsPayInfo"].ToString();      //超商繳費資訊上傳-新增
+        private string GetBarCode = ConfigurationManager.AppSettings["GetBarCode"].ToString();                  //超商條碼查詢
+        private string GetBarCodeShortUrl = ConfigurationManager.AppSettings["GetBarCodeShortUrl"].ToString();  //超商條碼短網址查詢
+        private string Data = ConfigurationManager.AppSettings["Data"].ToString();             //取台新超商APIToken用
+        private string EncKey = ConfigurationManager.AppSettings["EncKey"].ToString();         //取台新超商APIToken用
+        private string TaishinCID = ConfigurationManager.AppSettings["TaishinCID"].ToString(); //用戶代碼Base64
+        private string HmacKey = ConfigurationManager.AppSettings["HmacKey"].ToString();
+
         protected static Logger logger = LogManager.GetCurrentClassLogger();
+
+
+        public string GetHmacVal<T>(T input, string cTxSn)
+        {
+            string hmacVal = "";
+            var jsonString = JsonConvert.SerializeObject(input);
+            string formatString = string.Format("{0}{1}", jsonString, cTxSn);
+            hmacVal = GenerateHMACVal(formatString, HmacKey);
+            return hmacVal;
+        }
+        public string GenerateHMACVal(string body, string key)
+        {
+            var encoding = new System.Text.UTF8Encoding();
+            byte[] keyByte = encoding.GetBytes(key);
+            byte[] messageBytes = encoding.GetBytes(body);
+            using (var hmacSHA256 = new HMACSHA256(keyByte))
+            {
+                byte[] hashMessage = hmacSHA256.ComputeHash(messageBytes);
+                return BitConverter.ToString(hashMessage).Replace("-", "").ToLower();
+            }
+        }
 
         public string GenerateSignCode(string ClientId,string utcTimeStamp,string body,string apiKey)
         {
@@ -179,6 +214,150 @@ namespace OtherService
             return output;
         }
         #endregion
+        
+        #region 取台新超商APIToken
+        public bool DoGetTaishinCvsPayToken(ref WebAPIOutput_GetTaishinCvsPayToken output)
+        {
+            bool flag = true;
+            output = DoGetTaishinCvsPayTokenSend().Result;
+            if (string.IsNullOrWhiteSpace(output.access_token))
+            {
+                flag = false;
+            }
+            return flag;
+        }
+
+        private async Task<WebAPIOutput_GetTaishinCvsPayToken> DoGetTaishinCvsPayTokenSend()
+        {
+            bool flag = false;
+            string URL = StoreShopBaseURL + GetCvsPayToken;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+            request.Headers.Add("Authorization", string.Format("Basic {0}", TaishinCID));
+            request.Method = "POST";
+            request.ContentType = "application/x-www-form-urlencoded";
+            NameValueCollection postParams = HttpUtility.ParseQueryString(string.Empty);
+            postParams.Add("grant_type", "client_credentials");
+            postParams.Add("data", Data);
+            postParams.Add("encKey", EncKey);
+
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            WebAPIOutput_GetTaishinCvsPayToken output = null;
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                byte[] byteArray = Encoding.UTF8.GetBytes(postParams.ToString());//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_GetTaishinCvsPayToken>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_GetTaishinCvsPayToken()
+                {
+                    ReturnCode = "9999",
+                    Message = (ex.Message.Length > 200) ? ex.Message.Substring(0, 200) : ex.Message
+                };
+            }
+            finally
+            {
+                flag = true;
+            }
+            return output;
+        }
+        #endregion
+
+        #region 超商繳費資訊上傳-新增
+        public bool DoStoreShopCreateCvsPayInfo(WebAPI_CreateCvsPayInfo wsInput, string funName, string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_CreateCvsPayInfo output)
+        {
+            bool flag = true;
+            output = DoTaishinWalletStoreShopApiSend<WebAPI_CreateCvsPayInfo, WebAPIOutput_CreateCvsPayInfo>(wsInput, CreateCvsPayInfo, accessToken, hmacVal, funName).Result;
+
+            if (output.header.rtnCode == "ok" && output.body.detail[0].statusCode == "S")
+            {
+                //待補
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+
+        #endregion
+
+        #region 超商繳費條碼查詢
+        public bool DoStoreShopGetBarcode(WebAPI_GetBarcode wsInput,string funName, string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_GetBarCode output)
+        {
+            bool flag = true;
+            output = DoTaishinWalletStoreShopApiSend<WebAPI_GetBarcode, WebAPIOutput_GetBarCode>(wsInput, GetBarCode, accessToken, hmacVal, funName).Result;
+
+            if (output.header.rtnCode == "ok" && output.body.statusCode=="00")
+            {
+                SPInput_InsWalletStoreShopLog spInput = new SPInput_InsWalletStoreShopLog()
+                {
+                    TxSn= output.header.txSN,
+                    CTxSn = wsInput.header.cTxSn,
+                    PaymentId = wsInput.body.paymentId,
+                    CvsType = wsInput.body.cvsType,
+                    CvsCode = wsInput.body.cvsCode,
+                    PayAmount = wsInput.body.payAmount,
+                    PayPeriod = wsInput.body.payPeriod,
+                    DueDate = wsInput.body.dueDate,
+                    Code1 = output.body.code1,
+                    Code2 = output.body.code2,
+                    Code3 = output.body.code3,
+                    Memo=wsInput.body.memo,
+                    Barcode64 = output.body.barcode64,
+                    StatusCode = output.body.statusCode,
+                    StatusDesc = output.body.statusDesc
+                };
+                logger.Trace(" InsWalletStoreShopLog : " + JsonConvert.SerializeObject(spInput));
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new TaishinWalletLog().InsWalletStoreShopLog(spInput, ref flag, ref errCode, ref lstError);
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+        #endregion
+
+        #region 超商繳費條碼短網址查詢
+        public bool DoStoreShopGetBarcodeShortUrl(WebAPI_GetBarcodeShortUrl wsInput, string funName, string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_GetBarCodeShortUrl output)
+        {
+            bool flag = true;
+            output = DoTaishinWalletStoreShopApiSend<WebAPI_GetBarcodeShortUrl, WebAPIOutput_GetBarCodeShortUrl>(wsInput, GetBarCodeShortUrl, accessToken, hmacVal, funName).Result;
+
+            if (output.header.rtnCode == "ok")
+            {
+
+            }
+            else
+            {
+                flag = false;
+            }
+            return flag;
+        }
+        #endregion
+
         #region 扣款
         public bool DoPayTransaction(WebAPI_PayTransaction wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WebAPIOutput_PayTransaction output)
         {
@@ -669,6 +848,76 @@ namespace OtherService
             return flag;
         }
 
+        //台新超商交易類通用API
+        private async Task<TResponse> DoTaishinWalletStoreShopApiSend<TRequest, TResponse>(TRequest input,string apiUrl, string accessToken,string hmacVal, string funName) where TResponse: WebAPIOutput_Base
+        {
+            bool flag = false;
+            string URL = StoreShopBaseURL + apiUrl;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+            request.Headers.Add("Authorization", string.Format("Bearer {0}", accessToken));
+            request.Headers.Add("hmacVal", hmacVal);
+            request.Method = "POST";
+            request.ContentType = "application/json; charset=utf-8";
+
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            var output = Activator.CreateInstance<TResponse>();
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                logger.Trace(" postBody : " + postBody);
+
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<TResponse>(responseStr);
+                        logger.Trace(" responseStr: " + responseStr);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output.RtnCode = "9999";
+                output.RtnMessage = (ex.Message.Length > 200) ? ex.Message.Substring(0, 200) : ex.Message;
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = funName,
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = URL
+                };
+
+                flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+            return output;
+
+        }
+
         private async Task<T2> DoGetTaishinApi<T1,T2>(T1 input, string ClientId, string utcTimeStamp, string SignCode, string URL,string FunNm) where T2: IWSOut_EscrowBase
         {
             bool flag = false;
@@ -734,6 +983,7 @@ namespace OtherService
         }
 
         #endregion
+        
 
         private string ByteToString(byte[] source)
         {

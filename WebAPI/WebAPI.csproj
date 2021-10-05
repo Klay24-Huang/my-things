@@ -404,6 +404,7 @@
     <Compile Include="Controllers\WalletPayTransactionController.cs" />
     <Compile Include="Controllers\WalletStoredByCreditController.cs" />
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
+    <Compile Include="Controllers\WalletStoreShopController.cs" />
     <Compile Include="Controllers\WalletStoreTradeHistoryHiddenController.cs" />
     <Compile Include="Controllers\WalletStoreTradeTransHistoryController.cs" />
     <Compile Include="Controllers\WalletStoreVisualAccountController.cs" />
@@ -624,6 +625,7 @@
     <Compile Include="Models\Param\Input\IAPI_WalletPayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferCheck.cs" />
@@ -725,6 +727,7 @@
     <Compile Include="Models\Param\Output\OAPI_WalletInfoCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreBase.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoredByCredit.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreVisualAccount.cs" />

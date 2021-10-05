@@ -365,6 +365,34 @@ namespace WebAPI.Service
             return flag;
         }
 
+        public SPOutput_GetCvsPaymentId sp_GetCvsPaymentId(SPInput_GetCvsPaymentId spInput, ref string errCode)
+        {
+            bool flag = false;
+
+            string spName = "usp_InsTaishinWalletCvsPaymentId_I01";
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOutput_GetCvsPaymentId();
+
+            SQLHelper<SPInput_GetCvsPaymentId, SPOutput_GetCvsPaymentId> sqlHelp = new SQLHelper<SPInput_GetCvsPaymentId, SPOutput_GetCvsPaymentId>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (flag)
+            {
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+            return spOut;
+        }
     }
 
     public class WalletMap
