@@ -1847,6 +1847,9 @@ namespace OtherService
         {
             bool flag = false;
 
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
             output = DoNPR390Query(input).Result;
             if (output.Result)
             {
