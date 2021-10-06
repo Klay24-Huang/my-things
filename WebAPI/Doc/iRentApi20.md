@@ -81,6 +81,9 @@ iRentApi20 Web API版本
 - [WalletTransferTCheck 轉贈對象確認](#WalletTransferTargetCheck)
 - [SetDefPayMode 設定預設支付方式](#SetDefPayMode)
 - [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
+- [WalletWithdrowInvoice 寫入手續費發票](#WalletWithdrowInvoice)
+
+
 
 ----------
 # 修改歷程
@@ -5261,13 +5264,13 @@ iRentApi20 Web API版本
 | ------------ | ------------------  | :----: | ------------- |
 | PayMode | 付費方式 (0:信用卡 1:和雲錢包) | int | 0 |
 | HasBind      | 是否有綁定(0:無,1有)| int    | 1             |
-| HasWallet    | 是否有錢包(0:無,1有)| int    | 0            |
-| TotalAmount | 錢包剩餘金額        | int    | 0         |
-| BindListObj | 信用卡列表 | list |  |
-| MEMSENDCD | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 | int | 5 |
-| UNIMNO | 統編 | string |  |
-| CARRIERID | 手機條碼 | string | /N37H2JD |
-| NPOBAN | 愛心碼 | string |  |
+| HasWallet    | 是否有錢包(0:無,1有)| int    | 0             |
+| TotalAmount  | 錢包剩餘金額        | int    | 0             |
+| BindListObj  | 信用卡列表 		 | list |  |
+| MEMSENDCD    | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證    | int  	| 5 |
+| UNIMNO 	   | 統編 				 | string |  			  |
+| CARRIERID    | 手機條碼 			 | string | 	 /N37H2JD |
+| NPOBAN 	   | 愛心碼				 | string | 			  |
 | AutoStored | 是否同意自動儲值 (0:不同意 1:同意) | int | 0 |
 
 * BindListObj 回傳參數說明
@@ -5887,10 +5890,10 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
-| ---------- | ------------------------------------  |      | :--:     | ------ |
-| StoreMoney | 儲值金額                              | Y | int      | 300 |
-| CvsType | 超商類型(0:7-11 1:全家) | Y    | int  | 1 |
+| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例       |
+| ---------- | ------------------------------------  |      | :--:     | ------ 	|
+| StoreMoney | 儲值金額                              | Y 	| int      | 300 		|
+| CvsType 	 | 超商類型(0:7-11 1:全家) 				 | Y    | int  	   | 1 			|
 
 * input範例
 
@@ -5918,8 +5921,8 @@ iRentApi20 Web API版本
 | 參數名稱     | 參數說明              |  型態  | 範例                  |
 | ------------ | --------------------- | :----: | --------------------- |
 | StroeResult  | 儲值結果(1成功,0失敗) |  int   | 1                     |
-| StoreMoney   | 儲值金額              |  int   | 300                |
-| PayDeadline  | 繳費期限(距今+1天) | string | 2021/10/06 23:59:59 |
+| StoreMoney   | 儲值金額              |  int   | 300                   |
+| PayDeadline  | 繳費期限(距今+1天)    | string | 2021/10/06 23:59:59   |
 | ShopBarCode1 | 超商條碼1             | string | 1003908SJ             |
 | ShopBarCode2 | 超商條碼2             | string | 20944SE031003908SUEPJ |
 | ShopBarCode3 | 超商條碼3             | string | 10023984HPDJ3908SJ    |
@@ -6368,3 +6371,69 @@ iRentApi20 Web API版本
 }
 ```
 
+
+## WalletWithdrowInvoice 寫入手續費發票
+
+### [/api/WalletWithdrowInvoice/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(非必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 	| 參數說明 		| 必要 	| 型態 	| 範例 		|
+| -------- 	| ------------- | :--: 	| :--: 	| ---- 		|
+|SEQNO		|對應主檔流水號	|Y		|int	|123		|
+|INV_NO   	|發票號碼      	|Y     	|String	|DE12345678 |
+|INV_DATE   |發票開立日期	|Y     	|String |20211010 	|
+|RNDCODE   	|發票隨機碼		|Y     	|String	|0594 		|
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data 回傳參數說明
+
+| 參數名稱     | 參數說明            		|  型態  | 範例          |
+| ------------ | ------------------  		| :----: | ------------- |
+|無參數			|							|		|				|
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+       
+        ],
+        
+    }
+}
+```
+
+----
