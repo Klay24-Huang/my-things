@@ -22,6 +22,11 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Prometheus;//20210707唐加prometheus
 using OfficeOpenXml;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using WebAPI.Models.Param.Output;
+using System.Data.SqlClient;
 
 namespace Web.Controllers
 {
@@ -1486,8 +1491,101 @@ namespace Web.Controllers
 
             }
 
+            //保留查詢條件
+            ViewData["userID"] = IDNO;
+            ViewData["SD"] = SD;
+            ViewData["ED"] = ED;
+
             return View(obj);
-            #endregion
         }
+        #endregion
+
+        #region 和雲錢包餘額提領
+        /// <summary>
+        /// 和雲錢包餘額提領 - 20210927 Frank加
+        /// </summary>
+        public ActionResult WalletWithdraw()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult WalletWithdraw(string Account, string IDNO, string cashAmount, string IshandleFee, string invoiceMode, string carrier, string CustID, string NPOBAN, string RVBANK, string RVACNT, string RV_NAME)
+        {
+            double feeAmount = 0;
+            double tax = 0;
+            if (IshandleFee == "on")
+            {
+                feeAmount = int.Parse(cashAmount) * 0.03;
+                Math.Round(feeAmount,0);
+                if(feeAmount > 100) { feeAmount = 100; };
+                tax = feeAmount * 0.05;
+                Math.Round(tax, 0);
+            }
+            else
+            {
+                feeAmount = 0;
+                tax = 0;
+            }
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
+            string base_site = "http://localhost:2061/api/";
+            //string base_site = ConfigurationManager.AppSettings["jsHost"];
+            string site = base_site + "BE_WalletWithdraw";
+            HttpClient client = new HttpClient()
+            {
+                BaseAddress = new Uri(site)
+            };
+            var Data = new
+            {
+                UserID = Account,
+                IDNO = IDNO,
+                cashAmount = cashAmount,
+                invoiceMode = invoiceMode,
+                carrier = carrier,
+                handleFee = Convert.ToInt64(feeAmount),
+                tax = Convert.ToInt64(tax),
+                CustID = CustID,
+                NPOBAN = NPOBAN,
+                RVBANK = RVBANK,
+                RVACNT = RVACNT,
+                RV_NAME = RV_NAME
+            };
+            var jsonData = JsonConvert.SerializeObject(Data);
+            HttpContent postContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = new HttpResponseMessage();
+
+            response = client.PostAsync(site, postContent).GetAwaiter().GetResult();
+            var result = JsonConvert.DeserializeObject<OAPI_Base>(response.Content.ReadAsStringAsync().Result);
+
+            if(result.Result == 1)
+            {
+                site = base_site + "BE_InsWalletInvoiceInfo";
+                HttpClient invoiceClient = new HttpClient()
+                {
+                    BaseAddress = new Uri(site)
+                };
+
+                HttpContent invoicePostContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                HttpResponseMessage invoiceResponse = new HttpResponseMessage();
+
+                invoiceResponse = invoiceClient.PostAsync(site, invoicePostContent).GetAwaiter().GetResult();
+                var invoiceResult = JsonConvert.DeserializeObject<OAPI_Base>(invoiceResponse.Content.ReadAsStringAsync().Result);
+                if(invoiceResult.Result == 1)
+                {
+                    ViewData["result"] = "執行完畢";
+                }
+                else
+                {
+                    ViewData["result"] = "寫入發票介面檔失敗，請洽資訊部";
+                }
+            }
+            else
+            {
+                ViewData["result"] = "錢包扣款失敗，請洽資訊部";
+            }
+            
+            return View();
+        }
+        #endregion
     }
 }

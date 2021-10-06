@@ -574,6 +574,8 @@
     <Build Include="dbo\Stored Procedures\usp_CreditAndWalletQuery_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_DonePayRentBillNew_U2.sql" />
     <Build Include="dbo\Stored Procedures\usp_WalletPay_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsWalletStoreVisualAccountLog_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_AutoStoreSetting_U01.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

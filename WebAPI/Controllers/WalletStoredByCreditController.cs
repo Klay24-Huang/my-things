@@ -46,8 +46,8 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
-            var carRentComm = new CarRentCommon();
             var wsp = new WalletSp();
+            var walletService = new WalletService();
 
             HttpContext httpContext = HttpContext.Current;
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -65,7 +65,7 @@ namespace WebAPI.Controllers
             Int16 Mode = 1;
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_WalletStoredByCredit apiInput = null;
+            IAPI_WalletStoreBase apiInput = null;
             var apiOutput = new OAPI_WalletStoredByCredit();
             var spOutput = new SPOutput_GetWallet();
             WebAPI_CreateAccountAndStoredMoney wallet = null;
@@ -76,7 +76,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-            string spName = "";
             string TaishinNO = "";
 
             #endregion
@@ -90,7 +89,7 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     //寫入API Log
-                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_WalletStoredByCredit>(Contentjson);
+                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_WalletStoreBase>(Contentjson);
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
@@ -124,250 +123,207 @@ namespace WebAPI.Controllers
                 #region Token判斷
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = carRentComm.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        trace.traceAdd(nameof(token_re), token_re);
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
-                    trace.FlowList.Add("Token判斷");
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+
                 }
                 #endregion
 
                 #region 取錢包會員資料&儲值金額限制檢核
                 if (flag)
                 {
-                    spName = "usp_GetWallet_Q01";
-                    SPInput_GetWallet spInput = new SPInput_GetWallet()
+                    flag = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                }
+                #endregion
+
+                #region 送台新查詢信用卡→直接授權
+                if (flag)
+                {
+                    //送台新查詢
+                    TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+                    PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
                     {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        Token = Access_Token
+                        ApiVer = ApiVerOther,
+                        ApposId = TaishinAPPOS,
+                        RequestParams = new GetCreditCardListRequestParamasData()
+                        {
+                            MemberId = IDNO,
+                        },
+                        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                        TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+
                     };
-                    spOutput = new SPOutput_GetWallet();
-                    SQLHelper<SPInput_GetWallet, SPOutput_GetWallet> sqlHelp = new SQLHelper<SPInput_GetWallet, SPOutput_GetWallet>(connetStr);
-                    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, spOutput.Error, spOutput.ErrorCode, ref lstError, ref errCode);
+                    WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+                    flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
 
-                    if (flag && spOutput != null)
-                    {
-                        //錢包現存餘額上限為5萬元
-                        if (apiInput.StoreMoney + spOutput.WalletBalance > 50000)
-                        {
-                            flag = false;
-                            errCode = "ERR282";
-                        }
-                        //錢包單月儲值(包括受贈)上限為30萬元
-                        else if (apiInput.StoreMoney + spOutput.MonthlyTransAmount > 300000)
-                        {
-                            flag = false;
-                            errCode = "ERR280";
-                        }
-                    }
+                    trace.traceAdd("DoGetCreditCardList", new { wsInput, wsOutput, errCode });
+                    trace.FlowList.Add("送台新查詢信用卡");
 
-                    trace.traceAdd("GetWallet", new { spInput, spOutput });
-                    trace.FlowList.Add("儲值金額限制檢核");
-
-                    #region 送台新查詢信用卡→直接授權
                     if (flag)
                     {
-                        //送台新查詢
-                        TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-                        PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+                        int Len = wsOutput.ResponseParams.ResultData.Count;
+                        bool hasFind = false;
+                        string CardToken = "";
+                        if (Len > 0)
                         {
-                            ApiVer = ApiVerOther,
-                            ApposId = TaishinAPPOS,
-                            RequestParams = new GetCreditCardListRequestParamasData()
-                            {
-                                MemberId = IDNO,
-                            },
-                            Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                            TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+                            CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+                            hasFind = true;
+                        }
 
-                        };
-                        WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
-                        flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
-
-                        trace.traceAdd("DoGetCreditCardList", new { wsInput, wsOutput, errCode });
-                        trace.FlowList.Add("送台新查詢信用卡");
-
-                        if (flag)
+                        #region 直接授權
+                        if (hasFind)//有找到，可以做儲值
                         {
-                            int Len = wsOutput.ResponseParams.ResultData.Count;
-                            bool hasFind = false;
-                            string CardToken = "";
-                            if (Len > 0)
+                            Thread.Sleep(1000);
+                            Domain.WebAPI.Input.Taishin.AuthItem item = new Domain.WebAPI.Input.Taishin.AuthItem()
                             {
-                                CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
-                                hasFind = true;
-                            }
-
-                            #region 直接授權
-                            if (hasFind)//有找到，可以做儲值
+                                Amount = apiInput.StoreMoney.ToString() + "00",
+                                Name = "錢包儲值",
+                                NonPoint = "N",
+                                NonRedeem = "N",
+                                Price = apiInput.StoreMoney.ToString() + "00",
+                                Quantity = "1"
+                            };
+                            PartOfCreditCardAuth WSAuthInput = new PartOfCreditCardAuth()
                             {
-                                Thread.Sleep(1000);
-                                Domain.WebAPI.Input.Taishin.AuthItem item = new Domain.WebAPI.Input.Taishin.AuthItem()
+                                ApiVer = "1.0.2",
+                                ApposId = TaishinAPPOS,
+                                RequestParams = new Domain.WebAPI.Input.Taishin.AuthRequestParams()
                                 {
-                                    Amount = apiInput.StoreMoney.ToString() + "00",
-                                    Name = "錢包儲值",
-                                    NonPoint = "N",
-                                    NonRedeem = "N",
-                                    Price = apiInput.StoreMoney.ToString() + "00",
-                                    Quantity = "1"
-                                };
-                                PartOfCreditCardAuth WSAuthInput = new PartOfCreditCardAuth()
-                                {
-                                    ApiVer = "1.0.2",
-                                    ApposId = TaishinAPPOS,
-                                    RequestParams = new Domain.WebAPI.Input.Taishin.AuthRequestParams()
-                                    {
-                                        CardToken = CardToken,
-                                        InstallPeriod = "0",
-                                        InvoiceMark = "N",
-                                        Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
-                                        MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
-                                        MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                                        MerchantTradeNo = string.Format("{0}WalletSave{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        NonRedeemAmt = apiInput.StoreMoney.ToString() + "00",
-                                        NonRedeemdescCode = "",
-                                        Remark1 = "",
-                                        Remark2 = "",
-                                        Remark3 = "",
-                                        ResultUrl = BindResultURL,
-                                        TradeAmount = apiInput.StoreMoney.ToString() + "00",
-                                        TradeType = "1",
-                                        UseRedeem = "N"
+                                    CardToken = CardToken,
+                                    InstallPeriod = "0",
+                                    InvoiceMark = "N",
+                                    Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
+                                    MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                                    MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
+                                    MerchantTradeNo = string.Format("{0}WalletSave{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    NonRedeemAmt = apiInput.StoreMoney.ToString() + "00",
+                                    NonRedeemdescCode = "",
+                                    Remark1 = "",
+                                    Remark2 = "",
+                                    Remark3 = "",
+                                    ResultUrl = BindResultURL,
+                                    TradeAmount = apiInput.StoreMoney.ToString() + "00",
+                                    TradeType = "1",
+                                    UseRedeem = "N"
 
-                                    },
-                                    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                                    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                                };
-                                WSAuthInput.RequestParams.Item.Add(item);
+                                },
+                                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                            };
+                            WSAuthInput.RequestParams.Item.Add(item);
 
-                                WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                                flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
-                                
-                                TaishinNO = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;     //台新IR編
-                                trace.traceAdd("DoCreditCardAuth", new { WSAuthInput, WSAuthOutput, errCode });
-                                trace.FlowList.Add("信用卡授權");
+                            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+                            flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
 
-                                if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
-                                {
-                                    flag = false;
-                                    errCode = "ERR197"; //刷卡授權失敗，請洽發卡銀行
-                                }
-                            }
-                            else
+                            TaishinNO = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;     //台新IR編
+                            trace.traceAdd("DoCreditCardAuth", new { WSAuthInput, WSAuthOutput, errCode });
+                            trace.FlowList.Add("信用卡授權");
+
+                            if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
                             {
                                 flag = false;
-                                errCode = "ERR195"; //找不到此卡號
+                                errCode = "ERR197"; //刷卡授權失敗，請洽發卡銀行
                             }
-                            #endregion                      
                         }
                         else
                         {
-                            errCode = wsOutput.RtnCode;
-                            errMsg = wsOutput.RtnMessage;
-                        }
-                    }
-                    #endregion
-
-                    #region 台新錢包儲值
-                    if (flag)
-                    {
-                        DateTime NowTime = DateTime.UtcNow;
-                        string guid = Guid.NewGuid().ToString().Replace("-", "");
-                        int nowCount = 1;
-                        wallet = new WebAPI_CreateAccountAndStoredMoney()
-                        {
-                            ApiVersion = "0.1.01",
-                            GUID = guid,
-                            MerchantId = MerchantId,
-                            POSId = "",
-                            StoreId = "",
-                            StoreName = "",
-                            StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
-                            StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
-                            MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
-                            Name = spOutput.Name,
-                            PhoneNo = spOutput.PhoneNo,
-                            Email = spOutput.Email,
-                            ID = IDNO,
-                            AccountType = "2",
-                            CreateType = "1",
-                            AmountType = "2",
-                            Amount = apiInput.StoreMoney,
-                            Bonus = 0,
-                            BonusExpiredate = "",
-                            SourceFrom = "9"
-                        };
-
-                        var body = JsonConvert.SerializeObject(wallet);
-                        TaishinWallet WalletAPI = new TaishinWallet();
-                        string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-                        string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
-                        flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-
-                        trace.traceAdd("DoStoreValueCreateAccount", new { wallet, MerchantId, utcTimeStamp, SignCode, output, errCode });
-                        trace.FlowList.Add("錢包儲值");
-
-                        if (flag == false)
-                        {
-                            errCode = "ERR918"; //Api呼叫失敗
-                            errMsg = output.Message;
-                        }
-
-
-                        #region 寫入錢包紀錄
-                        if (flag)
-                        {
-                            string formatString = "yyyyMMddHHmmss";
-                            SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
-                            {
-                                IDNO = output.Result.ID,
-                                WalletMemberID = output.Result.MemberId,
-                                WalletAccountID = output.Result.AccountId,
-                                Status = Convert.ToInt32(output.Result.Status),
-                                Email = output.Result.Email,
-                                PhoneNo = output.Result.PhoneNo,
-                                StoreAmount = apiInput.StoreMoney,
-                                WalletBalance = output.Result.Amount,
-                                CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
-                                LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
-                                LastStoreTransId = output.Result.StoreTransId,
-                                LastTransId = output.Result.TransId,
-                                TaishinNO= TaishinNO,
-                                TradeType = TradeType,
-                                PRGID = PRGID,
-                                Mode = Mode,
-                                Token = Access_Token,
-                                LogID = LogID
-                            };
-
-                            flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);
-
-                            trace.traceAdd("WalletStore", new { spInput_Wallet, flag, errCode });
-                            trace.FlowList.Add("寫入錢包紀錄");
-
-
-                            apiOutput = new OAPI_WalletStoredByCredit()
-                            {
-                                StoreMoney = apiInput.StoreMoney,
-                                StroeResult = 1,
-                                Timestamp = spInput_Wallet.LastTransDate == null ? "" : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate )
-                            };
+                            flag = false;
+                            errCode = "ERR195"; //找不到此卡號
                         }
                         #endregion
+                    }
+                    else
+                    {
+                        errCode = wsOutput.RtnCode;
+                        errMsg = wsOutput.RtnMessage;
+                    }
+                }
+                #endregion
 
+                #region 台新錢包儲值
+                if (flag)
+                {
+                    DateTime NowTime = DateTime.Now;
+                    string guid = Guid.NewGuid().ToString().Replace("-", "");
+                    int nowCount = 1;
+                    wallet = new WebAPI_CreateAccountAndStoredMoney()
+                    {
+                        ApiVersion = "0.1.01",
+                        GUID = guid,
+                        MerchantId = MerchantId,
+                        POSId = "",
+                        StoreId = "",
+                        StoreName = "",
+                        StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
+                        StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
+                        MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
+                        Name = spOutput.Name,
+                        PhoneNo = spOutput.PhoneNo,
+                        Email = spOutput.Email,
+                        ID = IDNO,
+                        AccountType = "2",
+                        CreateType = "1",
+                        AmountType = "2",
+                        Amount = apiInput.StoreMoney,
+                        Bonus = 0,
+                        BonusExpiredate = "",
+                        SourceFrom = "9"
+                    };
+
+                    var body = JsonConvert.SerializeObject(wallet);
+                    TaishinWallet WalletAPI = new TaishinWallet();
+                    string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                    string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                    flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+
+                    trace.traceAdd("DoStoreValueCreateAccount", new { wallet, MerchantId, utcTimeStamp, SignCode, output, errCode });
+                    trace.FlowList.Add("錢包儲值");
+
+                    if (flag == false)
+                    {
+                        errCode = "ERR918"; //Api呼叫失敗
+                        errMsg = output.Message;
+                    }
+
+
+                    #region 寫入錢包紀錄
+                    if (flag)
+                    {
+                        string formatString = "yyyyMMddHHmmss";
+                        SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
+                        {
+                            IDNO = output.Result.ID,
+                            WalletMemberID = output.Result.MemberId,
+                            WalletAccountID = output.Result.AccountId,
+                            Status = Convert.ToInt32(output.Result.Status),
+                            Email = output.Result.Email,
+                            PhoneNo = output.Result.PhoneNo,
+                            StoreAmount = apiInput.StoreMoney,
+                            WalletBalance = output.Result.Amount,
+                            CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
+                            LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
+                            LastStoreTransId = output.Result.StoreTransId,
+                            LastTransId = output.Result.TransId,
+                            TaishinNO = TaishinNO,
+                            TradeType = TradeType,
+                            PRGID = PRGID,
+                            Mode = Mode,
+                            Token = Access_Token,
+                            LogID = LogID
+                        };
+
+                        flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);
+
+                        trace.traceAdd("WalletStore", new { spInput_Wallet, flag, errCode });
+                        trace.FlowList.Add("寫入錢包紀錄");
+
+
+                        apiOutput = new OAPI_WalletStoredByCredit()
+                        {
+                            StoreMoney = apiInput.StoreMoney,
+                            StroeResult = 1,
+                            Timestamp = spInput_Wallet.LastTransDate == null ? "" : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate)
+                        };
                     }
                     #endregion
 

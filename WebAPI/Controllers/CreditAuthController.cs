@@ -1262,6 +1262,7 @@ namespace WebAPI.Controllers
         /// <param name="NowTime"></param>
         /// <param name="TradeType"></param>
         /// <param name="PRGName"></param>
+        /// <param name="InputSource"></param>
         /// <returns></returns>
         private SPInput_WalletPay SetForWalletPayLog(WebAPI_PayTransaction wallet, WebAPIOutput_PayTransaction taishinResponse
             , string IDNO, long OrderNo, long LogID, string Access_Token, DateTime NowTime, string TradeType, string PRGName)
@@ -1281,7 +1282,8 @@ namespace WebAPI.Controllers
                 TransId = taishinResponse.Result.TransId,
                 TradeType = TradeType,
                 PRGName = PRGName,
-                Mode = GetWalletHistoryMode(TradeType)
+                Mode = GetWalletHistoryMode(TradeType),
+                InputSource = 1
             };
 
         }
@@ -1289,8 +1291,10 @@ namespace WebAPI.Controllers
         ////信用卡錢包儲值
         public bool WalletStoreByCredit(int storeMoney, string accessToken, string funName, ref string errCode)
         {
-            IAPI_WalletStoredByCredit Input =
-                new IAPI_WalletStoredByCredit { StoreMoney = storeMoney };
+
+            IAPI_WalletStoreBase Input =
+                new IAPI_WalletStoreBase { StoreMoney = storeMoney };
+
 
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             DateTime MKTime = DateTime.Now;
@@ -1300,7 +1304,9 @@ namespace WebAPI.Controllers
 
             string url = $@"{AzureAPIBaseURL}api/WalletStoredByCredit";
 
-            var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoredByCredit>(Input, url, accessToken);
+
+            var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoreBase>(Input, url, accessToken);
+
             try
             {
                 if (resault.Succ)

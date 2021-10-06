@@ -102,6 +102,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsTransParking_Moto.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_InsUserGroup.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_InsWalletInvoiceInfo.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_MemberScore.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_NewsHandle.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_NPR136Success.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="SP\BE\Output\SPOutput_BE_CheckCarStatusByReturn.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarMachineAndCheckOrder.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarMachineAndCheckOrderNoIDNO.cs" />
+    <Compile Include="SP\BE\Output\SPOutput_BE_InsWalletInvoiceInfo.cs" />
     <Compile Include="SP\BE\Output\SPOutput_Login.cs" />
     <Compile Include="SP\Input\Arrears\SPInput_ArrearsQuery.cs" />
     <Compile Include="SP\Input\Arrears\SPInput_ArrearsQueryByNPR330ID.cs" />
@@ -210,6 +212,7 @@
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsStoreValueCreateAccountLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTrade.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTransferStoreValueLog.cs" />
+    <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsWalletStoreShopLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
     <Compile Include="SP\Input\PolygonList\SpInput_GetAlliRentStation.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
@@ -283,7 +286,9 @@
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsNxt.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_UpSubsMonth.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_AutoStoreSetting.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_CreditAndWalletQuery.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_GetCvsPaymentId.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWallet.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetPayInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletStoredMoneySet.cs" />
@@ -291,6 +296,7 @@
     <Compile Include="SP\Input\Wallet\SPInput_GetPayInfoReturnCar.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletStoreTradeTransHistory.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_InsWalletStoreVisualAccountLog.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStore.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_HandleWallet.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_SetWalletTrade.cs" />
@@ -379,6 +385,7 @@
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsNxt.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_SetSubsPayInvoDef.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_UpSubsMonth.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_GetCvsPaymentId.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetMemberName.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWallet.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetPayInfo.cs" />
@@ -498,6 +505,7 @@
     <Compile Include="TB\BackEnd\BE_StationDetailCombind.cs" />
     <Compile Include="TB\BackEnd\BE_UserGroup.cs" />
     <Compile Include="TB\BackEnd\BE_MemberInvoiceSettingData.cs" />
+    <Compile Include="TB\BackEnd\BE_UserWalletInfo.cs" />
     <Compile Include="TB\BackEnd\BE_WalletDetailQuery.cs" />
     <Compile Include="TB\BackEnd\iRentCarBase.cs" />
     <Compile Include="TB\BackEnd\iRentManager.cs" />
@@ -602,11 +610,19 @@
     <Compile Include="WebAPI\Input\Taishin\GenerateCheckSum\PartOfGetPaymentInfo.cs" />
     <Compile Include="WebAPI\Input\Taishin\GetCreditCardListRequestParamasData.cs" />
     <Compile Include="WebAPI\Input\Taishin\RequestParamsData.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\IHUBReqHeader.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\Param\AccountData.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\Param\ShortUrlReq.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\Param\CvsPayInfoReq.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\Param\BarcodeReq.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WalletBase.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_CreateAccountAndStoredMoney.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetAccountStatus.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetAccountValue.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_CreateCvsPayInfo.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetBarcodeShortUrl.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetBarcode.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetTaishinToken.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_PayTransaction.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_StoredMoney.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_TransferStoredValueCreateAccount.cs" />
@@ -694,6 +710,10 @@
     <Compile Include="WebAPI\output\Taishin\ResultData\AuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\DeleteCreditCardAuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\GetCreditCardResultData.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\IHUBResHeader.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\ShortUrlRes.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\CvsPayInfoRes.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\BarcodeRes.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\GetAccountStatusResult.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\GetAccountValueResult.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\GetAccountValueResultDetail.cs" />
@@ -703,6 +723,10 @@
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\TransferStoreValueCreateAccountResult.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetAccountStatus.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetAccountValue.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_CreateCvsPayInfo.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetBarCodeShortUrl.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetBarCode.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetTaishinToken.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_PayTransaction.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_StoreValueCreateAccount.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_TransferStoreValueCreateAccount.cs" />

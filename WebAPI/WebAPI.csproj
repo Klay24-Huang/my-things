@@ -183,6 +183,7 @@
     <Compile Include="Controllers\AnyRentController.cs" />
     <Compile Include="Controllers\AreaListController.cs" />
     <Compile Include="Controllers\ArrearsQueryController.cs" />
+    <Compile Include="Controllers\AutoStoreSettingController.cs" />
     <Compile Include="Controllers\BatExchangeStationController.cs" />
     <Compile Include="Controllers\BE_AuditController.cs" />
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
@@ -237,6 +238,7 @@
     <Compile Include="Controllers\BE_HiEasyRentRetryController.cs" />
     <Compile Include="Controllers\BE_InsCleanOrderController.cs" />
     <Compile Include="Controllers\BE_InsertChargeParkingController.cs" />
+    <Compile Include="Controllers\BE_InsWalletInvoiceInfoController.cs" />
     <Compile Include="Controllers\BE_IrentPaymentDetailController.cs" />
     <Compile Include="Controllers\BE_MemberQueryController.cs" />
     <Compile Include="Controllers\BE_NewsHandleController.cs" />
@@ -252,6 +254,7 @@
     <Compile Include="Controllers\BE_UPDFuncGroupController.cs" />
     <Compile Include="Controllers\BE_UPDOperatorController.cs" />
     <Compile Include="Controllers\BE_UPDUserGroupController.cs" />
+    <Compile Include="Controllers\BE_WalletWithdrawController.cs" />
     <Compile Include="Controllers\BindQueryByTaishinController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
@@ -404,8 +407,10 @@
     <Compile Include="Controllers\WalletPayTransactionController.cs" />
     <Compile Include="Controllers\WalletStoredByCreditController.cs" />
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
+    <Compile Include="Controllers\WalletStoreShopController.cs" />
     <Compile Include="Controllers\WalletStoreTradeHistoryHiddenController.cs" />
     <Compile Include="Controllers\WalletStoreTradeTransHistoryController.cs" />
+    <Compile Include="Controllers\WalletStoreVisualAccountController.cs" />
     <Compile Include="Controllers\WalletTransferCheckController.cs" />
     <Compile Include="Controllers\WalletTransferStoredValueController.cs" />
     <Compile Include="Controllers\GetMachiParkTokenController.cs" />
@@ -478,6 +483,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDFuncGroup.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDOperator.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_UPDUserGroup.cs" />
+    <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_WalletWithdraw.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_HandlePolygon.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_BonusQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_CarScheduleTimeLog.cs" />
@@ -501,7 +507,9 @@
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_ArrearsQuery.cs" />
+    <Compile Include="Models\Param\Input\IAPI_AutoStoreSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_BatExchangeStation.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BE_InsWalletInvoiceInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQuery.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindUUCardJob.cs" />
     <Compile Include="Models\Param\Input\IAPI_BonusGiving.cs" />
@@ -621,8 +629,9 @@
     <Compile Include="Models\Param\Input\IAPI_RecieveTsac.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletInfoCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletPayTransaction.cs" />
-    <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletStoreBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferCheck.cs" />
@@ -722,9 +731,12 @@
     <Compile Include="Models\Param\Output\OAPI_WalletHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_RefrashToken.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletInfoCheck.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletStoreBase.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoredByCredit.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeTransHistory.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletStoreVisualAccount.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
