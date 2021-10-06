@@ -6092,7 +6092,6 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明              |  型態  | 範例              |
 | ---------- | --------------------- | :----: | ----------        |
 | TranResult | 轉贈結果 (1成功0失敗) |  int   | 1                 |
-| TranMessage| 失敗原因              | string |                   |
 | SystemTime | 系統回傳時間          | string | 2021/03/31 23:19  |
 
 * Output範例
@@ -6106,23 +6105,20 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
 	"Data": {
 	    "TranResult":1,
-	    "TranMessage":"",
 	    "SystemTime":"2021/03/31 23:19"
 	}
 }
 {
-    "Result": "1",
-    "ErrorCode": "000000",
+    "Result": "0",
+    "ErrorCode": "ERR281",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	    "TranResult":0,
-	    "TranMessage":"受贈人錢包餘額超過上限，請受贈人確認錢包餘額",
-	    "SystemTime":"2021/03/31 23:19"
-	}
+    "ErrorMessage": "轉贈金額超過錢包金額",
+    "Data": {
+        "TranResult": 0,
+        "SystemTime": "2021/03/31 23:19"
+    }
 }
-
 ```
 
 ----
@@ -6177,30 +6173,40 @@ iRentApi20 Web API版本
 
 | 參數名稱   | 參數說明              |  型態  | 範例               |
 | ---------- | --------------------- | :----: | ----------         |
-| TranCheck  | 可否轉贈              |  int   | 1                  |
+| TranCheck  | 可否轉贈(1:可轉贈)    |  int   | 1                  |
 | IDNO       | 會員身分證字號        | string | A123456789         |
 | ShowName   | 遮罩後會員姓名        | string | 李Ｏ瑄             |
 | ShowValue  | 遮罩後的查詢Key值     | string | 0987\*\*\*321      |
-| ShowMessage| 顯示訊息              | string | 此用戶未完成註冊...|
 
 * Output範例
 
 ```
+{
+    "Result": "0",
+    "ErrorCode": "ERR278",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "非一般會員",
+    "Data": {
+        "CkResult": 0,
+        "ShowName": "",
+        "ShowValue": "",
+        "IDNO": ""
+    }
+}
 {
     "Result": "1",
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
-	    "TranCheck":1,
-	    "IDNO":"A123456789",
-	    "ShowName":"李Ｏ瑄",
-	    "ShowValue":"0987***321",
-	    "ShowMessage":"此用戶未完成註冊..."
-	}
+    "Data": {
+        "CkResult": 1,
+        "ShowName": "劉O希",
+        "ShowValue": "F130XXX853",
+        "IDNO": "F130140853"
+    }
 }
-
 ```
 
 ----
