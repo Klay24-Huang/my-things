@@ -17,5 +17,9 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <para>2:待上線(下線)</para>
         /// </summary>
         public int Online { set; get; }
+        /// <summary>
+        /// 下線原因
+        /// </summary>
+        public string OffLineReason { get; set; }
     }
 }
