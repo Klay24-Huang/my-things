@@ -21,5 +21,9 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 下線原因
         /// </summary>
         public string OffLineReason { get; set; }
+        /// <summary>
+        /// 備註
+        /// </summary>
+        public string Memo { get; set; }
     }
 }
