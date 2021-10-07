@@ -1851,6 +1851,9 @@ namespace OtherService
         {
             bool flag = false;
 
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
             output = DoNPR390Query(input).Result;
             if (output.Result)
             {
@@ -2136,7 +2139,7 @@ namespace OtherService
         {
             bool flag = false;
 
-            output = DoNPR390Query5(input).Result;
+            output = DoNPR390Query5(input).Result;//
             if (output.Result)
             {
                 flag = true;

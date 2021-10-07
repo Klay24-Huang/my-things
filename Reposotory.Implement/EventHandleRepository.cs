@@ -245,7 +245,7 @@ namespace Reposotory.Implement
 
 
         //20210408唐加
-        public List<BE_MapList> GetMapList(Int64? OrderNo)
+        public List<BE_MapList> GetMapList(int mode, Int64? OrderNo, string carno, string start, string end)
         {
             List<BE_MapList> lstEV = new List<BE_MapList>();
             bool flag = false;
@@ -253,7 +253,7 @@ namespace Reposotory.Implement
        
 
             SqlParameter[] para = new SqlParameter[0];
-            string SQL = " EXEC usp_BE_GetMapList '" + OrderNo.ToString() + "'";
+            string SQL = " EXEC usp_BE_GetMapList '" + mode.ToString() + "'" + ",'" + OrderNo.ToString() + "'" + ",'" + carno + "'" + ",'" + start + "'" + ",'" + end + "'";
             string term = "";
 
             lstEV = GetObjList<BE_MapList>(ref flag, ref lstError, SQL, para, term);

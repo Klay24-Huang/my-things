@@ -69,7 +69,7 @@ namespace Web.Controllers
             return View(lstEv);
         }
 
-        public ActionResult ExplodeMapQuery(string ExplodeOrderNum)
+        public ActionResult ExplodeMapQuery(int ExplodeMode, string ExplodeOrderNum, string ExplodeCarNo, string ExplodeSDATE, string ExplodeEDATE)
         {
             BaseSafeController himsSafe = new BaseSafeController();
             himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
@@ -92,7 +92,7 @@ namespace Web.Controllers
                 header.CreateCell(j).SetCellValue(headerField[j]);
                 sheet.AutoSizeColumn(j);
             }
-            lstRawDataOfMachi = _repository.GetMapList(tmpOrder);
+            lstRawDataOfMachi = _repository.GetMapList(ExplodeMode, tmpOrder, ExplodeCarNo, ExplodeSDATE, ExplodeEDATE);
             int len = lstRawDataOfMachi.Count;
             for (int k = 0; k < len; k++)
             {
