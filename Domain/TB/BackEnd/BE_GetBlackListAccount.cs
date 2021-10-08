@@ -12,5 +12,6 @@ namespace Domain.TB.BackEnd
         public string MEMTEL { set; get; }
         public string MEMADDR { set; get; }
         public string MEMCNAME { set; get; }
+        public string TIMES { set; get; }
     }
 }

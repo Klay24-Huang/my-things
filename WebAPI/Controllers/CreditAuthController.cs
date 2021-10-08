@@ -189,7 +189,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR101";
                     //ProcessedJobCount19.Inc();//唐加prometheus
-                    SetCount("NUM_CreditAuth_Fail_isGuest");//無token
+                    SetCount("NUM_CreditAuth_Fail_isGuest");
                 }
                 #endregion
 

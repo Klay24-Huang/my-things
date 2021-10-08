@@ -68,6 +68,7 @@
     <Compile Include="SP\BE\Input\SPInput_BE_CheckOperator.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_CheckUserGroup.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_ContactFinish.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_DeleteBlackList.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_DeleteMemberScore.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_FeedBackHandle.cs" />
     <Compile Include="SP\BE\Input\SPInput_BE_GetCarCurrentStatus.cs" />
@@ -347,6 +348,7 @@
     <Compile Include="SP\Output\Project\SPOutput_GetStationCarTypeOfMutiStation.cs" />
     <Compile Include="SP\Output\Register\SPOuput_CheckMobileUse.cs" />
     <Compile Include="SP\Output\Register\SPOuput_GetMemberMobile.cs" />
+    <Compile Include="SP\Output\Register\SPOutput_CheckMobileUse.cs" />
     <Compile Include="SP\Output\Register\SPOutput_GetVerifyCode.cs" />
     <Compile Include="SP\Output\Rent\CarImageData.cs" />
     <Compile Include="SP\Output\Rent\SPOutput_CalCityParkingFee.cs" />

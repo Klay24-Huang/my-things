@@ -20,8 +20,8 @@ using Web.Models.Enum;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using Prometheus;//20210707唐加prometheus
-using StackExchange.Redis;//20210913唐加redis
+//using Prometheus;//20210707唐加prometheus
+//using StackExchange.Redis;//20210913唐加redis
 
 namespace Web.Controllers
 {
@@ -35,15 +35,15 @@ namespace Web.Controllers
         string credentialContainer = (System.Configuration.ConfigurationManager.AppSettings["credentialContainer"] == null) ? "" : System.Configuration.ConfigurationManager.AppSettings["credentialContainer"].ToString();
 
         //20210913唐加redis，解決azure多執行個體造成prometheus的數值亂跳問題
-        private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
-        private static Lazy<ConnectionMultiplexer> lazyConnection;
-        public MemberManageController()
-        {
-            if (lazyConnection == null)
-            {
-                lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
-            }
-        }
+        //private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
+        //private static Lazy<ConnectionMultiplexer> lazyConnection;
+        //public MemberManageController()
+        //{
+        //    if (lazyConnection == null)
+        //    {
+        //        lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisConnet));
+        //    }
+        //}
 
         //唐加prometheus，20210913改用Gauge
         //private static readonly Counter EnterCounte = Metrics.CreateCounter("BENSON_AuditDetail", "Number of call AuditDetail");
@@ -53,7 +53,7 @@ namespace Web.Controllers
         //        // Here you specify only the names of the labels.
         //        LabelNames = new[] { "method", "server" }
         //    });
-        private static readonly Gauge EnterCounte = Metrics.CreateGauge("BENSON_AuditDetail", "Number of call AuditDetail");
+        //private static readonly Gauge EnterCounte = Metrics.CreateGauge("BENSON_AuditDetail", "Number of call AuditDetail");
 
         #region 會員審核及明細
         /// <summary>
@@ -111,7 +111,7 @@ namespace Web.Controllers
             //唐加prometheus，20210913改呼叫SetAuditDetailCount透過redis計算後再給prometheus
             //EnterCounte.Inc();
             //EnterCounte.WithLabels(Request.HttpMethod, Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).Inc();//WEBSITE_INSTANCE_ID是抓azure主機的環境變數
-            SetAuditDetailCount();
+            //SetAuditDetailCount();
 
             if (UserName != null && Session["Account"] != null)
             {
@@ -1638,28 +1638,225 @@ namespace Web.Controllers
         }
         #endregion
 
-        private void SetAuditDetailCount()
+        #region 手機黑名單
+        public ActionResult BlackList()
         {
-            var value = 1;
-            try
-            {
-                ConnectionMultiplexer connection = lazyConnection.Value;
-                IDatabase cache = connection.GetDatabase();
-
-                var key = "Number of call AuditDetail";
-                var cacheString = cache.StringGet(key);
-                if (cacheString.HasValue)
-                {
-                    int.TryParse(cacheString.ToString(), out value);
-                    value++;
-                }
-                cache.StringSet(key, value);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex.Message);
-            }
-            EnterCounte.Set(value); //宣告Guage才能用set
+            return View();
         }
+        [HttpPost]
+        public ActionResult BlackList(string Mode, string StartDate, string EndDate, string MobilePhone, HttpPostedFileBase fileImport)
+        {
+            ViewData["StartDate"] = StartDate;
+            ViewData["EndDate"] = EndDate;
+            ViewData["MobilePhone"] = MobilePhone;
+
+            if (Mode == "0")
+            {
+                BE_AuditDetailCombind Data = new BE_AuditDetailCombind();
+                List<BE_GetBlackLists> lstData = new MemberRepository(connetStr).GetBlackLists(StartDate, EndDate, MobilePhone);
+                List<BE_GetBlackListsDetail> lstDataDetail = new MemberRepository(connetStr).GetBlackListsDetail(StartDate, EndDate, MobilePhone);
+                List<BE_GetBlackListAccount> lstDataAccount = new MemberRepository(connetStr).GetBlackListsAccount(StartDate, EndDate, MobilePhone);
+
+                //Newtonsoft.Json序列化
+                string jsonData = JsonConvert.SerializeObject(lstDataDetail);
+                string jsonDataAccount = JsonConvert.SerializeObject(lstDataAccount);
+
+                Data.BlackLists = new List<BE_GetBlackLists>();
+                Data.BlackLists = lstData;
+                //Data.MileStoneDetail = new List<BE_MileStoneDetail>();
+                //Data.MileStoneDetail = lstMileStoneDetail;
+                Data.JsonBlackListsDetail = jsonData;
+                Data.JsonBlackListsAccount = jsonDataAccount;
+
+                //return View(lstData);
+                return View(Data);
+            }
+            else if (Mode == "1")
+            {
+                bool flag = true;
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                CommonFunc baseVerify = new CommonFunc();
+                SPInput_BE_InsBlackList data = new SPInput_BE_InsBlackList()
+                {
+                    Mode = 0,
+                    Mobile = MobilePhone,
+                    USERID = UserId
+                };
+                SPOutput_Base SPOutput = new SPOutput_Base();
+                flag = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsBlackList", data, ref SPOutput, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorLine"] = SPOutput.ErrorMsg;
+                }
+
+                return View();
+            }
+            else
+            {
+                string errorMsg = "";
+                bool flag = true;
+
+                List<SPInput_BE_InsBlackList> lstData = new List<SPInput_BE_InsBlackList>();
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                CommonFunc baseVerify = new CommonFunc();
+                if (fileImport != null)
+                {
+                    if (fileImport.ContentLength > 0)
+                    {
+                        string fileName = string.Concat(new string[]{
+                            "BlackListImport",
+                            ((Session["Account"]==null)?"":Session["Account"].ToString()),
+                            "_",
+                            DateTime.Now.ToString("yyyyMMddHHmmss"),
+                            ".xlsx"
+                        });
+                        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Content/upload/BlackListImport"));
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        string path = Path.Combine(Server.MapPath("~/Content/upload/BlackListImport"), fileName);
+                        fileImport.SaveAs(path);
+                        IWorkbook workBook = new XSSFWorkbook(path);
+                        ISheet sheet = workBook.GetSheetAt(0);
+                        int sheetLen = sheet.LastRowNum;
+                        string[] field = { "手機號碼", "新增或刪除" };
+                        int fieldLen = field.Length;
+                        //第一關，判斷位置是否相等
+                        for (int i = 0; i < fieldLen; i++)
+                        {
+                            ICell headCell = sheet.GetRow(0).GetCell(i);
+                            if (headCell.ToString().Replace(" ", "").ToUpper() != field[i])
+                            {
+                                errorMsg = "標題列不相符";
+                                flag = false;
+                                break;
+                            }
+                        }
+
+                        if (flag)
+                        {
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                if ((sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")) != "新增" &&
+                                    (sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")) != "刪除")
+                                {
+                                    errorMsg = string.Format("第{0}筆資料有錯誤：{1}", i.ToString(), "未填寫或填錯新增刪除");
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //通過第一關 
+                        if (flag)
+                        {
+                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                SPInput_BE_InsBlackList data = new SPInput_BE_InsBlackList()
+                                {
+                                    Mode = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")=="新增" ? 0 : 1,
+                                    Mobile = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    USERID = UserId
+                                };
+
+                                SPOutput_Base SPOutput = new SPOutput_Base();
+                                flag = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsBlackList", data, ref SPOutput, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                if (flag == false)
+                                {
+                                    //errorLine = i.ToString();
+                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), SPOutput.ErrorMsg);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errorMsg = "請上傳要匯入的資料";
+                    }
+                }
+                else
+                {
+                    flag = false;
+                    errorMsg = "請上傳要匯入的資料";
+                }
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorLine"] = errorMsg;
+                }
+                return View();
+            }
+        }
+        public ActionResult ExplodeBlackList(string ExplodeSDate, string ExplodeEDate, string ExplodeMobilePhone)
+        {
+            List<BE_GetBlackLists> lstBlackList = new List<BE_GetBlackLists>();
+            MemberRepository _repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "手機號碼", "黑名單加入日期", "黑名單加入時間" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+            }
+            lstBlackList = _repository.GetBlackLists(ExplodeSDate, ExplodeEDate, ExplodeMobilePhone);
+
+            int len = lstBlackList.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstBlackList[k].Mobile);
+                content.CreateCell(1).SetCellValue(lstBlackList[k].CreateDate.Substring(0,10));
+                content.CreateCell(2).SetCellValue(lstBlackList[k].CreateDate.Substring(10));
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "手機黑名單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        #endregion
+
+        //private void SetAuditDetailCount()
+        //{
+        //    var value = 1;
+        //    try
+        //    {
+        //        ConnectionMultiplexer connection = lazyConnection.Value;
+        //        IDatabase cache = connection.GetDatabase();
+
+        //        var key = "Number of call AuditDetail";
+        //        var cacheString = cache.StringGet(key);
+        //        if (cacheString.HasValue)
+        //        {
+        //            int.TryParse(cacheString.ToString(), out value);
+        //            value++;
+        //        }
+        //        cache.StringSet(key, value);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //    }
+        //    EnterCounte.Set(value); //宣告Guage才能用set
+        //}
     }
 }

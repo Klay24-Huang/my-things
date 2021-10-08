@@ -1586,6 +1586,18 @@ namespace Web.Controllers
                     "RowCount" + ":" + lstData.Count.ToString() + "}"
                     );
 
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'車輛隨租定位(CarLocationQuery)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{IsCar" + ":'" + ((IsCar == "true") ? "汽車" : "機車") + "'," +
+                    "Time_Start" + ":'" + Time_Start + "'," +
+                    "Time_End" + ":'" + Time_End + "'," +
+                    "Account" + ":'" + Account + "'," +
+                    "RowCount" + ":" + lstData.Count.ToString() + "}"
+                    );
+
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             ExcelPackage ep = new ExcelPackage();
             ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");

@@ -203,11 +203,14 @@
                 for (int i = 0; i < ResultLen; i++)
                 {
                     <tr>
-                        <td scope="col">@(obj.BlackLists[i].Mobile)</td>
+                        <td scope="col">
+                            @(obj.BlackLists[i].Mobile)
+                            <input type="text" name="UserId_@(obj.BlackLists[i].Mobile)" id="UserId_@(obj.BlackLists[i].Mobile)" value="@(obj.BlackLists[i].Mobile)" class="form-control" style="display:none" />
+                        </td>
                         <td scope="col">@(obj.BlackLists[i].CreateDate)</td>
                         <td scope="col"><button type="button" class="btn btn-info" onclick="getaccount(@BlackListsAccount,'@(obj.BlackLists[i].Mobile)')" data-toggle="modal" data-target="#blacklistaccount_modal">檢視</button></td>
                         <td scope="col"><button type="button" class="btn btn-info" onclick="getdetail(@BlackListsDetail,'@(obj.BlackLists[i].Mobile)')" data-toggle="modal" data-target="#blacklistdetail_modal">檢視</button></td>
-                        <td scope="col"></td>
+                        <td scope="col"><Button type="button" class="btn btn-outline-secondary" id="btnDel_@(obj.BlackLists[i].Mobile)" name="btnDel_@(obj.BlackLists[i].Mobile)" onclick="DoDel('@(obj.BlackLists[i].Mobile)');">刪除</Button></td>
                     </tr>
                 }
 
@@ -231,11 +234,10 @@
                 <table class="table table-striped bg-white mt-4 " data-limit-navigation="5" id="myTable">
                     <thead class="text-white bg-primary">
                         <tr>
-                            <th scope="col">歷程記錄日</th>
-                            <th scope="col">手機</th>
-                            <th scope="col">黑名單建立日期</th>
-                            <th scope="col">目前是否為黑名單</th>
-                            <th scope="col">操作人員</th>
+                            <th scope="col">手機號碼</th>
+                            <th scope="col">黑名單加入時間</th>
+                            <th scope="col">移除時間</th>
+                            <th scope="col">修改人員</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -269,6 +271,7 @@
                             <th scope="col">姓名</th>
                             <th scope="col">地址</th>
                             <th scope="col">手機</th>
+                            <th scope="col">通過時間</th>
                         </tr>
                     </thead>
                     <tbody>

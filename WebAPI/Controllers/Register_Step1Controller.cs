@@ -172,15 +172,19 @@ namespace WebAPI.Controllers
                     Mobile = apiInput.Mobile,
                     LogID = LogID
                 };
-                SPOuput_CheckMobileUse spOut = new SPOuput_CheckMobileUse();
-                SQLHelper<SPInput_CheckMobile, SPOuput_CheckMobileUse> sqlHelp = new SQLHelper<SPInput_CheckMobile, SPOuput_CheckMobileUse>(connetStr);
+                SPOutput_CheckMobileUse spOut = new SPOutput_CheckMobileUse();
+                SQLHelper<SPInput_CheckMobile, SPOutput_CheckMobileUse> sqlHelp = new SQLHelper<SPInput_CheckMobile, SPOutput_CheckMobileUse>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
-                //企劃不想發簡訊，要用MAIL
+                //20211007 upd by 唐，企劃又不想發MAIL，要改用簡訊
                 //HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 //WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
-                //string Message = string.Format("您的手機驗證碼是");
+                //string Message = string.Format("親愛的iRent會員您好:\n" +
+                //    "您目前於iRent註冊的手機號碼與其他會員重複，為維護您的權益，請您重新認證手機號碼，\n" +
+                //    "若仍有問題，請您來電0800-024-550或line詢問客服，亦可至鄰近門市詢問辦理，謝謝您。\n" +
+                //    "※ 本信件為系統自動發送，請勿直接回覆此信件。\n" +
+                //    "和雲行動服務股份有限公司 敬上");
                 //flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
                 if (spOut.mail != "")
                 {
@@ -227,7 +231,7 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        public void SendMail(string TITLE,string MEMO, string recevie)
+        public void SendMail(string TITLE, string MEMO, string recevie)
         {
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             bool flag2 = true;
@@ -245,7 +249,7 @@ namespace WebAPI.Controllers
             try
             {
                 SendMail send = new SendMail();
-                flag2 = Task.Run(() => send.DoSendMail(TITLE,MEMO,recevie)).Result;
+                flag2 = Task.Run(() => send.DoSendMail(TITLE, MEMO, recevie)).Result;
 
                 SPInput.SendTime = DateTime.Now;
             }
