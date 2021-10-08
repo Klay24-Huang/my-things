@@ -126,20 +126,20 @@ namespace WebAPI.Controllers
                 {
                     SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
                     "HIMSIRENT2@hotaimotor.com.tw");
-                }
 
-                //20211008唐加
-                string spName2 = "usp_BE_InsBlackList";
-                SPInput_BE_InsBlackList spInput2 = new SPInput_BE_InsBlackList()
-                {
-                    Mode = 3,
-                    Mobile = apiInput.Mobile,
-                    USERID = ""
-                };
-                SPOutput_Base spOut2 = new SPOutput_Base();
-                SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr);
-                flag = sqlHelp2.ExecuteSPNonQuery(spName2, spInput2, ref spOut2, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                    //20211008唐加
+                    string spName2 = "usp_BE_InsBlackList2";
+                    SPInput_BE_InsBlackList spInput2 = new SPInput_BE_InsBlackList()
+                    {
+                        Mode = 3,
+                        Mobile = apiInput.Mobile,
+                        USERID = apiInput.IDNO
+                    };
+                    SPOutput_Base spOut2 = new SPOutput_Base();
+                    SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr);
+                    flag = sqlHelp2.ExecuteSPNonQuery(spName2, spInput2, ref spOut2, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref spOut2, ref lstError, ref errCode);
+                }         
             }
             #endregion
             #region 發送簡訊
