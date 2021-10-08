@@ -157,6 +157,46 @@ namespace WebAPI.Controllers
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
             }
             #endregion
+
+            //20210928唐加
+            #region 若已驗證手機被第二人驗證，發送簡訊通知前一位客人
+            if (flag)
+            {
+                string spName = "usp_CheckMobileUse";
+                SPInput_CheckMobile spInput = new SPInput_CheckMobile()
+                {
+                    Mobile = apiInput.Mobile,
+                    LogID = LogID
+                };
+                SPOutput_CheckMobileUse spOut = new SPOutput_CheckMobileUse();
+                SQLHelper<SPInput_CheckMobile, SPOutput_CheckMobileUse> sqlHelp = new SQLHelper<SPInput_CheckMobile, SPOutput_CheckMobileUse>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                //20211007 upd by 唐，企劃又不想發MAIL，要改用簡訊
+                //HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                //WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
+                //string Message = string.Format("親愛的iRent會員您好:\n" +
+                //    "您目前於iRent註冊的手機號碼與其他會員重複，為維護您的權益，請您重新認證手機號碼，\n" +
+                //    "若仍有問題，請您來電0800-024-550或line詢問客服，亦可至鄰近門市詢問辦理，謝謝您。\n" +
+                //    "※ 本信件為系統自動發送，請勿直接回覆此信件。\n" +
+                //    "和雲行動服務股份有限公司 敬上");
+                //flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
+                if (spOut.mail != "")
+                {
+                    SendMail("iRent會員異動通知",
+                    "<img src='https://irentv2-as-verify.azurewebsites.net/images/irent.png'><br>" +
+                    "親愛的iRent會員您好:<br>" +
+                    "您目前於iRent註冊的手機號碼與其他會員重複，為維護您的權益，請您重新認證手機號碼，<br>" +
+                    "若仍有問題，請您來電0800-024-550或line詢問客服，亦可至鄰近門市詢問辦理，謝謝您。<br>" +
+                    "※ 本信件為系統自動發送，請勿直接回覆此信件。<br>" +
+                    "和雲行動服務股份有限公司 敬上<br>" +
+                    "<img src='https://irentv2-as-verify.azurewebsites.net/images/hims_logo.png' width='300'>",
+                    spOut.mail);
+                }
+            }
+            #endregion
+
             #region TB
             if (flag)
             {
