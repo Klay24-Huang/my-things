@@ -62,5 +62,29 @@ namespace OtherService.Common
             }
 
         }
+
+        public void InsWalletStoreShopLog(SPInput_InsWalletStoreShopLog input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_InsWalletStoreShopLog, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_InsWalletStoreShopLog, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = "usp_InsWalletStoreShopLog_I01";
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+
+            if (flag)
+            {
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+        }
     }
 }

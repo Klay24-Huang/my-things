@@ -213,6 +213,7 @@
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
+    <Compile Include="Controllers\WalletWithdrowInvoiceController.cs" />
     <Compile Include="Controllers\BE_HandleCarMachineController.cs" />
     <Compile Include="Controllers\BE_HandleCarOnlineController.cs" />
     <Compile Include="Controllers\BE_HandleCarSettingController.cs" />
@@ -407,6 +408,7 @@
     <Compile Include="Controllers\WalletPayTransactionController.cs" />
     <Compile Include="Controllers\WalletStoredByCreditController.cs" />
     <Compile Include="Controllers\WalletStoredMoneyController.cs" />
+    <Compile Include="Controllers\WalletStoreShopController.cs" />
     <Compile Include="Controllers\WalletStoreTradeHistoryHiddenController.cs" />
     <Compile Include="Controllers\WalletStoreTradeTransHistoryController.cs" />
     <Compile Include="Controllers\WalletStoreVisualAccountController.cs" />
@@ -450,6 +452,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarMachine.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarOnline.cs" />
@@ -496,6 +499,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
@@ -630,6 +634,7 @@
     <Compile Include="Models\Param\Input\IAPI_WalletPayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreBase.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredMoney.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTransferCheck.cs" />
@@ -731,6 +736,7 @@
     <Compile Include="Models\Param\Output\OAPI_WalletInfoCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreBase.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoredByCredit.cs" />
+    <Compile Include="Models\Param\Output\OAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeTransHistory.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreVisualAccount.cs" />

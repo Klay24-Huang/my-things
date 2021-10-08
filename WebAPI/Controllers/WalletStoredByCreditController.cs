@@ -46,7 +46,6 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
-            var carRentComm = new CarRentCommon();
             var wsp = new WalletSp();
             var walletService = new WalletService();
 
@@ -77,7 +76,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-            string spName = "";
             string TaishinNO = "";
 
             #endregion
