@@ -90,8 +90,8 @@ namespace WebAPI.Controllers
                     CarNo = apiInput.CarNo.Replace(" ", ""),
                     Online=apiInput.Online,
                     UserID = apiInput.UserID,
-                    OffLineReason = apiInput.OffLineReason
-
+                    OffLineReason = apiInput.OffLineReason,
+                    Memo = apiInput.Memo
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
