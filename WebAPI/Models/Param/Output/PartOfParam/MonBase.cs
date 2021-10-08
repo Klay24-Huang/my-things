@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebAPI.Models.Param.Output.PartOfParam
 {
@@ -10,7 +7,13 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     /// </summary>
     public class MonBase
     {
+        /// <summary>
+        /// 月租訂單編號
+        /// </summary>
         public Int64 MonthlyRentId { get; set; }
+        /// <summary>
+        /// 月租方案名稱
+        /// </summary>
         public string ProjNM { get; set; }
     }
 }

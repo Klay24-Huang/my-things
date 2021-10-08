@@ -346,6 +346,14 @@ namespace WebAPI.Controllers
                 {
                     int.TryParse(cacheString.ToString(), out value);
                     value++;
+
+                    string _am = "00:00";
+                    string _pm = "08:00";
+                    TimeSpan dspAM = DateTime.Parse(_am).TimeOfDay;
+                    TimeSpan dspPM = DateTime.Parse(_pm).TimeOfDay;
+                    DateTime t1 = Convert.ToDateTime(DateTime.Now.ToString("HH:mm"));
+                    TimeSpan dspNOW = t1.TimeOfDay;
+                    if (dspNOW > dspAM && dspNOW < dspPM){ value=0; }
                 }
                 cache.StringSet(key, value);
             }
