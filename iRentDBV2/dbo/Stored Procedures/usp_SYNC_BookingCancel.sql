@@ -1,48 +1,26 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_SYNC_BookingCancel]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_SYNC_BookingCancel
+* 系    統 : IRENT
+* 程式功能 : 排程取消
+* 作    者 : ERIC
+* 撰寫日期 : 20201123
+* 修改日期 : 20201218 ADD BY ADAM
+			 20210205 ADD BY ADAM REASON.補上清潔訂單自動取消
+			 20210317 ADD;將已取車逾時未還車的狀態更新
+			 20210602 ADD BY YEH REASON:正在用車被系統取消不扣分
+			 20210707 ADD BY YEH REASON:逾時且40分鐘後有訂單，先預扣分數
+			 20210707 ADD BY YEH REASON:取出還在用車中的車輛清單
+			 20210707 ADD BY YEH REASON.同站 預約用車時間<10小時積分扣-20分
+			 20210707 ADD BY YEH REASON.同站 預約用車時間>=10小時積分扣-25分
+			 20210726 UPD BY YEH REASON:增加判斷不存在TB_MemberScoreDetail才寫入
+			 20210726 UPD BY YEH REASON:前位使用者逾時用車導致訂單被系統取消時，要扣前位使用者(影響後續用戶租用)的分數
+			 20210915 UPD BY YEH REASON:系統取消訂單要將共同承租人狀態是已接受/邀請中的改為已取消
 
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_SYNC_BookingCancel]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:Eric 
-** Date:2020/11/23 下午 05:52:28 
-**
-*****************************************************************
-** Change History
-*****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/11/23 下午 05:52:28    |  Eric|          First Release
-**			 |			  |
-*****************************************************************/
+* Example  : exec usp_SYNC_BookingCancel @DATEADD(hour,8,GETDATE()),'','','',''
+***********************************************************************************************/
+
 CREATE PROCEDURE [dbo].[usp_SYNC_BookingCancel]
 	@NowTime                DATETIME              ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -55,7 +33,6 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @Descript NVARCHAR(200);
 
 /*初始設定*/
 SET @Error=0;
@@ -123,11 +100,11 @@ BEGIN TRY
 
 	--更新總表
 	UPDATE TB_BookingStatusOfUser
-	SET NormalRentBookingNowCount	= CASE WHEN D.ProjType=0 AND NormalRentBookingNowCount>0 THEN NormalRentBookingNowCount-1 ELSE NormalRentBookingNowCount END,
+	SET NormalRentBookingNowCount = CASE WHEN D.ProjType=0 AND NormalRentBookingNowCount>0 THEN NormalRentBookingNowCount-1 ELSE NormalRentBookingNowCount END,
 		NormalRentBookingCancelCount= CASE WHEN D.ProjType=0 THEN NormalRentBookingCancelCount+1 ELSE NormalRentBookingCancelCount END,
 		AnyRentBookingNowCount = CASE WHEN D.ProjType=3 AND AnyRentBookingNowCount>0 THEN 0 ELSE AnyRentBookingNowCount END,
 		AnyRentBookingCancelCount = CASE WHEN D.ProjType=3 THEN AnyRentBookingCancelCount+1 ELSE AnyRentBookingCancelCount END,
-		MotorRentBookingNowCount	= CASE WHEN D.ProjType=4 AND MotorRentBookingNowCount>0 THEN 0 ELSE MotorRentBookingNowCount END,
+		MotorRentBookingNowCount = CASE WHEN D.ProjType=4 AND MotorRentBookingNowCount>0 THEN 0 ELSE MotorRentBookingNowCount END,
 		MotorRentBookingCancelCount = CASE WHEN D.ProjType=4 THEN MotorRentBookingCancelCount+1 ELSE MotorRentBookingCancelCount END,
 		UPDTime=@NowTime
 	FROM TB_BookingStatusOfUser A
@@ -168,7 +145,7 @@ BEGIN TRY
 	-- 20210707 ADD BY YEH REASON.同站 預約用車時間>=10小時積分扣-25分
 	INSERT INTO TB_MemberScoreDetail(A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
 										MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
-	SELECT @FunName,IDNO,@NowTime,@FunName,IDNO,@NowTime,
+	SELECT @FunName,'SYSTEM',@NowTime,@FunName,'SYSTEM',@NowTime,
 		IDNO,OrderNum,5,-25,-25,0,0
 	FROM @sync_order_data
 	WHERE ProjType=0
@@ -180,7 +157,7 @@ BEGIN TRY
 	-- 20210707 ADD BY YEH REASON.同站 預約用車時間<10小時積分扣-20分
 	INSERT INTO TB_MemberScoreDetail(A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
 										MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
-	SELECT @FunName,IDNO,@NowTime,@FunName,IDNO,@NowTime,
+	SELECT @FunName,'SYSTEM',@NowTime,@FunName,'SYSTEM',@NowTime,
 		IDNO,OrderNum,4,-20,-20,0,0
 	FROM @sync_order_data
 	WHERE ProjType=0
@@ -192,7 +169,7 @@ BEGIN TRY
 	-- 20210726 UPD BY YEH REASON:前位使用者逾時用車導致訂單被系統取消時，要扣前位使用者(影響後續用戶租用)的分數
 	INSERT INTO TB_MemberScoreDetail(A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
 									 MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
-	SELECT @FunName,IDNO,@NowTime,@FunName,IDNO,@NowTime,
+	SELECT @FunName,'SYSTEM',@NowTime,@FunName,'SYSTEM',@NowTime,
 		IDNO,order_number,14,-20,-20,0,-1
 	FROM #CarList
 	WHERE CarNo IN (SELECT CarNo FROM @sync_order_data)
@@ -200,8 +177,35 @@ BEGIN TRY
 
 	DROP TABLE IF EXISTS #CarList;
 
+	-- 20210915 UPD BY YEH REASON:系統取消訂單要將共同承租人狀態是已接受/邀請中的改為已取消
+	DROP TABLE IF EXISTS #Together;
+
+	-- 將被取消的人資料撈出來
+	SELECT A.Order_number,A.MEMIDNO,dbo.FN_BlockName(C.MEMCNAME,'●') AS InviteName
+	INTO #Together
+	FROM TB_TogetherPassenger A WITH(NOLOCK) 
+	INNER JOIN @sync_order_data B ON B.OrderNum=A.Order_number
+	INNER JOIN TB_MemberData C WITH(NOLOCK) ON C.MEMIDNO=B.IDNO
+	WHERE A.ChkType IN ('Y','S');
+
+	-- 將共同承租人狀態是已接受/邀請中的改為已取消
+	UPDATE TB_TogetherPassenger
+	SET ChkType='N',
+		UPTime=@NowTime
+	FROM TB_TogetherPassenger A
+	INNER JOIN #Together B ON B.Order_number=A.Order_number AND B.MEMIDNO=A.MEMIDNO;
+
+	-- 推播只送文字訊息，不給URL
+	INSERT INTO TB_PersonNotification (OrderNum,IDNO,NType,UserName,UserToken,STime,Title,Message,url)
+	SELECT A.Order_number,A.MEMIDNO,19,B.MEMCNAME,B.PushREGID,DateAdd(SECOND,10,@NowTime),
+		CONCAT('【共同承租】',A.InviteName,'取消邀請了唷!!'),CONCAT('【共同承租】',A.InviteName,'取消邀請了唷!!'),''
+	FROM #Together A
+	INNER JOIN TB_MemberData B ON B.MEMIDNO=A.MEMIDNO;
+
+	DROP TABLE IF EXISTS #Together;
+
 	--清除共用表
-	delete from @sync_order_data
+	delete from @sync_order_data;
 
 	/*還車前30分鐘通知*/
 	--宣告固定時間參數
@@ -245,7 +249,7 @@ BEGIN TRY
 	--寫入訂單歷程記錄
 	INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
 	select OrderNum,cancel_status,car_mgt_status,booking_status,N'排程【寫入逾時時間】'
-	from @sync_order_data
+	from @sync_order_data;
 
 	--寫入推播通知，推播先關掉等機制完成後再上
 	--INSERT INTO TB_PersonNotification(OrderNum,IDNO,NType,UserName,UserToken,STime,Message)
@@ -266,7 +270,7 @@ BEGIN TRY
 	-- 20210707 ADD BY YEH REASON:逾時且40分鐘後有訂單，先預扣分數
 	INSERT INTO TB_MemberScoreDetail(A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,
 										MEMIDNO,ORDERNO,DEF_SEQ,SCORE,ORI_SCORE,UIDISABLE,ISPROCESSED)
-	SELECT @FunName,B.IDNO,@NowTime,@FunName,B.IDNO,@NowTime,
+	SELECT @FunName,'SYSTEM',@NowTime,@FunName,'SYSTEM',@NowTime,
 		B.IDNO,B.OrderNum,14,-20,-20,0,-1
 	FROM TB_OrderMain A WITH(NOLOCK)
 	INNER JOIN @sync_order_data B ON A.CarNo=B.CarNo AND B.ProjType=0
@@ -278,7 +282,7 @@ BEGIN TRY
 	AND B.OrderNum NOT IN (SELECT ORDERNO FROM TB_MemberScoreDetail WITH(NOLOCK) WHERE DEF_SEQ=14 AND ORDERNO IN (SELECT ORDERNO FROM @sync_order_data) );
 
 	--清除共用表
-	delete from @sync_order_data
+	delete from @sync_order_data;
 	/*逾時通知END*/
 
 	/*結帳後15分鐘未還車*/
@@ -318,15 +322,14 @@ BEGIN TRY
 	--取出全部未完成及未取消的清潔保修
 	INSERT INTO @sync_clearOrder_data(OrderNum,CarNo,car_mgt_status,booking_status,cancel_status,spec_status,StartTime ,StopTime)
 	SELECT order_number ,CarNo ,car_mgt_status ,booking_status ,cancel_status ,spec_status,start_time,stop_time
-	FROM dbo.TB_OrderMain WITH(NOLOCK) WHERE booking_status>0 AND booking_status<3 AND cancel_status=0 AND spec_status>0 
+	FROM dbo.TB_OrderMain WITH(NOLOCK) WHERE booking_status>0 AND booking_status<3 AND cancel_status=0 AND spec_status>0;
 	
-
 	--執行整備人員逾期未取車
 	INSERT INTO @sync_closeCleanOrder (OrderNum)
 	SELECT order_number FROM TB_OrderMain WHERE order_number IN (
 		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status=4 AND DATEADD(minute,15,StartTime)<@NowTime  
 		AND OrderNum IN (SELECT OrderNum FROM TB_CarCleanLog WHERE OrderStatus=0)
-	)
+	);
 
 	--更新訂單主檔
 	UPDATE TB_OrderMain 
@@ -334,7 +337,7 @@ BEGIN TRY
 	WHERE order_number IN (
 		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status=4 AND DATEADD(minute,15,StartTime)<@NowTime 
 		AND OrderNum IN (SELECT OrderNum FROM TB_CarCleanLog WHERE OrderStatus=0)
-	)
+	);
 
 	--更新整備人員記錄檔
 	UPDATE TB_CarCleanLog 
@@ -342,17 +345,17 @@ BEGIN TRY
 		UPTime=@NowTime
 	WHERE OrderNum IN (
 		SELECT OrderNum FROM @sync_closeCleanOrder
-	)
+	);
 
 	--清除共用表
-	DELETE FROM @sync_closeCleanOrder
+	DELETE FROM @sync_closeCleanOrder;
   
 	--執行後台保清清潔若是已超過時間則自動釋出
 	UPDATE TB_OrderMain 
 	SET cancel_status=5 
 	WHERE order_number IN (
 		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status <4 AND StopTime<@NowTime
-	)
+	);
 
 	--更新整備人員記錄檔
 	UPDATE TB_CarCleanLog 
@@ -361,7 +364,7 @@ BEGIN TRY
 		UPTime=@NowTime
 	WHERE OrderNum IN (
 		SELECT OrderNum FROM @sync_clearOrder_data WHERE spec_status <4 AND StopTime<@NowTime
-	)
+	);
 
 	-- 20210317 ADD;將已取車逾時未還車的狀態更新
 	--執行更新"已取車逾時未還車"狀態更新
@@ -370,7 +373,7 @@ BEGIN TRY
 	WHERE order_number IN (
 		SELECT OrderNum FROM @sync_clearOrder_data WHERE car_mgt_status=0 AND StopTime < DATEADD(minute,-15,@NowTime)
 		AND OrderNum IN (SELECT OrderNum FROM TB_CarCleanLog WHERE OrderStatus=1)
-	)
+	);
 
 	--更新整備人員記錄檔
 	UPDATE TB_CarCleanLog 
@@ -379,11 +382,10 @@ BEGIN TRY
 	WHERE OrderNum IN (
 		SELECT OrderNum FROM @sync_clearOrder_data WHERE car_mgt_status=0 AND StopTime < DATEADD(minute,-15,@NowTime)
 		AND OrderNum IN (SELECT OrderNum FROM TB_CarCleanLog WHERE OrderStatus=1)
-	)
+	);
 
 	--清除共用表
-	DELETE FROM @sync_clearOrder_data
-
+	DELETE FROM @sync_clearOrder_data;
 
 	--寫入錯誤訊息
 	IF @Error=1
@@ -411,19 +413,3 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SYNC_BookingCancel';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SYNC_BookingCancel';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'排程取消', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SYNC_BookingCancel';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SYNC_BookingCancel';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SYNC_BookingCancel';

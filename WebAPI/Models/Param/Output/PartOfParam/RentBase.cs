@@ -86,19 +86,19 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         public int TotalRental { set; get; } = 0;
 
         /// <summary>
-        /// 車麻吉費用
+        /// 停車費用
         /// </summary>
         public int ParkingFee { set; get; } = 0;
         /// <summary>
-        /// 轉乘優惠，輸出時要*-1
+        /// 轉乘優惠
         /// </summary>
         public int TransferPrice { set; get; } = 0;
         /// <summary>
-        /// 安心保，純租金
+        /// 安心服務費用
         /// </summary>
         public int InsurancePurePrice { set; get; } = 0;
         /// <summary>
-        /// 安心保，延長費用
+        /// 安心服務費用(逾時)
         /// </summary>
         public int InsuranceExtPrice { set; get; } = 0;
     }

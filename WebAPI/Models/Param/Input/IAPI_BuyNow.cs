@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebAPI.Models.Param.Input
 {
@@ -79,11 +77,29 @@ namespace WebAPI.Models.Param.Input
 
     public class IAPI_BuyNow_UpMonth: IAPI_BuyNow_Base
     {
+        /// <summary>
+        /// 專案編號
+        /// </summary>
         public string MonProjID { get; set; } = "";
+        /// <summary>
+        /// 期數
+        /// </summary>
         public int MonProPeriod { get; set; } = 0;
+        /// <summary>
+        /// 短天期
+        /// </summary>
         public int ShortDays { get; set; } = 0;
+        /// <summary>
+        /// 升轉專案編號
+        /// </summary>
         public string UP_MonProjID { get; set; } = "";
+        /// <summary>
+        /// 升轉期數
+        /// </summary>
         public int UP_MonProPeriod { get; set; } = 0;
+        /// <summary>
+        /// 升轉短天期
+        /// </summary>
         public int UP_ShortDays { get; set; } = 0;
     }
 
@@ -94,5 +110,4 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public List<Int64> MonthlyRentIds { get; set; }
     }
-
 }

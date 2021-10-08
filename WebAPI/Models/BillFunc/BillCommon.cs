@@ -65,6 +65,7 @@ namespace WebAPI.Models.BillFunc
                 Minutes = 0;
             }
         }
+
         /// <summary>
         /// 將折抵時數換算成天、時、分
         /// </summary>
@@ -168,6 +169,7 @@ namespace WebAPI.Models.BillFunc
             }
             return MilageBase;
         }
+
         /// <summary>
         /// 計算租金
         /// </summary>
@@ -225,6 +227,7 @@ namespace WebAPI.Models.BillFunc
             }
             return Convert.ToInt32(totalPay);
         }
+
         /// <summary>
         /// 租金試算
         /// </summary>
@@ -350,13 +353,10 @@ namespace WebAPI.Models.BillFunc
         /// <param name="FreeMins">前n免費</param>
         /// <returns></returns>
         /// <mark>2020-12-07 eason</mark>
-        public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
-                    , List<MonthlyRentData> mOri
-                    , int Discount
-                    , double FreeMins = 0
-                    )
+        public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins,
+            double dayMaxHour, List<Holiday> lstHoliday, List<MonthlyRentData> mOri, int Discount, double FreeMins = 0
+            )
         { 
-
             if (SD == null || ED == null || SD > ED)
                 throw new Exception("SD,ED錯誤");
 
@@ -365,9 +365,7 @@ namespace WebAPI.Models.BillFunc
             var mins = xED.Subtract(xSD).TotalMinutes;
             if (mins >= daybaseMins)
                 daybaseMins = 0;
-            return CarRentInCompute_ori(SD, ED, priceN, priceH, daybaseMins, dayMaxHour, lstHoliday,
-                  mOri, Discount //, FreeMins
-                );
+            return CarRentInCompute_ori(SD, ED, priceN, priceH, daybaseMins, dayMaxHour, lstHoliday, mOri, Discount);
         }
 
         /// <summary>
@@ -384,14 +382,10 @@ namespace WebAPI.Models.BillFunc
         /// <param name="Discount">折扣</param>
         /// <param name="FreeMins">前n免費</param>
         /// <returns></returns>
-        public CarRentInfo CarRentInCompute_ori(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
-            , List<MonthlyRentData> mOri
-            , int Discount
-            , double FreeMins = 0
-                    )
-
-
-        {//note: CarRentInCompute2
+        public CarRentInfo CarRentInCompute_ori(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins,
+            double dayMaxHour, List<Holiday> lstHoliday, List<MonthlyRentData> mOri, int Discount, double FreeMins = 0
+        )
+        {   //note: CarRentInCompute2
             CarRentInfo re = new CarRentInfo();
             double dre = 0;
             double lastDisc = Convert.ToDouble(Discount);//剩餘折扣
@@ -489,7 +483,7 @@ namespace WebAPI.Models.BillFunc
             {
                 foreach (var m in mFinal)
                 {
-                    var carAllDisc = Convert.ToDouble(m.CarTotalHours);                    
+                    var carAllDisc = Convert.ToDouble(m.CarTotalHours);
                     var wdisc = Convert.ToDouble(m.WorkDayHours - m.WorkDayHours % 30);//平日可折
                     var hdisc = Convert.ToDouble(m.HolidayHours - m.HolidayHours % 30);//假日可折
 
@@ -561,11 +555,9 @@ namespace WebAPI.Models.BillFunc
             }
 
             #region 混和折扣前先記錄使用月租點數
-
             re.useMonthDisc = m_wDisc + m_hDisc;
             re.useMonthDiscW = m_wDisc;
             re.useMonthDiscH = m_hDisc;
-
             #endregion
 
             //價高先折
@@ -963,7 +955,7 @@ namespace WebAPI.Models.BillFunc
             {
                 if (mOri.Any(x => x.MotoTotalHours < 0 || x.WorkDayRateForMoto < 0 ||
                     x.HoildayRateForMoto < 0 || x.MonthlyRentId <= 0
-                    //|| x.Mode != 1
+                 //|| x.Mode != 1
                  ))
                     throw new Exception("mOri資料內容錯誤");
 
@@ -1958,28 +1950,53 @@ namespace WebAPI.Models.BillFunc
             return new Tuple<double, double>(n_allMins, h_allMins);
         }
 
-        //汽車未超時
+        /// <summary>
+        /// 汽車未超時
+        /// </summary>
+        /// <param name="SD"></param>
+        /// <param name="ED"></param>
+        /// <param name="baseMinutes"></param>
+        /// <param name="dayMaxMins"></param>
+        /// <param name="lstHoliday"></param>
+        /// <returns></returns>
         public Tuple<double, double> GetCarRangeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
         {
             var minsPro = new MinsProcess(GetCarPayMins);
             return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);
         }
 
-        //機車未超時
+        /// <summary>
+        /// 機車未超時
+        /// </summary>
+        /// <param name="SD"></param>
+        /// <param name="ED"></param>
+        /// <param name="baseMinutes"></param>
+        /// <param name="dayMaxMins"></param>
+        /// <param name="lstHoliday"></param>
+        /// <returns></returns>
         public Tuple<double, double> GetMotoRangeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
         {
             var minsPro = new MinsProcess(GetMotoPayMins);
             return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);
         }
 
-        //汽車超時時間-計算用
-        //2020-12-03 eason
+        /// <summary>
+        /// 汽車超時時間-計算用
+        /// </summary>
+        /// <param name="SD"></param>
+        /// <param name="ED"></param>
+        /// <param name="baseMinutes"></param>
+        /// <param name="dayMaxMins"></param>
+        /// <param name="lstHoliday"></param>
+        /// <returns></returns>
+        /// <remarks>2020-12-03 eason</remarks>
         public Tuple<double, double> GetCarOutComputeMins(DateTime SD, DateTime ED, double baseMinutes, double dayMaxMins, List<Holiday> lstHoliday)
         {//note: GetCarOutMins
             var minsPro = new MinsProcess(GetCarPayMins);
             var dayPro = new DayMinsProcess(CarOverTimeMinsToPayMins);
             return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
         }
+
         /// <summary>
         /// 汽車未滿1小時分鐘改為計費分鐘
         /// </summary>
@@ -4019,22 +4036,70 @@ namespace WebAPI.Models.BillFunc
 
     public class DayPayMins
     {
-        public string DateType { get; set; }//日期分類
-        public string xDate { get; set; }//格式yyyyMMdd
-        public string xSTime { get; set; }//開始時間:格式格式yyyyMMddHHmm
-        public string xETime { get; set; }//結束時間:格式格式yyyyMMddHHmm
-        public double xMins { get; set; }//當日付費分鐘
-        public double xRate { get; set; }//費率,汽車(每小時),機車每分鐘
-        public bool isMarkDay { get; set; }//是否為註記日, 平日,假日,月租平日,月租假日
-        public int haveNext { get; set; } //計費區段是否有下一日,1(有),0(沒有)
-        public int isStart { get; set; }//是否為時間區段起點,1是,0否
-        public int isEnd { get; set; }//是否為時間區段結束,1是,0否
-        public double useBaseMins { get; set; }//使用基本時間分鐘
-        public string dayGroupId { get; set; }//時間區段id
-        public double isGrpStar { get; set; }//是否為group起,1是,0否
-        public double isGrpEnd { get; set; }//是否為group迄,1是,0否
-        public bool isF24H { get; set; }//是否為首24H,1是,0否
-        public bool isFull24H { get; set; }//是否為完整24H,1是,0否
+        /// <summary>
+        /// 日期分類
+        /// </summary>
+        public string DateType { get; set; }
+        /// <summary>
+        /// 格式yyyyMMdd
+        /// </summary>
+        public string xDate { get; set; }
+        /// <summary>
+        /// 開始時間:格式格式yyyyMMddHHmm
+        /// </summary>
+        public string xSTime { get; set; }
+        /// <summary>
+        /// 結束時間:格式格式yyyyMMddHHmm
+        /// </summary>
+        public string xETime { get; set; }
+        /// <summary>
+        /// 當日付費分鐘
+        /// </summary>
+        public double xMins { get; set; }
+        /// <summary>
+        /// 費率,汽車(每小時),機車每分鐘
+        /// </summary>
+        public double xRate { get; set; }
+        /// <summary>
+        /// 是否為註記日, 平日,假日,月租平日,月租假日
+        /// </summary>
+        public bool isMarkDay { get; set; }
+        /// <summary>
+        /// 計費區段是否有下一日,1(有),0(沒有)
+        /// </summary>
+        public int haveNext { get; set; }
+        /// <summary>
+        /// 是否為時間區段起點,1是,0否
+        /// </summary>
+        public int isStart { get; set; }
+        /// <summary>
+        /// 是否為時間區段結束,1是,0否
+        /// </summary>
+        public int isEnd { get; set; }
+        /// <summary>
+        /// 使用基本時間分鐘
+        /// </summary>
+        public double useBaseMins { get; set; }
+        /// <summary>
+        /// 時間區段id
+        /// </summary>
+        public string dayGroupId { get; set; }
+        /// <summary>
+        /// 是否為group起,1是,0否
+        /// </summary>
+        public double isGrpStar { get; set; }
+        /// <summary>
+        /// 是否為group迄,1是,0否
+        /// </summary>
+        public double isGrpEnd { get; set; }
+        /// <summary>
+        /// 是否為首24H,1是,0否
+        /// </summary>
+        public bool isF24H { get; set; }
+        /// <summary>
+        /// 是否為完整24H,1是,0否
+        /// </summary>
+        public bool isFull24H { get; set; }
     }
 
     public enum eumDateType

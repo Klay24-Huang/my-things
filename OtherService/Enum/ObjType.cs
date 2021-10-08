@@ -74,7 +74,11 @@ namespace OtherService.Enum
             /// <summary>
             /// 台新錢包轉贈 LOG寫入
             /// </summary>
-            InsTransferStoreValueLog
+            InsTransferStoreValueLog,
+            /// <summary>
+            /// 訂單安心服務資格及價格查詢
+            /// </summary>
+            GetOrderInsuranceInfo
         }
         /// <summary>
         /// 取出SPName
@@ -137,6 +141,9 @@ namespace OtherService.Enum
                     break;
                 case SPType.InsTransferStoreValueLog:
                     SPName = "usp_InsTransferStoreValueCreateAccountLog";
+                    break;
+                case SPType.GetOrderInsuranceInfo:
+                    SPName = "usp_GetOrderInsuranceInfo";
                     break;
             }
             return SPName;
