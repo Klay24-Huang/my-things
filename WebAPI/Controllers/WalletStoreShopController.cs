@@ -51,7 +51,6 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
-            var carRentComm = new CarRentCommon();
             var wsp = new WalletSp();
             var walletService = new WalletService();
 
@@ -63,8 +62,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletStoreShop";
-            string TradeType = "Store_Shop"; ///交易類別
+            string funName = "WalletStoreShopController";
             string PRGID = "222"; //APIId
 
             Int64 LogID = 0;
@@ -217,7 +215,7 @@ namespace WebAPI.Controllers
                         payAmount = apiInput.StoreMoney,
                         payPeriod = 1,
                         overPaid = "N",
-                        custId = IDNO,
+                        custId = "",
                         custMobile = "",
                         custEmail = "",
                         memo = ""
@@ -240,10 +238,10 @@ namespace WebAPI.Controllers
                         }
                     };
 
-                    hmacVal =WalletAPI.GetHmacVal(webAPI_CreateCvsPayInfo, webAPI_CreateCvsPayInfo.header.cTxSn);
+                    hmacVal = WalletAPI.GetHmacVal(webAPI_CreateCvsPayInfo, webAPI_CreateCvsPayInfo.header.cTxSn);
 
                     WebAPIOutput_CreateCvsPayInfo output_CreateCvsPayInfo = new WebAPIOutput_CreateCvsPayInfo();
-                    flag = WalletAPI.DoStoreShopCreateCvsPayInfo(webAPI_CreateCvsPayInfo, funName, cvsPayToken, hmacVal, ref errCode, ref output_CreateCvsPayInfo);
+                    flag = WalletAPI.DoStoreShopCreateCvsPayInfo(webAPI_CreateCvsPayInfo, cvsPayToken, hmacVal, ref errCode, ref output_CreateCvsPayInfo);
                     if (!flag || output_CreateCvsPayInfo == null)
                     {
                         errCode = "ERR941";
@@ -282,7 +280,7 @@ namespace WebAPI.Controllers
                     hmacVal = WalletAPI.GetHmacVal(webAPI_GetBarcode, webAPI_GetBarcode.header.cTxSn);
 
                     WebAPIOutput_GetBarCode outGetBarCode = new WebAPIOutput_GetBarCode();
-                    flag = WalletAPI.DoStoreShopGetBarcode(webAPI_GetBarcode, funName, cvsPayToken, hmacVal, ref errCode, ref outGetBarCode);
+                    flag = WalletAPI.DoStoreShopGetBarcode(webAPI_GetBarcode, cvsPayToken, hmacVal, ref errCode, ref outGetBarCode);
                     if (flag && outGetBarCode != null)
                     {
                         apiOutput.StoreMoney = apiInput.StoreMoney;
@@ -290,7 +288,7 @@ namespace WebAPI.Controllers
                         apiOutput.ShopBarCode1 = outGetBarCode.body.code1;
                         apiOutput.ShopBarCode2 = outGetBarCode.body.code2;
                         apiOutput.ShopBarCode3 = outGetBarCode.body.code3;
-                        apiOutput.PayDeadline = dueDate.ToString("yyyy/MM/dd 23:59:59");
+                        apiOutput.PayDeadline = dueDate.ToString("yyyy/MM 23:59");
                     }
                     else
                     {
@@ -333,6 +331,7 @@ namespace WebAPI.Controllers
         private List<Tuple<int, string, string>> CvsCodeList = new List<Tuple<int, string, string>>()
         {
             //超商類型(0:7-11 1:全家),超商代收代號,業者識別碼
+            //new Tuple<int, string,string>(0,"E6B","IR7"),
             new Tuple<int, string,string>(0,"E6H","IRS"),
             new Tuple<int, string,string>(1,"K9A","IRF"),
         };

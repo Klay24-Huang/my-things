@@ -212,6 +212,7 @@
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsStoreValueCreateAccountLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTrade.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTransferStoreValueLog.cs" />
+    <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdWalletStoreShopLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsWalletStoreShopLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
     <Compile Include="SP\Input\PolygonList\SpInput_GetAlliRentStation.cs" />

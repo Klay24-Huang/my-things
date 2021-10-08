@@ -20,17 +20,22 @@ namespace Domain.SP.Input.OtherService.Taishin
         public string TxSn { get; set; }
 
         /// <summary>
+        /// 交易類別 新增：i、刪除：d
+        /// </summary>
+        public string TxType { get; set; }
+
+        /// <summary>
         /// 銷帳編號
         /// </summary>
         public string PaymentId { get; set; }
 
         /// <summary>
-        /// 超商類型 (0:7-11 1:全家 2:萊爾富)
+        /// 超商類型 0 : 7-11 1: 全家 2: 萊爾富
         /// </summary>
         public Int32 CvsType { get; set; }
 
         /// <summary>
-        /// 超商代收碼
+        /// 超商代收碼 長度:3
         /// </summary>
         public string CvsCode { get; set; }
 
@@ -39,35 +44,38 @@ namespace Domain.SP.Input.OtherService.Taishin
         /// </summary>
         public int PayAmount { get; set; }
 
-
         /// <summary>
         /// 期數 
         /// </summary>
-        public Int32 PayPeriod { get; set; }
+        public int PayPeriod { get; set; }
 
         /// <summary>
         /// 繳費期限 YYYYMMDD 
         /// </summary>
         public string DueDate { get; set; }
 
-
         /// <summary>
-        /// 第一段條碼文字
+        /// 是否允許溢繳, Y：是、N：否
         /// </summary>
-        public string Code1 { get; set; }
+        public string OverPaid { get; set; }
 
         /// <summary>
-        /// 第二段銷帳編號
+        /// 繳費人客戶編號
         /// </summary>
-        public string Code2 { get; set; }
+        public string CustId { get; set; }
 
         /// <summary>
-        /// 第三段條碼文字
+        /// 繳費人行動電話, 最大長度:20
         /// </summary>
-        public string Code3 { get; set; }
+        public string CustMobile { get; set; }
 
         /// <summary>
-        /// 備註
+        ///  繳費人Email, 最大長度:50
+        /// </summary>
+        public string CustEmail { get; set; }
+
+        /// <summary>
+        /// 備註, 最大長度:50
         /// </summary>
         public string Memo { get; set; }
 
@@ -80,16 +88,6 @@ namespace Domain.SP.Input.OtherService.Taishin
         /// 狀態說明
         /// </summary>
         public string StatusDesc { get; set; }
-
-        /// <summary>
-        /// BarCode
-        /// </summary>
-        public string Barcode64 { get; set; }
-
-        /// <summary>
-        /// 短網址URL
-        /// </summary>
-        public string Url { get; set; }
 
     }
 }
