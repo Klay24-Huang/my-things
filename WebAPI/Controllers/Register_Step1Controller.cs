@@ -16,6 +16,7 @@ using WebAPI.Models.Param.Output;
 using WebCommon;
 using Domain.Sync.Input;//20210928唐加
 using System.Threading.Tasks;//20210928唐加
+using Domain.SP.BE.Input;//20210928唐加
 
 namespace WebAPI.Controllers
 {
@@ -128,6 +129,19 @@ namespace WebAPI.Controllers
                     SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
                     "HIMSIRENT2@hotaimotor.com.tw");
                 }
+
+                //20211008唐加
+                string spName2 = "usp_BE_InsBlackList";
+                SPInput_BE_InsBlackList spInput2 = new SPInput_BE_InsBlackList()
+                {
+                    Mode = 3,
+                    Mobile = apiInput.Mobile,
+                    USERID = ""
+                };
+                SPOutput_Base spOut2 = new SPOutput_Base();
+                SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr);
+                flag = sqlHelp2.ExecuteSPNonQuery(spName2, spInput2, ref spOut2, ref lstError);
+                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }
             #endregion
 
@@ -191,9 +205,8 @@ namespace WebAPI.Controllers
                     SendMail("iRent會員異動通知",
                     "<img src='https://irentv2-as-verify.azurewebsites.net/images/irent.png'><br>" +
                     "親愛的iRent會員您好:<br>" +
-                    "您目前於iRent註冊的手機號碼與其他會員重複，為維護您的權益，請您重新認證手機號碼，<br>" +
-                    "若仍有問題，請您來電0800-024-550或line詢問客服，亦可至鄰近門市詢問辦理，謝謝您。<br>" +
-                    "※ 本信件為系統自動發送，請勿直接回覆此信件。<br>" +
+                    "您目前於iRent註冊的手機號碼與其他會員重複，請您重新認證手機號碼，若仍有問題，請點選app的 [ 聯絡我們 ] 以聯絡客服，亦可至鄰近和運租車門市詢問辦理，謝謝您。<br><br>" +
+                    "※ 本信件為系統自動發送，請勿直接回覆此信件。<br><br>" +
                     "和雲行動服務股份有限公司 敬上<br>" +
                     "<img src='https://irentv2-as-verify.azurewebsites.net/images/hims_logo.png' width='300'>",
                     spOut.mail);
