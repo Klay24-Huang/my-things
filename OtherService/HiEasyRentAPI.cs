@@ -1921,6 +1921,9 @@ namespace OtherService
         {
             bool flag = false;
 
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
             output = DoNPR390Query2(input).Result;
             if (output.Result)
             {
@@ -1991,6 +1994,9 @@ namespace OtherService
         public bool NPR390Query3(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentHistory output)
         {
             bool flag = false;
+
+            input.sig = GenerateSig();
+            input.user_id = userid;
 
             output = DoNPR390Query3(input).Result;
             if (output.Result)
@@ -2064,6 +2070,9 @@ namespace OtherService
         {
             bool flag = false;
 
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
             output = DoNPR390Query4(input).Result;
             if (output.Result)
             {
@@ -2134,6 +2143,9 @@ namespace OtherService
         public bool NPR390Query5(WebAPIInput_IrentPaymentDetail input, ref WebAPIOutput_IrentPaymentHistorySendMail output)
         {
             bool flag = false;
+
+            input.sig = GenerateSig();
+            input.user_id = userid;
 
             output = DoNPR390Query5(input).Result;//
             if (output.Result)
