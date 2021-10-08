@@ -577,6 +577,7 @@
     <Build Include="dbo\Stored Procedures\usp_AlertMailLog_U01.sql" />
     <Build Include="dbo\User Defined Types\TY_AlertMailLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMemberCMK.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_GetOrderDetail.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
