@@ -1,4 +1,4 @@
-/****** Object:  Table [dbo].[TB_WalletWithdrawInvoiceInfo]    Script Date: 2021/9/28 ¤U¤È 01:15:38 ******/
+/****** Object:  Table [dbo].[TB_WalletWithdrawInvoiceInfo]    Script Date: 2021/9/30 ¤U¤È 05:42:07 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -7,14 +7,14 @@ GO
 
 CREATE TABLE [dbo].[TB_WalletWithdrawInvoiceInfo](
 	[SEQNO] [int] NOT NULL,
-	[TradeAMT] [decimal](12, 0) NOT NULL,
 	[SALAMT] [numeric](15, 0) NOT NULL,
 	[TAXAMT] [numeric](15, 0) NOT NULL,
 	[FEEAMT] [numeric](15, 0) NOT NULL,
+	[INV_SENDCD] [tinyint] NULL,
 	[INV_CUSTID] [varchar](11) NULL,
 	[INV_CUSTNM] [varchar](30) NULL,
 	[INV_ADDR] [nvarchar](152) NULL,
-	[INVCARRIER] [varchar](20) NULL,
+	[INVCARRIER] [varchar](20) NOT NULL,
 	[NPOBAN] [varchar](20) NULL,
 	[RNDCODE] [varchar](4) NULL,
 	[RVBANK] [varchar](7) NULL,
@@ -31,9 +31,6 @@ CREATE TABLE [dbo].[TB_WalletWithdrawInvoiceInfo](
 	[SEQNO] ASC
 )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[TB_WalletWithdrawInvoiceInfo] ADD  CONSTRAINT [DF_TB_WalletWithdrawInvoiceInfo_TradeAMT]  DEFAULT ((0)) FOR [TradeAMT]
 GO
 
 ALTER TABLE [dbo].[TB_WalletWithdrawInvoiceInfo] ADD  CONSTRAINT [DF_TB_WalletWithdrawInvoiceInfo_SALAMT]  DEFAULT ((0)) FOR [SALAMT]

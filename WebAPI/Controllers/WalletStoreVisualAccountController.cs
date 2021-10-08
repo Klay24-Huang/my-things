@@ -46,8 +46,6 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
-            var carRentComm = new CarRentCommon();
-            var wsp = new WalletSp();
             var walletService = new WalletService();
 
             HttpContext httpContext = HttpContext.Current;
@@ -59,14 +57,12 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreVisualAccount";
-            string TradeType = "Store_Account"; ///交易類別
             string PRGID = "221"; //APIId
 
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
             IAPI_WalletStoreBase apiInput = null;
-            var sPOutput_GetWallet = new SPOutput_GetWallet();
             var apiOutput = new OAPI_WalletStoreVisualAccount();
 
             Token token = null;
@@ -75,7 +71,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-            string spName = "";
             DateTime payDeadLine = new DateTime();
             string virtualAccount = "";
 
@@ -137,6 +132,8 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     flag= CreateWalletStoreVisualAccount(apiInput,ref virtualAccount,ref payDeadLine, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    trace.traceAdd("CreateVisualAccount", new { apiInput, virtualAccount,payDeadLine,errCode });
+                    trace.FlowList.Add("產虛擬帳號");
                 }
 
                 if (flag)
@@ -152,7 +149,7 @@ namespace WebAPI.Controllers
 
                 apiOutput.StroeResult = flag ? 1 : 0;
 
-                trace.traceAdd("TraceFinal", new { errCode, errMsg });
+                trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
                 carRepo.AddTraceLog(Convert.ToInt32(PRGID), funName, trace, flag);
             }
             catch (Exception ex)
@@ -195,7 +192,7 @@ namespace WebAPI.Controllers
                 };
 
                 flag = wsp.sp_WalletStoreVisualAccount(spInput_Wallet, ref errCode);
-
+               
                 //若虛擬帳號重複，則重新產生
                 while (flag == false && errCode== "ERR935")
                 {
@@ -205,7 +202,7 @@ namespace WebAPI.Controllers
             }
             else
             {
-                errCode = "ERR913";                
+                errCode = "ERR937";                   
             }
             return flag;
         }
