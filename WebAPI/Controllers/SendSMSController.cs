@@ -14,6 +14,8 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using Domain.Sync.Input;//20210928唐加
+using System.Threading.Tasks;//20210928唐加
 
 namespace WebAPI.Controllers
 {
@@ -116,6 +118,13 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_CheckMobile, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckMobile, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+
+                //20210928唐加，若用黑名單手機註冊要發email給企劃，Adam哥最帥，幫我上版
+                if (!flag)//!flag
+                {
+                    SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
+                    "HIMSIRENT2@hotaimotor.com.tw");
+                }
             }
             #endregion
             #region 發送簡訊
@@ -177,6 +186,49 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);
             return objOutput;
             #endregion
+
+        }
+        public void SendMail(string TITLE, string MEMO, string recevie)
+        {
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            bool flag2 = true;
+            int SendFlag = 0;
+
+            SPInput_SYNC_UPDEventMessage SPInput = new SPInput_SYNC_UPDEventMessage()
+            {
+                AlertID = 80345,
+                HasSend = 1,
+                Sender = "SendGuid",
+                LogID = 0
+            };
+            SPOutput_Base SPOutput = new SPOutput_Base();
+
+            try
+            {
+                SendMail send = new SendMail();
+                flag2 = Task.Run(() => send.DoSendMail(TITLE, MEMO, recevie)).Result;
+
+                SPInput.SendTime = DateTime.Now;
+            }
+            catch (Exception ex)
+            {
+                //logger.Error(ex.Message);
+                SendFlag = 1;
+                SPInput.HasSend = 2;
+            }
+            finally
+            {
+                string SPName = "usp_SYNC_UPDSendAlertMessage";
+
+                flag2 = new SQLHelper<SPInput_SYNC_UPDEventMessage, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                if (flag2 == false)
+                {
+                    if (SendFlag == 1)
+                        SendFlag = 2;   //發送失敗，更新失敗
+                    else
+                        SendFlag = 3;   //發送成功，更新失敗
+                }
+            }
         }
     }
 }
