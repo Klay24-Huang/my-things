@@ -205,9 +205,8 @@ namespace WebAPI.Controllers
                     SendMail("iRent會員異動通知",
                     "<img src='https://irentv2-as-verify.azurewebsites.net/images/irent.png'><br>" +
                     "親愛的iRent會員您好:<br>" +
-                    "您目前於iRent註冊的手機號碼與其他會員重複，為維護您的權益，請您重新認證手機號碼，<br>" +
-                    "若仍有問題，請您來電0800-024-550或line詢問客服，亦可至鄰近門市詢問辦理，謝謝您。<br>" +
-                    "※ 本信件為系統自動發送，請勿直接回覆此信件。<br>" +
+                    "您目前於iRent註冊的手機號碼與其他會員重複，請您重新認證手機號碼，若仍有問題，請點選app的 [ 聯絡我們 ] 以聯絡客服，亦可至鄰近和運租車門市詢問辦理，謝謝您。<br><br>" +
+                    "※ 本信件為系統自動發送，請勿直接回覆此信件。<br><br>" +
                     "和雲行動服務股份有限公司 敬上<br>" +
                     "<img src='https://irentv2-as-verify.azurewebsites.net/images/hims_logo.png' width='300'>",
                     spOut.mail);
