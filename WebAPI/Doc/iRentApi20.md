@@ -81,6 +81,9 @@ iRentApi20 Web API版本
 - [WalletTransferTCheck 轉贈對象確認](#WalletTransferTargetCheck)
 - [SetDefPayMode 設定預設支付方式](#SetDefPayMode)
 - [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
+- [WalletWithdrowInvoice 寫入手續費發票](#WalletWithdrowInvoice)
+
+
 
 ----------
 # 修改歷程
@@ -183,7 +186,7 @@ iRentApi20 Web API版本
 
 # 登入相關
 
-##  Login 登入 
+## Login 登入
 
 ### [/api/Login/]
 
@@ -2851,7 +2854,7 @@ iRentApi20 Web API版本
 
 ----
 
-## CreditAuth 付款與還款 
+## CreditAuth 付款與還款
 
 ### [/api/CreditAuth/]
 
@@ -2935,6 +2938,21 @@ iRentApi20 Web API版本
 }
 ```
 
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                   |說明              |
+| -------- | ---------------- ------- | ---------------  |
+| ERR203 |  找不到符合的訂單編號 | 租金計算時找不到此訂單編號 | 
+| ERR209 |  已完成還車付款，請勿重覆付款 | 已完成還車付款，請勿重覆付款　｜
+| ERR210 | 尚未完成還車步驟，無法還車付款 | 未符合還車付款狀態，又重覆點下付款 |
+| ERR244 | 系統偵測到異常，請重新進入 | 系統偵測到異常，請重新進入 |
+| ERR245 | 還車已超過十四分鐘，請重新計算費率 | 還車時間過久沒重新計價 |
+| ERR730 | 查詢綁定卡號失敗 |查詢綁定卡號失敗 |
+| ERR932 | 錢包未開通 | 錢包未開通 |
+| ERR933 | 錢包扣款失敗 | 錢包扣款失敗 |
+| ERR934 | 錢包餘額不足 | 錢包餘額不足|
+
+
 
 ---
 
@@ -2943,7 +2961,7 @@ iRentApi20 Web API版本
 
 ## GetMonthList 取得訂閱制月租列表/我的所有方案
 
-###  [/api/GetMonthList/]
+### [/api/GetMonthList/]
 
 * 20210510發佈
 
@@ -5263,13 +5281,13 @@ iRentApi20 Web API版本
 | ------------ | ------------------  | :----: | ------------- |
 | PayMode | 付費方式 (0:信用卡 1:和雲錢包) | int | 0 |
 | HasBind      | 是否有綁定(0:無,1有)| int    | 1             |
-| HasWallet    | 是否有錢包(0:無,1有)| int    | 0            |
-| TotalAmount | 錢包剩餘金額        | int    | 0         |
-| BindListObj | 信用卡列表 | list |  |
-| MEMSENDCD | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 | int | 5 |
-| UNIMNO | 統編 | string |  |
-| CARRIERID | 手機條碼 | string | /N37H2JD |
-| NPOBAN | 愛心碼 | string |  |
+| HasWallet    | 是否有錢包(0:無,1有)| int    | 0             |
+| TotalAmount  | 錢包剩餘金額        | int    | 0             |
+| BindListObj  | 信用卡列表 		 | list |  |
+| MEMSENDCD    | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證    | int  	| 5 |
+| UNIMNO 	   | 統編 				 | string |  			  |
+| CARRIERID    | 手機條碼 			 | string | 	 /N37H2JD |
+| NPOBAN 	   | 愛心碼				 | string | 			  |
 | AutoStored | 是否同意自動儲值 (0:不同意 1:同意) | int | 0 |
 
 * BindListObj 回傳參數說明
@@ -5903,10 +5921,10 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
-| ---------- | ------------------------------------  |      | :--:     | ------ |
-| StoreMoney | 儲值金額                              | Y | int      | 300 |
-| CvsType | 超商類型(0:7-11 1:全家) | Y    | int  | 1 |
+| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例       |
+| ---------- | ------------------------------------  |      | :--:     | ------ 	|
+| StoreMoney | 儲值金額                              | Y 	| int      | 300 		|
+| CvsType 	 | 超商類型(0:7-11 1:全家) 				 | Y    | int  	   | 1 			|
 
 * input範例
 
@@ -6144,7 +6162,6 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明              |  型態  | 範例              |
 | ---------- | --------------------- | :----: | ----------        |
 | TranResult | 轉贈結果 (1成功0失敗) |  int   | 1                 |
-| TranMessage| 失敗原因              | string |                   |
 | SystemTime | 系統回傳時間          | string | 2021/03/31 23:19  |
 
 * Output範例
@@ -6158,23 +6175,20 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
 	"Data": {
 	    "TranResult":1,
-	    "TranMessage":"",
 	    "SystemTime":"2021/03/31 23:19"
 	}
 }
 {
-    "Result": "1",
-    "ErrorCode": "000000",
+    "Result": "0",
+    "ErrorCode": "ERR281",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	    "TranResult":0,
-	    "TranMessage":"受贈人錢包餘額超過上限，請受贈人確認錢包餘額",
-	    "SystemTime":"2021/03/31 23:19"
-	}
+    "ErrorMessage": "轉贈金額超過錢包金額",
+    "Data": {
+        "TranResult": 0,
+        "SystemTime": "2021/03/31 23:19"
+    }
 }
-
 ```
 
 ----
@@ -6229,30 +6243,40 @@ iRentApi20 Web API版本
 
 | 參數名稱   | 參數說明              |  型態  | 範例               |
 | ---------- | --------------------- | :----: | ----------         |
-| TranCheck  | 可否轉贈              |  int   | 1                  |
+| TranCheck  | 可否轉贈(1:可轉贈)    |  int   | 1                  |
 | IDNO       | 會員身分證字號        | string | A123456789         |
 | ShowName   | 遮罩後會員姓名        | string | 李Ｏ瑄             |
 | ShowValue  | 遮罩後的查詢Key值     | string | 0987\*\*\*321      |
-| ShowMessage| 顯示訊息              | string | 此用戶未完成註冊...|
 
 * Output範例
 
 ```
+{
+    "Result": "0",
+    "ErrorCode": "ERR278",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "非一般會員",
+    "Data": {
+        "CkResult": 0,
+        "ShowName": "",
+        "ShowValue": "",
+        "IDNO": ""
+    }
+}
 {
     "Result": "1",
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
-	    "TranCheck":1,
-	    "IDNO":"A123456789",
-	    "ShowName":"李Ｏ瑄",
-	    "ShowValue":"0987***321",
-	    "ShowMessage":"此用戶未完成註冊..."
-	}
+    "Data": {
+        "CkResult": 1,
+        "ShowName": "劉O希",
+        "ShowValue": "F130XXX853",
+        "IDNO": "F130140853"
+    }
 }
-
 ```
 
 ----
@@ -6376,3 +6400,69 @@ iRentApi20 Web API版本
 }
 ```
 
+
+## WalletWithdrowInvoice 寫入手續費發票
+
+### [/api/WalletWithdrowInvoice/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(非必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 	| 參數說明 		| 必要 	| 型態 	| 範例 		|
+| -------- 	| ------------- | :--: 	| :--: 	| ---- 		|
+|SEQNO		|對應主檔流水號	|Y		|int	|123		|
+|INV_NO   	|發票號碼      	|Y     	|String	|DE12345678 |
+|INV_DATE   |發票開立日期	|Y     	|String |20211010 	|
+|RNDCODE   	|發票隨機碼		|Y     	|String	|0594 		|
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data 回傳參數說明
+
+| 參數名稱     | 參數說明            		|  型態  | 範例          |
+| ------------ | ------------------  		| :----: | ------------- |
+|無參數			|							|		|				|
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+       
+        ],
+        
+    }
+}
+```
+
+----

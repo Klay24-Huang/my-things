@@ -381,7 +381,7 @@ namespace WebAPI.Controllers
                 #endregion
                 //2021-09-28 UPD BY YANKEY 調整日期輸出格式
                 //apiOutput.SystemTime = DateTime.Now.ToString("G", CultureInfo.CreateSpecificCulture("zh-CN"));    //Display:"2021/9/28 15:36:52"
-                apiOutput.SystemTime = DateTime.Now.ToString("s");                                                  //Display:"2021-09-28T15:41:03"
+                apiOutput.SystemTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");                                                  //Display:"2021-09-28T15:41:03"
                 apiOutput.TranResult = flag ? 1 : 0;
             }
             catch (Exception ex)

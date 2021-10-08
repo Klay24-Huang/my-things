@@ -303,6 +303,7 @@
     <Compile Include="SP\Input\Wallet\SPInput_SetWalletTrade.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletPay.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoreTradeHistoryHidden.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletWithdrowInvoice.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletTransferCheck.cs" />
     <Compile Include="SP\MA\Input\SPInpupt_MA_CleanCarStart.cs" />
     <Compile Include="SP\MA\Input\SPInput_MA_CleanCarEndNew.cs" />
@@ -397,6 +398,7 @@
     <Compile Include="SP\Output\Wallet\SPOut_GetWalletStoreTradeTransHistory.cs" />
     <Compile Include="SP\Output\Wallet\SPOut_SetWalletTrade.cs" />
     <Compile Include="SP\Output\Wallet\SPOut_WalletStoreTradeHistoryHidden.cs" />
+    <Compile Include="SP\Output\Wallet\SPOut_WalletWithdrowInvoice.cs" />
     <Compile Include="SP\Output\Wallet\SPOut_WalletTransferCheck.cs" />
     <Compile Include="SP\Sync\Input\SPInput_SYNC_UpdNotification.cs" />
     <Compile Include="Sync\Input\SPInput_SYNC_BookingCancel.cs" />
