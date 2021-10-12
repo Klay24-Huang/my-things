@@ -24,6 +24,11 @@ namespace Domain.SP.Input.Rent
         /// auth token
         /// </summary>
         public string Token { set; get; }
+
+        /// <summary>
+        /// 付費方式：0:信用卡;1:和雲錢包;2:line pay;3:街口支付
+        /// </summary>
+        public int PayMode { get; set; }
     }
 
 

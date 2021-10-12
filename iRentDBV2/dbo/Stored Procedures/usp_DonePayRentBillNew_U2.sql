@@ -42,6 +42,8 @@
 ** ----------|------------| ------------------------------------
 ** 2020/10/6 下午 05:07:23    |  Eric|          First Release
 ** 20210523 ADD BY ADAM (5.9.1)
+** 20210915  Umeko  加入錢包付款流程
+** 20211008 Umeko  加入付費方式傳入參數
 *****************************************************************/
 /*
 --BEGIN TRAN
@@ -50,10 +52,11 @@ exec usp_DonePayRentBillNew_20210517 'A122364317',10629448,'','51EE5EEDAD31104EE
 SELECT @REWARD
 --ROLLBACK TRAN
 */
-Create PROCEDURE [dbo].[usp_DonePayRentBillNew_U2]
+CREATE PROCEDURE [dbo].[usp_DonePayRentBillNew_U2]
 	@IDNO                   VARCHAR(10)           ,
 	@OrderNo                BIGINT                ,
 	@transaction_no         NVARCHAR(100)         , --金流交易序號，免付費使用Free
+	@PayMode tinyint      , -- 付費方式：0:信用卡;1:和雲錢包;2:line pay;3:街口支付
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
 	@Reward					INT				OUTPUT,	--換電獎勵
@@ -165,13 +168,9 @@ BEGIN TRY
 		INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
 		VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 
-		--判斷該訂單是否為錢包付款
-		Declare @IsWalletPay tinyint = 0,@Amount int = 0
-		if Exists ( Select 1 From TB_WalletHistory with(nolock) Where  OrderNo = @OrderNo And Mode = 0)
-		Begin
-			Set @IsWalletPay = 1
-			Select @Amount = Amount From TB_WalletHistory with(nolock) Where  OrderNo = @OrderNo And Mode = 0
-		End
+		--寫入付款方式
+		Insert Into TB_OrderExtinfo(order_number,CheckoutMode,MKTime,MKUser,MKPRGID,UPDTime,UPDUser,UPDPRGID)
+		values(@OrderNo,@PayMode,dbo.GET_TWDATE(),@IDNO,Left(@FunName,10),dbo.GET_TWDATE(),@IDNO,Left(@FunName,10))
 
 		--更新訂單主檔
 		UPDATE TB_OrderMain
@@ -180,24 +179,13 @@ BEGIN TRY
 		WHERE order_number=@OrderNo;
 					
 		--更新訂單明細
-		if  @IsWalletPay = 1
-		Begin
 			UPDATE TB_OrderDetail
 			SET transaction_no=@transaction_no,
 				trade_status=1,
 				[already_return_car]=1,
-				[already_payment]= @Amount
+				[already_payment]= 1
 			WHERE order_number=@OrderNo;
-		End
-		Else
-		Begin
-			UPDATE TB_OrderDetail
-			SET transaction_no=@transaction_no,
-				trade_status=1,
-				[already_return_car]=1,
-				[already_payment]=1
-			WHERE order_number=@OrderNo;
-		End
+	
 		--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理
 		--更新個人訂單控制
 		IF @ProjType=4
@@ -418,7 +406,7 @@ BEGIN TRY
 			END
 			ELSE
 			BEGIN
-				IF @IsWalletPay = 0 And  NOT EXISTS (SELECT order_number FROM TB_OrderAuth WITH(NOLOCK) WHERE order_number=@OrderNo)
+				IF @PayMode = 0 And  NOT EXISTS (SELECT order_number FROM TB_OrderAuth WITH(NOLOCK) WHERE order_number=@OrderNo)
 				BEGIN
 					INSERT INTO TB_OrderAuth
 					(A_PRGID, A_USERID, A_SYSDT, U_PRGID, U_USERID, U_SYSDT, order_number, final_price, 
