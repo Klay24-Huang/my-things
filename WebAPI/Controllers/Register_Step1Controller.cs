@@ -127,7 +127,11 @@ namespace WebAPI.Controllers
                 if (!flag)//!flag
                 {
                     SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
-                    "HIMSIRENT2@hotaimotor.com.tw");
+                    "ann420@hotaimotor.com.tw");
+                    SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
+                    "nancywen@hotaimotor.com.tw");
+                    SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
+                    "himsirent3@hotaimotor.com.tw");
 
                     //20211008唐加
                     string spName2 = "usp_BE_InsBlackList2";
