@@ -1,11 +1,9 @@
 ﻿using Domain.CarMachine;
 using Domain.Common;
 using Domain.SP.Input.Booking;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Booking;
-using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.Input.CENS;
 using Domain.WebAPI.Input.FET;
@@ -16,20 +14,20 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
-using Domain.WebAPI.output.HiEasyRentAPI;
 
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 取車
+    /// 汽車取車
     /// </summary>
     public class BookingStartController : ApiController
     {
@@ -39,7 +37,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -136,24 +133,29 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
+            #region 檢查信用卡是否綁卡
+            if (flag)
+            {
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (ds.Tables.Count == 0)
+                {
+                    flag = false;
+                    errCode = "ERR290";
+                }
+                else if (ds.Tables[0].Rows.Count == 0)
+                {
+                    flag = false;
+                    errCode = "ERR290";
+                }
+                ds.Dispose();
+            }
+            #endregion
             #region 檢查欠費
             if (flag)
             {
@@ -170,7 +172,7 @@ namespace WebAPI.Controllers
             //取車判斷
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.BeforeBookingStart);
+                string CheckTokenName = "usp_BeforeBookingStart";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
@@ -227,11 +229,11 @@ namespace WebAPI.Controllers
                                 errCode = "ERR468";
                             }
                         }
-                        
+
                         //執行sp合約
                         if (flag)
                         {
-                            string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
+                            string BookingStartName = "usp_BookingStart";
                             Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                             {
                                 IDNO = IDNO,
@@ -249,7 +251,7 @@ namespace WebAPI.Controllers
                         }
                         if (flag)
                         {
-                            string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
+                            string BookingControlName = "usp_BookingControl";
                             SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                             {
                                 IDNO = IDNO,
@@ -426,7 +428,7 @@ namespace WebAPI.Controllers
                             //執行sp合約
                             if (flag)
                             {
-                                string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
+                                string BookingStartName = "usp_BookingStart";
                                 Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                                 {
                                     IDNO = IDNO,
@@ -444,7 +446,7 @@ namespace WebAPI.Controllers
                             }
                             if (flag)
                             {
-                                string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
+                                string BookingControlName = "usp_BookingControl";
                                 SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                                 {
                                     IDNO = IDNO,
@@ -597,12 +599,6 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
-                }
-                //送短租, 先pendding
-                if (flag)
-                {
-                    //預約的資料，似乎走排程比較好
-                    //由另外的JOB來呼叫執行，在BookingStart存檔那邊去處理狀態
                 }
             }
             #endregion
