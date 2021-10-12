@@ -284,14 +284,36 @@ namespace OtherService
         #endregion
 
         #region 超商繳費資訊上傳-新增
-        public bool DoStoreShopCreateCvsPayInfo(WebAPI_CreateCvsPayInfo wsInput, string funName, string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_CreateCvsPayInfo output)
+        public bool DoStoreShopCreateCvsPayInfo(WebAPI_CreateCvsPayInfo wsInput,string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_CreateCvsPayInfo output)
         {
             bool flag = true;
+            string funName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             output = DoTaishinWalletStoreShopApiSend<WebAPI_CreateCvsPayInfo, WebAPIOutput_CreateCvsPayInfo>(wsInput, CreateCvsPayInfo, accessToken, hmacVal, funName).Result;
 
             if (output.header.rtnCode == "ok" && output.body.detail[0].statusCode == "S")
             {
-                //待補
+                SPInput_InsWalletStoreShopLog spInput = new SPInput_InsWalletStoreShopLog()
+                {
+                    CTxSn = wsInput.header.cTxSn,
+                    TxSn = output.header.txSN,
+                    TxType = wsInput.body.txType,
+                    PaymentId = output.body.detail[0].paymentId,
+                    CvsType = wsInput.body.cvsCode.cvsType,
+                    CvsCode = wsInput.body.cvsCode.cvsCode,
+                    PayAmount = wsInput.body.detail[0].payAmount,
+                    PayPeriod = wsInput.body.detail[0].payPeriod,
+                    DueDate =wsInput.body.detail[0].paidDue,
+                    OverPaid = wsInput.body.detail[0].overPaid,
+                    CustId =wsInput.body.detail[0].custId,
+                    CustMobile = wsInput.body.detail[0].custMobile,
+                    CustEmail = wsInput.body.detail[0].custEmail,
+                    Memo= wsInput.body.detail[0].memo,          
+                    StatusCode = output.body.detail[0].statusCode,
+                    StatusDesc = output.body.detail[0].statusDesc
+                };
+                logger.Trace(" InsWalletStoreShopLog : " + JsonConvert.SerializeObject(spInput));
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new TaishinWalletLog().InsWalletStoreShopLog(spInput, ref flag, ref errCode, ref lstError);
             }
             else
             {
@@ -303,34 +325,27 @@ namespace OtherService
         #endregion
 
         #region 超商繳費條碼查詢
-        public bool DoStoreShopGetBarcode(WebAPI_GetBarcode wsInput,string funName, string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_GetBarCode output)
+        public bool DoStoreShopGetBarcode(WebAPI_GetBarcode wsInput, string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_GetBarCode output)
         {
             bool flag = true;
+            string funName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             output = DoTaishinWalletStoreShopApiSend<WebAPI_GetBarcode, WebAPIOutput_GetBarCode>(wsInput, GetBarCode, accessToken, hmacVal, funName).Result;
 
-            if (output.header.rtnCode == "ok" && output.body.statusCode=="00")
+            if (output.header.rtnCode == "ok")
             {
-                SPInput_InsWalletStoreShopLog spInput = new SPInput_InsWalletStoreShopLog()
+                SPInput_UpdWalletStoreShopLog spInput = new SPInput_UpdWalletStoreShopLog()
                 {
-                    TxSn= output.header.txSN,
-                    CTxSn = wsInput.header.cTxSn,
                     PaymentId = wsInput.body.paymentId,
-                    CvsType = wsInput.body.cvsType,
-                    CvsCode = wsInput.body.cvsCode,
-                    PayAmount = wsInput.body.payAmount,
-                    PayPeriod = wsInput.body.payPeriod,
-                    DueDate = wsInput.body.dueDate,
                     Code1 = output.body.code1,
                     Code2 = output.body.code2,
                     Code3 = output.body.code3,
-                    Memo=wsInput.body.memo,
                     Barcode64 = output.body.barcode64,
                     StatusCode = output.body.statusCode,
                     StatusDesc = output.body.statusDesc
                 };
-                logger.Trace(" InsWalletStoreShopLog : " + JsonConvert.SerializeObject(spInput));
+                logger.Trace(" UpdWalletStoreShopLog : " + JsonConvert.SerializeObject(spInput));
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
-                new TaishinWalletLog().InsWalletStoreShopLog(spInput, ref flag, ref errCode, ref lstError);
+                new TaishinWalletLog().UpdWalletStoreShopLog(spInput, ref flag, ref errCode, ref lstError);
             }
             else
             {

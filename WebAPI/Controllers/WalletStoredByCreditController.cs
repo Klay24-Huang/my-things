@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletStoredByCredit";
+            string funName = "WalletStoredByCreditController";
             string TradeType = "Store_Credit"; ///交易類別
             string PRGID = "220"; //APIId
 

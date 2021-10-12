@@ -1,14 +1,14 @@
 ﻿/***********************************************************************************************
 * Serve    : sqyhi03az.database.windows.net
 * Database : IRENT_V2
-* 程式名稱 : usp_InsWalletStoreVisualAccountLog_I01
+* 程式名稱 : usp_WalletStoreVisualAccount_I01
 * 系    統 : IRENT
 * 程式功能 : 電子錢包虛擬帳號產生紀錄檔
 * 作    者 : AMBER
 * 撰寫日期 : 20210928
 Example :
 ***********************************************************************************************/
-CREATE PROCEDURE [dbo].[usp_InsWalletStoreVisualAccountLog_I01]
+CREATE PROCEDURE [dbo].[usp_WalletStoreVisualAccount_I01]
 	@Amt				VARCHAR(15),   --交易金額
 	@TrnActNo			VARCHAR(16),   --虛擬帳號
 	@DueDate			VARCHAR(16),   --繳費期限
@@ -25,7 +25,7 @@ DECLARE @Error INT
 DECLARE @IsSystem TINYINT = 1
 DECLARE @ErrorType TINYINT = 4
 DECLARE @hasData INT
-DECLARE @FunName VARCHAR(50) = 'usp_InsWalletStoreVisualAccountLog_I01'
+DECLARE @FunName VARCHAR(50) = 'usp_WalletStoreVisualAccount_I01'
 DECLARE @NowTime DATETIME =dbo.Get_TWDATE()
 
 /*初始設定*/
@@ -104,7 +104,7 @@ BEGIN CATCH
 			VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 END CATCH
 RETURN @Error
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsWalletStoreVisualAccountLog_I01';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_WalletStoreVisualAccount_I01';
 
 
 

@@ -56,7 +56,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletStoreVisualAccount";
+            string funName = "WalletStoreVisualAccountController";
             string PRGID = "221"; //APIId
 
             Int64 LogID = 0;
@@ -141,7 +141,7 @@ namespace WebAPI.Controllers
                     apiOutput = new OAPI_WalletStoreVisualAccount()
                     {
                         StoreMoney = apiInput.StoreMoney,
-                        PayDeadline = string.Format("{0:yyyy/MM/dd 23:59:59}", payDeadLine),
+                        PayDeadline = string.Format("{0:yyyy/MM 23:59}", payDeadLine),
                         VirtualAccount = $"(812){virtualAccount}"
                     };
                 }

@@ -382,7 +382,7 @@ namespace WebAPI.Service
         public bool sp_WalletStoreVisualAccount(SPInput_InsWalletStoreVisualAccountLog spInput, ref string errCode)
         {
             bool flag = false;
-            string spName = "usp_InsWalletStoreVisualAccountLog_I01";
+            string spName = "usp_WalletStoreVisualAccount_I01";
 
             var lstError = new List<ErrorInfo>();
             SPOutput_Base spOutput = new SPOutput_Base();
@@ -412,7 +412,7 @@ namespace WebAPI.Service
         {
             bool flag = false;
 
-            string spName = "usp_InsTaishinWalletCvsPaymentId_I01";
+            string spName = "usp_WalletStoreShop_I01";
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOutput_GetCvsPaymentId();
 
