@@ -1592,6 +1592,18 @@ namespace Web.Controllers
                     "RowCount" + ":" + lstData.Count.ToString() + "}"
                     );
 
+            //增加NLOG機制
+            logger.Trace(
+                    "{ReportName:'車輛隨租定位(CarLocationQuery)'," +
+                    "User" + ":'" + Session["User"] + "'," +
+                    "IPAddr" + ":'" + System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] + "'," +
+                    "Condition:{IsCar" + ":'" + ((IsCar == "true") ? "汽車" : "機車") + "'," +
+                    "Time_Start" + ":'" + Time_Start + "'," +
+                    "Time_End" + ":'" + Time_End + "'," +
+                    "Account" + ":'" + Account + "'," +
+                    "RowCount" + ":" + lstData.Count.ToString() + "}"
+                    );
+
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             ExcelPackage ep = new ExcelPackage();
             ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("Sheet");
@@ -1704,7 +1716,7 @@ namespace Web.Controllers
                 cmd.CommandText = "usp_GetIRentCarMapValue";
                 cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
                 SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
-                SqlParameter fileName = cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50);
+                SqlParameter fileName = cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 200);
                 msg.Direction = ParameterDirection.Output;
                 fileName.Direction = ParameterDirection.Output;
 
@@ -1757,7 +1769,7 @@ namespace Web.Controllers
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = "usp_HandleIRentCarMapKey";
                         cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 20).Value = string.Format("{0}_{1}", month, carType);
-                        cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 50).Value = fileName;
+                        cmd.Parameters.Add("@Value", SqlDbType.NVarChar, 200).Value = fileName;
                         cmd.Parameters.Add("@User", SqlDbType.VarChar, 10).Value = Account;
                         SqlParameter msg = cmd.Parameters.Add("@MSG", SqlDbType.VarChar, 200);
                         msg.Direction = ParameterDirection.Output;

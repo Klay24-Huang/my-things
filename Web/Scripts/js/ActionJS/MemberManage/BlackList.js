@@ -133,7 +133,6 @@
     });
 })
 
-
 var DateDiff = function (sDate1, sDate2) { // sDate1 和 sDate2 是 2016-06-18 格式
     var aDate, oDate1, oDate2, iDays
     aDate = sDate1.split("/")
@@ -143,7 +142,6 @@ var DateDiff = function (sDate1, sDate2) { // sDate1 和 sDate2 是 2016-06-18 �
     iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) // 把相差的毫秒數轉換為天數
     return iDays;
 };
-
 
 function getdetail(detail, Mobile) {
     console.log('b')
@@ -156,12 +154,20 @@ function getdetail(detail, Mobile) {
     var tableRef = document.getElementById('myTable').getElementsByTagName('tbody')[0];
 
     for (let index = 0; index < pp; index++) {
-        tableRef.insertRow().innerHTML =
-            "<td>" + obj[index].A_SYSDT + "</td>" +
-            "<td>" + obj[index].Mobile + "</td>" +
-            "<td>" + obj[index].CreateDate + "</td>" +
-            "<td>" + obj[index].Valid + "</td>" +
-            "<td>" + obj[index].USERID + "</td>";
+        if (obj[index].Valid == 'N') {
+            tableRef.insertRow().innerHTML =
+                "<td>" + obj[index].Mobile + "</td>" +
+                "<td>" + obj[index].CreateDate + "</td>" +
+                "<td>" + obj[index].A_SYSDT + "</td>" +
+                "<td>" + obj[index].USERID + "</td>";
+        }
+        else {
+            tableRef.insertRow().innerHTML =
+                "<td>" + obj[index].Mobile + "</td>" +
+                "<td>" + obj[index].CreateDate + "</td>" +
+                "<td>" + "</td>" +
+                "<td>" + obj[index].USERID + "</td>";
+        }
     }
 }
 
@@ -171,12 +177,6 @@ function getaccount(detail, Mobile) {
     const obj = $.grep(detail, function (n, i) {
         return n.MEMTEL === Mobile;
     });
-
-    var pp = $.grep(detail, function (n, i) {
-        return n.MEMTEL === Mobile;
-    }).length
-
-    var tableRef = document.getElementById('myTable2').getElementsByTagName('tbody')[0];
 
     var pp = $.grep(detail, function (n, i) {
         return n.MEMTEL === Mobile;

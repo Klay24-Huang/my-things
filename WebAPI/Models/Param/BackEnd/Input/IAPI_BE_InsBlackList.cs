@@ -5,9 +5,9 @@ using System.Web;
 
 namespace WebAPI.Models.Param.BackEnd.Input
 {
-    public class IAPI_BE_DeleteBlackList
+    public class IAPI_BE_InsBlackList
     {
-        public string MOBILE { get; set; }//
+        public string MOBILE { get; set; }
         public string USERID { get; set; }
     }
 }

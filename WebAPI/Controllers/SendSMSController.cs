@@ -14,6 +14,9 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using Domain.Sync.Input;//20210928唐加
+using System.Threading.Tasks;//20210928唐加
+using Domain.SP.BE.Input;//20210928唐加
 
 namespace WebAPI.Controllers
 {
@@ -48,6 +51,7 @@ namespace WebAPI.Controllers
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
+
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SendSMS>(Contentjson);
@@ -116,6 +120,30 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_CheckMobile, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckMobile, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+
+                //20210928唐加，若用黑名單手機註冊要發email給企劃，Adam哥最帥，幫我上版
+                if (!flag)//!flag
+                {
+                    SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
+                    "ann420@hotaimotor.com.tw");
+                    SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
+                    "nancywen@hotaimotor.com.tw");
+                    SendMail("【安全性通知】有黑名單手機號碼嘗試驗證", "您好，使用者(" + apiInput.IDNO + ")於(" + DateTime.Now + ")嘗試使用黑名單手機號碼(" + apiInput.Mobile + ")驗證，請密切留意。",
+                    "himsirent3@hotaimotor.com.tw");
+
+                    //20211008唐加
+                    string spName2 = "usp_BE_InsBlackList2";
+                    SPInput_BE_InsBlackList spInput2 = new SPInput_BE_InsBlackList()
+                    {
+                        Mode = 3,
+                        Mobile = apiInput.Mobile,
+                        USERID = apiInput.IDNO
+                    };
+                    SPOutput_Base spOut2 = new SPOutput_Base();
+                    SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr);
+                    flag = sqlHelp2.ExecuteSPNonQuery(spName2, spInput2, ref spOut2, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref spOut2, ref lstError, ref errCode);
+                }         
             }
             #endregion
             #region 發送簡訊
@@ -148,6 +176,45 @@ namespace WebAPI.Controllers
                 flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
             }
             #endregion
+
+            //20210928唐加
+            #region 若已驗證手機被第二人驗證，發送簡訊通知前一位客人
+            if (flag)
+            {
+                string spName = "usp_CheckMobileUse";
+                SPInput_CheckMobile spInput = new SPInput_CheckMobile()
+                {
+                    Mobile = apiInput.Mobile,
+                    LogID = LogID
+                };
+                SPOutput_CheckMobileUse spOut = new SPOutput_CheckMobileUse();
+                SQLHelper<SPInput_CheckMobile, SPOutput_CheckMobileUse> sqlHelp = new SQLHelper<SPInput_CheckMobile, SPOutput_CheckMobileUse>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                //20211007 upd by 唐，企劃又不想發MAIL，要改用簡訊
+                //HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                //WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
+                //string Message = string.Format("親愛的iRent會員您好:\n" +
+                //    "您目前於iRent註冊的手機號碼與其他會員重複，為維護您的權益，請您重新認證手機號碼，\n" +
+                //    "若仍有問題，請您來電0800-024-550或line詢問客服，亦可至鄰近門市詢問辦理，謝謝您。\n" +
+                //    "※ 本信件為系統自動發送，請勿直接回覆此信件。\n" +
+                //    "和雲行動服務股份有限公司 敬上");
+                //flag = hiEasyRentAPI.NPR260Send(apiInput.Mobile, Message, "", ref wsOutput);
+                if (spOut.mail != "")
+                {
+                    SendMail("iRent會員異動通知",
+                    "<img src='https://irentv2-as-verify.azurewebsites.net/images/irent.png'><br>" +
+                    "親愛的iRent會員您好:<br>" +
+                    "您目前於iRent註冊的手機號碼與其他會員重複，請您重新認證手機號碼，若仍有問題，請點選app的 [ 聯絡我們 ] 以聯絡客服，亦可至鄰近和運租車門市詢問辦理，謝謝您。<br><br>" +
+                    "※ 本信件為系統自動發送，請勿直接回覆此信件。<br><br>" +
+                    "和雲行動服務股份有限公司 敬上<br>" +
+                    "<img src='https://irentv2-as-verify.azurewebsites.net/images/hims_logo.png' width='300'>",
+                    spOut.mail);
+                }
+            }
+            #endregion
+
             #region TB
             if (flag)
             {
@@ -177,6 +244,49 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, CheckAccountAPI, token);
             return objOutput;
             #endregion
+
+        }
+        public void SendMail(string TITLE, string MEMO, string recevie)
+        {
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            bool flag2 = true;
+            int SendFlag = 0;
+
+            SPInput_SYNC_UPDEventMessage SPInput = new SPInput_SYNC_UPDEventMessage()
+            {
+                AlertID = 80345,
+                HasSend = 1,
+                Sender = "SendGuid",
+                LogID = 0
+            };
+            SPOutput_Base SPOutput = new SPOutput_Base();
+
+            try
+            {
+                SendMail send = new SendMail();
+                flag2 = Task.Run(() => send.DoSendMail(TITLE, MEMO, recevie)).Result;
+
+                SPInput.SendTime = DateTime.Now;
+            }
+            catch (Exception ex)
+            {
+                //logger.Error(ex.Message);
+                SendFlag = 1;
+                SPInput.HasSend = 2;
+            }
+            finally
+            {
+                string SPName = "usp_SYNC_UPDSendAlertMessage";
+
+                flag2 = new SQLHelper<SPInput_SYNC_UPDEventMessage, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                if (flag2 == false)
+                {
+                    if (SendFlag == 1)
+                        SendFlag = 2;   //發送失敗，更新失敗
+                    else
+                        SendFlag = 3;   //發送成功，更新失敗
+                }
+            }
         }
     }
 }

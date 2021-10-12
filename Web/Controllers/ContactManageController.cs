@@ -693,7 +693,8 @@ namespace Web.Controllers
                         csvText.Append(lstBook[i].LStation.Replace(",", "，") + "/" + lstBook[i].RStation.Replace(",", "，") + ",");          //取/還車站
                         csvText.Append(lstBook[i].CarTypeName.Replace(",", "，") + ",");                                   //車型
                         csvText.Append(lstBook[i].CarNo + ",");                                         //車牌號碼
-                        csvText.Append(lstBook[i].PRONAME.Replace(",", "，") + ",");                                       //優惠方案
+                        //csvText.Append(lstBook[i].PRONAME.Replace(",", "，") + ",");                                       //優惠方案
+                        csvText.Append(lstBook[i].PRONAME == null ? "," :lstBook[i].PRONAME.Replace(",", "，") + ",");       //優惠方案 20210915 ADD BY ADAM 
                         csvText.Append((lstBook[i].FS.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未取車," : lstBook[i].FS.ToString("yyyy/MM/dd HH:mm") + ",");    //實際取車時間
                         csvText.Append((lstBook[i].FE.ToString("yyyy-MM-dd HH:mm:ss") == "1911-01-01 00:00:00") ? "未還車," : lstBook[i].FE.ToString("yyyy/MM/dd HH:mm") + ",");    //實際還車時間
                         csvText.Append((lstBook[i].P_LBA) < 0 ? "," : string.Format("{0}%", Convert.ToInt32(lstBook[i].P_LBA)) + ",");       //取車左邊電池電量

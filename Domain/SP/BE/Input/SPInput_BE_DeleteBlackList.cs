@@ -8,7 +8,7 @@ namespace Domain.SP.BE.Input
 {
     public class SPInput_BE_DeleteBlackList
     {
-        public string Mobile { get; set; }
+        public string Mobile { get; set; }//
         public string USERID { get; set; }
     }
 }

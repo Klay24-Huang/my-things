@@ -270,3 +270,39 @@ CreditCardWeb/Properties/ServiceDependencies/iRentV2-pay-api - Web Deploy/profil
 iRentClearWeb/Properties/PublishProfiles/iRentV2-clear-web - Web Deploy.pubxml
 iRentClearWeb/Properties/ServiceDependencies/iRentV2-clear-web - Web Deploy/profile.arm.json
 /WebAPI/Models/Param/Output/PartOfParam/GetProject_SeatGroup.cs
+iRentClearWeb/Properties/PublishProfiles/iRentV2-AS-clear-web - FTP.pubxml
+iRentClearWeb/Properties/PublishProfiles/iRentV2-AS-clear-web - Web Deploy.pubxml
+iRentClearWeb/Properties/ServiceDependencies/iRentV2-AS-clear-web - Web Deploy/profile.arm.json
+Web/Properties/PublishProfiles/iRent-Backend-Web - Web Deploy.pubxml
+Web/Properties/PublishProfiles/iRent-Backend-Web-Test - Web Deploy.pubxml
+Web/Properties/PublishProfiles/iRentV2-AS-Backend-Web-Test - Web Deploy.pubxml
+Web/Properties/ServiceDependencies/iRent-Backend-Web - Web Deploy/profile.arm.json
+Web/Properties/ServiceDependencies/iRent-Backend-Web-Test - Web Deploy/profile.arm.json
+Web/Properties/ServiceDependencies/iRentV2-AS-Backend-Web-Test - Web Deploy/profile.arm.json
+WebAPI/Properties/PublishProfiles/iRent-CarMachine-Api - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-App-Api2 - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-App-Api3 - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/irentv2-app-api3-pretest - FTP.pubxml
+WebAPI/Properties/PublishProfiles/irentv2-app-api3-pretest - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-AS-api - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-AS-Api2 - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-AS-Api3 - FTP.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-AS-Api3 - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-AS-Api4 - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-AS-backend-api-test - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-AutoJob - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-Backend-Api - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-backend-api-test - Web Deploy.pubxml
+WebAPI/Properties/PublishProfiles/iRentV2-Taishin-Api2 - Web Deploy.pubxml
+WebAPI/Properties/ServiceDependencies/iRent-CarMachine-Api - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-App-Api2 - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-App-Api3 - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-AS-api - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-AS-Api2 - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-AS-Api3 - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-AS-Api4 - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-AS-backend-api-test - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-AutoJob - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-Backend-Api - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-backend-api-test - Web Deploy/profile.arm.json
+WebAPI/Properties/ServiceDependencies/iRentV2-Taishin-Api2 - Web Deploy/profile.arm.json

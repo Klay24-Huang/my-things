@@ -579,7 +579,6 @@
     <Build Include="dbo\Tables\TB_PersonNotificationRLog.sql" />
     <Build Include="dbo\Stored Procedures\usp_PersonNoticeRead_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetMemberCMK.sql" />
-    <Build Include="dbo\Tables\TB_NYRefundList.sql" />
     <Build Include="dbo\Stored Procedures\usp_BE_GetOrderDetail.sql" />
     <Build Include="dbo\Tables\TB_MotorChangeBattHis.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsMonthlyPayData.sql" />

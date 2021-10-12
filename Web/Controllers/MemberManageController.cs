@@ -1481,11 +1481,13 @@ namespace Web.Controllers
                 bool flag = true;
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 string errCode = "";
+                string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
                 CommonFunc baseVerify = new CommonFunc();
                 SPInput_BE_InsBlackList data = new SPInput_BE_InsBlackList()
                 {
                     Mode = 0,
-                    Mobile = MobilePhone
+                    Mobile = MobilePhone,
+                    USERID = UserId
                 };
                 SPOutput_Base SPOutput = new SPOutput_Base();
                 flag = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsBlackList", data, ref SPOutput, ref lstError);
@@ -1497,7 +1499,7 @@ namespace Web.Controllers
                 }
                 else
                 {
-                    ViewData["errorLine"] = "新增失敗";
+                    ViewData["errorLine"] = SPOutput.ErrorMsg;
                 }
 
                 return View();
@@ -1752,6 +1754,111 @@ namespace Web.Controllers
                                     flag = false;
                                     break;
                                 }
+                            }
+                        }
+
+                        //通過第一關 
+                        if (flag)
+                        {
+                            string UserId = ((Session["Account"] == null) ? "" : Session["Account"].ToString());
+                            for (int i = 1; i <= sheetLen; i++)
+                            {
+                                SPInput_BE_InsBlackList data = new SPInput_BE_InsBlackList()
+                                {
+                                    Mode = sheet.GetRow(i).GetCell(1).ToString().Replace(" ", "")=="新增" ? 0 : 1,
+                                    Mobile = sheet.GetRow(i).GetCell(0).ToString().Replace(" ", ""),
+                                    USERID = UserId
+                                };
+
+                                SPOutput_Base SPOutput = new SPOutput_Base();
+                                flag = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr).ExecuteSPNonQuery("usp_BE_InsBlackList", data, ref SPOutput, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                                if (flag == false)
+                                {
+                                    //errorLine = i.ToString();
+                                    errorMsg = string.Format("寫入第{0}筆資料時，發生錯誤：{1}", i.ToString(), SPOutput.ErrorMsg);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errorMsg = "請上傳要匯入的資料";
+                    }
+                }
+                else
+                {
+                    flag = false;
+                    errorMsg = "請上傳要匯入的資料";
+                }
+                if (flag)
+                {
+                    ViewData["errorLine"] = "ok";
+                }
+                else
+                {
+                    ViewData["errorLine"] = errorMsg;
+                }
+                return View();
+                }
+
+        }
+        public ActionResult ExplodeBlackList(string ExplodeSDate, string ExplodeEDate, string ExplodeMobilePhone)
+        {
+            List<BE_GetBlackLists> lstBlackList = new List<BE_GetBlackLists>();
+            MemberRepository _repository = new MemberRepository(connetStr);
+
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("搜尋結果");
+
+            string[] headerField = { "手機號碼", "黑名單加入日期", "黑名單加入時間" };
+            int headerFieldLen = headerField.Length;
+
+            IRow header = sheet.CreateRow(0);
+            for (int j = 0; j < headerFieldLen; j++)
+            {
+                header.CreateCell(j).SetCellValue(headerField[j]);
+            }
+            lstBlackList = _repository.GetBlackLists(ExplodeSDate, ExplodeEDate, ExplodeMobilePhone);
+
+            int len = lstBlackList.Count;
+            for (int k = 0; k < len; k++)
+            {
+                IRow content = sheet.CreateRow(k + 1);
+                content.CreateCell(0).SetCellValue(lstBlackList[k].Mobile);
+                content.CreateCell(1).SetCellValue(lstBlackList[k].CreateDate.Substring(0,10));
+                content.CreateCell(2).SetCellValue(lstBlackList[k].CreateDate.Substring(10));
+            }
+            MemoryStream ms = new MemoryStream();
+            workbook.Write(ms);
+            return base.File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "手機黑名單" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx");
+        }
+        #endregion
+
+        //private void SetAuditDetailCount()
+        //{
+        //    var value = 1;
+        //    try
+        //    {
+        //        ConnectionMultiplexer connection = lazyConnection.Value;
+        //        IDatabase cache = connection.GetDatabase();
+
+        //        var key = "Number of call AuditDetail";
+        //        var cacheString = cache.StringGet(key);
+        //        if (cacheString.HasValue)
+        //        {
+        //            int.TryParse(cacheString.ToString(), out value);
+        //            value++;
+        //        }
+        //        cache.StringSet(key, value);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error(ex.Message);
+        //    }
+        //    EnterCounte.Set(value); //宣告Guage才能用set
+        //}
                             }
                         }
 

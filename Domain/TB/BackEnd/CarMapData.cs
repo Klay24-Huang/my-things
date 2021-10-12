@@ -20,6 +20,8 @@ namespace Domain.TB.BackEnd
         public string AREA { get; set; }
         public string Memo { get; set; }
         public string device3TBA { get; set; }
+        public string deviceMBA { get; set; }
+        public string device2TBA { get; set; }
         public string isMotor { get; set; }
     }
 }
