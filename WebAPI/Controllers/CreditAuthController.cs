@@ -1106,26 +1106,27 @@ namespace WebAPI.Controllers
             //錢包餘額<訂單金額
             if (WalletStatus.WalletInfo.Balance < Amount)
             {
-                //如果自動儲值是on
-                if (breakAutoStore && WalletStatus.WalletInfo.AutoStoreFlag == 1)
-                {
-                    //儲值.....儲值金額(訂單-錢包)
-                    var storeAmount = Amount - WalletStatus.WalletInfo.Balance;
+                //這段APP 會做，所以取消
+                ////如果自動儲值是on
+                //if (breakAutoStore && WalletStatus.WalletInfo.AutoStoreFlag == 1)
+                //{
+                //    //儲值.....儲值金額(訂單-錢包)
+                //    var storeAmount = Amount - WalletStatus.WalletInfo.Balance;
 
-                    bool storeSataus = WalletStoreByCredit(storeAmount, Access_Token, funName, ref errCode);
+                //    bool storeSataus = WalletStoreByCredit(storeAmount, Access_Token, funName, ref errCode);
 
-                    if (storeSataus)
-                    {
-                        return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
-                    }
-                    else
-                    {
-                        if (TradeType != "Pay_Arrear")
-                        {
-                            return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, false, funName, LogID, Access_Token, ref errCode);
-                        }
-                    }
-                }
+                //    if (storeSataus)
+                //    {
+                //        return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
+                //    }
+                //    else
+                //    {
+                //        if (TradeType != "Pay_Arrear")
+                //        {
+                //            return PayWalletFlow(OrderNo, Amount, IDNO, TradeType, false, funName, LogID, Access_Token, ref errCode);
+                //        }
+                //    }
+                //}
 
                 PayAmount = WalletStatus.WalletInfo.Balance;
             }
