@@ -161,8 +161,8 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
-                DateTime NowTime = DateTime.Now;
-                DateTime dueDate = NowTime.Date.AddDays(2).AddSeconds(-1);
+
+                DateTime dueDate = DateTime.Now.Date.AddDays(2).AddSeconds(-1);
 
                 #region 產生超商銷帳編號
                 if (flag)
@@ -197,15 +197,7 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     cvsCode = GetCvsCode(apiInput.CvsType).Item2; //超商代收代號
-                    string guid = Guid.NewGuid().ToString().Replace("-", "");
-                    IHUBReqHeader header = new IHUBReqHeader()
-                    {
-                        cTxSn = guid,
-                        txDate = string.Format("{0:yyyyMMddTHHmmssK}", NowTime).Replace(":", ""),
-                        txId = CreateCvsPayInfo,
-                        cId = TaishinCID,
-                    };
-
+                    IHUBReqHeader header = SetReqHeader(CreateCvsPayInfo);
 
                     List<CVSPayInfoDetailReq> payInfoList = new List<CVSPayInfoDetailReq>();
                     CVSPayInfoDetailReq detailReq = new CVSPayInfoDetailReq
@@ -229,8 +221,8 @@ namespace WebAPI.Controllers
                         body = new CvsPayInfoReq()
                         {
                             txType = "i",
-                            txDate = NowTime.ToString("yyyyMMdd"),
-                            txBatchNo = NowTime.ToString("yyyyMMddHHmmssfff"),
+                            txDate = DateTime.Now.ToString("yyyyMMdd"),
+                            txBatchNo = DateTime.Now.ToString("yyyyMMddHHmmssfff"),
                             recordCount = 1,
                             totalAmount = apiInput.StoreMoney,
                             cvsCode = new CvsCode { cvsCode = cvsCode, cvsType = apiInput.CvsType },
@@ -253,15 +245,7 @@ namespace WebAPI.Controllers
                 #region Barcode查詢
                 if (flag)
                 {
-                    string guid = Guid.NewGuid().ToString().Replace("-", "");
-                    IHUBReqHeader header = new IHUBReqHeader()
-                    {
-                        cTxSn = guid,
-                        txDate = string.Format("{0:yyyyMMddTHHmmssK}", NowTime).Replace(":", ""),
-                        txId = GetBarCode,
-                        cId = TaishinCID,
-                    };
-
+                    IHUBReqHeader header = SetReqHeader(GetBarCode);
                     WebAPI_GetBarcode webAPI_GetBarcode = new WebAPI_GetBarcode()
                     {
                         header = header,
@@ -271,7 +255,7 @@ namespace WebAPI.Controllers
                             dueDate = dueDate.ToString("yyyyMMdd"),
                             cvsType = apiInput.CvsType,
                             payAmount = apiInput.StoreMoney,
-                            paymentId = paymentId, 
+                            paymentId = paymentId,
                             memo = "",
                             payPeriod = 1
                         }
@@ -341,7 +325,24 @@ namespace WebAPI.Controllers
             return CvsCodeList.Where(x => x.Item1 == CvsType).FirstOrDefault();
         }
 
+        /// <summary>
+        /// 交易請求共通表頭物件
+        /// </summary>
+        /// <param name="txId"></param>
+        /// <returns></returns>
+        private IHUBReqHeader SetReqHeader(string txId)
+        {
+            DateTime NowTime = DateTime.Now;
+            string guid = Guid.NewGuid().ToString().Replace("-", "");
 
-     
+            return new IHUBReqHeader()
+            {
+                cTxSn = guid,
+                txDate = string.Format("{0:yyyyMMddTHHmmssK}", NowTime).Replace(":", ""),
+                txId = txId,
+                cId = TaishinCID
+            };
+        }
+
     }
 }

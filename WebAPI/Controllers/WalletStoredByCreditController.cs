@@ -70,6 +70,7 @@ namespace WebAPI.Controllers
             var spOutput = new SPOutput_GetWallet();
             WebAPI_CreateAccountAndStoredMoney wallet = null;
             WebAPIOutput_StoreValueCreateAccount output = null;
+            SPInput_WalletStore spInput_Wallet = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -290,7 +291,7 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         string formatString = "yyyyMMddHHmmss";
-                        SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
+                        spInput_Wallet = new SPInput_WalletStore()
                         {
                             IDNO = output.Result.ID,
                             WalletMemberID = output.Result.MemberId,
@@ -317,20 +318,19 @@ namespace WebAPI.Controllers
                         trace.traceAdd("WalletStore", new { spInput_Wallet, flag, errCode });
                         trace.FlowList.Add("寫入錢包紀錄");
 
-
-                        apiOutput = new OAPI_WalletStoredByCredit()
-                        {
-                            StoreMoney = apiInput.StoreMoney,
-                            StroeResult = 1,
-                            Timestamp = spInput_Wallet.LastTransDate == null ? "" : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate)
-                        };
                     }
                     #endregion
 
                 }
                 #endregion
 
-                apiOutput.StroeResult = flag ? 1 : 0;
+
+                apiOutput = new OAPI_WalletStoredByCredit()
+                {
+                    StoreMoney = apiInput.StoreMoney,
+                    StroeResult = flag ? 1 : 0,
+                    Timestamp = spInput_Wallet.LastTransDate == null ? string.Format("{0:yyyy/MM/dd hh:mm}", DateTime.Now) : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate)
+                };
 
                 trace.traceAdd("TraceFinal", new { errCode, errMsg });
                 carRepo.AddTraceLog(220, funName, trace, flag);
