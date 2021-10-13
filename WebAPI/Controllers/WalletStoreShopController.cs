@@ -162,7 +162,7 @@ namespace WebAPI.Controllers
                 #endregion
 
 
-                DateTime dueDate = DateTime.Now.Date.AddDays(2).AddSeconds(-1);
+                DateTime dueDate = DateTime.Now.AddHours(3);
 
                 #region 產生超商銷帳編號
                 if (flag)
@@ -272,7 +272,7 @@ namespace WebAPI.Controllers
                         apiOutput.ShopBarCode1 = outGetBarCode.body.code1;
                         apiOutput.ShopBarCode2 = outGetBarCode.body.code2;
                         apiOutput.ShopBarCode3 = outGetBarCode.body.code3;
-                        apiOutput.PayDeadline = dueDate.ToString("yyyy/MM 23:59");
+                        apiOutput.PayDeadline = dueDate.ToString("yyyy/MM/dd HH:mm");
                     }
                     else
                     {
@@ -315,8 +315,7 @@ namespace WebAPI.Controllers
         private List<Tuple<int, string, string>> CvsCodeList = new List<Tuple<int, string, string>>()
         {
             //超商類型(0:7-11 1:全家),超商代收代號,業者識別碼
-            //new Tuple<int, string,string>(0,"E6B","IR7"),
-            new Tuple<int, string,string>(0,"E6H","IRS"),
+            new Tuple<int, string,string>(0,"E6H","IR7"),
             new Tuple<int, string,string>(1,"K9A","IRF"),
         };
 

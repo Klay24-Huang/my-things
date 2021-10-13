@@ -5972,11 +5972,13 @@ iRentApi20 Web API版本
 | ------------ | --------------------- | :----: | --------------------- |
 | StroeResult  | 儲值結果(1成功,0失敗) |  int   | 1                     |
 | StoreMoney   | 儲值金額              |  int   | 300                |
-| PayDeadline  | 繳費期限(距今+1天) | string | 2021/10/08 23:59 |
+| PayDeadline  | 繳費期限(距今+3H) | string | 2021/10/08 23:59 |
 | ShopBarCode1 | 超商條碼1             | string | 101008K9A    |
 | ShopBarCode2 | 超商條碼2             | string | IRF0000000000003 |
 | ShopBarCode3 | 超商條碼3             | string | 235988000000300 |
 | Barcode64 | BASE64 ENCODE 字串 (尺寸：320 X 480，由前端轉為PNG 格式等比顯示，需轉向) | string |  |
+
+[^註]: 7-11只會回傳Barcode64 ENCODE 字串
 
 * Output範例
 

@@ -141,7 +141,7 @@ namespace WebAPI.Controllers
                     apiOutput = new OAPI_WalletStoreVisualAccount()
                     {
                         StoreMoney = apiInput.StoreMoney,
-                        PayDeadline = string.Format("{0:yyyy/MM 23:59}", payDeadLine),
+                        PayDeadline = string.Format("{0:yyyy/MM/dd 23:59}", payDeadLine),
                         VirtualAccount = $"(812){virtualAccount}"
                     };
                 }
