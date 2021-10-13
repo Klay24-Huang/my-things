@@ -202,7 +202,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         OrderNo = tmpOrder,
                         Token = Access_Token,
-                        transaction_no = ""
+                        transaction_no = "",
+                        PayMode = apiInput.CheckoutMode
                     };
 
                     trace.traceAdd("PayInput", PayInput);
@@ -594,7 +595,9 @@ namespace WebAPI.Controllers
                                 MerchantTradeNo = "",
                                 TaishinTradeNo = "",
                                 Token = Access_Token,
-                                LogID = LogID
+                                LogID = LogID,
+                                PayMode = apiInput.CheckoutMode
+
                             };
                             apiInput.OrderNo = NPR330Save_ID.ToString();    //20201222 ADD BY ADAM REASON.欠費補上id
                             PayInput.OrderNo = NPR330Save_ID;

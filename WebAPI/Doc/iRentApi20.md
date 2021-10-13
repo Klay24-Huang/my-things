@@ -162,6 +162,8 @@ iRentApi20 Web API版本
 
 20211007 錢包儲值-商店條碼(WalletStoreShop) 範例調整
 
+20211008 預約(Booking) 輸出參數調整
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -4713,7 +4715,7 @@ iRentApi20 Web API版本
 
 
 
-## OrderDetail
+## OrderDetail 訂單明細
 
 ### [/api/OrderDetail/]
 
@@ -4887,7 +4889,7 @@ iRentApi20 Web API版本
 
 ------
 
-## Booking
+## Booking 預約
 
 ### [/api/Booking/]
 
@@ -4921,32 +4923,47 @@ iRentApi20 Web API版本
 | MonId		| 選擇的訂閱制月租 | Y | int | 123456 |
 
 
-* input範例 -同站預約
+* input範例 -同站汽車預約
 
 ```
 {
-	"ProjID": "P735",
-	"SDate": "2021-05-11 10:30:00",
-    "EDate": "2021-05-11 11:30:00",
+    "ProjID": "R220",
+    "SDate": "2021-10-07 14:00:00",
+    "EDate": "2021-10-07 15:00:00",
     "CarNo": "",
-    "CarType": "COROLLA CROSS",
+    "CarType": "PRIUSC",
     "Insurance": 0,
-    "StationID": "XXXX"
-    "ModId": 0
+    "StationID": "X2BI",
+    "MonId": 0
 }
 ```
 
-* input範例 -機車預約
+* input範例-路邊汽車預約
+
 ```
 {
-	"ProjID": "P686",
-	"SDate": "",
-	"EDate": "",
-	"CarNo": "EWJ-8339",
-	"CarType": "MANY-110",
-	"Insurance": 0,
-	"StationID": ""
-	"ModId": 0
+    "ProjID": "R221",
+    "SDate": "",
+    "EDate": "",
+    "CarNo": "RDD-6775",
+    "CarType": "PRIUSC",
+    "Insurance": 0,
+    "StationID": "",
+    "MonId": 0
+}
+```
+
+* input範例 -路邊機車預約
+```
+{
+    "ProjID": "R225",
+    "SDate": "",
+    "EDate": "",
+    "CarNo": "EWJ-8393",
+    "CarType": "MANY-110",
+    "Insurance": 0,
+    "StationID": "",
+    "MonId": 0
 }
 ```
 
@@ -4960,7 +4977,7 @@ iRentApi20 Web API版本
 | NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           |        |               |
+| Data         | 資料物件           | object |               |
 
 * Data回傳參數說明
 
@@ -4968,6 +4985,7 @@ iRentApi20 Web API版本
 | ------------ | ------------------ | :----: | ------------- |
 | OrderNo      | 訂單編號           | string | H10455246     |
 | LastPickTime   | 最晚的取車時間	| string | 20210608020120 |
+| WalletNotice | 錢包餘額不足通知<br>0:不顯示  1:顯示	| int | 1 |
 
 
 * Output範例
@@ -4980,8 +4998,9 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "OrderNo": "H10791575",
-        "LastPickTime": "20210608020120"
+        "OrderNo": "H13270976",
+        "LastPickTime": "20211008161318",
+        "WalletNotice": 1
     }
 }
 ```
