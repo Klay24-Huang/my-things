@@ -70,9 +70,9 @@ IF @Token='' OR @IDNO='' OR @CvsIdentifier=''
 
  IF @Error=0
    BEGIN
-	  INSERT INTO TB_WalletStoreCvsPaymentId (IDNO,CvsIdentifier,MKTime,UPDTime) VALUES (@IDNO,@CvsIdentifier,@NowTime,@NowTime)	  
+	  INSERT INTO TB_WalletStoreCvsPaymentId (CvsIdentifier,MKTime) VALUES (@CvsIdentifier,@NowTime)	  
 	  SET @SEQNO=@@IDENTITY
-	  UPDATE TB_WalletStoreCvsPaymentId SET PaymentId =CvsIdentifier+RIGHT('0000000000000'+CAST(@SEQNO AS varchar(13)),13),UPDTime=[dbo].[GET_TWDATE]() WHERE SEQNO=@SEQNO;	  
+	  UPDATE TB_WalletStoreCvsPaymentId SET PaymentId =CvsIdentifier+RIGHT('0000000000000'+CAST(@SEQNO AS varchar(13)),13) WHERE SEQNO=@SEQNO;	  
 	  SET @PaymentId=@CvsIdentifier+RIGHT('0000000000000'+CAST(@SEQNO AS varchar(13)),13)	
    END
 
@@ -101,5 +101,6 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_WalletStoreShop_I01';
+
 
 

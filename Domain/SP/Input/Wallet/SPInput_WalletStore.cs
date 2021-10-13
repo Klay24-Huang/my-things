@@ -93,5 +93,10 @@ namespace Domain.SP.Input.Wallet
         /// </summary>
         public int Mode { set; get; }
 
+        /// <summary>
+        /// 來源站台(1:APP/2:Backend)
+        /// </summary>
+        public short InputSource { set; get; }
+
     }
 }

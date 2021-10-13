@@ -309,6 +309,7 @@ namespace WebAPI.Controllers
                             TradeType = TradeType,
                             PRGID = PRGID,
                             Mode = Mode,
+                            InputSource=1,
                             Token = Access_Token,
                             LogID = LogID
                         };
