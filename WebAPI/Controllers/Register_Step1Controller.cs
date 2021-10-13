@@ -37,6 +37,7 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
+            bool flag2 = true;
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
@@ -143,8 +144,8 @@ namespace WebAPI.Controllers
                     };
                     SPOutput_Base spOut2 = new SPOutput_Base();
                     SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base> sqlHelp2 = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr);
-                    flag = sqlHelp2.ExecuteSPNonQuery(spName2, spInput2, ref spOut2, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref spOut2, ref lstError, ref errCode);
+                    flag2 = sqlHelp2.ExecuteSPNonQuery(spName2, spInput2, ref spOut2, ref lstError);
+                    baseVerify.checkSQLResult(ref flag2, ref spOut2, ref lstError, ref errCode);
                 }
 
             }
