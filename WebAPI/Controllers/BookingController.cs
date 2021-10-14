@@ -464,52 +464,52 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        #region 是否有綁定信用卡
-        /// <summary>
-        /// 是否有綁定信用卡
-        /// </summary>
-        /// <param name="IDNO">身分證號</param>
-        /// <param name="errCode">錯誤代碼</param>
-        /// <returns></returns>
-        private bool CheckCard(string IDNO, ref string errCode)
-        {
-            bool flag = false;
+        //#region 是否有綁定信用卡
+        ///// <summary>
+        ///// 是否有綁定信用卡
+        ///// </summary>
+        ///// <param name="IDNO">身分證號</param>
+        ///// <param name="errCode">錯誤代碼</param>
+        ///// <returns></returns>
+        //private bool CheckCard(string IDNO, ref string errCode)
+        //{
+        //    bool flag = false;
 
-            //送台新查詢
-            TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-            PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
-            {
-                ApiVer = ApiVerOther,
-                ApposId = TaishinAPPOS,
-                RequestParams = new GetCreditCardListRequestParamasData()
-                {
-                    MemberId = IDNO,
-                },
-                Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
-            };
-            WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
-            flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
+        //    //送台新查詢
+        //    TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+        //    PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+        //    {
+        //        ApiVer = ApiVerOther,
+        //        ApposId = TaishinAPPOS,
+        //        RequestParams = new GetCreditCardListRequestParamasData()
+        //        {
+        //            MemberId = IDNO,
+        //        },
+        //        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+        //        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+        //        TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+        //    };
+        //    WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
+        //    flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
 
-            if (flag)
-            {
-                flag = false;
-                int Len = wsOutput.ResponseParams.ResultData.Count;
-                if (Len > 0)
-                {
-                    string CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
-                    if (!string.IsNullOrWhiteSpace(CardToken))
-                        flag = true;
-                }
-            }
+        //    if (flag)
+        //    {
+        //        flag = false;
+        //        int Len = wsOutput.ResponseParams.ResultData.Count;
+        //        if (Len > 0)
+        //        {
+        //            string CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
+        //            if (!string.IsNullOrWhiteSpace(CardToken))
+        //                flag = true;
+        //        }
+        //    }
 
-            if (!flag)
-                errCode = "ERR730";
+        //    if (!flag)
+        //        errCode = "ERR730";
 
-            return flag;
-        }
-        #endregion
+        //    return flag;
+        //}
+        //#endregion
 
         #region 春節租金-汽車
         /// <summary>
