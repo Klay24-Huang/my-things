@@ -9,5 +9,7 @@ namespace WebAPI.Models.Param.BackEnd.Input
     {
         public string MOBILE { get; set; }
         public string USERID { get; set; }
+        public string MEMO { get; set; }
+        public string MODE { get; set; }
     }
 }
