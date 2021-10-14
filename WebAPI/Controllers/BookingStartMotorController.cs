@@ -1,11 +1,11 @@
 ﻿using Domain.CarMachine;
 using Domain.Common;
 using Domain.SP.Input.Booking;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
+using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Booking;
-using Domain.SP.Output.Common;
+using Domain.SP.Output.Wallet;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
@@ -14,13 +14,14 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -36,7 +37,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -64,6 +64,9 @@ namespace WebAPI.Controllers
             int IsCens = 0;
             double mil = 0;
             List<CardList> lstCardList = new List<CardList>();
+            bool CreditFlag = true;     // 信用卡綁卡
+            bool WalletFlag = false;    // 綁定錢包
+            int WalletAmout = 0;        // 錢包餘額
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -113,24 +116,63 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+            }
+            #endregion
+            #region 檢查信用卡是否綁卡、錢包是否開通
+            if (flag)
+            {
+                #region 檢查信用卡是否綁卡
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (ds.Tables.Count == 0)
                 {
-                    LogID = LogID,
-                    Token = Access_Token
+                    CreditFlag = false;
+                }
+                else if (ds.Tables[0].Rows.Count == 0)
+                {
+                    CreditFlag = false;
+                }
+                ds.Dispose();
+                #endregion
+
+                #region 檢查錢包是否開通
+                string SPName = "usp_CreditAndWalletQuery_Q01";
+                SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
+                {
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
                 };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                SPOut_CreditAndWalletQuery spOut = new SPOut_CreditAndWalletQuery();
+                SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
                 if (flag)
                 {
-                    IDNO = spOut.IDNO;
+                    WalletFlag = spOut.WalletStatus == "2" ? true : false;
+                    WalletAmout = spOut.WalletAmout;
+                }
+                #endregion
+
+                if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
+                {
+                    flag = false;
+                    errCode = "ERR290";
+                }
+                else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包
+                {
+                    if (WalletAmout < 50)   // 錢包餘額 < 50元 不給取車
+                    {
+                        flag = false;
+                        errCode = "ERR291";
+                    }
                 }
             }
+            #endregion
             #region 檢查欠費
             if (flag)
             {
@@ -147,7 +189,7 @@ namespace WebAPI.Controllers
             //取車判斷
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.BeforeBookingStart);
+                string CheckTokenName = "usp_BeforeBookingStart";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
@@ -204,7 +246,7 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     #region 執行sp合約
-                    string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
+                    string BookingStartName = "usp_BookingStart";
                     Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                     {
                         IDNO = IDNO,
@@ -222,7 +264,7 @@ namespace WebAPI.Controllers
                     #endregion
                     if (flag)
                     {
-                        string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
+                        string BookingControlName = "usp_BookingControl";
                         SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                         {
                             IDNO = IDNO,
@@ -258,8 +300,6 @@ namespace WebAPI.Controllers
                         }
                     }
                     #endregion
-
-                    
 
                     #region 設定租約
                     if (flag)
@@ -303,7 +343,7 @@ namespace WebAPI.Controllers
                     #region 20210514 開啟電源後須紀錄電量 20210521 改為設定完租約再記錄電量
                     if (flag)
                     {
-                        string SPInsMotorBattLogName = new ObjType().GetSPName(ObjType.SPType.InsMotorBattLog);
+                        string SPInsMotorBattLogName = "usp_InsMotorBattLog";
                         SPInput_InsMotorBattLog SPInsMotorBattLogInput = new SPInput_InsMotorBattLog()
                         {
                             OrderNo = tmpOrder,

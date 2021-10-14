@@ -180,6 +180,49 @@ namespace WebAPI.Service
             }
         }
 
+        public List<SPOut_WalletWithdrowInvoice> sp_WalletWithdrowInvoice(SPInput_WalletWithdrowInvoice spInput, ref string errCode)
+        {
+            var re = new List<SPOut_WalletWithdrowInvoice>();
+
+            try
+            {
+                string SPName = "usp_WalletWithdrowInvoice_U1";
+                object[][] parms1 = {
+                    new object[] {
+                        spInput.SEQNO,
+                        spInput.INV_NO,
+                        spInput.INV_DATE,
+                        spInput.RNDCODE,
+                        spInput.LogID
+                    },
+                };
+
+                DataSet ds1 = null;
+                string returnMessage = "";
+                string messageLevel = "";
+                string messageType = "";
+
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                {
+                     if (ds1.Tables.Count == 1)
+                    {
+                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
+                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
+                            errCode = re_db.ErrorCode;
+                    }
+                }
+
+                return re;
+            }
+            catch (Exception ex)
+            {
+                errCode = ex.ToString();
+                throw ex;
+            }
+        }
+
         public SPOut_GetPayInfoReturnCar sp_GetPayInfoReturnCar(SPInput_GetPayInfoReturnCar spInput, ref string errCode)
         {
             var re = new SPOut_GetPayInfoReturnCar();
@@ -339,7 +382,7 @@ namespace WebAPI.Service
         public bool sp_WalletStoreVisualAccount(SPInput_InsWalletStoreVisualAccountLog spInput, ref string errCode)
         {
             bool flag = false;
-            string spName = "usp_InsWalletStoreVisualAccountLog_I01";
+            string spName = "usp_WalletStoreVisualAccount_I01";
 
             var lstError = new List<ErrorInfo>();
             SPOutput_Base spOutput = new SPOutput_Base();
@@ -365,6 +408,34 @@ namespace WebAPI.Service
             return flag;
         }
 
+        public SPOutput_GetCvsPaymentId sp_GetCvsPaymentId(SPInput_GetCvsPaymentId spInput, ref string errCode)
+        {
+            bool flag = false;
+
+            string spName = "usp_WalletStoreShop_I01";
+            var lstError = new List<ErrorInfo>();
+            var spOut = new SPOutput_GetCvsPaymentId();
+
+            SQLHelper<SPInput_GetCvsPaymentId, SPOutput_GetCvsPaymentId> sqlHelp = new SQLHelper<SPInput_GetCvsPaymentId, SPOutput_GetCvsPaymentId>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+
+            if (flag)
+            {
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+            return spOut;
+        }
     }
 
     public class WalletMap

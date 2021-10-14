@@ -81,6 +81,9 @@ iRentApi20 Web API版本
 - [WalletTransferTCheck 轉贈對象確認](#WalletTransferTargetCheck)
 - [SetDefPayMode 設定預設支付方式](#SetDefPayMode)
 - [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
+- [WalletWithdrowInvoice 寫入手續費發票](#WalletWithdrowInvoice)
+
+
 
 ----------
 # 修改歷程
@@ -157,6 +160,10 @@ iRentApi20 Web API版本
 
 20210929 自動儲值設定(AutoStoreSetting)參數調整
 
+20211007 錢包儲值-商店條碼(WalletStoreShop) 範例調整
+
+20211008 預約(Booking) 輸出參數調整
+
 
 # Header參數相關說明
 | KEY | VALUE |
@@ -181,7 +188,7 @@ iRentApi20 Web API版本
 
 # 登入相關
 
-##  Login 登入 
+## Login 登入
 
 ### [/api/Login/]
 
@@ -2849,7 +2856,7 @@ iRentApi20 Web API版本
 
 ----
 
-## CreditAuth 付款與還款 
+## CreditAuth 付款與還款
 
 ### [/api/CreditAuth/]
 
@@ -2933,6 +2940,21 @@ iRentApi20 Web API版本
 }
 ```
 
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                   |說明              |
+| -------- | ---------------- ------- | ---------------  |
+| ERR203 |  找不到符合的訂單編號 | 租金計算時找不到此訂單編號 | 
+| ERR209 |  已完成還車付款，請勿重覆付款 | 已完成還車付款，請勿重覆付款　｜
+| ERR210 | 尚未完成還車步驟，無法還車付款 | 未符合還車付款狀態，又重覆點下付款 |
+| ERR244 | 系統偵測到異常，請重新進入 | 系統偵測到異常，請重新進入 |
+| ERR245 | 還車已超過十四分鐘，請重新計算費率 | 還車時間過久沒重新計價 |
+| ERR730 | 查詢綁定卡號失敗 |查詢綁定卡號失敗 |
+| ERR932 | 錢包未開通 | 錢包未開通 |
+| ERR933 | 錢包扣款失敗 | 錢包扣款失敗 |
+| ERR934 | 錢包餘額不足 | 錢包餘額不足|
+
+
 
 ---
 
@@ -2941,7 +2963,7 @@ iRentApi20 Web API版本
 
 ## GetMonthList 取得訂閱制月租列表/我的所有方案
 
-###  [/api/GetMonthList/]
+### [/api/GetMonthList/]
 
 * 20210510發佈
 
@@ -4693,7 +4715,7 @@ iRentApi20 Web API版本
 
 
 
-## OrderDetail
+## OrderDetail 訂單明細
 
 ### [/api/OrderDetail/]
 
@@ -4867,7 +4889,7 @@ iRentApi20 Web API版本
 
 ------
 
-## Booking
+## Booking 預約
 
 ### [/api/Booking/]
 
@@ -4901,32 +4923,47 @@ iRentApi20 Web API版本
 | MonId		| 選擇的訂閱制月租 | Y | int | 123456 |
 
 
-* input範例 -同站預約
+* input範例 -同站汽車預約
 
 ```
 {
-	"ProjID": "P735",
-	"SDate": "2021-05-11 10:30:00",
-    "EDate": "2021-05-11 11:30:00",
+    "ProjID": "R220",
+    "SDate": "2021-10-07 14:00:00",
+    "EDate": "2021-10-07 15:00:00",
     "CarNo": "",
-    "CarType": "COROLLA CROSS",
+    "CarType": "PRIUSC",
     "Insurance": 0,
-    "StationID": "XXXX"
-    "ModId": 0
+    "StationID": "X2BI",
+    "MonId": 0
 }
 ```
 
-* input範例 -機車預約
+* input範例-路邊汽車預約
+
 ```
 {
-	"ProjID": "P686",
-	"SDate": "",
-	"EDate": "",
-	"CarNo": "EWJ-8339",
-	"CarType": "MANY-110",
-	"Insurance": 0,
-	"StationID": ""
-	"ModId": 0
+    "ProjID": "R221",
+    "SDate": "",
+    "EDate": "",
+    "CarNo": "RDD-6775",
+    "CarType": "PRIUSC",
+    "Insurance": 0,
+    "StationID": "",
+    "MonId": 0
+}
+```
+
+* input範例 -路邊機車預約
+```
+{
+    "ProjID": "R225",
+    "SDate": "",
+    "EDate": "",
+    "CarNo": "EWJ-8393",
+    "CarType": "MANY-110",
+    "Insurance": 0,
+    "StationID": "",
+    "MonId": 0
 }
 ```
 
@@ -4940,7 +4977,7 @@ iRentApi20 Web API版本
 | NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           |        |               |
+| Data         | 資料物件           | object |               |
 
 * Data回傳參數說明
 
@@ -4948,6 +4985,7 @@ iRentApi20 Web API版本
 | ------------ | ------------------ | :----: | ------------- |
 | OrderNo      | 訂單編號           | string | H10455246     |
 | LastPickTime   | 最晚的取車時間	| string | 20210608020120 |
+| WalletNotice | 錢包餘額不足通知<br>0:不顯示  1:顯示	| int | 1 |
 
 
 * Output範例
@@ -4960,8 +4998,9 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "OrderNo": "H10791575",
-        "LastPickTime": "20210608020120"
+        "OrderNo": "H13270976",
+        "LastPickTime": "20211008161318",
+        "WalletNotice": 1
     }
 }
 ```
@@ -5261,13 +5300,13 @@ iRentApi20 Web API版本
 | ------------ | ------------------  | :----: | ------------- |
 | PayMode | 付費方式 (0:信用卡 1:和雲錢包) | int | 0 |
 | HasBind      | 是否有綁定(0:無,1有)| int    | 1             |
-| HasWallet    | 是否有錢包(0:無,1有)| int    | 0            |
-| TotalAmount | 錢包剩餘金額        | int    | 0         |
-| BindListObj | 信用卡列表 | list |  |
-| MEMSENDCD | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 | int | 5 |
-| UNIMNO | 統編 | string |  |
-| CARRIERID | 手機條碼 | string | /N37H2JD |
-| NPOBAN | 愛心碼 | string |  |
+| HasWallet    | 是否有錢包(0:無,1有)| int    | 0             |
+| TotalAmount  | 錢包剩餘金額        | int    | 0             |
+| BindListObj  | 信用卡列表 		 | list |  |
+| MEMSENDCD    | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證    | int  	| 5 |
+| UNIMNO 	   | 統編 				 | string |  			  |
+| CARRIERID    | 手機條碼 			 | string | 	 /N37H2JD |
+| NPOBAN 	   | 愛心碼				 | string | 			  |
 | AutoStored | 是否同意自動儲值 (0:不同意 1:同意) | int | 0 |
 
 * BindListObj 回傳參數說明
@@ -5804,13 +5843,13 @@ iRentApi20 Web API版本
 
 | 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
 | ---------- | ------------------------------------  |      | :--:     | ------ |
-| StoreMoney | 儲值金額                              | Y | int      | 100    |
+| StoreMoney | 儲值金額                              | Y | int      | 300 |
 
 * input範例
 
 ```
 {
-  "StoreMoney" : 100
+  "StoreMoney" : 300
 }
 
 ```
@@ -5832,7 +5871,7 @@ iRentApi20 Web API版本
 | --------------- | ------------------------------------- |  :----:   | ---------------- |
 | StroeResult     | 儲值結果(1成功,0失敗)                 | int       | 1                |
 | StoreMoney      | 儲值金額        　                    | int       | 300           |
-| PayDeadline     | 繳費期限                              | string    | 2021/10/01 23:59:59 |
+| PayDeadline     | 繳費期限(距今+3日)                  | string    | 2021/10/01 23:59 |
 | VirtualAccount  | 轉入虛擬帳號    　                    | string    | (812)8552002486602742 |
 
 * Output範例
@@ -5845,10 +5884,24 @@ iRentApi20 Web API版本
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "PayDeadline": "2021/10/01 23:59:59",
+        "PayDeadline": "2021/10/01 23:59",
         "VirtualAccount": "(812)8552002486602742",
         "StroeResult": 1,
         "StoreMoney": 300
+    }
+}
+
+{
+    "Result": "0",
+    "ErrorCode": "ERR284",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "儲值金額不得低於下限",
+    "Data": {
+        "PayDeadline": null,
+        "VirtualAccount": null,
+        "StroeResult": 0,
+        "StoreMoney": 0
     }
 }
 
@@ -5856,12 +5909,12 @@ iRentApi20 Web API版本
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                | 說明                                     |
-| -------- | ----------------------- | ---------------------------------------- |
-| ERR284   | 儲值金額不得低於下限    | 儲值金額不得低於100元                    |
-| ERR282   | 錢包金額超過上限        | 錢包現存餘額上限為5萬元(包括受贈)        |
-| ERR280   | 金流超過上限            | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
-| ERR913   | 發生錯誤,請洽系統管理員 | 虛擬帳號產生失敗，請洽系統管理員         |
+| 錯誤代碼 | 錯誤訊息                         | 說明                                     |
+| -------- | -------------------------------- | ---------------------------------------- |
+| ERR284   | 儲值金額不得低於下限             | 儲值金額不得低於100元                    |
+| ERR282   | 錢包金額超過上限                 | 錢包現存餘額上限為5萬元(包括受贈)        |
+| ERR280   | 金流超過上限                     | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
+| ERR937   | 虛擬帳號產生失敗，請洽系統管理員 | 虛擬帳號產生失敗                         |
 
 ----
 
@@ -5887,17 +5940,17 @@ iRentApi20 Web API版本
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                              | 必要 |  型態    | 範例          |
-| ---------- | ------------------------------------  |      | :--:     | ------ |
-| StoreMoney | 儲值金額                              | Y | int      | 300 |
-| CvsType | 超商類型(0:7-11 1:全家) | Y    | int  | 0 |
+| 參數名稱   | 參數說明                | 必要 | 型態 | 範例 |
+| ---------- | ----------------------- | ---- | :--: | ---- |
+| StoreMoney | 儲值金額                | Y    | int  | 300  |
+| CvsType    | 超商類型(0:7-11 1:全家) | Y    | int  | 1    |
 
 * input範例
 
 ```
 {
   "StoreMoney" : 300,
-  "CvsType":0
+  "CvsType":1
 }
 
 ```
@@ -5918,11 +5971,14 @@ iRentApi20 Web API版本
 | 參數名稱     | 參數說明              |  型態  | 範例                  |
 | ------------ | --------------------- | :----: | --------------------- |
 | StroeResult  | 儲值結果(1成功,0失敗) |  int   | 1                     |
-| StoreMoney   | 儲值金額              |  int   | 500                   |
-| PayDeadline  | 繳費期限(距今+10分鐘)  | string | 2021/03/31 23:19      |
-| ShopBarCode1 | 超商條碼1             | string | 1003908SJ             |
-| ShopBarCode2 | 超商條碼2             | string | 20944SE031003908SUEPJ |
-| ShopBarCode3 | 超商條碼3             | string | 10023984HPDJ3908SJ    |
+| StoreMoney   | 儲值金額              |  int   | 300                |
+| PayDeadline  | 繳費期限(距今+3H) | string | 2021/10/08 23:59 |
+| ShopBarCode1 | 超商條碼1             | string | 101008K9A    |
+| ShopBarCode2 | 超商條碼2             | string | IRF0000000000003 |
+| ShopBarCode3 | 超商條碼3             | string | 235988000000300 |
+| Barcode64 | BASE64 ENCODE 字串 (尺寸：320 X 480，由前端轉為PNG 格式等比顯示，需轉向) | string |  |
+
+[^註]: 7-11只會回傳Barcode64 ENCODE 字串
 
 * Output範例
 
@@ -5933,27 +5989,45 @@ iRentApi20 Web API版本
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
-	   {
-	     "StroeResult": 1,
-	     "StoreMoney": 500,
-         "PayDeadline" : "2021/03/31 23:19",
-		 "ShopBarCode1" : "1003908SJ",
-		 "ShopBarCode2" : "20944SE031003908SUEPJ",
-		 "ShopBarCode3" : "10023984HPDJ3908SJ"
-	   }
-	}
+    "Data": {
+        "PayDeadline": "2021/10/08 23:59",
+        "ShopBarCode1": "101008K9A",
+        "ShopBarCode2": "IRF0000000000003",
+        "ShopBarCode3": "235988000000300",
+        "Barcode64": "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",
+        "StroeResult": 1,
+        "StoreMoney": 300
+    }
 }
+
+{
+    "Result": "0",
+    "ErrorCode": "ERR940",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "超商條碼產生失敗，請洽系統管理員",
+    "Data": {
+        "PayDeadline": null,
+        "ShopBarCode1": null,
+        "ShopBarCode2": null,
+        "ShopBarCode3": null,
+        "Barcode64": null,
+        "StroeResult": 0,
+        "StoreMoney": 0
+    }
 
 ```
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息             | 說明                                     |
-| -------- | -------------------- | ---------------------------------------- |
-| ERR284   | 儲值金額不得低於下限 | 儲值金額不得低於300元                    |
-| ERR282   | 錢包金額超過上限     | 錢包現存餘額上限為5萬元(包括受贈)        |
-| ERR280   | 金流超過上限         | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
+| 錯誤代碼 | 錯誤訊息                              | 說明                                     |
+| -------- | ------------------------------------- | ---------------------------------------- |
+| ERR284   | 儲值金額不得低於下限                  | 儲值金額不得低於300元                    |
+| ERR282   | 錢包金額超過上限                      | 錢包現存餘額上限為5萬元(包括受贈)        |
+| ERR280   | 金流超過上限                          | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
+| ERR938   | 銷帳編號產生失敗，請洽系統管理員      | 銷帳編號產生失敗                         |
+| ERR939   | 超商條碼Token產生失敗，請洽系統管理員 | 超商條碼Token產生失敗                    |
+| ERR940   | 超商條碼產生失敗，請洽系統管理員      | 超商條碼產生失敗                         |
 
 ----
 
@@ -6109,7 +6183,6 @@ iRentApi20 Web API版本
 | 參數名稱   | 參數說明              |  型態  | 範例              |
 | ---------- | --------------------- | :----: | ----------        |
 | TranResult | 轉贈結果 (1成功0失敗) |  int   | 1                 |
-| TranMessage| 失敗原因              | string |                   |
 | SystemTime | 系統回傳時間          | string | 2021/03/31 23:19  |
 
 * Output範例
@@ -6123,23 +6196,20 @@ iRentApi20 Web API版本
     "ErrorMessage": "Success",
 	"Data": {
 	    "TranResult":1,
-	    "TranMessage":"",
 	    "SystemTime":"2021/03/31 23:19"
 	}
 }
 {
-    "Result": "1",
-    "ErrorCode": "000000",
+    "Result": "0",
+    "ErrorCode": "ERR281",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-	"Data": {
-	    "TranResult":0,
-	    "TranMessage":"受贈人錢包餘額超過上限，請受贈人確認錢包餘額",
-	    "SystemTime":"2021/03/31 23:19"
-	}
+    "ErrorMessage": "轉贈金額超過錢包金額",
+    "Data": {
+        "TranResult": 0,
+        "SystemTime": "2021/03/31 23:19"
+    }
 }
-
 ```
 
 ----
@@ -6194,30 +6264,40 @@ iRentApi20 Web API版本
 
 | 參數名稱   | 參數說明              |  型態  | 範例               |
 | ---------- | --------------------- | :----: | ----------         |
-| TranCheck  | 可否轉贈              |  int   | 1                  |
+| TranCheck  | 可否轉贈(1:可轉贈)    |  int   | 1                  |
 | IDNO       | 會員身分證字號        | string | A123456789         |
 | ShowName   | 遮罩後會員姓名        | string | 李Ｏ瑄             |
 | ShowValue  | 遮罩後的查詢Key值     | string | 0987\*\*\*321      |
-| ShowMessage| 顯示訊息              | string | 此用戶未完成註冊...|
 
 * Output範例
 
 ```
+{
+    "Result": "0",
+    "ErrorCode": "ERR278",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "非一般會員",
+    "Data": {
+        "CkResult": 0,
+        "ShowName": "",
+        "ShowValue": "",
+        "IDNO": ""
+    }
+}
 {
     "Result": "1",
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
-	    "TranCheck":1,
-	    "IDNO":"A123456789",
-	    "ShowName":"李Ｏ瑄",
-	    "ShowValue":"0987***321",
-	    "ShowMessage":"此用戶未完成註冊..."
-	}
+    "Data": {
+        "CkResult": 1,
+        "ShowName": "劉O希",
+        "ShowValue": "F130XXX853",
+        "IDNO": "F130140853"
+    }
 }
-
 ```
 
 ----
@@ -6341,3 +6421,69 @@ iRentApi20 Web API版本
 }
 ```
 
+
+## WalletWithdrowInvoice 寫入手續費發票
+
+### [/api/WalletWithdrowInvoice/]
+
+* 20210819新增文件
+
+* ASP.NET Web API (REST API)
+
+* api位置
+
+  正式環境：https://irentcar-app.azurefd.net/
+
+  測試環境：https://irentcar-app-test.azurefd.net
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(非必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 	| 參數說明 		| 必要 	| 型態 	| 範例 		|
+| -------- 	| ------------- | :--: 	| :--: 	| ---- 		|
+|SEQNO		|對應主檔流水號	|Y		|int	|123		|
+|INV_NO   	|發票號碼      	|Y     	|String	|DE12345678 |
+|INV_DATE   |發票開立日期	|Y     	|String |20211010 	|
+|RNDCODE   	|發票隨機碼		|Y     	|String	|0594 		|
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data 回傳參數說明
+
+| 參數名稱     | 參數說明            		|  型態  | 範例          |
+| ------------ | ------------------  		| :----: | ------------- |
+|無參數			|							|		|				|
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+       
+        ],
+        
+    }
+}
+```
+
+----

@@ -46,7 +46,6 @@ namespace WebAPI.Controllers
             #region 初始宣告
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
-            var carRentComm = new CarRentCommon();
             var wsp = new WalletSp();
             var walletService = new WalletService();
 
@@ -58,7 +57,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletStoredByCredit";
+            string funName = "WalletStoredByCreditController";
             string TradeType = "Store_Credit"; ///交易類別
             string PRGID = "220"; //APIId
 
@@ -71,13 +70,13 @@ namespace WebAPI.Controllers
             var spOutput = new SPOutput_GetWallet();
             WebAPI_CreateAccountAndStoredMoney wallet = null;
             WebAPIOutput_StoreValueCreateAccount output = null;
+            SPInput_WalletStore spInput_Wallet = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-            string spName = "";
             string TaishinNO = "";
 
             #endregion
@@ -292,7 +291,7 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         string formatString = "yyyyMMddHHmmss";
-                        SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
+                        spInput_Wallet = new SPInput_WalletStore()
                         {
                             IDNO = output.Result.ID,
                             WalletMemberID = output.Result.MemberId,
@@ -310,6 +309,7 @@ namespace WebAPI.Controllers
                             TradeType = TradeType,
                             PRGID = PRGID,
                             Mode = Mode,
+                            InputSource=1,
                             Token = Access_Token,
                             LogID = LogID
                         };
@@ -319,20 +319,19 @@ namespace WebAPI.Controllers
                         trace.traceAdd("WalletStore", new { spInput_Wallet, flag, errCode });
                         trace.FlowList.Add("寫入錢包紀錄");
 
-
-                        apiOutput = new OAPI_WalletStoredByCredit()
-                        {
-                            StoreMoney = apiInput.StoreMoney,
-                            StroeResult = 1,
-                            Timestamp = spInput_Wallet.LastTransDate == null ? "" : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate)
-                        };
                     }
                     #endregion
 
                 }
                 #endregion
 
-                apiOutput.StroeResult = flag ? 1 : 0;
+
+                apiOutput = new OAPI_WalletStoredByCredit()
+                {
+                    StoreMoney = apiInput.StoreMoney,
+                    StroeResult = flag ? 1 : 0,
+                    Timestamp = spInput_Wallet.LastTransDate == null ? string.Format("{0:yyyy/MM/dd hh:mm}", DateTime.Now) : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate)
+                };
 
                 trace.traceAdd("TraceFinal", new { errCode, errMsg });
                 carRepo.AddTraceLog(220, funName, trace, flag);

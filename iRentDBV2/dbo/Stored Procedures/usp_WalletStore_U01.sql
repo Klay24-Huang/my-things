@@ -9,7 +9,7 @@
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_WalletStore_U01]
-	@IDNO                   VARCHAR(10)           , --操作的會員帳號
+    @IDNO                   VARCHAR(10)           , --操作的會員帳號
 	@WalletMemberID         VARCHAR(20)           , --錢包會員ID
 	@WalletAccountID		VARCHAR(20)			  , --錢包虛擬ID
     @Status					INT      			  , --錢包狀態
@@ -24,7 +24,8 @@ CREATE PROCEDURE [dbo].[usp_WalletStore_U01]
 	@TaishinNO              VARCHAR(30)	          , --台新IR編
 	@TradeType              VARCHAR(20)           , --交易類別名稱
 	@PRGID                  VARCHAR(20)           , --程式ID
-	@Mode                   TINYINT               , --交易類別代號(0:消費;1:儲值;2:轉贈給他人;3:受他人轉贈;4:退款)
+	@Mode                   TINYINT               , --交易類別代號(0:消費;1:儲值;2:轉贈給他人;3:受他人轉贈;4:退款;5:欠費繳交)
+	@InputSource            TINYINT               , --輸入來源(1:APP;2:Web)
 	@Token                  VARCHAR(1024)         , --JWT TOKEN
 	@LogID                  BIGINT                , --執行的api log
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -62,15 +63,21 @@ SET @WalletAccountID =ISNULL (@WalletAccountID,'');
 SET @Token           =ISNULL (@Token,'');
 
 BEGIN TRY
-
-  IF @Token='' OR @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID=''
+　IF @InputSource = 1
+　BEGIN
+ 　　IF @Token='' OR @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID=''
+   　SET @Error=1;
+  　 SET @ErrorCode='ERR900'
+  END
+  ELSE 
   BEGIN
-  SET @Error=1;
-  SET @ErrorCode='ERR900'
+    IF @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID=''
+    SET @Error=1;
+  　SET @ErrorCode='ERR900'
   END
 		 
   --0.再次檢核token
-  IF @Error=0
+  IF @Error=0　And @InputSource = 1
   BEGIN
     SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
     IF @hasData=0
@@ -139,7 +146,6 @@ BEGIN CATCH
 			VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 END CATCH
 RETURN @Error
-
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_WalletStore_U01';
 
 
