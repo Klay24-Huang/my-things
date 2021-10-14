@@ -204,7 +204,9 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     #region 執行sp合約
+                    //20211012 ADD BY ADAM REASON.增加手機定位點
                     string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
+                    //string BookingStartName = "usp_BookingStart_V20211012";
                     Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                     {
                         IDNO = IDNO,
@@ -214,6 +216,9 @@ namespace WebAPI.Controllers
                         NowMileage = Convert.ToSingle(mil),
                         StopTime = "",
                         Insurance = 0
+                        //20211012 ADD BY ADAM REASON.增加手機定位點
+                        //PhoneLat = apiInput.PhoneLat,
+                        //PhoneLon = apiInput.PhoneLon
                     };
                     SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
                     SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);

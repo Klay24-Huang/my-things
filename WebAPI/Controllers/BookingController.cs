@@ -336,8 +336,14 @@ namespace WebAPI.Controllers
                     StationID = StationID,
                     Token = Access_Token,
                     SD = SDate
+                    //20211012 ADD BY ADAM REASON.增加手機定位點
+                    //PhoneLat = apiInput.PhoneLat,
+                    //PhoneLon = apiInput.PhoneLon
                 };
+                //20211012 ADD BY ADAM REASON.增加手機定位點
                 string SPName = new ObjType().GetSPName(ObjType.SPType.Booking);
+                //string SPName = "usp_Booking_V20211012";
+
                 SPOutput_Booking spOut = new SPOutput_Booking();
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
