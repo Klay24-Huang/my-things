@@ -92,6 +92,10 @@ namespace Domain.SP.Input.Wallet
         /// 交易類別代號(0:消費;1:儲值;2:轉贈給他人;3:受他人轉贈;4:退款)
         /// </summary>
         public int Mode { set; get; }
+        /// <summary>
+        /// 輸入來源(1:APP;2:Web)
+        /// </summary>
+        public int InputSource { get; set; }
 
     }
 }
