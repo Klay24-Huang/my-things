@@ -1,65 +1,34 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_SetDefPayMode]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_SetDefPayMode
+* 系    統 : IRENT
+* 程式功能 : 設定支付方式
+* 作    者 : ERIC
+* 撰寫日期 : 20201011
+* 修改日期 : 20210928 UPD BY YEH REASON:將SP整理修正
 
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_SetDefPayMode]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:Eric 
-** Date:2020/10/11 上午 08:48:37 
-**
-*****************************************************************
-** Change History
-*****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/10/11 上午 08:48:37    |  Eric|          First Release
-**			 |			  |
-*****************************************************************/
+* Example  : 
+***********************************************************************************************/
+
 CREATE PROCEDURE [dbo].[usp_SetDefPayMode]
-	@IDNO                   VARCHAR(10)           ,
-	@PayMode                INT                   ,
-	@Token                  VARCHAR(1024)         ,
-	@LogID                  BIGINT                ,
-	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
-	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
-	@SQLExceptionCode		VARCHAR(10)		OUTPUT,	--回傳sqlException代碼
-	@SQLExceptionMsg		NVARCHAR(1000)	OUTPUT	--回傳sqlException訊息
+	@IDNO				VARCHAR(10)				,	-- 帳號
+	@Token				VARCHAR(1024)			,	-- TOKEN
+	@PayMode			INT						,	-- 支付方式
+	@ApiName			VARCHAR(100)			,	-- APIName
+	@LogID				BIGINT					,	-- LogID
+	@ErrorCode			VARCHAR(6)		OUTPUT	,	-- 回傳錯誤代碼
+	@ErrorMsg			NVARCHAR(100)	OUTPUT	,	-- 回傳錯誤訊息
+	@SQLExceptionCode	VARCHAR(10)		OUTPUT	,	-- 回傳sqlException代碼
+	@SQLExceptionMsg	NVARCHAR(1000)	OUTPUT		-- 回傳sqlException訊息
 AS
 DECLARE @Error INT;
 DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
+DECLARE @ApiID INT;
 
 /*初始設定*/
 SET @Error=0;
@@ -72,21 +41,22 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @IDNO=ISNULL (@IDNO,'');
-SET @PayMode=ISNULL (@PayMode,-1);
-SET @Token=ISNULL (@Token,'');
+SET @IDNO=ISNULL(@IDNO,'');
+SET @Token=ISNULL(@Token,'');
+SET @PayMode=ISNULL(@PayMode,0);
+SET @ApiID=0;
 
 BEGIN TRY
-	IF @Token='' OR @IDNO=''  OR @PayMode<0 OR @PayMode>3
+	IF @Token='' OR @IDNO=''
 	BEGIN
 		SET @Error=1;
-		SET @ErrorCode='ERR900'
+		SET @ErrorCode='ERR900';
 	END
-		 
-	--0.再次檢核token
+
+	-- 再次檢核token
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND Rxpires_in>@NowTime;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -106,6 +76,8 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
+		SELECT @ApiID=ISNULL(APIID,999) FROM TB_APIList WITH(NOLOCK) WHERE APIName=@ApiName;
+
 		SET @hasData=0;
 		SELECT @hasData=COUNT(1) FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 		IF @hasData=0
@@ -117,16 +89,17 @@ BEGIN TRY
 		BEGIN
 			UPDATE TB_MemberData
 			SET PayMode=@PayMode,
-				U_PRGID=87,
+				U_PRGID=@ApiID,
 				U_USERID=@IDNO,
 				U_SYSDT=@NowTime
 			WHERE MEMIDNO=@IDNO;
 
 			-- 20210226;新增LOG檔
 			INSERT INTO TB_MemberData_Log
-			SELECT 'U','87',@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
+			SELECT 'U',@ApiID,@NowTime,* FROM TB_MemberData WHERE MEMIDNO=@IDNO;
 		END
 	END
+
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
@@ -153,19 +126,4 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetDefPayMode';
-
-
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetDefPayMode';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'描述', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetDefPayMode';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetDefPayMode';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_SetDefPayMode';

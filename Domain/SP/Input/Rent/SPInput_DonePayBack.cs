@@ -16,5 +16,9 @@ namespace Domain.SP.Input.Rent
         public string MerchantTradeNo { get; set; }     //20210106 ADD BY ADAM REASON.增加關聯存檔
         public string TaishinTradeNo { get; set; }      //20210106 ADD BY ADAM REASON.增加關聯存檔
         public string Token { get; set; }
+        /// <summary>
+        /// 付費方式：0:信用卡;1:和雲錢包;2:line pay;3:街口支付
+        /// </summary>
+        public int PayMode { get; set; }
     }
 }

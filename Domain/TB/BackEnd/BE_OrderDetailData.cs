@@ -95,6 +95,12 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public string PRONAME { set; get; }
         /// <summary>
+        /// 付款方式
+        /// <para>0:信用卡</para>
+        /// <para>1:和雲錢包</para>
+        /// </summary>
+        public Int16 PayMode { set; get; }
+        /// <summary>
         /// 發票寄送方式：
         /// <para>1:捐贈</para>
         /// <para>2:email</para>

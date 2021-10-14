@@ -939,7 +939,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_ContactFinish";    // 20210907 UPD BY YEH SP已同步，指回原版本
                     break;
                 case SPType.DonePayBack:
-                    SPName = "usp_DonePayBack_V2";
+                    SPName = "usp_DonePayBack_V3";
                     break;
                 case SPType.PolygonListQuery:
                     SPName = "usp_PolygonListQuery";

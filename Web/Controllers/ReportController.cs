@@ -1723,7 +1723,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [Obsolete]
-        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport,string month, string carType, string Account, string export)
+        public ActionResult CarMapFileUpload(HttpPostedFileBase fileImport, string month, string carType, string Account, string export)
         {
             BaseSafeController himsSafe = new BaseSafeController();
             himsSafe.nnlog(Session["User"], Session["Account"], System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]
@@ -1763,9 +1763,9 @@ namespace Web.Controllers
             }
 
             //上傳檔案
-            if(fileImport != null)
+            if (fileImport != null)
             {
-                if(fileImport.ContentLength > 0)
+                if (fileImport.ContentLength > 0)
                 {
 
                     using (var reader = new StreamReader(fileImport.InputStream, Encoding.UTF8))
@@ -1823,10 +1823,12 @@ namespace Web.Controllers
             {
                 ViewData["result"] = "未上傳任何檔案";
             }
-            
-            
+
+
             return View();
         }
         #endregion
+
+
     }
 }
