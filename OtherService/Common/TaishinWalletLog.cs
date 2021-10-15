@@ -14,7 +14,7 @@ namespace OtherService.Common
     class TaishinWalletLog
     {
  
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
 
         public void InsStoreValueCreateAccountLog(SPInput_InsStoreValueCreateAccountLog input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
         {

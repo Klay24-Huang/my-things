@@ -11,9 +11,14 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_WalletStoreVisualAccount : OAPI_WalletStoreBase
     {
         /// <summary>
-        /// 繳費期限 ex: 2021/10/01 23:59:59
+        /// 繳費期限 ex: 2021/10/01 23:59
         /// </summary>
         public string PayDeadline { get; set; }
+
+        /// <summary>
+        /// 銀行代碼
+        /// </summary>
+        public string BankCode { get; set; }
 
         /// <summary>
         /// 匯款帳號

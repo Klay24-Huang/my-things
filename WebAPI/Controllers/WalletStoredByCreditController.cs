@@ -28,18 +28,18 @@ using WebCommon;
 
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 錢包儲值-信用卡
-    /// </summary>
+
     public class WalletStoredByCreditController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
 
+        /// <summary>
+        /// 錢包儲值-信用卡
+        /// </summary>
         [HttpPost]
         public Dictionary<string, object> DoWalletStoredByCredit(Dictionary<string, object> value)
         {
@@ -59,18 +59,17 @@ namespace WebAPI.Controllers
             string errCode = "000000"; //預設成功
             string funName = "WalletStoredByCreditController";
             string TradeType = "Store_Credit"; ///交易類別
-            string PRGID = "220"; //APIId
 
 
             Int16 Mode = 1;
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_WalletStoreBase apiInput = null;
-            var apiOutput = new OAPI_WalletStoredByCredit();
             var spOutput = new SPOutput_GetWallet();
             WebAPI_CreateAccountAndStoredMoney wallet = null;
             WebAPIOutput_StoreValueCreateAccount output = null;
             SPInput_WalletStore spInput_Wallet = null;
+            var apiOutput = new OAPI_WalletStoredByCredit();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -263,8 +262,8 @@ namespace WebAPI.Controllers
                         Email = spOutput.Email,
                         ID = IDNO,
                         AccountType = "2",
-                        CreateType = "1",
                         AmountType = "2",
+                        CreateType = "1",
                         Amount = apiInput.StoreMoney,
                         Bonus = 0,
                         BonusExpiredate = "",
@@ -305,11 +304,11 @@ namespace WebAPI.Controllers
                             LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
                             LastStoreTransId = output.Result.StoreTransId,
                             LastTransId = output.Result.TransId,
-                            TaishinNO = TaishinNO,
+                            TaishinNO = !string.IsNullOrWhiteSpace(TaishinNO)  ? TaishinNO : output.Result.TransId,
                             TradeType = TradeType,
-                            PRGID = PRGID,
+                            PRGName = funName,
                             Mode = Mode,
-                            InputSource=1,
+                            InputSource = 1,
                             Token = Access_Token,
                             LogID = LogID
                         };
@@ -325,13 +324,9 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
-
-                apiOutput = new OAPI_WalletStoredByCredit()
-                {
-                    StoreMoney = apiInput.StoreMoney,
-                    StroeResult = flag ? 1 : 0,
-                    Timestamp = spInput_Wallet.LastTransDate == null ? string.Format("{0:yyyy/MM/dd hh:mm}", DateTime.Now) : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate)
-                };
+                apiOutput.StoreMoney = apiInput.StoreMoney;
+                apiOutput.StroeResult = flag ? 1 : 0;
+                apiOutput.Timestamp = spInput_Wallet.LastTransDate == null ? string.Format("{0:yyyy/MM/dd hh:mm}", DateTime.Now) : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate);
 
                 trace.traceAdd("TraceFinal", new { errCode, errMsg });
                 carRepo.AddTraceLog(220, funName, trace, flag);
@@ -339,6 +334,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 flag = false;
+                errCode = "ERR918";
                 apiOutput.StroeResult = 0;
                 trace.BaseMsg = ex.Message;
             }
