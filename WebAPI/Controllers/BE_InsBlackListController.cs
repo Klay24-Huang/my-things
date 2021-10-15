@@ -57,12 +57,13 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                string spName = "usp_BE_InsBlackList";
+                string spName = "usp_BE_InsBlackList_TEST";
                 SPInput_BE_InsBlackList spInput = new SPInput_BE_InsBlackList()
                 {
-                    Mode = 0,
+                    Mode = int.Parse(apiInput.MODE),
                     Mobile = apiInput.MOBILE,
-                    USERID = apiInput.USERID
+                    USERID = apiInput.USERID,
+                    MEMO = apiInput.MEMO
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_InsBlackList, SPOutput_Base>(connetStr);
