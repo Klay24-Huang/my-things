@@ -1,4 +1,4 @@
-/****** Object:  Table [dbo].[TB_WalletTradeMain]    Script Date: 2021/9/28 ¤U¤È 01:17:39 ******/
+/****** Object:  Table [dbo].[TB_WalletTradeMain]    Script Date: 2021/10/15 ¤U¤È 03:43:36 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -18,6 +18,7 @@ CREATE TABLE [dbo].[TB_WalletTradeMain](
 	[F_INTFNO] [varchar](30) NULL,
 	[F_TRFCOD] [varchar](1) NOT NULL,
 	[F_FEECHK] [varchar](1) NOT NULL,
+	[ORDNO] [varchar](12) NULL,
 	[ShowFLG] [int] NOT NULL,
 	[RetryTimes] [int] NOT NULL,
 	[UPDTime] [datetime] NOT NULL,
