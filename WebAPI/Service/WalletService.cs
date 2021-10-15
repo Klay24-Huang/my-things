@@ -83,7 +83,7 @@ namespace WebAPI.Service
 
     public class WalletSp
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         public List<SPOut_GetWalletStoreTradeTransHistory> sp_GetWalletStoreTradeTransHistory(SPInput_GetWalletStoreTradeTransHistory spInput, ref string errCode)
