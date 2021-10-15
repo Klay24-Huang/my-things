@@ -28,18 +28,18 @@ using WebCommon;
 
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 錢包儲值-信用卡
-    /// </summary>
+    
     public class WalletStoredByCreditController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
-
+       
+        /// <summary>
+        /// 錢包儲值-信用卡
+        /// </summary>
         [HttpPost]
         public Dictionary<string, object> DoWalletStoredByCredit(Dictionary<string, object> value)
         {
@@ -339,7 +339,8 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 flag = false;
-                apiOutput.StroeResult = 0;
+                errCode = "ERR918";
+                apiOutput.StroeResult = 0;              
                 trace.BaseMsg = ex.Message;
             }
 

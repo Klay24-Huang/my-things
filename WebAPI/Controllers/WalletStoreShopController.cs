@@ -14,6 +14,9 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -31,20 +34,15 @@ using WebCommon;
 
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 錢包儲值-超商條碼
-    /// </summary>
+
     public class WalletStoreShopController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinCID = ConfigurationManager.AppSettings["TaishinCID"].ToString();                 //用戶代碼Base64
         private string GetBarCode = ConfigurationManager.AppSettings["GetBarCode"].ToString();                 //超商繳費條碼查詢
-        private string GetBarCodeShortUrl = ConfigurationManager.AppSettings["GetBarCodeShortUrl"].ToString(); //超商繳費條碼短網址查詢
         private string CreateCvsPayInfo = ConfigurationManager.AppSettings["CreateCvsPayInfo"].ToString();     //超商繳費資訊上傳-新增
-
-        protected static Logger logger = LogManager.GetCurrentClassLogger();
-
-
+        /// <summary>
+        /// 錢包儲值-超商條碼
+        /// </summary>
         [HttpPost]
         public Dictionary<string, object> DoWalletStoreShop(Dictionary<string, object> value)
         {
@@ -82,6 +80,7 @@ namespace WebAPI.Controllers
             string cvsCode = "";
             string paymentId = "";
             string hmacVal = "";
+            string base64String = "";
 
             #endregion
             trace.traceAdd("apiIn", value);
@@ -161,10 +160,8 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
-
-                DateTime dueDate = DateTime.Now.AddHours(3);
-
                 #region 產生超商銷帳編號
+                DateTime dueDate = DateTime.Now.AddHours(3);
                 if (flag)
                 {
                     string cvsIdentifier = GetCvsCode(apiInput.CvsType).Item3; //超商業者識別碼
@@ -265,10 +262,23 @@ namespace WebAPI.Controllers
 
                     WebAPIOutput_GetBarCode outGetBarCode = new WebAPIOutput_GetBarCode();
                     flag = WalletAPI.DoStoreShopGetBarcode(webAPI_GetBarcode, cvsPayToken, hmacVal, ref errCode, ref outGetBarCode);
-                    if (flag && outGetBarCode != null)
+
+                    //台新回傳Base64String需轉向輸出給APP
+                    if (flag && outGetBarCode.body.barcode64 != null)
+                    {
+                        byte[] binaryData = Convert.FromBase64String(outGetBarCode.body.barcode64);
+                        using (var memoryStream = new MemoryStream(binaryData))
+                        {
+                            var rotateImage = System.Drawing.Image.FromStream(memoryStream);
+                            rotateImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            base64String = ImageToBase64(rotateImage, System.Drawing.Imaging.ImageFormat.Png);
+                        }
+                    }
+
+                    if (flag && !string.IsNullOrWhiteSpace(base64String))
                     {
                         apiOutput.StoreMoney = apiInput.StoreMoney;
-                        apiOutput.Barcode64 = outGetBarCode.body.barcode64;
+                        apiOutput.Barcode64 = base64String;
                         apiOutput.ShopBarCode1 = outGetBarCode.body.code1;
                         apiOutput.ShopBarCode2 = outGetBarCode.body.code2;
                         apiOutput.ShopBarCode3 = outGetBarCode.body.code3;
@@ -293,6 +303,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 flag = false;
+                errCode = "ERR918";
                 apiOutput.StroeResult = 0;
                 trace.BaseMsg = ex.Message;
             }
@@ -315,7 +326,7 @@ namespace WebAPI.Controllers
         private List<Tuple<int, string, string>> CvsCodeList = new List<Tuple<int, string, string>>()
         {
             //超商類型(0:7-11 1:全家),超商代收代號,業者識別碼
-            new Tuple<int, string,string>(0,"E6H","IR7"),
+            new Tuple<int, string,string>(0,"E6H","IRS"),
             new Tuple<int, string,string>(1,"K9A","IRF"),
         };
 
@@ -343,5 +354,32 @@ namespace WebAPI.Controllers
             };
         }
 
+        private ImageCodecInfo GetEncoder(ImageFormat format)
+        {
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+            var codec = codecs.Where(x => x.FormatID == format.Guid).FirstOrDefault();
+            return codec;
+        }
+
+        /// <summary>
+        /// 圖片轉Base64String
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        private string ImageToBase64(Image image, ImageFormat format)
+        {
+            string base64String = "";
+            EncoderParameters myEncoderParameters = new EncoderParameters(1);
+            EncoderParameter myEncoderParameter = new EncoderParameter(Encoder.Quality, 100);
+            myEncoderParameters.Param[0] = myEncoderParameter;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.Save(ms, GetEncoder(format), myEncoderParameters);
+                byte[] imageBytes = ms.ToArray();
+                base64String = Convert.ToBase64String(imageBytes);
+            }
+            return base64String;
+        }
     }
 }
