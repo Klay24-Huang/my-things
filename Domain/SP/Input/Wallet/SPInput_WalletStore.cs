@@ -9,6 +9,11 @@ namespace Domain.SP.Input.Wallet
     public class SPInput_WalletStore : SPInput_Base
     {
         /// <summary>
+        /// 公司別
+        /// </summary>
+        public string ORGID { set; get; } = "01";
+
+        /// <summary>
         /// 操作的會員帳號
         /// </summary>
         public string IDNO { set; get; }
@@ -84,9 +89,9 @@ namespace Domain.SP.Input.Wallet
         public string TradeType { set; get; }
 
         /// <summary>
-        /// 程式ID
+        /// 程式名稱
         /// </summary>
-        public string PRGID { set; get; }
+        public string PRGName { set; get; }
 
         /// <summary>
         /// 交易類別代號(0:消費;1:儲值;2:轉贈給他人;3:受他人轉贈;4:退款)
@@ -96,6 +101,16 @@ namespace Domain.SP.Input.Wallet
         /// 來源站台(1:APP/2:Backend)
         /// </summary>
         public short InputSource { set; get; }
+
+        /// <summary>
+        /// 訂單編號(合約退款用)
+        /// </summary>
+        public string OrderNo { set; get; }
+
+        /// <summary>
+        /// APP上是否顯示：0:隱藏,1:顯示
+        /// </summary>
+        public short ShowFLG { set; get; } = 1;
 
     }
 }
