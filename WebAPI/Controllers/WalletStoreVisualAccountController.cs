@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreVisualAccountController";
-            string PRGID = "221"; //APIId
+            int apiId = 221;
 
             Int64 LogID = 0;
             Int16 ErrType = 0;
@@ -124,7 +124,8 @@ namespace WebAPI.Controllers
                 #region 儲值金額限制檢核
                 if (flag)
                 {
-                    flag = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    var walletInfo = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref errCode);
+                    flag = walletInfo.flag;
                 }
                 #endregion
 
@@ -151,7 +152,7 @@ namespace WebAPI.Controllers
                 apiOutput.StroeResult = flag ? 1 : 0;
 
                 trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
-                carRepo.AddTraceLog(Convert.ToInt32(PRGID), funName, trace, flag);
+                carRepo.AddTraceLog(apiId, funName, trace, flag);
             }
             catch (Exception ex)
             {

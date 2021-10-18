@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreShopController";
-            string PRGID = "222"; //APIId
+            int apiId = 222; 
 
             Int64 LogID = 0;
             Int16 ErrType = 0;
@@ -69,6 +69,7 @@ namespace WebAPI.Controllers
             TaishinWallet WalletAPI = new TaishinWallet();
             IAPI_WalletStoreShop apiInput = null;
             var apiOutput = new OAPI_WalletStoreShop();
+            var spOutput = new SPOutput_GetWallet();
 
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -136,7 +137,9 @@ namespace WebAPI.Controllers
                 #region 儲值金額限制檢核
                 if (flag)
                 {
-                    flag = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    var walletInfo = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref errCode);
+                    flag = walletInfo.flag;
+                    spOutput = walletInfo.Info;
                 }
                 #endregion
 
@@ -204,9 +207,9 @@ namespace WebAPI.Controllers
                         payAmount = apiInput.StoreMoney,
                         payPeriod = 1,
                         overPaid = "N",
-                        custId = "",
-                        custMobile = "",
-                        custEmail = "",
+                        custId = IDNO,
+                        custMobile = spOutput.PhoneNo,
+                        custEmail = spOutput.Email,
                         memo = ""
                     };
                     payInfoList.Add(detailReq);
@@ -298,7 +301,7 @@ namespace WebAPI.Controllers
                 apiOutput.StroeResult = flag ? 1 : 0;
 
                 trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                carRepo.AddTraceLog(Convert.ToInt32(PRGID), funName, trace, flag);
+                carRepo.AddTraceLog(apiId, funName, trace, flag);
             }
             catch (Exception ex)
             {
