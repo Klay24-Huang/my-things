@@ -65,10 +65,10 @@ namespace WebAPI.Controllers
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                    if(apiInput == null || string.IsNullOrWhiteSpace(apiInput.ORGID) || apiInput.SEQNO <= 0 || string.IsNullOrWhiteSpace(apiInput.TaishinNO))
+                    if(apiInput == null || apiInput.SEQNO <= 0 )
                     {
                         flag = false;
-                        errMsg = "ORGID, SEQNO, TaishinNO必填";
+                        errMsg = "SEQNO必填";
                         errCode = "ERR257";
                     }
 
@@ -118,11 +118,8 @@ namespace WebAPI.Controllers
                 {
                     var spIn = new SPInput_WalletStoreTradeHistoryHidden()
                     {
-                        IDNO = IDNO,
                         LogID = LogID,
-                        ORGID = apiInput.ORGID,
-                        SEQNO = apiInput.SEQNO,
-                        TaishinNO = apiInput.TaishinNO
+                        SEQNO = apiInput.SEQNO
                     };
                     trace.traceAdd("spIn", spIn);
                     flag = wsp.sp_WalletStoreTradeHistoryHidden(spIn, ref errCode);
