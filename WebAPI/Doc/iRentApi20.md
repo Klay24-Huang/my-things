@@ -78,7 +78,7 @@ iRentApi20 Web API版本
 - [WalletStoreShop 錢包儲值-商店條碼](#WalletStoreShop)
 - [GetPayInfo 取得付款方式](#GetPayInfo)
 - [WalletTransferStoredValue 錢包轉贈](#WalletTransferStoredValue)
-- [WalletTransferTCheck 轉贈對象確認](#WalletTransferTargetCheck)
+- [WalletTransferCheck 轉贈對象確認](#WalletTransferTargetCheck)
 - [SetDefPayMode 設定預設支付方式](#SetDefPayMode)
 - [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
 - [WalletWithdrowInvoice 寫入手續費發票](#WalletWithdrowInvoice)
@@ -4983,11 +4983,11 @@ iRentApi20 Web API版本
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| OrderNo      | 訂單編號           | string | H10455246     |
-| LastPickTime   | 最晚的取車時間	| string | 20210608020120 |
-| WalletNotice | 錢包餘額不足通知<br>0:不顯示  1:顯示	| int | 1 |
+| 參數名稱     | 參數說明           			|  型態  | 範例          |
+| ------------ | ------------------ 			|:----:  | ------------- |
+| OrderNo      | 訂單編號           			| string | H10455246     |
+| LastPickTime | 最晚的取車時間					| string | 20210608020120|
+| WalletNotice | 僅綁錢包通知0:不顯示  1:顯示	| int 	 | 1 			 |
 
 
 * Output範例
@@ -5428,8 +5428,6 @@ iRentApi20 Web API版本
     "Data": {
         "TradeHis": [
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 9,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5441,8 +5439,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 8,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5454,8 +5450,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 7,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5467,8 +5461,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 6,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5480,8 +5472,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 5,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5493,8 +5483,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 4,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5506,8 +5494,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 3,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5519,8 +5505,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 2,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5532,8 +5516,6 @@ iRentApi20 Web API版本
                 "ShowFLG": 1
             },
             {
-                "ORGID": "01",
-                "IDNO": "A123456789",
                 "SEQNO": 1,
                 "TaishinNO": "IR2021051736452153XX",
                 "TradeYear": 2021,
@@ -5575,18 +5557,14 @@ iRentApi20 Web API版本
 
 | 參數名稱  | 參數說明           | 必要 |  型態  | 範例                 |
 | --------- | ------------------ | ---- | :----: | -------------------- |
-| ORGID     | 組織代號(公司代碼) |      | string | 01                   |
 | SEQNO     | 帳款流水號(by會員) |      |  int   | 1                    |
-| TaishinNO | 台新交易編號(IR編) |      | string | IR2021051736452153XX |
 
 
 * input範例
 
 ```
 {
-  "ORGID" : "01",
-  "SEQNO" : 1,
-  "TaishinNO" : "IR2021051736452153XX"
+  "SEQNO" : 1
 }
 
 ```
