@@ -133,7 +133,7 @@ namespace WebAPI.Controllers
                     "himsirent3@hotaimotor.com.tw");
 
                     //20211008唐加
-                    string spName2 = "usp_BE_InsBlackList2_TEST";
+                    string spName2 = "usp_BE_InsBlackList2";
                     SPInput_BE_InsBlackList spInput2 = new SPInput_BE_InsBlackList()
                     {
                         Mode = 0,

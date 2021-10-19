@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                string spName = "usp_BE_InsBlackList_TEST";
+                string spName = "usp_BE_InsBlackList";
                 SPInput_BE_InsBlackList spInput = new SPInput_BE_InsBlackList()
                 {
                     Mode = int.Parse(apiInput.MODE),

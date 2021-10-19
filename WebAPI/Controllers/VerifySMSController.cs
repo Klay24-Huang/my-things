@@ -150,7 +150,7 @@ namespace WebAPI.Controllers
             #region 若已驗證手機被第二人驗證，發送簡訊通知前一位客人
             if (flag)
             {
-                string spName = "usp_CheckMobileUse_TEST";
+                string spName = "usp_CheckMobileUse";
                 SPInput_CheckMobile spInput = new SPInput_CheckMobile()
                 {
                     Mobile = apiInput.IDNO,
