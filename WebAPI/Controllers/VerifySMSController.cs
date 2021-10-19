@@ -126,6 +126,26 @@ namespace WebAPI.Controllers
             }
             #endregion
 
+            #region TB
+            if (flag)
+            {
+                string spName = new ObjType().GetSPName(ObjType.SPType.CheckVerifyCode);
+                SPInput_CheckVerifyCode spInput = new SPInput_CheckVerifyCode()
+                {
+                    LogID = LogID,
+                    IDNO = apiInput.IDNO,
+                    Mode = Mode,
+                    OrderNum = "",
+                    DeviceID = apiInput.DeviceID,
+                    VerifyCode = apiInput.VerifyCode
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_CheckVerifyCode, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckVerifyCode, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+            }
+            #endregion
+
             //20210928唐加
             #region 若已驗證手機被第二人驗證，發送簡訊通知前一位客人
             if (flag)
@@ -163,25 +183,6 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region TB
-            if (flag)
-            {
-                string spName = new ObjType().GetSPName(ObjType.SPType.CheckVerifyCode);
-                SPInput_CheckVerifyCode spInput = new SPInput_CheckVerifyCode()
-                {
-                    LogID = LogID,
-                    IDNO = apiInput.IDNO,
-                    Mode = Mode,
-                    OrderNum = "",
-                    DeviceID = apiInput.DeviceID,
-                    VerifyCode = apiInput.VerifyCode
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_CheckVerifyCode, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckVerifyCode, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-            }
-            #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {
