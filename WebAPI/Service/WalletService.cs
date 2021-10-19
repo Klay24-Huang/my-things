@@ -189,7 +189,7 @@ namespace WebAPI.Service
                 string SPName = "usp_WalletWithdrowInvoice_U1";
                 object[][] parms1 = {
                     new object[] {
-                        spInput.SEQNO,
+                        spInput.NORDNO,
                         spInput.INV_NO,
                         spInput.INV_DATE,
                         spInput.RNDCODE,
