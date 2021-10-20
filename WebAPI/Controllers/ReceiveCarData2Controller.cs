@@ -249,7 +249,7 @@ namespace WebAPI.Controllers
                                 extDeviceData2 = MotorDataInput.extDeviceData2,
                                 extDeviceStatus1 = MotorDataInput.extDeviceStatus1,
                                 deviceName = MotorDataInput.deviceName,
-                                deviceFW = VehicleInput.deviceFW ?? "",
+                                deviceFW = MotorDataInput.deviceFW ?? "",   //20211020 ADD BY ADAM REASON.修正
 
                                 LogID = LogID
                             };
