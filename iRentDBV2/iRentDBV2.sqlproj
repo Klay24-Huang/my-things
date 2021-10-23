@@ -583,6 +583,9 @@
     <Build Include="dbo\Tables\TB_MotorChangeBattHis.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsMonthlyPayData.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMonthlyPayInvData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsBlackList2.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsBlackList.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckMobileUse.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
