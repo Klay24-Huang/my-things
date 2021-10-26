@@ -32,14 +32,14 @@ using WebCommon;
 
 namespace WebAPI.Controllers
 {
-    /// <summary>
-    /// 錢包儲值-虛擬條碼
-    /// </summary>
+
     public class WalletStoreVisualAccountController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string businessCode = ConfigurationManager.AppSettings["TaishinWalletVirtualAccountBusinessCod"].ToString(); //虛擬帳號企業代碼
 
+        /// <summary>
+        /// 錢包儲值-虛擬條碼
+        /// </summary>
         [HttpPost]
         public Dictionary<string, object> DoWalletStoreVisualAccount(Dictionary<string, object> value)
         {
@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreVisualAccountController";
-            string PRGID = "221"; //APIId
+            int apiId = 221;
 
             Int64 LogID = 0;
             Int16 ErrType = 0;
@@ -124,15 +124,16 @@ namespace WebAPI.Controllers
                 #region 儲值金額限制檢核
                 if (flag)
                 {
-                    flag = walletService.CheckStoreAmtLimit(apiInput.StoreMoney,IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    var walletInfo = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref errCode);
+                    flag = walletInfo.flag;
                 }
                 #endregion
 
                 #region TB
                 if (flag)
                 {
-                    flag= CreateWalletStoreVisualAccount(apiInput,ref virtualAccount,ref payDeadLine, IDNO, LogID, Access_Token, ref flag, ref errCode);
-                    trace.traceAdd("CreateVisualAccount", new { apiInput, virtualAccount,payDeadLine,errCode });
+                    flag = CreateWalletStoreVisualAccount(apiInput, ref virtualAccount, ref payDeadLine, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    trace.traceAdd("CreateVisualAccount", new { apiInput, virtualAccount, payDeadLine, errCode });
                     trace.FlowList.Add("產虛擬帳號");
                 }
 
@@ -142,7 +143,8 @@ namespace WebAPI.Controllers
                     {
                         StoreMoney = apiInput.StoreMoney,
                         PayDeadline = string.Format("{0:yyyy/MM/dd 23:59}", payDeadLine),
-                        VirtualAccount = $"(812){virtualAccount}"
+                        BankCode = "812",
+                        VirtualAccount = SplitOnLength(virtualAccount,4," ")
                     };
                 }
                 #endregion
@@ -150,11 +152,12 @@ namespace WebAPI.Controllers
                 apiOutput.StroeResult = flag ? 1 : 0;
 
                 trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
-                carRepo.AddTraceLog(Convert.ToInt32(PRGID), funName, trace, flag);
+                carRepo.AddTraceLog(apiId, funName, trace, flag);
             }
             catch (Exception ex)
             {
                 flag = false;
+                errCode = "ERR918";
                 apiOutput.StroeResult = 0;
                 trace.BaseMsg = ex.Message;
             }
@@ -173,7 +176,22 @@ namespace WebAPI.Controllers
 
         }
 
-        private bool CreateWalletStoreVisualAccount(IAPI_WalletStoreBase apiInput, ref string virtualAccount,ref DateTime payDeadLine,string IDNO, long LogID,string Access_Token,ref bool flag, ref string errCode) 
+        /// <summary>
+        /// 虛擬帳號分割字串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="chunkSize"></param>
+        /// <param name="padding"></param>
+        /// <returns></returns>
+        private string SplitOnLength(string str, int chunkSize, string padding)
+        {
+            string[] array = Enumerable.Range(0, str.Length / chunkSize)
+                .Select(i => str.Substring(i * chunkSize, chunkSize)).ToArray();
+
+            return string.Join(padding, array);
+        }
+
+        private bool CreateWalletStoreVisualAccount(IAPI_WalletStoreBase apiInput, ref string virtualAccount, ref DateTime payDeadLine, string IDNO, long LogID, string Access_Token, ref bool flag, ref string errCode)
         {
             var wsp = new WalletSp();
             payDeadLine = DateTime.Now.AddDays(3); //+3天 繳費截止日
@@ -192,17 +210,17 @@ namespace WebAPI.Controllers
                 };
 
                 flag = wsp.sp_WalletStoreVisualAccount(spInput_Wallet, ref errCode);
-               
+
                 //若虛擬帳號重複，則重新產生
-                while (flag == false && errCode== "ERR935")
+                while (flag == false && errCode == "ERR935")
                 {
-                   return CreateWalletStoreVisualAccount(apiInput, ref virtualAccount, ref payDeadLine, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    return CreateWalletStoreVisualAccount(apiInput, ref virtualAccount, ref payDeadLine, IDNO, LogID, Access_Token, ref flag, ref errCode);
                 }
                 #endregion
             }
             else
             {
-                errCode = "ERR937";                   
+                errCode = "ERR937";
             }
             return flag;
         }
@@ -219,7 +237,7 @@ namespace WebAPI.Controllers
             Random rnd = new Random();
             string randomNum = rnd.Next(1, 99999).ToString().PadLeft(6, '0');
             string payDeadlineStr = $"{(payDeadline.Year - 1911).ToString().Substring(2, 1)}{payDeadline.DayOfYear.ToString()}";
-            string strAccount = $"{businessCode}{randomNum}{payDeadlineStr}";          
+            string strAccount = $"{businessCode}{randomNum}{payDeadlineStr}";
             int[] accWeights = { 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3 };  // 權重 長度15
             int accSum = 0;
             for (int i = 0; i < accWeights.Length; i++)

@@ -9,6 +9,7 @@
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_WalletStore_U01]
+    @ORGID                  VARCHAR(5)            , --公司別
     @IDNO                   VARCHAR(10)           , --操作的會員帳號
 	@WalletMemberID         VARCHAR(20)           , --錢包會員ID
 	@WalletAccountID		VARCHAR(20)			  , --錢包虛擬ID
@@ -21,11 +22,13 @@ CREATE PROCEDURE [dbo].[usp_WalletStore_U01]
     @LastTransDate			DATETIME			  , --最近一次交易日期
     @LastStoreTransId		VARCHAR(50)			  , --最近一次訂單編號
     @LastTransId			VARCHAR(50)			  , --最近一次台新訂單編號
-	@TaishinNO              VARCHAR(30)	          , --台新IR編
+	@TaishinNO              VARCHAR(30)	          , --IR編or台新訂單編號
 	@TradeType              VARCHAR(20)           , --交易類別名稱
-	@PRGID                  VARCHAR(20)           , --程式ID
+	@PRGName                VARCHAR(50)           , --程式名稱
 	@Mode                   TINYINT               , --交易類別代號(0:消費;1:儲值;2:轉贈給他人;3:受他人轉贈;4:退款;5:欠費繳交)
 	@InputSource            TINYINT               , --輸入來源(1:APP;2:Web)
+	@OrderNo                VARCHAR(20)           , --訂單編號
+	@ShowFLG                TINYINT               , --APP上是否顯示：0:隱藏,1:顯示
 	@Token                  VARCHAR(1024)         , --JWT TOKEN
 	@LogID                  BIGINT                , --執行的api log
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -39,9 +42,6 @@ DECLARE @FunName VARCHAR(50)
 DECLARE @ErrorType TINYINT
 DECLARE @hasData INT
 DECLARE @NowTime DATETIME
-DECLARE @ORGID  VARCHAR(5)='01'
-DECLARE @TradeKey VARCHAR(50)=''
-DECLARE @ShowFLG  TINYINT=1
 
 /*初始設定*/
 SET @Error=0;
@@ -57,6 +57,7 @@ SET @IsSystem=0;
 SET @hasData=0;
 
 SET @NowTime         =dbo.GET_TWDATE();
+SET @OrderNo         =ISNULL (@OrderNo,'0')
 SET @IDNO            =ISNULL (@IDNO,'');
 SET @WalletMemberID  =ISNULL (@WalletMemberID,'');
 SET @WalletAccountID =ISNULL (@WalletAccountID,'');
@@ -66,14 +67,18 @@ BEGIN TRY
 　IF @InputSource = 1
 　BEGIN
  　　IF @Token='' OR @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID=''
-   　SET @Error=1;
-  　 SET @ErrorCode='ERR900'
+     BEGIN
+   　  SET @Error=1;
+  　   SET @ErrorCode='ERR900'
+	 END
   END
   ELSE 
   BEGIN
     IF @IDNO=''  OR @WalletAccountID='' OR @WalletMemberID=''
-    SET @Error=1;
-  　SET @ErrorCode='ERR900'
+    BEGIN
+      SET @Error=1
+  　  SET @ErrorCode='ERR900'
+	END
   END
 		 
   --0.再次檢核token
@@ -82,13 +87,13 @@ BEGIN TRY
     SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
     IF @hasData=0
     BEGIN
-    SET @Error=1;
-    SET @ErrorCode='ERR101';
+      SET @Error=1;
+      SET @ErrorCode='ERR101';
     END
     ELSE
 	BEGIN
-	SET @hasData=0;
-	SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+	  SET @hasData=0;
+	  SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
 	END 
     IF @hasData=0
 	BEGIN
@@ -98,29 +103,40 @@ BEGIN TRY
   END
 
   IF @Error=0
-	BEGIN
-	--1.檢核是否有開通錢包
-	SELECT @hasData=COUNT(1) FROM TB_UserWallet WITH(NOLOCK) WHERE IDNO=@IDNO;
+   BEGIN
+		--1.檢核是否有開通錢包
+		SELECT @hasData=COUNT(1) FROM TB_UserWallet WITH(NOLOCK) WHERE IDNO=@IDNO;
 	
-	IF @hasData=0
-	BEGIN
-		INSERT INTO TB_UserWallet(IDNO,WalletMemberID,WalletAccountID,CreateDate,[Status],Email,PhoneNo,LastStoreTransId,LastTransDate,LastTransId,StoreAmount,WalletBalance)
-		VALUES(@IDNO,@WalletMemberID,@WalletAccountID,@CreateDate,@Status,@Email,@PhoneNo,@LastStoreTransId,@LastTransDate,@LastTransId,@StoreAmount,@WalletBalance);		
-	END
-	ELSE
-	BEGIN
-		UPDATE TB_UserWallet
-		SET WalletBalance=@WalletBalance,StoreAmount=StoreAmount+@StoreAmount,LastStoreTransId=@LastStoreTransId,LastTransDate=@LastTransDate,LastTransId=@LastTransId,[Status]=@Status
-		WHERE IDNO=@IDNO AND  WalletMemberID=@WalletMemberID AND WalletAccountID=@WalletAccountID;			
-	END
+		IF @hasData=0
+		BEGIN
+			INSERT INTO TB_UserWallet(IDNO,WalletMemberID,WalletAccountID,CreateDate,[Status],Email,PhoneNo,LastStoreTransId,LastTransDate,LastTransId,StoreAmount,WalletBalance)
+			VALUES(@IDNO,@WalletMemberID,@WalletAccountID,@CreateDate,@Status,@Email,@PhoneNo,@LastStoreTransId,@LastTransDate,@LastTransId,@StoreAmount,@WalletBalance);		
+		END
+		ELSE
+		BEGIN
+			UPDATE TB_UserWallet
+			SET WalletBalance=@WalletBalance,StoreAmount=StoreAmount+@StoreAmount,LastStoreTransId=@LastStoreTransId,LastTransDate=@LastTransDate,LastTransId=@LastTransId,[Status]=@Status
+			WHERE IDNO=@IDNO AND  WalletMemberID=@WalletMemberID AND WalletAccountID=@WalletAccountID;			
+		END
 
-    INSERT INTO TB_WalletHistory(IDNO,WalletMemberID,WalletAccountID,Mode,Amount,TransDate,TransId,StoreTransId)
-    VALUES(@IDNO,@WalletMemberID,@WalletAccountID,1,@StoreAmount,@LastTransDate,@LastTransId,@LastStoreTransId);
+		DECLARE @PRGID VARCHAR(10) = '0'
+		IF @InputSource = 1
+		BEGIN
+			SELECT @PRGID = Convert(VARCHAR(10),APIID) FROM TB_APIList WITH(NOLOCK) WHERE  APIName = @PRGName
+		END
+		ELSE
+		BEGIN
+			SET @PRGID = Left(@PRGName,10)
+		END
 
-    INSERT INTO TB_WalletTradeMain(ORGID,IDNO,TaishinNO,TradeType,TradeKey,TradeDate,TradeAMT,F_CONTNO,ShowFLG,UPDTime,UPDUser,UPDPRGID,MKTime,MKUser,MKPRGID)
-    VALUES (@ORGID,@IDNO,@TaishinNO,@TradeType,@TradeKey,@LastTransDate,@StoreAmount,@WalletMemberID,@ShowFLG,@NowTime,@PRGID,@PRGID,@NowTime,@PRGID,@PRGID);
+		INSERT INTO TB_WalletHistory(IDNO,WalletMemberID,WalletAccountID,Mode,Amount,TransDate,TransId,StoreTransId,OrderNo)
+		VALUES(@IDNO,@WalletMemberID,@WalletAccountID,1,@StoreAmount,@LastTransDate,@LastTransId,@LastStoreTransId,Convert(bigint,@OrderNo));
 
-    END
+		INSERT INTO TB_WalletTradeMain(ORGID,IDNO,TaishinNO,ORDNO,TradeType,TradeDate,TradeAMT,F_CONTNO,ShowFLG,UPDTime,UPDUser,UPDPRGID,MKTime,MKUser,MKPRGID)
+		VALUES (@ORGID,@IDNO,@TaishinNO,@OrderNo,@TradeType,@LastTransDate,@StoreAmount,@WalletMemberID,@ShowFLG,@NowTime,@PRGID,@PRGID,@NowTime,@PRGID,@PRGID);
+
+
+   END
 
 --寫入錯誤訊息
 	IF @Error=1

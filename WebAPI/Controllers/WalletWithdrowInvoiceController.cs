@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
             string ClientIP = baseVerify.GetClientIp(Request);
             flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-            string[] checkList = { inData.SEQNO+"", inData.INV_NO, inData.INV_DATE, inData.RNDCODE };
+            string[] checkList = { inData.NORDNO+"", inData.INV_NO, inData.INV_DATE, inData.RNDCODE };
             string[] errList = { "ERR900" };
             //1.判斷必填
             flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
@@ -72,7 +72,7 @@ namespace WebAPI.Controllers
             {
                 var spIn = new SPInput_WalletWithdrowInvoice()
                 {
-                    SEQNO = inData.SEQNO,
+                    NORDNO = inData.NORDNO,
                     INV_NO = inData.INV_NO,
                     INV_DATE = inData.INV_DATE,
                     RNDCODE = inData.RNDCODE,

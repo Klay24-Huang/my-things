@@ -44,11 +44,12 @@ namespace WebAPI.Service
     public class WalletService
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        public bool CheckStoreAmtLimit(int StoreMoney, string IDNO, long LogID, string Access_Token, ref bool flag, ref string errCode) 
+        public (bool flag , SPOutput_GetWallet Info)  CheckStoreAmtLimit (int StoreMoney, string IDNO, long LogID, string Access_Token, ref string errCode) 
         {
-            
+            (bool flag, SPOutput_GetWallet Info) re = (false, new SPOutput_GetWallet());
             CommonFunc baseVerify = new CommonFunc();
             string spName = "usp_GetWallet_Q01";
+
             SPInput_GetWallet spInput = new SPInput_GetWallet()
             {
                 IDNO = IDNO,
@@ -58,7 +59,7 @@ namespace WebAPI.Service
             SPOutput_GetWallet sPOutput_GetWallet = new SPOutput_GetWallet();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SQLHelper<SPInput_GetWallet, SPOutput_GetWallet> sqlHelp = new SQLHelper<SPInput_GetWallet, SPOutput_GetWallet>(connetStr);
-            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref sPOutput_GetWallet, ref lstError);
+            bool flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref sPOutput_GetWallet, ref lstError);
             baseVerify.checkSQLResult(ref flag, sPOutput_GetWallet.Error, sPOutput_GetWallet.ErrorCode, ref lstError, ref errCode);
 
             if (flag && sPOutput_GetWallet != null)
@@ -77,13 +78,15 @@ namespace WebAPI.Service
                 }
             }
 
-            return flag;
+            re.flag = flag;
+            re.Info = sPOutput_GetWallet;
+            return re;
         }
     }
 
     public class WalletSp
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         public List<SPOut_GetWalletStoreTradeTransHistory> sp_GetWalletStoreTradeTransHistory(SPInput_GetWalletStoreTradeTransHistory spInput, ref string errCode)
@@ -189,7 +192,7 @@ namespace WebAPI.Service
                 string SPName = "usp_WalletWithdrowInvoice_U1";
                 object[][] parms1 = {
                     new object[] {
-                        spInput.SEQNO,
+                        spInput.NORDNO,
                         spInput.INV_NO,
                         spInput.INV_DATE,
                         spInput.RNDCODE,
@@ -343,6 +346,41 @@ namespace WebAPI.Service
 
             return flag;
         }
+
+        /// <summary>
+        /// 寫入開戶儲值錯誤LOG
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_InsTaishinStoredMoneyError(SPInput_InsTaishinStoredMoneyError spInput, ref string errCode)
+        {
+            bool flag = false;
+            string spName = "usp_WalletStoredByCredit_I01";
+
+            var lstError = new List<ErrorInfo>();
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_InsTaishinStoredMoneyError, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsTaishinStoredMoneyError, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return flag;
+        }    
 
         public bool sp_WalletPay(SPInput_WalletPay spInput, ref string errCode)
         {

@@ -11,7 +11,7 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_WalletStoreShop :OAPI_WalletStoreBase
     {
         /// <summary>
-        /// 繳費期限(距今+1天) ex: 2021/03/31 23:59:59
+        /// 繳費期限 ex: 2021/03/31 21:34
         /// </summary>
         public string PayDeadline { get; set; }
 

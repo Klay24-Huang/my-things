@@ -1,4 +1,4 @@
-/****** Object:  Table [dbo].[TB_WalletWithdrawInvoiceInfo]    Script Date: 2021/9/30 ¤U¤È 05:42:07 ******/
+/****** Object:  Table [dbo].[TB_WalletWithdrawInvoiceInfo]    Script Date: 2021/10/15 ¤U¤È 03:44:02 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -14,12 +14,14 @@ CREATE TABLE [dbo].[TB_WalletWithdrawInvoiceInfo](
 	[INV_CUSTID] [varchar](11) NULL,
 	[INV_CUSTNM] [varchar](30) NULL,
 	[INV_ADDR] [nvarchar](152) NULL,
-	[INVCARRIER] [varchar](20) NOT NULL,
+	[INVCARRIER] [varchar](20) NULL,
 	[NPOBAN] [varchar](20) NULL,
 	[RNDCODE] [varchar](4) NULL,
 	[RVBANK] [varchar](7) NULL,
 	[RVACNT] [varchar](16) NULL,
 	[RV_NAME] [nvarchar](60) NULL,
+	[INV_NO] [varchar](10) NULL,
+	[INV_DATE] [date] NULL,
 	[UPDTime] [datetime] NOT NULL,
 	[UPDUser] [varchar](10) NOT NULL,
 	[UPDPRGID] [varchar](10) NOT NULL,
