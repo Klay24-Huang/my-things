@@ -325,7 +325,9 @@ namespace WebAPI.Controllers
                                 newItem.WDRateForCar = z.WorkDayRateForCar;
 
                                 //newItem.HDRateForCar = z.HoildayRateForCar;
-                                newItem.HDRateForCar = x.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                //newItem.HDRateForCar = x.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
+                                newItem.HDRateForCar = x.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
 
                                 newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                 newItem.HDRateForMoto = z.HoildayRateForMoto;
