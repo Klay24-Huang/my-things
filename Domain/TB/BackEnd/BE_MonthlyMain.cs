@@ -48,6 +48,25 @@ namespace Domain.TB.BackEnd
         /// 自動續約(Y/N)
         /// </summary>
         public string AutomaticRenewal { get; set; }
-
+        /// <summary>
+        /// 合約是否有效(0:無效,1:有效)
+        /// </summary>
+        public int useFlag { get; set; }
+        /// <summary>
+        /// 合約失效原因(1:升轉,2:解約,3:人工解約)
+        /// </summary>
+        public int FlagCodeId { get; set; }
+        /// <summary>
+        /// 訂閱方案群組編號
+        /// </summary>
+        public int SubsId { get; set; }
+        /// <summary>
+        /// 訂閱方案編號
+        /// </summary>
+        public int MonthlyRentId { get; set; }
+        /// <summary>
+        /// 是否為汽機車
+        /// </summary>
+        public int IsMoto { get; set; }
     }
 }

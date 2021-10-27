@@ -9,7 +9,7 @@
     }
     else
     {
-        subscriptData = Model.ToList<Domain.TB.BackEnd.BE_MonthlyMain>();
+        subscriptData = Model.OrderBy(i => i.MonthlyRentId).ToList<Domain.TB.BackEnd.BE_MonthlyMain>();
         subscriptDataLen = subscriptData.Count();
 
     }
@@ -20,7 +20,7 @@
     <!--card start-->
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            月租總表
+            訂閱制方案總表
         </div>
 
         <ul class="list-group list-group-flush">
@@ -114,6 +114,24 @@
                 <li class="list-group-item">
                     <div class="container-fluid">
                         <div class="row">
+                            <div class="col-md-2">
+                                方案類型
+                            </div>
+                            <div class="col-md-3">
+                                <select name="carType" id="carType" class="form-control">
+                                    <option value="2">全部</option>
+                                    <option value="0">機車</option>
+                                    <option value="1">汽車</option>
+
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-fluid">
+                        <div class="row">
                             <div class="col-md-3 offset-md-2">
                                 <input type="hidden" id="Account" name="Account" value="@((Session["Account"] == null) ? "" : Session["Account"].ToString())" />
                                 <input type="hidden" id="len" name="len" value="@subscriptDataLen" />
@@ -127,24 +145,27 @@
 
             @if (subscriptDataLen > 0)
             {
-                <li class="list-group-item">
-                    @using (Html.BeginForm("MonthlyMainQueryDownLoad", "Report", FormMethod.Post, new { id = "formMonthlyQueryDownLoad" }))
-                    {
-                    <button id="btnDownload" name="btnDownload" class="btn btn-primary">匯出excel</button>
+        <li class="list-group-item">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-3 offset-md-2">
+                        @using (Html.BeginForm("MonthlyMainQueryDownLoad", "Report", FormMethod.Post, new { id = "formMonthlyQueryDownLoad" }))
+                        {
+                            <button id="btnDownload" name="btnDownload" class="btn btn-primary">匯出excel</button>
 
-                    <input type="hidden" name="SDate" id="SDate" value="@ViewData["SDate"]">
-                    <input type="hidden" name="EDate" id="EDate" value="@ViewData["EDate"]">
-                    <input type="hidden" name="isHandle" id="isHandle" value="@ViewData["isHandle"]">
-                    <input type="hidden" name="userID" id="userID" value="@ViewData["userID"]">
-                    }
-                </li>
+                            <input type="hidden" name="SDate" id="SDate" value="@ViewData["SDate"]">
+                            <input type="hidden" name="EDate" id="EDate" value="@ViewData["EDate"]">
+                            <input type="hidden" name="isHandle" id="isHandle" value="@ViewData["isHandle"]">
+                            <input type="hidden" name="userID" id="userID" value="@ViewData["userID"]">
+                            <input type="hidden" name="carType" id="carType" value="@ViewData["carType"]">
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </li>
             }
         </ul>
-
-
-
-
-
     </div>
     <!--end card-->
 </div>
@@ -157,6 +178,8 @@
             @if (subscriptDataLen == 0)
             {
             <tr>
+                <th>合約狀態</th>
+                <th>失效原因</th>
                 <th data-sort-inital="descending" data-class="expand">帳號</th>
                 <th>訂閱方案編號</th>
                 <th>方案代碼</th>
@@ -174,8 +197,12 @@
             else
             {
                 <tr>
+                    <th>合約狀態</th>
+                    <th>失效原因</th>
                     <th data-sort-inital="descending" data-class="expand">帳號</th>
                     <th>訂閱方案編號</th>
+                    <th>訂閱方案群組編號</th>
+                    <th>合約期數</th>
                     <th>方案代碼</th>
                     <th>方案名稱</th>
                     <th>方案生效時間</th>
@@ -200,22 +227,46 @@
             }
             else
             {
+                //處理期數流水號
+                string projName = "";
+                int count = 1;
                 for (int i = 0; i < subscriptDataLen; i++)
                 {
-        <tr>
-            <td>@subscriptData[i].IDNO</td>
-            <td>@subscriptData[i].SEQNO</td>
-            <td>@subscriptData[i].ProjID</td>
-            <td>@subscriptData[i].ProjNM</td>
-            <td>@subscriptData[i].StartDate.ToString("yyyy/MM/dd HH:mm")</td>
-            <td>@subscriptData[i].EndDate.ToString("yyyy/MM/dd HH:mm")</td>
-            <td>@subscriptData[i].WorkDayHours</td>
-            <td>@subscriptData[i].HolidayHours</td>
-            <td> @((subscriptData[i].MotoTotalHours ).ToString("f1"))</td>
-            <td>@subscriptData[i].AutomaticRenewal</td>
-            <td>@subscriptData[i].IsTiedUp</td>
-            <td>@subscriptData[i].MonProPeriod.ToString()</td>
-        </tr>
+                    if(projName == "")
+                    {
+                        projName = subscriptData[i].ProjNM;
+                    }else if (projName == subscriptData[i].ProjNM)
+                    {
+                        count++;
+
+                        if(count > 6)
+                        {
+                            count = 1;
+                        }
+                    }
+                    else
+                    {
+                        projName = subscriptData[i].ProjNM;
+                        count = 1;
+                    }
+                    <tr>
+                        <td>@((subscriptData[i].useFlag == 0) ? "已失效" : "有效")</td>
+                        <td>@((subscriptData[i].FlagCodeId == 0) ? "-" : (subscriptData[i].FlagCodeId == 1) ? "當期升轉" : (subscriptData[i].FlagCodeId == 2) ? "解約" : "人工解約")</td>
+                        <td>@subscriptData[i].IDNO</td>
+                        <td>@subscriptData[i].MonthlyRentId</td>
+                        <td>@subscriptData[i].SubsId</td>
+                        <td>@count</td>
+                        <td>@subscriptData[i].ProjID</td>
+                        <td>@subscriptData[i].ProjNM</td>
+                        <td>@subscriptData[i].StartDate.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>@subscriptData[i].EndDate.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>@subscriptData[i].WorkDayHours</td>
+                        <td>@subscriptData[i].HolidayHours</td>
+                        <td> @((subscriptData[i].MotoTotalHours ).ToString("f1"))</td>
+                        <td>@subscriptData[i].AutomaticRenewal</td>
+                        <td>@subscriptData[i].IsTiedUp</td>
+                        <td>@subscriptData[i].MonProPeriod.ToString()</td>
+                    </tr>
                     
                 }
 

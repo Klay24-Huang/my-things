@@ -196,7 +196,6 @@ namespace WebView.Repository
         public Error SaveInviteeResponse(string AESEncryptString)
         {
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
             using (HttpClient client = new HttpClient())
             {
                 string url = ConfigurationManager.AppSettings["AppHost"] + "JointRentIviteeFeedBack";
@@ -211,7 +210,21 @@ namespace WebView.Repository
                 HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
 
-                response = client.PostAsync(url, content).GetAwaiter().GetResult();
+                logger.Info("準備發送請求");
+                try
+                {
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+                    response = client.PostAsync(url, content).GetAwaiter().GetResult();
+                }
+                catch(Exception ex)
+                {
+                    logger.Info(ex.Message);
+                    logger.Info(ex);
+                    logger.Info(ex.InnerException.Message);
+
+                }
+
+                logger.Info("請求完成");
 
                 var result = JsonConvert.DeserializeObject<Error>(response.Content.ReadAsStringAsync().Result);
 

@@ -644,7 +644,10 @@ namespace WebAPI.Controllers
                                             newItem.MonthlyRentId = z.MonthlyRentId;
                                             newItem.WDRateForCar = z.WorkDayRateForCar;
                                             //newItem.HDRateForCar = z.HoildayRateForCar;
-                                            newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                        //newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                        //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
+                                        newItem.HDRateForCar = y.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+
                                             newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                             newItem.HDRateForMoto = z.HoildayRateForMoto;
                                             newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位
@@ -656,7 +659,10 @@ namespace WebAPI.Controllers
                                                 Price = y.WorkdayPerHour * 10,
                                                 PRICE_H = y.HolidayPerHour * 10,
                                             };
-                                            newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId);
+                                        newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId)
+                                                    //20211025 ADD BY ADAM REASON.補上里程費跟安心服務計算
+                                                    + bill.CarMilageCompute(SDate, EDate, spList.First(a => a.CarType == y.CarType).MilageBase, Mildef, 20, new List<Holiday>())
+                                                    + ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, y.InsurancePerHour * 10, y.InsurancePerHour * 10, 10, lstHoliday) : 0);
                                             #endregion
 
                                             newGetProjObj.ProjectObj.Add(newItem);

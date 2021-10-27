@@ -44,7 +44,13 @@ namespace WebAPI.Models.Param.Input
         /// 選擇的訂閱制制月租
         /// </summary>
         public Int64 MonId { get; set; }
-
-
+        /// <summary>
+        /// 手機的定位(緯度) 20211012 ADD BY ADAM
+        /// </summary>
+        public double PhoneLat { get; set; } = 0;
+        /// <summary>
+        /// 手機的定位(經度) 20211012 ADD BY ADAM
+        /// </summary>
+        public double PhoneLon { get; set; } = 0;
     }
 }
