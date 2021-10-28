@@ -101,6 +101,9 @@ namespace Domain.SP.Output.OrderList
         #endregion
 
         #region 專案相關
+        /// <summary>
+        /// 專案代碼
+        /// </summary>
         public string ProjID { get; set; }
         /// <summary>
         /// 專案類型
@@ -121,18 +124,7 @@ namespace Domain.SP.Output.OrderList
         /// 假日每小時
         /// </summary>
         public int PRICE_H { set; get; }
-        /// <summary>
-        /// 春節訂金
-        /// </summary>
-        public int OrderPrice { get; set; }
-        /// <summary>
-        /// 使用訂金
-        /// </summary>
-        public int UseOrderPrice { get; set; }
-        /// <summary>
-        /// 剩餘訂金
-        /// </summary>
-        public int LastOrderPrice { get; set; }
+        
         /// <summary>
         /// 前n分鐘0元
         /// </summary>
@@ -271,6 +263,26 @@ namespace Domain.SP.Output.OrderList
         /// 副承租人每小時費率總和
         /// </summary>
         public int JointInsurancePerHour { get; set; }
+
+        /// <summary>
+        /// 預授權金額
+        /// </summary>
+        public int PreAmount { get; set; }
+        #endregion
+
+        #region 無用欄位
+        /// <summary>
+        /// 春節訂金
+        /// </summary>
+        public int OrderPrice { get; set; }
+        /// <summary>
+        /// 使用訂金
+        /// </summary>
+        public int UseOrderPrice { get; set; }
+        /// <summary>
+        /// 剩餘訂金
+        /// </summary>
+        public int LastOrderPrice { get; set; }
         #endregion
     }
 
