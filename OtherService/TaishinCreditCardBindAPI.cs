@@ -1327,7 +1327,7 @@ namespace OtherService
                     LogID = 0,
                     OrderNo = tmpOrder,
                     MerchantTradeNo = input.RequestParams.MerchantTradeNo,
-                    AutoClose = AutoClose,
+                    ChkClose = (AutoClose==1)?1:0,
                     CardType = 1,
                     ProName = FunName,
                     UserID = InsUser

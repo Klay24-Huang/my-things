@@ -1,24 +1,26 @@
-﻿CREATE TABLE [dbo].[TB_Trade]
-(
-	[TradeID]          BIGINT         IDENTITY (1, 1) NOT NULL,
-    [OrderNo]          BIGINT         DEFAULT(0) NOT NULL,
-    [MerchantTradeNo]  VARCHAR (30)   DEFAULT ('') NOT NULL,
-    [CreditType]       TINYINT        DEFAULT ((0)) NOT NULL,
-    [MerchantMemberID] VARCHAR (10)   DEFAULT ('') NOT NULL,
-    [RetCode]          VARCHAR(10)            DEFAULT ((-1)) NOT NULL,
-    [RetMsg]           NVARCHAR (400) DEFAULT (N'') NOT NULL,
-    [TaishinTradeNo]    VARCHAR (50)   DEFAULT ('') NOT NULL,
-    [CardNumber]          VARCHAR (20)    DEFAULT ('') NOT NULL,
-    [CardToken]        VARCHAR(128)   DEFAULT('') NOT NULL,
+﻿CREATE TABLE [dbo].[TB_Trade] (
+    [TradeID]          BIGINT         IDENTITY (2790000, 1) NOT NULL,
+    [OrderNo]          BIGINT         CONSTRAINT [DF__tmp_ms_xx__Order__04115F34] DEFAULT ((0)) NOT NULL,
+    [MerchantTradeNo]  VARCHAR (30)   CONSTRAINT [DF__tmp_ms_xx__Merch__0505836D] DEFAULT ('') NOT NULL,
+    [CreditType]       TINYINT        CONSTRAINT [DF__tmp_ms_xx__Credi__05F9A7A6] DEFAULT ((0)) NOT NULL,
+    [MerchantMemberID] VARCHAR (10)   CONSTRAINT [DF__tmp_ms_xx__Merch__06EDCBDF] DEFAULT ('') NOT NULL,
+    [RetCode]          VARCHAR (10)   CONSTRAINT [DF__tmp_ms_xx__RetCo__07E1F018] DEFAULT ((-1)) NOT NULL,
+    [RetMsg]           NVARCHAR (400) CONSTRAINT [DF__tmp_ms_xx__RetMs__08D61451] DEFAULT (N'') NOT NULL,
+    [TaishinTradeNo]   VARCHAR (50)   CONSTRAINT [DF__tmp_ms_xx__Taish__09CA388A] DEFAULT ('') NOT NULL,
+    [CardNumber]       VARCHAR (20)   CONSTRAINT [DF__tmp_ms_xx__CardN__0ABE5CC3] DEFAULT ('') NOT NULL,
+    [CardToken]        VARCHAR (128)  CONSTRAINT [DF__tmp_ms_xx__CardT__0BB280FC] DEFAULT ('') NOT NULL,
     [process_date]     DATETIME       NULL,
-    [AUTHAMT]          INT            DEFAULT ((0)) NOT NULL,
+    [AUTHAMT]          INT            CONSTRAINT [DF__tmp_ms_xx__AUTHA__0CA6A535] DEFAULT ((0)) NOT NULL,
     [amount]           INT            NOT NULL,
-    [AuthIdResp]              INT            DEFAULT ((-1)) NOT NULL,
-    [IsSuccess]        INT        DEFAULT ((0)) NOT NULL,
-    [MKTime]           DATETIME       DEFAULT (DATEADD(HOUR,8,getdate())) NOT NULL,
-    [UPDTime]          DATETIME       NULL, 
-    CONSTRAINT [PK_TB_Trade] PRIMARY KEY ([TradeID]),
-)
+    [AuthIdResp]       VARCHAR (50)   CONSTRAINT [DF__tmp_ms_xx__AuthI__0D9AC96E] DEFAULT ((-1)) NOT NULL,
+    [IsSuccess]        INT            CONSTRAINT [DF__tmp_ms_xx__IsSuc__0E8EEDA7] DEFAULT ((0)) NOT NULL,
+    [MKTime]           DATETIME       CONSTRAINT [DF__tmp_ms_xx__MKTim__0F8311E0] DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
+    [UPDTime]          DATETIME       NULL,
+    [AutoClose]        INT            CONSTRAINT [DF_TB_Trade_AutoClose] DEFAULT ('0') NOT NULL,
+    CONSTRAINT [PK_TB_Trade] PRIMARY KEY CLUSTERED ([TradeID] ASC)
+);
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_INSAllPayForLand]
     ON [dbo].TB_Trade([CreditType] ASC, [TaishinTradeNo] ASC)
@@ -120,3 +122,25 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'原始訂�
 GO
 
 CREATE INDEX [IX_TB_Trade_SearchForUpd] ON [dbo].[TB_Trade] ([OrderNo], [MerchantTradeNo])
+
+GO
+CREATE NONCLUSTERED INDEX [IX_SearchTaishinTradeNoByOrderModify2]
+    ON [dbo].[TB_Trade]([OrderNo] ASC, [IsSuccess] ASC)
+    INCLUDE([TaishinTradeNo]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_SearchTaishinTradeNoByOrderModify]
+    ON [dbo].[TB_Trade]([IsSuccess] ASC, [TaishinTradeNo] ASC)
+    INCLUDE([OrderNo]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_MissIndex_TB_Trade_20210329]
+    ON [dbo].[TB_Trade]([CreditType] ASC, [IsSuccess] ASC)
+    INCLUDE([OrderNo], [TaishinTradeNo], [CardNumber], [AUTHAMT], [AuthIdResp]);
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'自動關帳 1:自動關 0:手動關', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_Trade', @level2type = N'COLUMN', @level2name = N'AutoClose';
+
