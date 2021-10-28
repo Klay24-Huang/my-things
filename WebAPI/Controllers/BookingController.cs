@@ -252,7 +252,7 @@ namespace WebAPI.Controllers
                     if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
                     {
                         flag = false;
-                        errCode = "ERR730";
+                        errCode = "ERR292";
                     }
                     else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包，要給APP值顯示通知
                     {
