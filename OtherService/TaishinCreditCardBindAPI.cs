@@ -1327,7 +1327,7 @@ namespace OtherService
                     LogID = 0,
                     OrderNo = tmpOrder,
                     MerchantTradeNo = input.RequestParams.MerchantTradeNo,
-                    AutoClose = AutoClose,
+                    ChkClose = (AutoClose==1)?1:0,
                     CardType = 1,
                     ProName = FunName,
                     UserID = InsUser
@@ -1669,10 +1669,14 @@ namespace OtherService
         {
             (int creditType,string OrderString, Int64 OrderNo) orderInfo = (99,"", 0);
 
-            Dictionary<string, int> typeDic = new Dictionary<string, int>()
-            {
-                {"F_",0},{"P_",1},{"E_",2},{"G_",3},{"M_",4},{"MA_",5},{"W_",6}
-            };
+            var payTypeInfos = GetCreditCardPayInfoColl();
+
+            //Dictionary<string, int> typeDic = new Dictionary<string, int>()
+            //{
+            //    {"F_",0},{"P_",1},{"E_",2},{"G_",3},{"M_",4},{"MA_",5},{"W_",6}
+            //};
+
+            Dictionary<string, int> typeDic = payTypeInfos.ToDictionary(p => p.PayTypeCode, p => p.PayType);
 
             foreach (KeyValuePair<string, int> type in typeDic)
             {
@@ -1692,6 +1696,22 @@ namespace OtherService
             return orderInfo;
         }
 
+
+        public List<CreditCardPayInfo> GetCreditCardPayInfoColl()
+        {
+            List<CreditCardPayInfo> CreditCardPayInfoColl = new List<CreditCardPayInfo>()
+            {
+                new CreditCardPayInfo{ PayType = 0,PayTypeStr = "租金",PayTypeCode="F_"},
+                new CreditCardPayInfo{ PayType = 1,PayTypeStr = "罰金",PayTypeCode="P_"},
+                new CreditCardPayInfo{ PayType = 2,PayTypeStr = "eTag",PayTypeCode="E_"},
+                new CreditCardPayInfo{ PayType = 3,PayTypeStr = "補繳",PayTypeCode="G_"},
+                new CreditCardPayInfo{ PayType = 4,PayTypeStr = "訂閱",PayTypeCode="M_"},
+                new CreditCardPayInfo{ PayType = 5,PayTypeStr = "訂閱",PayTypeCode="MA_"},
+                new CreditCardPayInfo{ PayType = 6,PayTypeStr = "錢包",PayTypeCode="W_"},
+            };
+
+            return CreditCardPayInfoColl;
+        }
     }
 
 
