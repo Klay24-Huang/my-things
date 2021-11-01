@@ -30,6 +30,7 @@ using Domain.SP.Input.Subscription;
 using WebAPI.Models.ComboFunc;
 using WebAPI.Service;
 using Domain.SP.Input.Rent;
+using Domain.SP.Input.Notification;
 
 namespace WebAPI.Controllers
 {
@@ -85,10 +86,10 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;
             string IDNO = "";
             string CarTypeCode = "";
-
             bool hasFind = false;
             string CardToken = "";
             string SPName = "";
+            string error = "";
 
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
@@ -337,85 +338,109 @@ namespace WebAPI.Controllers
             #region 預授權機制
             if (flag && (ProjType == 0 || ProjType == 3))
             {
-                int preAuthAmt = 0;
-                bool canAuth = false;
-                bool authflag = false;
-                #region 計算預授權金額
-                if (ProjType == 0)
+                //預授權不處理專案(長租客服月結E077)
+                string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
+                if (!notHandle.Contains(apiInput.ProjID))
                 {
-                    preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, EDate, LogID, lstHoliday, billCommon);
-                    //同站取車前6小時後預約立即授權
-                    DateTime checkDate = SDate.AddHours(-6);
-                    canAuth = DateTime.Compare(DateTime.Now, checkDate) >= 0 ? true : false;
-                }
-                else if (ProjType == 3)
-                {
-                    int triaHour = 6;  //路邊預收6小時授權金
-                    DateTime trialDate = SDate.AddHours(triaHour);
-                    InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, trialDate, InsurancePerHours * triaHour, InsurancePerHours * triaHour, lstHoliday)) : 0;
-                    price = billCommon.CarRentCompute(SDate, trialDate.AddHours(triaHour), priceBase.PRICE, priceBase.PRICE_H, triaHour, lstHoliday);
-                    preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, trialDate, LogID, lstHoliday, billCommon);
-                    canAuth = true;
-                }
-                #endregion
-
-                #region 符合立即授權OR寫入預授權供排程呼叫
-                if (preAuthAmt > 0)
-                {
-                    #region 立即授權
-                    if (hasFind && canAuth)
+                    #region 計算預授權金額
+                    int preAuthAmt = 0;
+                    bool canAuth = false;
+                    bool authflag = false;
+                    if (ProjType == 0)
                     {
-                        int payType = 0; //租金
-                        int autoClose = 0; //自動關帳
-                        CreditAuthComm creditAuthComm = new CreditAuthComm();
-
-                        authflag = creditAuthComm.DoAuthV3(spOut.OrderNum, IDNO, preAuthAmt, CardToken, payType, ref errCode, autoClose, funName, funName, ref WSAuthOutput);
+                        preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, EDate, LogID, lstHoliday, billCommon);
+                        //同站取車前6小時後預約立即授權
+                        DateTime checkDate = SDate.AddHours(-6);
+                        canAuth = DateTime.Compare(DateTime.Now, checkDate) >= 0 ? true : false;
+                    }
+                    else if (ProjType == 3)
+                    {
+                        int triaHour = 6;  //路邊預收6小時授權金
+                        DateTime trialDate = SDate.AddHours(triaHour);
+                        InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, trialDate, InsurancePerHours * triaHour, InsurancePerHours * triaHour, lstHoliday)) : 0;
+                        price = billCommon.CarRentCompute(SDate, trialDate.AddHours(triaHour), priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
+                        preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, trialDate, LogID, lstHoliday, billCommon);
+                        canAuth = true;
                     }
                     #endregion
-                    #region 寫入預授權
-                    string merchantTradNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
-                    string bankTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
-                    SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
+                    #region 符合立即授權OR寫入預授權供排程呼叫
+                    if (preAuthAmt > 0)
                     {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        Token = Access_Token,
-                        AuthType = 16,
-                        CardType = 1,
-                        final_price = preAuthAmt,
-                        OrderNo = spOut.OrderNum,
-                        PRGName = funName,
-                        MerchantTradNo = merchantTradNo,
-                        BankTradeNo = bankTradeNo,
-                        Status = canAuth ? 2 : 0
-                    };
-                    var perAuthflag = commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref errCode);
-                    #endregion
-                    #region 取消訂單(授權失敗)
-                    if (canAuth && !authflag)
-                    {
-                        SPInput_BookingCancel spInput_BookingCancel = new SPInput_BookingCancel()
+                        #region 立即授權
+                        if (canAuth && !string.IsNullOrWhiteSpace(CardToken))
                         {
-                            OrderNo = spOut.OrderNum,
+                            int payType = 0; //租金
+                            int autoClose = 0; //自動關帳
+                            CreditAuthComm creditAuthComm = new CreditAuthComm();
+                            authflag = creditAuthComm.DoAuthV3(spOut.OrderNum, IDNO, preAuthAmt, CardToken, payType, ref errCode, autoClose, funName, funName, ref WSAuthOutput);
+                        }
+                        #endregion
+                        #region 寫入預授權
+                        string merchantTradNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
+                        string bankTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
+                        SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
+                        {
                             IDNO = IDNO,
                             LogID = LogID,
                             Token = Access_Token,
-                            Descript = "預授權失敗【取消訂單】"
+                            AuthType = 16,
+                            CardType = 1,
+                            final_price = preAuthAmt,
+                            OrderNo = spOut.OrderNum,
+                            PRGName = funName,
+                            MerchantTradNo = merchantTradNo,
+                            BankTradeNo = bankTradeNo,
+                            Status = canAuth ? 2 : 0
                         };
-                        SPName = "usp_BookingCancel_U01";
-                        SPOutput_Base output_Base = new SPOutput_Base();
-                        flag = new SQLHelper<SPInput_BookingCancel, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, spInput_BookingCancel, ref output_Base, ref lstError);
-                        baseVerify.checkSQLResult(ref flag, ref output_Base, ref lstError, ref errCode);
-                        if (flag)
+                        commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
+                        #endregion
+                        #region 新增推播訊息
+                        if (authflag)
                         {
-                            flag = false;
-                            errCode = "ERR602";
+                            SPInput_InsPersonNotification spInput_InsPersonNotification = new SPInput_InsPersonNotification()
+                            {
+                                OrderNo = Convert.ToInt32(spOut.OrderNum),
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                NType = 19,
+                                STime = DateTime.Now.AddSeconds(10),
+                                Title = "預授權通知",
+                                imageurl = "",
+                                url = "",
+                                Message = $"取授權通知:已於{DateTime.Now.ToString("MM/dd hh:mm")}預約取授權成功，金額 {preAuthAmt}，謝謝!"
+
+                            };
+                            commonService.sp_InsPersonNotification(spInput_InsPersonNotification, ref error);
                         }
+                        #endregion
+                        #region 授權失敗取消訂單
+                        if (canAuth && !authflag)
+                        {
+                            SPInput_BookingCancel spInput_BookingCancel = new SPInput_BookingCancel()
+                            {
+                                OrderNo = spOut.OrderNum,
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                Token = Access_Token,
+                                Descript = $"預授權失敗【取消訂單】，金額{preAuthAmt}"
+                            };
+                            SPName = "usp_BookingCancel_U01";
+                            SPOutput_Base output_Base = new SPOutput_Base();
+                            flag = new SQLHelper<SPInput_BookingCancel, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, spInput_BookingCancel, ref output_Base, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, ref output_Base, ref lstError, ref errCode);
+                            if (flag)
+                            {
+                                flag = false;
+                                errCode = "ERR602";
+                            }
+                        }
+                        #endregion
                     }
                     #endregion
                 }
-                #endregion
             }
+
+
             #endregion
 
             //預約成功
