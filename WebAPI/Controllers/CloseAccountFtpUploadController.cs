@@ -24,11 +24,13 @@ using NPOI.XSSF.UserModel;
 using System.Web.Hosting;
 using FluentFTP;
 
+using WebCommon;
+
 namespace WebAPI.Controllers
 {
     public class CloseAccountFtpUploadController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
 
         //public CloseAccountFtpUploadController()
         //{
@@ -75,27 +77,29 @@ namespace WebAPI.Controllers
                     {
                         sw.WriteLine(lstData[i].DAD);
                     }
+
+                    OutputMSG = "寫入成功！";
                 }
 
-                using (FtpClient conn = new FtpClient())
-                {
-                    conn.Host = "ftp://epftp.easycard.com.tw";
-                    conn.Credentials = new NetworkCredential("ecc_irent", "ecc_irent");
+                //using (FtpClient conn = new FtpClient())
+                //{
+                //    conn.Host = "ftp://epftp.easycard.com.tw";
+                //    conn.Credentials = new NetworkCredential("ecc_irent", "ecc_irent");
 
-                    conn.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
-                    conn.EncryptionMode = FtpEncryptionMode.Implicit;
+                //    conn.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+                //    conn.EncryptionMode = FtpEncryptionMode.Implicit;
 
-                    conn.Connect();
-                    conn.SetWorkingDirectory("/IN");
-                    conn.UploadFile(localFilePath, strUploadFileName);
+                //    conn.Connect();
+                //    conn.SetWorkingDirectory("/IN");
+                //    conn.UploadFile(localFilePath, strUploadFileName);
 
-                    OutputMSG = "上傳成功！";
-                }
+                //    OutputMSG = "上傳成功！";
+                //}
             
             }
             catch (Exception ex)
             {
-                OutputMSG = "easyWalletFtpUpload-程式異常！"; //回傳訊息
+                OutputMSG = "上傳失敗！"; //回傳訊息
 
             }
 
