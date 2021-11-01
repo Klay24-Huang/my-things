@@ -25,6 +25,12 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 using Domain.WebAPI.output.HiEasyRentAPI;
+using Domain.SP.Output.Bill;
+using System.Linq;
+using WebAPI.Service;
+using WebAPI.Models.ComboFunc;
+using Domain.WebAPI.output.Taishin;
+using Domain.SP.Input.Notification;
 
 namespace WebAPI.Controllers
 {
@@ -66,8 +72,11 @@ namespace WebAPI.Controllers
             int IsMotor = 0;
             int IsCens = 0;
             double mil = 0;
+            string CardToken = "";
+            string error = "";
             DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
+            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -191,6 +200,94 @@ namespace WebAPI.Controllers
                     List<ErrorInfo> lstCarError = new List<ErrorInfo>();
                     lstCardList = new CarCardCommonRepository(connetStr).GetCardListByCustom(IDNO, ref lstCarError);
                 }
+
+                #region 預授權機制
+                if (flag)
+                {
+                    CommonService commonService = new CommonService();
+                    #region 判斷路邊調整還車時間是否要加收錢
+                    int preAuthAmt = 0;
+                    bool canAuth = false;
+                    SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
+                    //預授權不處理專案(長租客服月結E077)
+                    string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
+                    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID))
+                    {
+                        //調整還車時間置換預計時間
+                        DateTime.TryParse(apiInput.ED, out StopTime);
+                        orderData.ED = StopTime;
+                        int estimateAmt = commonService.EstimatePreAuthAmt(orderData, apiInput.Insurance);
+                        if (estimateAmt > orderData.PreAuthAmt)
+                        {
+                            //需扣掉預約授權部分
+                            preAuthAmt = estimateAmt - orderData.PreAuthAmt;
+                            canAuth = true;
+                        }
+                    }
+                    #endregion
+                    #region 立即授權
+                    if (canAuth)
+                    {
+                        #region 檢查信用卡是否綁卡
+                        var result = commonService.CheckBindCard(ref flag, IDNO, ref errCode);
+                        CardToken = result.cardToken;
+                        #endregion
+                        #region 台新授權
+                        if (!string.IsNullOrWhiteSpace(CardToken))
+                        {
+                            int payType = 0; //租金
+                            int autoClose = 0; //自動關帳
+                            CreditAuthComm creditAuthComm = new CreditAuthComm();
+                            flag = creditAuthComm.DoAuthV3(tmpOrder, IDNO, preAuthAmt, CardToken, payType, ref errCode, autoClose, funName, funName, ref WSAuthOutput);
+                            if (!flag)
+                            {
+                                errCode = "ERR603";
+                            }
+                        }
+                        #endregion
+                        #region 寫入預授權
+                        string merchantTradNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
+                        string bankTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
+                        SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            Token = Access_Token,
+                            AuthType = 19,
+                            CardType = 1,
+                            final_price = preAuthAmt,
+                            OrderNo = tmpOrder,
+                            PRGName = funName,
+                            MerchantTradNo = merchantTradNo,
+                            BankTradeNo = bankTradeNo,
+                            Status = 2
+                        };
+                        commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
+                        #endregion
+                        #region 授權成功新增推播訊息
+                        if (flag)
+                        {
+                            SPInput_InsPersonNotification spInput_InsPersonNotification = new SPInput_InsPersonNotification()
+                            {
+                                OrderNo = Convert.ToInt32(tmpOrder),
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                NType = 19,
+                                STime = DateTime.Now.AddSeconds(10),
+                                Title = "預授權通知",
+                                imageurl = "",
+                                url = "",
+                                Message = $"取授權通知:已於{DateTime.Now.ToString("MM/dd hh:mm")}延長預計還車時間取授權成功，金額 {preAuthAmt}，謝謝!"
+
+                            };
+                            commonService.sp_InsPersonNotification(spInput_InsPersonNotification, ref error);
+                        }
+                        #endregion
+                    }
+                    #endregion
+                }
+                #endregion
+
                 //開始對車機做動作
                 if (flag)
                 {
