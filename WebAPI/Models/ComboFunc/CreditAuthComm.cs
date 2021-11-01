@@ -269,29 +269,37 @@ namespace WebAPI.Models.ComboFunc
 
         public bool DoAuthV3(long OrderNo, string IDNO, int Amount, string CardToken, int PayType, ref string errCode,int autoClose,string funName,string insUser, ref WebAPIOutput_Auth WSAuthOutput)
         {
+            
             bool flag = true;
+
+            var payTypeInfos = WebAPI.GetCreditCardPayInfoColl();
 
             string PayTypeStr = "";
             string PaySuff = "F";
-            switch (PayType)
-            {
-                case 0:
-                    PayTypeStr = "租金";
-                    PaySuff = "F_";
-                    break;
-                case 1:
-                    PayTypeStr = "罰金";
-                    PaySuff = "P_";
-                    break;
-                case 2:
-                    PayTypeStr = "eTag";
-                    PaySuff = "E_";
-                    break;
-                case 3:
-                    PayTypeStr = "補繳";
-                    PaySuff = "G_";
-                    break;
-            }
+
+            var temPayTypeInfo = payTypeInfos.Where(p => p.PayType == PayType).FirstOrDefault();
+            PayTypeStr = temPayTypeInfo?.PayTypeStr?? PayTypeStr;
+            PaySuff = temPayTypeInfo?.PayTypeCode ?? PaySuff;
+
+            //switch (PayType)
+            //{
+            //    case 0:
+            //        PayTypeStr = "租金";
+            //        PaySuff = "F_";
+            //        break;
+            //    case 1:
+            //        PayTypeStr = "罰金";
+            //        PaySuff = "P_";
+            //        break;
+            //    case 2:
+            //        PayTypeStr = "eTag";
+            //        PaySuff = "E_";
+            //        break;
+            //    case 3:
+            //        PayTypeStr = "補繳";
+            //        PaySuff = "G_";
+            //        break;
+            //}
             Thread.Sleep(1000);
             Domain.WebAPI.Input.Taishin.AuthItem item = new Domain.WebAPI.Input.Taishin.AuthItem()
             {

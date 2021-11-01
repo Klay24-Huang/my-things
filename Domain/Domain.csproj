@@ -523,6 +523,7 @@
     <Compile Include="TB\CarPIC.cs" />
     <Compile Include="TB\CarTypeData.cs" />
     <Compile Include="TB\CityData.cs" />
+    <Compile Include="TB\CloseAccount.cs" />
     <Compile Include="TB\Code.cs" />
     <Compile Include="TB\ErrorMessageList.cs" />
     <Compile Include="TB\FeedBackPIC.cs" />
