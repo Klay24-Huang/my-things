@@ -204,16 +204,16 @@ namespace WebAPI.Controllers
                 #region 預授權機制
                 if (flag)
                 {
-                    CommonService commonService = new CommonService();
                     #region 判斷路邊調整還車時間是否要加收錢
                     int preAuthAmt = 0;
                     bool canAuth = false;
+                    CommonService commonService = new CommonService();
                     SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
-                    //預授權不處理專案(長租客服月結E077)
                     string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
-                    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID))
+                    //1.路邊 2.預授權不處理專案(長租客服月結E077) 3.有調整還車時間
+                    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID) && !string.IsNullOrWhiteSpace(apiInput.ED))
                     {
-                        //調整還車時間置換預計時間
+                        //調整還車時間置換預計時間                        
                         DateTime.TryParse(apiInput.ED, out StopTime);
                         orderData.ED = StopTime;
                         int estimateAmt = commonService.EstimatePreAuthAmt(orderData, apiInput.Insurance);
@@ -233,7 +233,7 @@ namespace WebAPI.Controllers
                         CardToken = result.cardToken;
                         #endregion
                         #region 台新授權
-                        if (!string.IsNullOrWhiteSpace(CardToken))
+                        if (flag)
                         {
                             int payType = 0; //租金
                             int autoClose = 0; //自動關帳
@@ -246,23 +246,26 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                         #region 寫入預授權
-                        string merchantTradNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
-                        string bankTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
-                        SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
-                        {
-                            IDNO = IDNO,
-                            LogID = LogID,
-                            Token = Access_Token,
-                            AuthType = 19,
-                            CardType = 1,
-                            final_price = preAuthAmt,
-                            OrderNo = tmpOrder,
-                            PRGName = funName,
-                            MerchantTradNo = merchantTradNo,
-                            BankTradeNo = bankTradeNo,
-                            Status = 2
-                        };
-                        commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
+                        if (flag)
+                        {                           
+                            string merchantTradNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
+                            string bankTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
+                            SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
+                            {
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                Token = Access_Token,
+                                AuthType = 19,
+                                CardType = 1,
+                                final_price = preAuthAmt,
+                                OrderNo = tmpOrder,
+                                PRGName = funName,
+                                MerchantTradNo = merchantTradNo,
+                                BankTradeNo = bankTradeNo,
+                                Status = 2
+                            };
+                            commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
+                        }                       
                         #endregion
                         #region 授權成功新增推播訊息
                         if (flag)
