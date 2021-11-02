@@ -236,11 +236,12 @@ namespace WebAPI.Controllers
                         }
                     }
                     */
-                    // outputApi.Amount = apiInput.Amount; --2021/09/23 UPD BY YANKEY 不須判斷錢包餘額
+
                     #endregion
                 }
 
                 outputApi.CkResult = flag ? 1 : 0;
+               // outputApi.Amount = apiInput.Amount; --2021/09/23 UPD BY YANKEY 不須判斷錢包餘額
 
                 #endregion
             }
