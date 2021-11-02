@@ -45,7 +45,7 @@ namespace Domain.SP.Input.Rent
         public int CardType { get; set; }
 
         /// <summary>
-        /// 授權類別 (16:預約; 17:訂金; 18:延長用車; 19:取車; 20:逾時; 21:欠費; 22:還車)
+        /// 授權類別 (1:預約; 2:訂金; 3:取車; 4:延長用車; 5:逾時; 6:欠費; 7:還車)
         /// </summary>
         public int AuthType { get; set; }
 
