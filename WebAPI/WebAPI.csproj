@@ -286,6 +286,7 @@
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
     <Compile Include="Controllers\GetOrderInsuranceInfoController.cs" />
+    <Compile Include="Controllers\GetPreCreditAuthJobController.cs" />
     <Compile Include="Controllers\JointRentInvitationController.cs" />
     <Compile Include="Controllers\JointRentInviteeModifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
