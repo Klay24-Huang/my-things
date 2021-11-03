@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace WebAPI.Controllers
 {
-    public class CloseAccountFtpDoemloadController : ApiController
+    public class CloseAccountFtpDownloadController : ApiController
     {
     }
 }

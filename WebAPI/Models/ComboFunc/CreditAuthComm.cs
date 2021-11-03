@@ -338,7 +338,7 @@ namespace WebAPI.Models.ComboFunc
 
             };
             WSAuthInput.RequestParams.Item.Add(item);
-            //flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, IDNO, autoClose, funName, insUser, ref errCode, ref WSAuthOutput);
+            flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, IDNO, autoClose, funName, insUser, ref errCode, ref WSAuthOutput);
 
             if (WSAuthOutput.RtnCode != "1000" || WSAuthOutput.ResponseParams.ResultCode != "1000")
             {
