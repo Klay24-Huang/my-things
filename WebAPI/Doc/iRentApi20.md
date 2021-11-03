@@ -49,6 +49,7 @@
 - [BookingDelete 刪除訂單](#BookingDelete)
 - [OrderDetail 訂單明細](#OrderDetail)
 - [GetOrderInsuranceInfo 訂單安心服務資格及價格查詢](#GetOrderInsuranceInfo)
+- [GetCancelOrderList 取得取消訂單列表](#GetCancelOrderList)
 
 取還車跟車機操控相關
 
@@ -259,6 +260,8 @@
 20211028 補延長用車(BookingExtend)、補預約(Booking)、汽車取車(BookingStart)錯誤代碼
 
 20211102 更新 汽車取車(BookingStart)、延長用車(BookingExtend)錯誤代碼
+
+20211103 新增取得取消訂單列表(GetCancelOrderList)
 
 # API位置
 
@@ -3641,6 +3644,161 @@
         "MainInsurancePerHour": 50,
         "JointInsurancePerHour": 20,
         "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認"
+    }
+}
+```
+
+## GetCancelOrderList 取得取消訂單列表
+
+### [/api/GetCancelOrderList/]
+
+* 20211103新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| NowPage  | 現在頁碼 |  Y   | string | H0000029 |
+
+
+* input範例
+
+```
+{
+    "NowPage" : "1"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data回傳參數說明
+
+| 參數名稱              | 參數說明                                                     |  型態  | 範例                                                   |
+| --------------------- | ------------------------------------------------------------ | :----: | ------------------------------------------------------ |
+| order_number          | 訂單編號                                                     |string  |H11538852|
+| CarNo  | 車號                                                  |  int   | RDE-6193                                                     |
+| Price | 預估租金                             |  int   | 200               |
+| ProjID     | 專案代碼                                             | string | R220 |
+| SD     | 預計取車時間                                             | datetime | 2021-07-27T12:10:00 |
+| ED     | 預計還車時間                                             | datetime | 2021-07-27T13:10:00 |
+| Seat     | 座椅數                                             | int | 4 |
+| CarBrend     | 車子品牌                                             | string | TOYOTA |
+| Score     | 分數                                             | float | 5.0 |
+| OperatorICon     | ?                                             | string | supplierIrent |
+| CarTypeImg     | 車型圖                                             | string | priusC |
+| CarTypeName     | 車型名稱                                           | string | PRIUSc |
+| PRONAME     | 專案名稱                                             | string | 同站汽車110起推廣專案 |
+| MilOfHours     | 預估每小時多少公里                                | int | 20 |
+| MilageUnit     | 每公里多少錢                                             | float | 3.1 |
+| Milage     | 預估里程費                                             | int | 62 |
+| CarOfArea     | 站別類型                                             | string | 同站 |
+| StationName     | 站別名稱                                             | string | iRent礁溪轉運站-內站 |
+| IsMotor     | 是否為機車(0:否、1:是)                                             | int | 0 |
+| WeekdayPrice     | 平日價                                             | float | 2300.0 |
+| HoildayPrice     | 假日售價                                             | float | 2300.0 |
+| WeekdayPriceByMinutes     | 假日售價                                             | float | 0.0 |
+| HoildayPriceByMinutes     | 假日售價                                             | float | 0.0 |
+| CarRentBill     | 預估租金                                             | int | 110 |
+| InsuranceBill     | 預估安心保險費用                                             | int | 0 |
+| TransDiscount     | 轉乘優惠                                             | int | 0 |
+| MileageBill     | 預估里程費                                             | int | 62 |
+| Bill     | 預估總金額                                             | int | 172 |
+| cancel_status     | 取消訂單原因(訂單修改狀態：0 = 無(訂單未刪除，正常預約狀態)、1 = 修改指派車輛(此訂單因其他預約單強迫延長而更改過訂單 or 後台重新配車過 or 取車時無車，重新配車)、2 = 此訂單被人工介入過(後台協助取還車 or 後台修改訂單資料)、3 = 訂單已取消(會員主動取消 or 逾時15分鐘未取車)、4 = 訂單已取消(因車輛仍在使用中又無法預約到其他車輛而取消)、5 = 整備使用(逾時未取或還車)、6 = 預授權失敗取消訂單)                                             | int | 0 |
+
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "TotalPage": 2,
+        "CancelObj": [
+            {
+                "order_number": "H11538852",
+                "CarNo": "RDE-6193",
+                "Price": 110,
+                "ProjID": "R220",
+                "SD": "2021-07-27T12:10:00",
+                "ED": "2021-07-27T13:10:00",
+                "Seat": 5,
+                "CarBrend": "TOYOTA",
+                "Score": 5.0,
+                "OperatorICon": "supplierIrent",
+                "CarTypeImg": "priusC",
+                "CarTypeName": "PRIUSc",
+                "PRONAME": "同站汽車110起推廣專案",
+                "MilOfHours": 20,
+                "MilageUnit": 3.1,
+                "Milage": 62,
+                "CarOfArea": "同站",
+                "StationName": "iRent礁溪轉運站-內站",
+                "IsMotor": 0,
+                "WeekdayPrice": 2300.0,
+                "HoildayPrice": 2300.0,
+                "WeekdayPriceByMinutes": 0.0,
+                "HoildayPriceByMinutes": 0.0,
+                "CarRentBill": 110,
+                "InsuranceBill": 0,
+                "TransDiscount": 0,
+                "MileageBill": 62,
+                "Bill": 172,
+                "cancel_status": 3
+            },
+            {
+                "order_number": "H11524658",
+                "CarNo": "RDF-0272",
+                "Price": 110,
+                "ProjID": "R220",
+                "SD": "2021-07-26T16:10:00",
+                "ED": "2021-07-26T17:10:00",
+                "Seat": 5,
+                "CarBrend": "TOYOTA",
+                "Score": 5.0,
+                "OperatorICon": "supplierIrent",
+                "CarTypeImg": "priusC",
+                "CarTypeName": "PRIUSc",
+                "PRONAME": "同站汽車110起推廣專案",
+                "MilOfHours": 20,
+                "MilageUnit": 3.1,
+                "Milage": 62,
+                "CarOfArea": "同站",
+                "StationName": "iRent礁溪火車站",
+                "IsMotor": 0,
+                "WeekdayPrice": 2300.0,
+                "HoildayPrice": 2300.0,
+                "WeekdayPriceByMinutes": 0.0,
+                "HoildayPriceByMinutes": 0.0,
+                "CarRentBill": 110,
+                "InsuranceBill": 0,
+                "TransDiscount": 0,
+                "MileageBill": 62,
+                "Bill": 172,
+                "cancel_status": 3
+            }
+        ]
     }
 }
 ```
