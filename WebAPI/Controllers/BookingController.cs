@@ -358,7 +358,7 @@ namespace WebAPI.Controllers
                         int triaHour = 6;  //路邊預收6小時授權金
                         DateTime trialDate = SDate.AddHours(triaHour);
                         InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, trialDate, InsurancePerHours * triaHour, InsurancePerHours * triaHour, lstHoliday)) : 0;
-                        price = billCommon.CarRentCompute(SDate, trialDate.AddHours(triaHour), priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
+                        price = billCommon.CarRentCompute(SDate, trialDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
                         preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, trialDate, LogID, lstHoliday, billCommon);
                         canAuth = true;
                     }
@@ -424,10 +424,7 @@ namespace WebAPI.Controllers
                                 Token = Access_Token,
                                 Descript = $"預授權失敗【取消訂單】，金額{preAuthAmt}"
                             };
-                            SPName = "usp_BookingCancel_U01";
-                            SPOutput_Base output_Base = new SPOutput_Base();
-                            flag = new SQLHelper<SPInput_BookingCancel, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, spInput_BookingCancel, ref output_Base, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, ref output_Base, ref lstError, ref errCode);
+                            flag=commonService.sp_BookingCancel(spInput_BookingCancel, ref errCode);
                             if (flag)
                             {
                                 flag = false;
