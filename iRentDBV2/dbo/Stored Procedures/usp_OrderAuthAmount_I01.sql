@@ -13,7 +13,7 @@ CREATE PROCEDURE [dbo].[usp_OrderAuthAmount_I01]
     @BankTradeNo            VARCHAR(50)           , --銀行交易序號
     @IDNO                   VARCHAR(10)           , --操作的會員帳號
 	@CardType               INT                   , --信用卡類別(0:和泰 ; 1:台新)
-	@AuthType               INT                   , --授權類別 (16:預約; 17:訂金; 18:延長用車; 19:取車; 20:逾時; 21:欠費; 22:還車)
+	@AuthType               INT                   , --授權類別 (1:預約; 2:訂金; 3:取車; 4:延長用車; 5:逾時; 6:欠費; 7:還車)
     @final_price            INT                   , --授權金額
 	@PRGName                VARCHAR(50)           , --程式名稱
 	@OrderNo                INT                   , --訂單編號
@@ -86,7 +86,6 @@ BEGIN TRY
    DECLARE @PRGID VARCHAR(10) = '0'
    SELECT @PRGID = Convert(VARCHAR(10),APIID) FROM TB_APIList WITH(NOLOCK) WHERE  APIName = @PRGName
 
-   IF NOT EXISTS (SELECT 1 FROM TB_OrderAuthAmount WHERE order_number=@OrderNo AND MerchantTradeNo=@MerchantTradNo)
    BEGIN
    INSERT INTO TB_OrderAuthAmount(order_number,MerchantTradeNo,BankTradeNo,IDNO,CardType,AuthType,final_price,[Status],A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT)	
    VALUES(@OrderNo,@MerchantTradNo,@BankTradeNo,@IDNO,@CardType,@AuthType,@final_price,@Status,@PRGID,@PRGID,@NowTime,@PRGID,@PRGID,@NowTime);

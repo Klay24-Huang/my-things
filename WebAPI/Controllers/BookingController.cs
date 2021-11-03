@@ -356,9 +356,10 @@ namespace WebAPI.Controllers
                     else if (ProjType == 3)
                     {
                         int triaHour = 6;  //路邊預收6小時授權金
+                        int dayMaxHour = 10;
                         DateTime trialDate = SDate.AddHours(triaHour);
-                        InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, trialDate, InsurancePerHours * triaHour, InsurancePerHours * triaHour, lstHoliday)) : 0;
-                        price = billCommon.CarRentCompute(SDate, trialDate, priceBase.PRICE, priceBase.PRICE_H, 10, lstHoliday);
+                        InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, trialDate, InsurancePerHours * dayMaxHour, InsurancePerHours * dayMaxHour, lstHoliday)) : 0;
+                        price = billCommon.CarRentCompute(SDate, trialDate, priceBase.PRICE, priceBase.PRICE_H, dayMaxHour, lstHoliday);
                         preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, trialDate, LogID, lstHoliday, billCommon);
                         canAuth = true;
                     }

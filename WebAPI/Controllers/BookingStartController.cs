@@ -192,9 +192,8 @@ namespace WebAPI.Controllers
                 #region 預授權機制
                 if (flag)
                 {
-                    #region 判斷路邊調整還車時間是否要加收錢
+                    #region 路邊調整還車時間加收錢
                     int preAuthAmt = 0;
-                    bool canAuth = false;
                     CommonService commonService = new CommonService();
                     SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
                     string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
@@ -208,26 +207,20 @@ namespace WebAPI.Controllers
                             ProjID = orderData.ProjID,
                             SD = orderData.SD,
                             ED = StopTime,
-                            CarNo=orderData.CarNo,
-                            CarTypeGroupCode=orderData.CarTypeGroupCode,
-                            WeekdayPrice=orderData.PRICE,
-                            HoildayPrice=orderData.PRICE_H,
-                            Insurance=apiInput.Insurance,
-                            InsurancePerHours=orderData.InsurancePerHours,
-                            ProjType=orderData.ProjType
+                            CarNo = orderData.CarNo,
+                            CarTypeGroupCode = orderData.CarTypeGroupCode,
+                            WeekdayPrice = orderData.PRICE,
+                            HoildayPrice = orderData.PRICE_H,
+                            Insurance = apiInput.Insurance,
+                            InsurancePerHours = orderData.InsurancePerHours,
+                            ProjType = orderData.ProjType
                         };
-
                         int estimateAmt = commonService.EstimatePreAuthAmt(estimateData);
-                        if (estimateAmt > orderData.PreAuthAmt)
-                        {
-                            //需扣掉預約授權部分
-                            preAuthAmt = estimateAmt - orderData.PreAuthAmt;
-                            canAuth = true;
-                        }
+                        preAuthAmt = estimateAmt - orderData.PreAuthAmt;
                     }
                     #endregion
                     #region 立即授權
-                    if (canAuth)
+                    if (preAuthAmt > 0)
                     {
                         #region 檢查信用卡是否綁卡
                         var result = commonService.CheckBindCard(ref flag, IDNO, ref errCode);
@@ -248,7 +241,7 @@ namespace WebAPI.Controllers
                         #endregion
                         #region 寫入預授權
                         if (flag)
-                        {                           
+                        {
                             string merchantTradNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
                             string bankTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
                             SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
@@ -266,7 +259,7 @@ namespace WebAPI.Controllers
                                 Status = 2
                             };
                             commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
-                        }                       
+                        }
                         #endregion
                         #region 授權成功新增推播訊息
                         if (flag)
