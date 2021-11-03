@@ -14,6 +14,7 @@ using Domain.WebAPI.output.Taishin;
 using Newtonsoft.Json;
 using NLog;
 using OtherService;
+using Prometheus; //20210707唐加prometheus
 using Reposotory.Implement;
 using StackExchange.Redis;
 using System;
@@ -25,13 +26,12 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Service;
 using WebAPI.Utils;
 using WebCommon;
-using Prometheus; //20210707唐加prometheus
 
 namespace WebAPI.Controllers
 {
@@ -224,20 +224,6 @@ namespace WebAPI.Controllers
                     if (apiInput.PayType == 0)
                     {
                         #region 0:租金
-                        #region 還車時間檢查 
-                        if (flag)
-                        {
-                            var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
-                            if (!ckTime)
-                            {
-                                flag = false;
-                                errCode = "ERR245";
-                                //ProcessedJobCount7.Inc();//唐加prometheus
-                                SetCount("NUM_CreditAuth_Fail_ckTime");//使用者超過15分鐘沒還車
-                            }
-                            trace.traceAdd("ckTime", ckTime);
-                        }
-                        #endregion
                         #region 取出訂單資訊
                         if (flag)
                         {
@@ -248,13 +234,8 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 Token = Access_Token
                             };
-                            string SPName = "usp_GetOrderStatusByOrderNo";
-                            SPOutput_Base spOutBase = new SPOutput_Base();
-                            SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
-                            OrderDataLists = new List<OrderQueryFullData>();
-                            DataSet ds = new DataSet();
-                            flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref OrderDataLists, ref ds, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+                            CommonService commonService = new CommonService();
+                            OrderDataLists = commonService.GetOrderStatusByOrderNo(spInput, ref flag, ref errCode);
 
                             trace.traceAdd("OrderDataLists", OrderDataLists);
 
@@ -291,8 +272,21 @@ namespace WebAPI.Controllers
                                 Amount = OrderDataLists[0].final_price;
                             }
                         }
-
                         trace.traceAdd("OrderDataListsCk", new { flag, errCode });
+                        #endregion
+                        #region 還車時間檢查 
+                        if (flag)
+                        {
+                            var ckTime = CkFinalStopTime(OrderDataLists[0]);
+                            if (!ckTime)
+                            {
+                                flag = false;
+                                errCode = "ERR245";
+                                //ProcessedJobCount7.Inc();//唐加prometheus
+                                SetCount("NUM_CreditAuth_Fail_ckTime");//使用者超過15分鐘沒還車
+                            }
+                            trace.traceAdd("ckTime", ckTime);
+                        }
                         #endregion
                         #region Adam哥上線記得打開
                         //#region 檢查車機狀態
@@ -1185,41 +1179,20 @@ namespace WebAPI.Controllers
         #endregion
 
         #region 還車時間檢查
-        private bool CkFinalStopTime(string IDNO, long Order, long LogID, string Access_Token)
+        private bool CkFinalStopTime(OrderQueryFullData OrderList)
         {
-            bool flag = true;
-            var xre = GetOrder(IDNO, Order, LogID, Access_Token, ref flag);
-            if (xre != null && !string.IsNullOrWhiteSpace(xre.final_stop_time))
+            bool flag = false;
+            if (OrderList != null && !string.IsNullOrWhiteSpace(OrderList.final_stop_time))
             {
-                if (DateTime.TryParse(xre.final_stop_time, out DateTime FD))
+                if (DateTime.TryParse(OrderList.final_stop_time, out DateTime FD))
                 {
                     if (DateTime.Now.Subtract(FD).TotalMinutes < 15)
-                        return true;
+                    {
+                        flag = true;
+                    }
                 }
             }
-            return false;
-        }
-
-        private OrderQueryFullData GetOrder(string IDNO, long Order, long LogID, string Access_Token, ref bool flag)
-        {
-            var re = new OrderQueryFullData();
-            var lstError = new List<ErrorInfo>();
-
-            SPInput_GetOrderStatusByOrderNo spInput = new SPInput_GetOrderStatusByOrderNo()
-            {
-                IDNO = IDNO,
-                OrderNo = Order,
-                LogID = LogID,
-                Token = Access_Token
-            };
-            string SPName = "usp_GetOrderStatusByOrderNo";
-            SPOutput_Base spOutBase = new SPOutput_Base();
-            SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
-            DataSet ds = new DataSet();
-            flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref ds, ref lstError);
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                re = objUti.GetFirstRow<OrderQueryFullData>(ds.Tables[0]);
-            return re;
+            return flag;
         }
         #endregion
 

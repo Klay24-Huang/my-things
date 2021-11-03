@@ -5,6 +5,7 @@ using Domain.SP.Input.Notification;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Bill;
+using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
@@ -92,12 +93,12 @@ namespace WebAPI.Service
         /// <param name="dayMaxHour">單日時數上限</param>
         /// <returns></returns>
 
-        public int EstimatePreAuthAmt(EstimateData input,int dayMaxHour = 10)
+        public int EstimatePreAuthAmt(EstimateData input, int dayMaxHour = 10)
         {
             BillCommon billCommon = new BillCommon();
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(input.SD.ToString("yyyyMMdd"), input.ED.ToString("yyyyMMdd"));
             //計算安心服務金額
-            var InsurancePurePrice = (input.Insurance== 1) ? Convert.ToInt32(billCommon.CalSpread(input.SD, input.ED, input.InsurancePerHours * dayMaxHour, input.InsurancePerHours * dayMaxHour, lstHoliday)) : 0;
+            var InsurancePurePrice = (input.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(input.SD, input.ED, input.InsurancePerHours * dayMaxHour, input.InsurancePerHours * dayMaxHour, lstHoliday)) : 0;
             //計算預估租金
             var Rent = billCommon.CarRentCompute(input.SD, input.ED, input.WeekdayPrice, input.HoildayPrice, dayMaxHour, lstHoliday);
             //計算里程費
@@ -230,5 +231,29 @@ namespace WebAPI.Service
 
             return flag;
         }
+
+        #region 取得訂單完整資訊
+        /// <summary>
+        /// 取得訂單完整資訊
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="flag"></param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <returns></returns>
+        public List<OrderQueryFullData> GetOrderStatusByOrderNo(SPInput_GetOrderStatusByOrderNo spInput, ref bool flag, ref string errCode)
+        {
+            List<OrderQueryFullData> result = new List<OrderQueryFullData>();
+            flag = false;
+            var lstError = new List<ErrorInfo>();
+            string spName = "usp_GetOrderStatusByOrderNo";
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            flag = sqlHelp.ExeuteSP(spName, spInput, ref spOutput, ref result, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutput, ref lstError, ref errCode);
+
+            return result;
+        }
+        #endregion
     }
 }

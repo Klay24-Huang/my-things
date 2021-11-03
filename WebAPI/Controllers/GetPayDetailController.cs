@@ -18,6 +18,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Service;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -181,7 +182,6 @@ namespace WebAPI.Controllers
                 #region 取出訂單資訊
                 if (flag)
                 {
-                    string SPName = "usp_GetOrderStatusByOrderNo";
                     SPInput_GetOrderStatusByOrderNo spInput = new SPInput_GetOrderStatusByOrderNo()
                     {
                         IDNO = IDNO,
@@ -189,12 +189,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         Token = Access_Token
                     };
-                    SPOutput_Base spOutBase = new SPOutput_Base();
-                    SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
-                    OrderDataLists = new List<OrderQueryFullData>();
-                    DataSet ds = new DataSet();
-                    flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref OrderDataLists, ref ds, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+                    CommonService commonService = new CommonService();
+                    OrderDataLists = commonService.GetOrderStatusByOrderNo(spInput, ref flag, ref errCode);
 
                     trace.FlowList.Add("取出訂單資訊");
                     //判斷訂單狀態
