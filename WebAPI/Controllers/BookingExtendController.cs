@@ -1,18 +1,26 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Notification;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
+using Domain.SP.Output.Bill;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.Rent;
+using Domain.TB;
+using Domain.WebAPI.output.Taishin;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.ComboFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Service;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -36,6 +44,7 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "BookingExtendController";
+            string spName = "";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_BookingExtend apiInput = null;
@@ -44,7 +53,8 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-
+            SPOutput_GetBookingStartTime spOut = null;
+            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
             string Contentjson = "";
             bool isGuest = true;
 
@@ -120,24 +130,13 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
+            #region 延長用車前先取得原始用車時間
             if (flag)
             {
                 SPInput_GetBookingStartTime spInput = new SPInput_GetBookingStartTime()
@@ -147,8 +146,8 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token
                 };
-                SPOutput_GetBookingStartTime spOut = new SPOutput_GetBookingStartTime();
-                string spName = new ObjType().GetSPName(ObjType.SPType.GetBookingStartTime);
+                spOut = new SPOutput_GetBookingStartTime();
+                spName = "usp_GetBookingStartTime";
                 SQLHelper<SPInput_GetBookingStartTime, SPOutput_GetBookingStartTime> sqlHelp = new SQLHelper<SPInput_GetBookingStartTime, SPOutput_GetBookingStartTime>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
@@ -192,25 +191,159 @@ namespace WebAPI.Controllers
                 {
                     SD = spOut.ED; //前一次的結束時間
                 }
-                if (flag)
-                {
-                    SPInput_BookingExtend spExtend = new SPInput_BookingExtend()
-                    {
-                        OrderNo = tmpOrder,
-                        IDNO = IDNO,
-                        Token = Access_Token,
-                        LogID = LogID,
-                        SD = SD,
-                        ED = StopTime,
-                        CarNo = spOut.CarNo
-                    };
-                    SPOutput_Base spOutExtend = new SPOutput_Base();
-                    spName = new ObjType().GetSPName(ObjType.SPType.BookingExtend);
-                    SQLHelper<SPInput_BookingExtend, SPOutput_Base> sqlHelpCheck = new SQLHelper<SPInput_BookingExtend, SPOutput_Base>(connetStr);
-                    flag = sqlHelpCheck.ExecuteSPNonQuery(spName, spExtend, ref spOutExtend, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref spOutExtend, ref lstError, ref errCode);
-                }
+
             }
+            #endregion
+            #region 預授權機制
+            if (flag)
+            {
+                CommonService commonService = new CommonService();
+                #region 判斷延長用車是否要加收
+                SPOutput_OrderForPreAuth orderInfo = commonService.GetOrderForPreAuth(tmpOrder);
+                //預授權不處理專案(長租客服月結E077)
+                string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
+                int preAuthAmt = 0;
+                bool canAuth = false;
+                if (orderInfo != null && (orderInfo.ProjType == 0 || orderInfo.ProjType == 3) && !notHandle.Contains(orderInfo.ProjID))
+                {
+                    EstimateData estimateData = new EstimateData()
+                    {
+                        ProjID = orderInfo.ProjID,
+                        ProjType = orderInfo.ProjType,
+                        SD = orderInfo.SD,
+                        ED = orderInfo.ED,
+                        CarNo = orderInfo.CarNo,
+                        CarTypeGroupCode = orderInfo.CarTypeGroupCode,
+                        WeekdayPrice = orderInfo.PRICE,
+                        HoildayPrice = orderInfo.PRICE_H,
+                        Insurance = orderInfo.Insurance,
+                        InsurancePerHours = orderInfo.InsurancePerHours
+                    };
+
+                    //用車+延長時數(未超過24小時不取授權)
+                    double oriHour = StopTime.Subtract(orderInfo.SD).TotalHours;
+                    if (oriHour > 24)
+                    {
+                        //首次延長
+                        if (orderInfo.ExtendTimes == 0)
+                        {
+                            canAuth = true;
+                            //時間 =< 6小時，則取6小時預估總金額授權【租金+里程費+安心服務】
+                            if (StopTime.Subtract(orderInfo.ED).TotalHours <= 6)
+                            {
+                                estimateData.SD = orderInfo.ED;
+                                estimateData.ED = orderInfo.ED.AddHours(6);
+                            }
+                            //時間 > 6小時，預估授權金與原預授權的差額進行預授權
+                            else
+                            {
+                                estimateData.ED = StopTime;
+                            }
+                            int authAmt = commonService.EstimatePreAuthAmt(estimateData);
+                            preAuthAmt = authAmt - orderInfo.PreAuthAmt;
+                        }
+                        else if (orderInfo.ExtendTimes > 0)
+                        {
+                            //計算【首次延長開始-預計延長還車】時數
+                            double extendHour = StopTime.Subtract(orderInfo.ExtendStartTime).TotalHours;
+                            canAuth = extendHour > 6 ? true : false;
+                            if (canAuth)
+                            {
+                                estimateData.ED = StopTime;
+                                int authAmt = commonService.EstimatePreAuthAmt(estimateData);
+                                preAuthAmt = orderInfo.PreAuthAmt > 0 ? authAmt - orderInfo.PreAuthAmt : 0;
+                            }
+                        }
+                    }
+                }
+                #endregion
+                #region 立即授權
+                if (canAuth && preAuthAmt > 0)
+                {
+                    bool bindCard = false;
+                    bool authFlag = false;
+                    string error = "";
+
+                    #region 檢查信用卡是否綁卡
+                    var result = commonService.CheckBindCard(ref bindCard, IDNO, ref error);
+                    string CardToken = result.cardToken;
+                    #endregion
+                    #region 台新授權
+                    if (bindCard)
+                    {
+                        int payType = 0; //租金
+                        int autoClose = 0; //自動關帳
+                        CreditAuthComm creditAuthComm = new CreditAuthComm();
+                        authFlag = creditAuthComm.DoAuthV3(tmpOrder, IDNO, preAuthAmt, CardToken, payType, ref error, autoClose, funName, funName, ref WSAuthOutput);
+                        //if (!flag)
+                        //{
+                        //    errCode = "ERR604";
+                        //}
+                    }
+                    #endregion
+                    #region 寫入預授權
+                    if (authFlag)
+                    {
+                        SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            Token = Access_Token,
+                            AuthType = 4,
+                            CardType = 1,
+                            final_price = preAuthAmt,
+                            OrderNo = tmpOrder,
+                            PRGName = funName,
+                            MerchantTradNo = WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo,
+                            BankTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo,
+                            Status = 2
+                        };
+                        commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
+                    }
+                    #endregion
+                    #region 授權成功新增推播訊息
+                    if (authFlag)
+                    {
+                        SPInput_InsPersonNotification spInput_InsPersonNotification = new SPInput_InsPersonNotification()
+                        {
+                            OrderNo = Convert.ToInt32(tmpOrder),
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            NType = 19,
+                            STime = DateTime.Now.AddSeconds(10),
+                            Title = "預授權通知",
+                            imageurl = "",
+                            url = "",
+                            Message = $"取授權通知:已於{DateTime.Now.ToString("MM/dd hh:mm")}延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
+
+                        };
+                        commonService.sp_InsPersonNotification(spInput_InsPersonNotification, ref error);
+                    }
+                    #endregion
+                }
+                #endregion
+            }
+            #endregion
+            #region 延長用車
+            if (flag)
+            {
+                SPInput_BookingExtend spExtend = new SPInput_BookingExtend()
+                {
+                    OrderNo = tmpOrder,
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID,
+                    SD = SD,
+                    ED = StopTime,
+                    CarNo = spOut.CarNo
+                };
+                SPOutput_Base spOutExtend = new SPOutput_Base();
+                spName = "usp_BookingExtend";
+                SQLHelper<SPInput_BookingExtend, SPOutput_Base> sqlHelpCheck = new SQLHelper<SPInput_BookingExtend, SPOutput_Base>(connetStr);
+                flag = sqlHelpCheck.ExecuteSPNonQuery(spName, spExtend, ref spOutExtend, ref lstError);
+                baseVerify.checkSQLResult(ref flag, ref spOutExtend, ref lstError, ref errCode);
+            }
+            #endregion
             #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
