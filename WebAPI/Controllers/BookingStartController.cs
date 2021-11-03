@@ -201,10 +201,23 @@ namespace WebAPI.Controllers
                     //1.路邊 2.預授權不處理專案(長租客服月結E077) 3.有調整還車時間
                     if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID) && !string.IsNullOrWhiteSpace(apiInput.ED))
                     {
-                        //調整還車時間置換預計時間                        
+                        //調整還車時間置換預計時間         
                         DateTime.TryParse(apiInput.ED, out StopTime);
-                        orderData.ED = StopTime;
-                        int estimateAmt = commonService.EstimatePreAuthAmt(orderData, apiInput.Insurance);
+                        EstimateData estimateData = new EstimateData()
+                        {
+                            ProjID = orderData.ProjID,
+                            SD = orderData.SD,
+                            ED = StopTime,
+                            CarNo=orderData.CarNo,
+                            CarTypeGroupCode=orderData.CarTypeGroupCode,
+                            WeekdayPrice=orderData.PRICE,
+                            HoildayPrice=orderData.PRICE_H,
+                            Insurance=apiInput.Insurance,
+                            InsurancePerHours=orderData.InsurancePerHours,
+                            ProjType=orderData.ProjType
+                        };
+
+                        int estimateAmt = commonService.EstimatePreAuthAmt(estimateData);
                         if (estimateAmt > orderData.PreAuthAmt)
                         {
                             //需扣掉預約授權部分

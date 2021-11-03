@@ -1,5 +1,6 @@
 ﻿using Domain.SP.Input;
 using Domain.SP.Input.Bill;
+using Domain.SP.Input.Booking;
 using Domain.SP.Input.Notification;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
@@ -87,19 +88,18 @@ namespace WebAPI.Service
         /// <summary>
         /// 試算預授權金額
         /// </summary>
-        /// <param name="input">訂單資訊</param>
-        /// <param name="insurance">是否加購安心服務</param>
+        /// <param name="input">試算資料</param>
         /// <param name="dayMaxHour">單日時數上限</param>
         /// <returns></returns>
 
-        public int EstimatePreAuthAmt(SPOutput_OrderForPreAuth input, int insurance, int dayMaxHour = 10)
+        public int EstimatePreAuthAmt(EstimateData input,int dayMaxHour = 10)
         {
             BillCommon billCommon = new BillCommon();
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(input.SD.ToString("yyyyMMdd"), input.ED.ToString("yyyyMMdd"));
             //計算安心服務金額
-            var InsurancePurePrice = (insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(input.SD, input.ED, input.InsurancePerHours * dayMaxHour, input.InsurancePerHours * dayMaxHour, lstHoliday)) : 0;
+            var InsurancePurePrice = (input.Insurance== 1) ? Convert.ToInt32(billCommon.CalSpread(input.SD, input.ED, input.InsurancePerHours * dayMaxHour, input.InsurancePerHours * dayMaxHour, lstHoliday)) : 0;
             //計算預估租金
-            var Rent = billCommon.CarRentCompute(input.SD, input.ED, input.PRICE, input.PRICE_H, dayMaxHour, lstHoliday);
+            var Rent = billCommon.CarRentCompute(input.SD, input.ED, input.WeekdayPrice, input.HoildayPrice, dayMaxHour, lstHoliday);
             //計算里程費
             float MilUnit = billCommon.GetMilageBase(input.ProjID, input.CarTypeGroupCode, input.SD, input.ED, 0);
             int MilagePrice = Convert.ToInt32(billCommon.CarMilageCompute(input.SD, input.ED, MilUnit, Mildef, 20, lstHoliday));
@@ -138,7 +138,7 @@ namespace WebAPI.Service
         /// 新增預授權
         /// </summary>
         /// <param name="spInput"></param>
-        /// <param name="errCode"></param>
+        /// <param name="errCode">錯誤代碼</param>
         /// <returns></returns>F
         public bool sp_InsOrderAuthAmount(SPInput_InsOrderAuthAmount spInput, ref string errCode)
         {
@@ -170,7 +170,7 @@ namespace WebAPI.Service
         /// 新增個人推播訊息
         /// </summary>
         /// <param name="spInput"></param>
-        /// <param name="errCode"></param>
+        /// <param name="errCode">錯誤代碼</param>
         /// <returns></returns>
         public bool sp_InsPersonNotification(SPInput_InsPersonNotification spInput, ref string errCode)
         {
@@ -179,6 +179,39 @@ namespace WebAPI.Service
             SPOutput_Base spOutput = new SPOutput_Base();
             string SPName = "usp_InsPersonNotification_I01";
             flag = new SQLHelper<SPInput_InsPersonNotification, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, spInput, ref spOutput, ref lstError);
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return flag;
+        }
+
+
+        /// <summary>
+        /// 取消訂單
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <returns></returns>
+        public bool sp_BookingCancel(SPInput_BookingCancel spInput, ref string errCode)
+        {
+            bool flag = false;
+            var lstError = new List<ErrorInfo>();
+            SPOutput_Base spOutput = new SPOutput_Base();
+            string SPName = "usp_BookingCancel_U01";
+            flag = new SQLHelper<SPInput_BookingCancel, SPOutput_Base>(connetStr).ExecuteSPNonQuery(SPName, spInput, ref spOutput, ref lstError);
             if (flag)
             {
                 if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")

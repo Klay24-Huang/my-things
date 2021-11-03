@@ -80,6 +80,21 @@ namespace Domain.SP.Output.Bill
         /// </summary>
         public int PreAuthAmt { get; set; } = 0;
 
+        /// <summary>
+        /// 延長次數
+        /// </summary>
+        public int ExtendTimes { get; set; }
+
+        /// <summary>
+        /// 延長開始時間
+        /// </summary>
+        public DateTime ExtendStartTime { get; set; }
+
+        /// <summary>
+        /// 延長結束時間
+        /// </summary>
+        public DateTime ExtendStopTime { get; set; }
+
 
     }
 }
