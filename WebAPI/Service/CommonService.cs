@@ -262,9 +262,8 @@ namespace WebAPI.Service
         /// <param name="Input"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool InsertOrderAuth(SPInput_OrderAuth Input, ref string errCode)
+        public bool InsertOrderAuth(SPInput_OrderAuth Input, ref string errCode, ref List<ErrorInfo> lstError)
         {
-            var lstError = new List<ErrorInfo>();
             string SPName = "usp_InsOrderAuth_I01";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_OrderAuth, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_OrderAuth, SPOutput_Base>(connetStr);
@@ -282,9 +281,8 @@ namespace WebAPI.Service
         /// <param name="Input"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool InsertOrderAuthReservation(SPInput_OrderAuthReservation Input, ref string errCode)
+        public bool InsertOrderAuthReservation(SPInput_OrderAuthReservation Input, ref string errCode , ref List<ErrorInfo> lstError)
         {
-            var lstError = new List<ErrorInfo>();
             string SPName = "usp_InsOrderAuth_I01";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_OrderAuthReservation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_OrderAuthReservation, SPOutput_Base>(connetStr);

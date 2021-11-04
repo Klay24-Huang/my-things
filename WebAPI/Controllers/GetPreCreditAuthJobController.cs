@@ -3,6 +3,7 @@ using Domain.SP.Input.OrderList;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.OrderList;
+using Domain.TB;
 using Newtonsoft.Json;
 using NLog;
 using System;
@@ -29,7 +30,7 @@ namespace WebAPI.Controllers
         private CommonFunc baseVerify { get; set; }
 
         [HttpGet]
-        public Dictionary<string, object> DoCreditAuthJob()
+        public Dictionary<string, object> DoJob(Dictionary<string, object> value)
         {
             logger.Trace("Init");
             #region 初始宣告
@@ -44,8 +45,8 @@ namespace WebAPI.Controllers
             string funName = "GetPreCreditAuthJobController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            
-            IAPI_CreditAuth apiInput = null;
+
+            IAPI_GetPreCreditAuthJob apiInput = new IAPI_GetPreCreditAuthJob();
             NullOutput apiOutput = new NullOutput();
            
             Token token = null;
@@ -58,21 +59,30 @@ namespace WebAPI.Controllers
             Int64 tmpOrder = 0;
             int Amount = 0;
             
-            /*以下 移到API INPUT*/
-            int Nday = 2;
-            int NHour = 6;
-            int FirstReserveTime = 20;
-            int AuthGateCount = 1;
-            int ReservationAuthGateCount = 1;
+            int Nday = apiInput.Nday;
+            int NHour =apiInput.NHour;
+            int FirstReserveTime = apiInput.FirstReserveTime;
+            int AuthGateCount = apiInput.AuthGateCount;
+            int ReservationAuthGateCount = apiInput.ReservationAuthGateCount;
+            int PrepaidDays = apiInput.PrepaidDays;
 
-            //List<OrderAuthList> OrderAuthList = null;
             #endregion
             #region 防呆
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+
             if (flag)
             {
+                apiInput = JsonConvert.DeserializeObject<IAPI_GetPreCreditAuthJob>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog("NA", ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
+
+                Nday = apiInput.Nday;
+                NHour = apiInput.NHour;
+                FirstReserveTime = apiInput.FirstReserveTime;
+                AuthGateCount = apiInput.AuthGateCount;
+                ReservationAuthGateCount = apiInput.ReservationAuthGateCount;
+                PrepaidDays = apiInput.PrepaidDays;
             }
             #endregion
             #region TB
@@ -80,7 +90,7 @@ namespace WebAPI.Controllers
             var PreOrderAuthList = new List<PreOrderAuth>();
             if (flag)
             {
-                PreOrderAuthList = GetPreOrderAuthList( ref flag,ref lstError,ref errCode);
+                PreOrderAuthList = GetPreOrderAuthList(NHour, ref flag,ref lstError,ref errCode);
             }
             #endregion
 
@@ -89,84 +99,69 @@ namespace WebAPI.Controllers
                 var bookingList = PreOrderAuthList.Where(p => p.AuthType == 1);
                 var timeoutList = PreOrderAuthList.Where(p => p.AuthType == 5);
 
-                foreach (var booking in bookingList)
+                //處理預約
+                foreach (var bookingObj in bookingList)
                 {
-                    /*
-                     --,start_time a_start_time, booking_date a_booking_date,stop_time a_stop_time
-                     --,Convert(varchar(10),start_time,111) getCarDate,DateAdd(day,-2,DateAdd(hour,20,Convert(varchar(10),start_time,111))) BookingNDaysAgo
-                     --,DateAdd(hour,-6,start_time) NowBookingbefore 
-                     --,DateAdd(hour,6,dbo.GET_TWDATE()) 
-                     --,DateAdd(hour,-2,dbo.GET_TWDATE())  TimeOver
-                     --,datediff(hour,stop_time,dbo.GET_TWDATE()) OverTimes
-                     
-                     */
-
                     var insertFlag = false;
 
-                    DateTime getCarDate = booking.start_time.Date;
+                    //取車日
+                    DateTime getCarDate = bookingObj.start_time.Date;
+                    //取天前N天
                     DateTime BookingNDaysAgo = getCarDate.AddDays(-Nday);
+                    //第一次取授權的時間
                     DateTime ReserveBookingAuthTime = BookingNDaysAgo.AddHours(FirstReserveTime);
-                    DateTime NowBookingbefore = booking.start_time.AddHours(-NHour);
-                    
-                    if(booking.booking_date > ReserveBookingAuthTime && booking.booking_date < NowBookingbefore) 
-                    {
-                        SPInput_OrderAuth input = new SPInput_OrderAuth
-                        {
-                            order_number = booking.order_number,
-                            IDNO = booking.IDNO,
-                            final_Price = booking.pre_final_Price,
-                            CardType = 1,
-                            AuthType = booking.AuthType,
-                            GateNo = GetGateNo(AuthGateCount),
-                            isRetry = 0,
-                            AutoClose = 0,
-                            PrgName = funName,
-                            PrgUser = ""
-                        };
+                    //在這時間點後預約的訂單 不走排程
+                    DateTime NowBookingbefore = bookingObj.start_time.AddHours(-NHour);
 
-                        insertFlag = commonService.InsertOrderAuth(input,ref errCode);
+                    //取車前N小時到取車日前X日的Y時預約的訂單 走即時授權的排程
+                    if (bookingObj.booking_date > ReserveBookingAuthTime && bookingObj.booking_date < NowBookingbefore)
+                    {
+                        SPInput_OrderAuth input = SetOrderAuthObj(bookingObj, funName, AuthGateCount);
+
+                        insertFlag = commonService.InsertOrderAuth(input, ref errCode, ref lstError);
+                        if (!insertFlag)
+                        {
+                            string errString = SetErrorStringForLog("InsertOrderAuth", lstError, bookingObj);
+                            logger.Trace(errString);
+                            baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
+
+                        }
                     }
                     else
                     {
-                        SPInput_OrderAuthReservation input = new SPInput_OrderAuthReservation
-                        {
-                            order_number = booking.order_number,
-                            IDNO = booking.IDNO,
-                            final_Price = booking.pre_final_Price,
-                            CardType = 1,
-                            AuthType = booking.AuthType,
-                            GateNo = GetGateNo(ReservationAuthGateCount),
-                            isRetry = 0,
-                            AutoClose = 0,
-                            PrgName = funName,
-                            PrgUser = "",
-                            AppointmentTime = ReserveBookingAuthTime
-                        };
+                        //取車日前X日的Y時以前預約的訂單 走預約授權的排程
+                        SPInput_OrderAuthReservation input = SetOrderAuthReservationObj(bookingObj, funName, ReservationAuthGateCount, ReserveBookingAuthTime);
 
-                        insertFlag = commonService.InsertOrderAuthReservation(input, ref errCode);
+                        insertFlag = commonService.InsertOrderAuthReservation(input, ref errCode, ref lstError);
+                        if (!insertFlag)
+                        {
+                            string errString = SetErrorStringForLog("InsertOrderAuthReservation", lstError, bookingObj);
+                            
+                            logger.Trace(errString);
+                            baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
+                        }
                     }
                 }
 
+                //處理逾時
                 foreach (var timeoutObj in timeoutList)
                 {
                     var insertFlag = false;
-                    SPInput_OrderAuth input = new SPInput_OrderAuth
-                    {
-                        order_number = timeoutObj.order_number,
-                        IDNO = timeoutObj.IDNO,
-                        final_Price = 0,
-                        CardType = 1,
-                        AuthType = timeoutObj.AuthType,
-                        GateNo = GetGateNo(AuthGateCount),
-                        isRetry = 0,
-                        AutoClose = 0,
-                        PrgName = funName,
-                        PrgUser = ""
-                    };
 
-                    insertFlag = commonService.InsertOrderAuth(input, ref errCode);
+                    timeoutObj.pre_final_Price = GetPrepaidAmount(timeoutObj.order_number, PrepaidDays, timeoutObj.stop_time);
+                    SPInput_OrderAuth input = SetOrderAuthObj(timeoutObj, funName, AuthGateCount);
+                   
+                    insertFlag = commonService.InsertOrderAuth(input, ref errCode,ref lstError);
+                    if (!insertFlag)
+                    {
+                        string errString = SetErrorStringForLog("InsertOrderAuth", lstError, timeoutObj);
+                           
+                        logger.Trace(errString);
+                        baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
+                    }
                 }
 
+                errCode = "000000";
             }
             
             #endregion
@@ -182,14 +177,14 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        private List<PreOrderAuth> GetPreOrderAuthList(ref bool flag, ref List<ErrorInfo> lstError,ref string errCode)
+        private List<PreOrderAuth> GetPreOrderAuthList(int NHour, ref bool flag, ref List<ErrorInfo> lstError,ref string errCode)
         {
             var PreOrderAuthList = new List<PreOrderAuth>();
 
-            SPInput_GetPreCreditAuthList spInput = new SPInput_GetPreCreditAuthList();
-            //{
-            //    //MINUTES = AuthResendMin
-            //};
+            SPInput_GetPreCreditAuthList spInput = new SPInput_GetPreCreditAuthList
+            {
+                NHour = NHour
+            };
 
             string SPName = "usp_GetPreCreditAuthList_Q01";
             SPOutput_Base spOutBase = new SPOutput_Base();
@@ -228,8 +223,72 @@ namespace WebAPI.Controllers
 
         }
 
+        private int GetPrepaidAmount(Int64 order_number,int prepaidDays,DateTime stop_time)
+        {
+            CommonService commonService = new CommonService();
+            var orderInfo = commonService.GetOrderForPreAuth(order_number);
 
+            var estimateData = new EstimateData
+            {
+                ProjID = orderInfo.ProjID,
+                ProjType = orderInfo.ProjType,
+                SD = stop_time,
+                ED = stop_time.AddDays(prepaidDays),
+                Insurance = orderInfo.Insurance,
+                InsurancePerHours = orderInfo.InsurancePerHours,
+                WeekdayPrice = orderInfo.WeekdayPrice,
+                HoildayPrice = orderInfo.HoildayPrice
+            };
 
+            return commonService.EstimatePreAuthAmt(estimateData);
+
+        }
+
+        private SPInput_OrderAuth SetOrderAuthObj (PreOrderAuth input,string funName,int GateCount)
+        {
+            SPInput_OrderAuth OrderAuthObj = new SPInput_OrderAuth
+            {
+                order_number = input.order_number,
+                IDNO = input.IDNO,
+                final_price = input.pre_final_Price,
+                CardType = 1,
+                AuthType = input.AuthType,
+                GateNO = GetGateNo(GateCount),
+                isRetry = 0,
+                AutoClose = 0,
+                PrgName = funName,
+                PrgUser = ""
+            };
+
+            return OrderAuthObj;
+        }
+
+        private SPInput_OrderAuthReservation SetOrderAuthReservationObj(PreOrderAuth input, string funName, int GateCount,DateTime AppointmentTime)
+        {
+            SPInput_OrderAuthReservation OrderAuthObj = new SPInput_OrderAuthReservation
+            {
+                order_number = input.order_number,
+                IDNO = input.IDNO,
+                final_price = input.pre_final_Price,
+                CardType = 1,
+                AuthType = input.AuthType,
+                GateNO = GetGateNo(GateCount),
+                isRetry = 0,
+                AutoClose = 0,
+                PrgName = funName,
+                PrgUser = "",
+                AppointmentTime = AppointmentTime
+            };
+
+            return OrderAuthObj;
+        }
+
+        private string SetErrorStringForLog<T>(string title, List<ErrorInfo> lstError,T input)
+        {
+            string errString = $"{title} Error:{JsonConvert.SerializeObject(lstError)} InputObj:{JsonConvert.SerializeObject(input)}";
+            
+            return errString;
+        }
 
     }
 }

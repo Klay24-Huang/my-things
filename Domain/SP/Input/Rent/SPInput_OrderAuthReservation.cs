@@ -20,7 +20,7 @@ namespace Domain.SP.Input.Rent
         /// <summary>
         /// 授權金額
         /// </summary>
-        public int final_Price { get; set; }
+        public int final_price { get; set; }
         /// <summary>
         /// 預設卡片類型 0:和泰Pay 1:台新
         /// </summary>
@@ -32,7 +32,7 @@ namespace Domain.SP.Input.Rent
         /// <summary>
         /// 排程通道
         /// </summary>
-        public int GateNo { get; set; }
+        public int GateNO { get; set; }
         /// <summary>
         /// 授權次數
         /// </summary>

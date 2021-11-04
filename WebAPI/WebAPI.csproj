@@ -533,6 +533,7 @@
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetOrderInsuranceInfo.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetPreCreditAuthJob.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInvitation.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeModify.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeListQuery.cs" />
