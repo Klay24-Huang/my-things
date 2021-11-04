@@ -28,6 +28,10 @@ namespace Domain.SP.Input.Bill
         /// 客戶編號
         /// </summary>
         public string IDNO { set; get;  }
+        /// <summary>
+        /// 訂閱制代碼 20211104 ADD BY ADAM
+        /// </summary>
+        public int MonId { set; get; }
         public long LogID { set; get; }
     }
 }
