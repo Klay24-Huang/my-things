@@ -199,6 +199,10 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// 安心服務小計
         /// </summary>
         public string NOCAMT { set; get; }
+        /// <summary>
+        /// 停車費 20210818補上
+        /// </summary>
+        public string PARKINGAMT2 { set; get; }
         public PaymentDetail[] tbPaymentDetail { set; get; }
     }
     public class PaymentDetail

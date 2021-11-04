@@ -1002,8 +1002,6 @@ namespace WebAPI.Controllers
             CarRentInfo carInfo = new CarRentInfo();//汽車資料
             int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH 
 
-            double nor_car_wDisc = 0;//只有一般時段時平日折扣
-            double nor_car_hDisc = 0;//只有一般時段時價日折扣
             int nor_car_PayDisc = 0;//只有一般時段時總折扣
             int nor_car_PayDiscPrice = 0;//只有一般時段時總折扣金額
 

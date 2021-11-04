@@ -227,6 +227,7 @@ namespace WebAPI.Controllers
                         CarType = apiInput.CarType,
                         ProjType = ProjType,
                         IDNO = IDNO,
+                        MonId = apiInput.MonId,     //20211104 ADD BY ADAM REASON.訂閱制調整
                         LogID = LogID
                     };
                     string SPName = new ObjType().GetSPName(ObjType.SPType.GetProjectPriceBase);

@@ -87,7 +87,7 @@ namespace Reposotory.Implement
                 IDNO = string.IsNullOrEmpty(IDNO) ? null : IDNO,
                 hasPointer = hasPointer
             };
-            if(!string.IsNullOrEmpty(SD))
+            if (!string.IsNullOrEmpty(SD))
             {
                 spInput.SD = Convert.ToDateTime(SD);
             }
@@ -102,7 +102,7 @@ namespace Reposotory.Implement
             List<BE_MonthlyMain> lstOut = new List<BE_MonthlyMain>();
             DataSet ds = new DataSet();
             flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref lstOut, ref ds, ref lstError);
-          
+
             if (flag)
             {
                 if (spOut.Error == 1)

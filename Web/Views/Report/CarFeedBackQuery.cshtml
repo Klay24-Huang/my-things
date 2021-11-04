@@ -188,6 +188,21 @@
 <!--輸出表格-->
 <div class="container mt-4" id="ShowSetCardPanel" style="max-width:1500px;">
 
+    @*<script src="../../../Scripts/js/jquery-3.5.1.min.js"></script>
+    <script src="../../../Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+        function showBlockUI() {
+            $.blockUI({
+                message: '<table><tr><td valign="middle" style="height:50px" class="main"> 處理中,請稍候...</td></tr></table>',
+                css: {
+                    width: '450px',
+                    height: '150px'
+                }
+            });
+        }
+        showBlockUI()
+    </script>*@
+
     <table class="table bg-white" data-limit-navigation="5">
         <thead class="text-white bg-primary">
             @if (feedBackLen == 0)
@@ -352,6 +367,14 @@
             </tr>
         </tfoot>
     </table>
+
+    @*<script type="text/javascript">
+        function unBlockUI() {
+            $.unblockUI();
+        }
+        unBlockUI()
+    </script>*@
+
 </div>
 <div class="modal fade " id="surrounding_modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">

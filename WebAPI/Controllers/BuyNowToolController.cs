@@ -1,32 +1,36 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Subscription;
-using Domain.SP.Output.Subscription;
-using Domain.WebAPI.Input.HiEasyRentAPI;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using Domain.WebAPI.output.Taishin;
-using Newtonsoft.Json;
-using NLog;
-using OtherService;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.BillFunc;
-using WebAPI.Models.Param.CusFun.Input;
+using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using System.Data;
+using WebAPI.Models.BillFunc;
+using Domain.SP.Input.Bill;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
+using Domain.WebAPI.output.Taishin;
+using Domain.SP.Input.Subscription;
+using Domain.SP.Output.Subscription;
+using WebAPI.Models.Param.CusFun.Input;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using OtherService;
+using NLog;
+using System.Text;
 
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 立即購買
+    /// 立即購買-工具跳過信用卡付費
     /// </summary>
-    public class BuyNowController : ApiController
+    public class BuyNowToolController : ApiController
     {
         private List<Int64> payList = new List<Int64>() { 0 };
         private List<Int64> invoList = new List<Int64>() { 1, 2, 3, 4, 5, 6 };
@@ -315,8 +319,7 @@ namespace WebAPI.Controllers
 
         #endregion
 
-        #region 購買月租
-        [Route("api/BuyNow/DoAddMonth")]
+        [Route("api/BuyNowTool/DoAddMonth")]
         [HttpPost()]
         public async Task<Dictionary<string, object>> DoAddMonth([FromBody] Dictionary<string, object> value)
         {
@@ -336,9 +339,9 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BuyNow_DoAddMonthController";
+            string funName = "BuyNowTool_DoAddMonth";
             Int64 LogID = 0;
-            var apiInput = new IAPI_BuyNow_AddMonth();
+            var apiInput = new IAPI_BuyNowTool_AddMonth();
             var outputApi = new OAPI_BuyNow_Base();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -371,7 +374,7 @@ namespace WebAPI.Controllers
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
-                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BuyNow_AddMonth>(Contentjson);
+                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BuyNowTool_AddMonth>(Contentjson);
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -380,7 +383,8 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         if (string.IsNullOrWhiteSpace(apiInput.MonProjID) ||
-                           apiInput.MonProPeriod == 0)
+                           apiInput.MonProPeriod == 0 
+                           )
                         {
                             flag = false;
                             errCode = "ERR900";
@@ -408,6 +412,9 @@ namespace WebAPI.Controllers
                         }
                     }*/
 
+                    MerchantTradeNo = apiInput.MerchantTradeNo;
+                    TransactionNo = apiInput.TransactionNo;
+                    MonthlyRentId = apiInput.MonthlyRentId;
                     trace.FlowList.Add("防呆");
                 }
 
@@ -439,48 +446,6 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region TB
-
-                //是否已刷過卡
-                if (flag)
-                {//24小時內相同呼叫條件視為相同
-                    string spErrCode = "";
-                    var spIn = new SPInput_GetSubsCreditStatus()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        APIID = 181,
-                        ActionNM = funName,
-                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                    };
-                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                    if (sp_list != null && sp_list.Count() > 0)
-                    {
-                        flag = false;
-                        errCode = "ERR277";
-                        errMsg = "刷卡已存在";
-                    }
-                }
-
-                //先檢查是否可以購買訂閱制
-                //目前兩個情況會擋掉，積分小於60，已經有重複買的也不能
-                if (flag)
-                {
-                    string spErrCode = "";
-                    var spIn = new SPInput_BuyNowAddMonth_Q01()
-                    {
-                        IDNO = IDNO,
-                        MonProjId = apiInput.MonProjID,
-                        MonProPeroid = apiInput.MonProPeriod,
-                        ShortDays = apiInput.ShortDays,
-                        LogID = LogID
-                    };
-                    if (!msp.sp_BuyNowAddMonth_Q01(spIn, ref spErrCode))
-                    {
-                        flag = false;
-                        errCode = spErrCode;
-                        errMsg = "購買失敗!";
-                    }
-                }
 
                 if (flag)
                 {
@@ -537,30 +502,12 @@ namespace WebAPI.Controllers
                     #region 信用卡交易
 
                     var WsOut = new WebAPIOutput_Auth();
-                    if (ProdPrice > 0) //有價格才進行信用卡交易
+                    if (apiInput.CreditCardFlg == 1 && ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
 
-                        #region 刷卡狀態-共用
-
-                        string spErrCode = "";
-                        var spIn = new SPInput_SetSubsCreditStatus()
-                        {
-                            IDNO = IDNO,
-                            LogID = LogID,
-                            APIID = 181,
-                            ActionNM = funName,
-                            ApiCallKey = JsonConvert.SerializeObject(apiInput),
-                            CreditStatus = 0
-                        };
-
-                        #endregion
-
                         try
                         {
-                            //寫入刷卡狀態-未送
-                            var sp_re = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
                             flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
 
                             if (WsOut != null)
@@ -573,32 +520,14 @@ namespace WebAPI.Controllers
                                 CreditCardNo = WsOut.ResponseParams.ResultData.CardNumber;
                                 MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
                             }
-
-                            #region 更新刷卡狀態-一般
-
-                            spIn.CreditStatus = flag ? 1 : 2;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion)
-                            if (WsOut != null)
-                                spIn.BankApiRe = JsonConvert.SerializeObject(WsOut);
-                            //更新信用卡呼叫紀錄
-                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
-                            #endregion
                         }
                         catch (Exception ex)
                         {
                             flag = false;
                             errCode = "ERR270";
                             trace.BaseMsg = ex.Message;
-
-                            #region 更新刷卡狀態-例外
-
-                            spIn.CreditStatus = 3;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion) 
-                            spIn.Note = ex.Message;
-                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
-                            #endregion
-
                             throw new Exception("TSIBTrade Fail");
+
                         }
 
                         trace.FlowList.Add("信用卡交易");
@@ -609,7 +538,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 後續api處理
-                    if (flag)
+                    if (apiInput.SubsDataFlg == 1 && flag)
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
@@ -618,7 +547,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 履保
-                    if (flag)
+                    if (apiInput.EscrowMonthFlg == 1 && flag)
                     {
                         try
                         {
@@ -650,7 +579,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 發票
-                    if (flag && ProdPrice > 0)
+                    if (apiInput.InvoiceFlg==1 && flag)
                     {
                         try
                         {
@@ -659,7 +588,7 @@ namespace WebAPI.Controllers
                                 CUSTID = IDNO,
                                 CUSTNM = mem.MEMCNAME,
                                 EMAIL = mem.MEMEMAIL,
-                                MonRentID = buyNxtCom.MonthlyRentId,
+                                MonRentID = apiInput.MonthlyRentId == 0 ? buyNxtCom.MonthlyRentId : apiInput.MonthlyRentId,
                                 MonProjID = apiInput.MonProjID,
                                 MonProPeriod = apiInput.MonProPeriod,
                                 ShortDays = apiInput.ShortDays,
@@ -693,7 +622,6 @@ namespace WebAPI.Controllers
                             if (wsOutput.Result == false)
                             {
                                 xflag = false;
-                                logger.Trace("發票開立失敗!MonthlyRentId=" + wsInput.MonRentID.ToString());
                             }
                             else
                             {
@@ -731,37 +659,6 @@ namespace WebAPI.Controllers
                                 }
                                 trace.FlowList.Add("發票存檔");
                             }
-                            else
-                            {
-                                //20210826 ADD BY ADAM REASON.發票開立失敗處理
-                                //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
-                                string sp_errCode = "";
-                                var spInput = new SPInput_InsMonthlyInvErr()
-                                {
-                                    ApiInput = JsonConvert.SerializeObject(wsInput),
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    MonthlyRentID = buyNxtCom.MonthlyRentId,
-                                    MonProjID = apiInput.MonProjID,
-                                    MonProPeriod = apiInput.MonProPeriod,
-                                    ShortDays = apiInput.ShortDays,
-                                    NowPeriod = 1,
-                                    PayTypeId = (Int64)apiInput.PayTypeId,
-                                    InvoTypeId = InvoTypeId,
-                                    InvoiceType = InvData.InvocieType,
-                                    CARRIERID = InvData.CARRIERID,
-                                    UNIMNO = InvData.UNIMNO,
-                                    NPOBAN = InvData.NPOBAN,
-                                    INVAMT = ProdPrice
-                                };
-
-                                xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
-                                if (!xflag)
-                                {
-                                    logger.Trace("spError=" + sp_errCode);
-                                }
-                                trace.FlowList.Add("發票錯誤處理");
-                            }
                         }
                         catch (Exception ex)
                         {
@@ -771,7 +668,7 @@ namespace WebAPI.Controllers
                     }
 
                     #endregion
-
+                    
                     outputApi.PayResult = flag ? 1 : 0;
                 }
 
@@ -791,10 +688,8 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-        #endregion
 
-        #region 月租升轉
-        [Route("api/BuyNow/DoUpMonth")]
+        [Route("api/BuyNowTool/DoUpMonth")]
         [HttpPost()]
         public async Task<Dictionary<string, object>> DoUpMonth([FromBody] Dictionary<string, object> value)
         {
@@ -814,7 +709,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BuyNow_DoUpMonthController";
+            string funName = "BuyNow_DoUpMonth";
             Int64 LogID = 0;
             var apiInput = new IAPI_BuyNow_UpMonth();
             var outputApi = new OAPI_BuyNow_Base();
@@ -919,27 +814,6 @@ namespace WebAPI.Controllers
 
                 #region TB
 
-                //是否已刷過卡
-                if (flag)
-                {//24小時內相同呼叫條件視為相同
-                    string spErrCode = "";
-                    var spIn = new SPInput_GetSubsCreditStatus()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        APIID = 181,
-                        ActionNM = funName,
-                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                    };
-                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                    if (sp_list != null && sp_list.Count() > 0)
-                    {
-                        flag = false;
-                        errCode = "ERR277";
-                        errMsg = "刷卡已存在";
-                    }
-                }
-
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -1011,30 +885,11 @@ namespace WebAPI.Controllers
                     #region 信用卡交易
 
                     var WsOut = new WebAPIOutput_Auth();
-                    if (ProdPrice > 0) //有價格才進行信用卡交易
+                    if (false && ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
-
-                        #region 刷卡狀態-共用
-
-                        string spErrCode = "";
-                        var spIn = new SPInput_SetSubsCreditStatus()
-                        {
-                            IDNO = IDNO,
-                            LogID = LogID,
-                            APIID = 181,
-                            ActionNM = funName,
-                            ApiCallKey = JsonConvert.SerializeObject(apiInput),
-                            CreditStatus = 0
-                        };
-
-                        #endregion
-
                         try
                         {
-                            //寫入刷卡狀態-未送
-                            var sp_re = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
                             flag = mscom.Month_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
@@ -1047,30 +902,12 @@ namespace WebAPI.Controllers
                                 MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
                             }
 
-                            #region 更新刷卡狀態-一般
-
-                            spIn.CreditStatus = flag ? 1 : 2;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion)
-                            if (WsOut != null)
-                                spIn.BankApiRe = JsonConvert.SerializeObject(WsOut);
-                            //更新信用卡呼叫紀錄
-                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
-                            #endregion
                         }
                         catch (Exception ex)
                         {
                             flag = false;
                             errCode = "ERR270";
                             trace.BaseMsg = ex.Message;
-
-                            #region 更新刷卡狀態-例外
-
-                            spIn.CreditStatus = 3;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion) 
-                            spIn.Note = ex.Message;
-                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
-                            #endregion
-
                             throw new Exception("TSIBTrade Fail");
                         }
 
@@ -1081,7 +918,7 @@ namespace WebAPI.Controllers
 
                     #region 後續api處理
 
-                    if (flag)
+                    if (false && flag)
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
@@ -1229,10 +1066,8 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-        #endregion
 
-        #region 月租欠費
-        [Route("api/BuyNow/DoPayArrs")]
+        [Route("api/BuyNowTool/DoPayArrs")]
         [HttpPost()]
         public async Task<Dictionary<string, object>> DoPayArrs([FromBody] Dictionary<string, object> value)
         {
@@ -1252,7 +1087,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "BuyNow_DoPayArrsController";
+            string funName = "BuyNow_DoPayArrs";
             Int64 LogID = 0;
             var apiInput = new IAPI_BuyNow_PayArrs();
             var outputApi = new OAPI_BuyNow_Base();
@@ -1348,27 +1183,6 @@ namespace WebAPI.Controllers
 
                 #region TB
 
-                //是否已刷過卡
-                if (flag)
-                {//24小時內相同呼叫條件視為相同
-                    string spErrCode = "";
-                    var spIn = new SPInput_GetSubsCreditStatus()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        APIID = 181,
-                        ActionNM = funName,
-                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                    };
-                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                    if (sp_list != null && sp_list.Count() > 0)
-                    {
-                        flag = false;
-                        errCode = "ERR277";
-                        errMsg = "刷卡已存在";
-                    }
-                }
-
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -1423,30 +1237,11 @@ namespace WebAPI.Controllers
                     #region 信用卡交易
 
                     var WsOut = new WebAPIOutput_Auth();
-                    if (ProdPrice > 0) //有價格才進行信用卡交易
+                    if (false && ProdPrice > 0) //有價格才進行信用卡交易
                     {
                         trace.traceAdd("CarTradeIn", new { IDNO, ProdPrice, errCode });
-
-                        #region 刷卡狀態-共用
-
-                        string spErrCode = "";
-                        var spIn = new SPInput_SetSubsCreditStatus()
-                        {
-                            IDNO = IDNO,
-                            LogID = LogID,
-                            APIID = 181,
-                            ActionNM = funName,
-                            ApiCallKey = JsonConvert.SerializeObject(apiInput),
-                            CreditStatus = 0
-                        };
-
-                        #endregion
-
                         try
                         {
-                            //寫入刷卡狀態-未送
-                            var xsp_re = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
                             flag = mscom.MonArrears_TSIBTrade(IDNO, ref WsOut, ref ProdPrice, ref errCode);
                             if (WsOut != null)
                                 trace.traceAdd("CarTradeResult", new { WsOut });
@@ -1458,31 +1253,12 @@ namespace WebAPI.Controllers
                                 CreditCardNo = WsOut.ResponseParams.ResultData.CardNumber;
                                 MerchantTradeNo = WsOut.ResponseParams.ResultData.MerchantTradeNo;
                             }
-
-                            #region 更新刷卡狀態-一般
-
-                            spIn.CreditStatus = flag ? 1 : 2;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion)
-                            if (WsOut != null)
-                                spIn.BankApiRe = JsonConvert.SerializeObject(WsOut);
-                            //更新信用卡呼叫紀錄
-                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
-                            #endregion
                         }
                         catch (Exception ex)
                         {
                             flag = false;
                             errCode = "ERR270";
                             trace.BaseMsg = ex.Message;
-
-                            #region 更新刷卡狀態-例外
-
-                            spIn.CreditStatus = 3;//刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion) 
-                            spIn.Note = ex.Message;
-                            var sp_re2 = msp.sp_SetSubsCreditStatus(spIn, ref spErrCode);
-
-                            #endregion
-
                             throw new Exception("TSIBTrade Fail");
                         }
 
@@ -1531,7 +1307,7 @@ namespace WebAPI.Controllers
 
                     #endregion
 
-                    if (flag && ProdPrice > 0)  //阻擋0元發票
+                    if (flag)
                     {
                         try
                         {
@@ -1647,6 +1423,17 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-        #endregion
+
+    }
+
+    public class IAPI_BuyNowTool_AddMonth : IAPI_BuyNow_AddMonth
+    {
+        public string MerchantTradeNo { get; set; }
+        public string TransactionNo { get; set; }
+        public int MonthlyRentId { get; set; }
+        public int CreditCardFlg { get; set; }
+        public int SubsDataFlg { get; set; }
+        public int EscrowMonthFlg { get; set; }
+        public int InvoiceFlg { get; set; }
     }
 }

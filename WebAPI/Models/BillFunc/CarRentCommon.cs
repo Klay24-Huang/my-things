@@ -286,7 +286,7 @@ namespace WebAPI.Models.BillFunc
                     {
                         var pri = cr_sp.sp_GetEstimate("", "", sour.LogID, ref xErrMsg, sour.intOrderNO);
                         if (pri != null && pri.PRICE_H > 0)
-                            m.HoildayRateForCar = Convert.ToSingle(pri.PRICE_H/10);
+                            m.HoildayRateForCar = Convert.ToSingle(pri.PRICE_H)/10; //20210731 ADD BY ADAM REASON.補上除以10
                     }
                     trace.FlowList.Add("置換汽車假日優惠費率");                    
                 }

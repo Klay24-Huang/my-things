@@ -259,6 +259,7 @@
 | iOS     | https://irentcar-app.azurefd.net/   | https://irentcar-app-test.azurefd.net/   |
 | ANDROID | https://irent-app-jpw.ai-irent.net/ | https://irent-app-jpw-test.ai-irent.net/ |
 
+
 # Header參數相關說明
 
 | KEY | VALUE |
@@ -6548,7 +6549,6 @@
 | 錯誤代碼 | 說明 |
 | ------- | ------- |
 | ERR919 | 對方不能租車，請對方確認會員狀態哦！ |
-| ERR920 | 同時段有合約或預約，不能邀請哦！ |
 | ERR921 | 已至邀請人數上限，請手動移除非邀請對象哦！ |
 | ERR924 | 無法取消共同承租邀請 |
 | ERR925 | 無法進行共同承租重新邀請 |
