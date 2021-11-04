@@ -1327,10 +1327,10 @@ namespace OtherService
                     LogID = 0,
                     OrderNo = tmpOrder,
                     MerchantTradeNo = input.RequestParams.MerchantTradeNo,
-                    ChkClose = (AutoClose==1)?1:0,
+                    ChkClose = (AutoClose == 1) ? 1 : 0,
                     CardType = 1,
                     ProName = FunName,
-                    UserID = InsUser
+                    UserID = (InsUser == FunName) ? "" : ((InsUser.Length > 20) ? InsUser.Substring(0, 20) : InsUser)
                 };
                 if (output.RtnCode == "0")
                 {

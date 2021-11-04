@@ -592,6 +592,10 @@
     <Build Include="dbo\User Defined Types\TY_TradeClose.sql" />
     <Build Include="dbo\Stored Procedures\usp_CreditAuth_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_CreditAuth_U01.sql" />
+    <Build Include="dbo\Tables\TB_OrderAuthReservation.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsOrderAuthReservation_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsOrderAuth_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetPreCreditAuthList_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetOrderInfoForPreAuth_Q01.sql" />
   </ItemGroup>
   <ItemGroup>

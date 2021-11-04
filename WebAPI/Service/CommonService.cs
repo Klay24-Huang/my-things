@@ -255,5 +255,42 @@ namespace WebAPI.Service
             return result;
         }
         #endregion
+
+        /// <summary>
+        /// 寫入信用卡授權排程清單
+        /// </summary>
+        /// <param name="Input"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool InsertOrderAuth(SPInput_OrderAuth Input, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            string SPName = "usp_InsOrderAuth_I01";
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_OrderAuth, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_OrderAuth, SPOutput_Base>(connetStr);
+
+            var flag = sqlHelp.ExecuteSPNonQuery(SPName, Input, ref spOut, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+            return flag;
+        }
+
+
+        /// <summary>
+        /// 寫入預約信用卡授權排程清單
+        /// </summary>
+        /// <param name="Input"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool InsertOrderAuthReservation(SPInput_OrderAuthReservation Input, ref string errCode , ref List<ErrorInfo> lstError)
+        {
+            string SPName = "usp_InsOrderAuth_I01";
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_OrderAuthReservation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_OrderAuthReservation, SPOutput_Base>(connetStr);
+
+            var flag = sqlHelp.ExecuteSPNonQuery(SPName, Input, ref spOut, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+            return flag;
+        }
     }
 }
