@@ -796,6 +796,7 @@
 | CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                     | string | Y          |
 | IsShowBuy       | 是否顯示購買牌卡 (Y:是 N:否)                                 | string | Y          |
 | HasNoticeMsg    | 是否有推播訊息 (Y:是 N:否)                                   | string | Y          |
+| AuthStatus      | 預授權條款狀態 (Y:重新確認 N:不需重新確認)                   | string | Y          |
 
 
 * Output範例
@@ -834,7 +835,8 @@
             "BLOCK_EDATE": "",
             "CMKStatus": "Y",
             "IsShowBuy": "Y",
-			"HasNoticeMsg": "Y"
+			"HasNoticeMsg": "Y",
+            "AuthStatus": "Y"
         }
     }
 }
@@ -1095,15 +1097,17 @@
 * 動作 [POST]
 * Input 傳入參數說明
 
-| 參數名稱  | 參數說明                       | 必要 |  型態  | 範例 |
-| --------- | ------------------------------ | :--: | :----: | ---- |
-| CHKStatus | 是否同意 (Y：同意 / N：不同意) |  Y   | string | Y    |
+| 參數名稱  | 參數說明                                     | 必要 |  型態  | 範例 |
+| --------- | -------------------------------------------- | :--: | :----: | ---- |
+| CHKStatus | 是否同意 (Y：同意 / N：不同意)               |  Y   | string | Y    |
+| SeqNo     | 流水號<br>1:會員條款狀態<br>2:預授權條款狀態 |  Y   |  int   | 0    |
 
 * Input範例
 
 ```
 {
-    "CHKStatus": "Y"
+    "CHKStatus": "Y",
+    "SeqNo": 2
 }
 ```
 

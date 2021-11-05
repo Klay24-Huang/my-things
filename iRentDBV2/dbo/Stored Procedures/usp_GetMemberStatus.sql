@@ -19,7 +19,8 @@
 			 20210708 UPD BY Olivia 調整會員權限檢核順序
 			 20210811 UPD BY YEH REASON:增加會員條款狀態
 			 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
-			 
+			 20210917 ADD BY ADAM REASON.是否有推播判斷
+			 20211105 UPD BY YEH REASON:增加預授權條款狀態
 * Example  : 
 ***********************************************************************************************/
 
@@ -101,10 +102,24 @@ BEGIN TRY
 		SELECT VerType,MAX(Version) AS Version
 		INTO #CMKDef
 		FROM TB_CMKDef
-		WHERE DATEADD(HOUR,8,GETDATE()) >= SDATE
+		WHERE @NowTime >= SDATE
 		GROUP BY VerType;
 
 		SELECT @Audit=Audit FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+
+		--20210917 ADD BY ADAM REASON.是否有未讀推播判斷
+		DECLARE @HasNoticeMsg VARCHAR(1)
+				,@NOTIFYTIME DATETIME
+		SELECT TOP 1 @HasNoticeMsg = CASE WHEN COUNT(A.NotificationID)>0 THEN 'Y' ELSE 'N' END
+		,@NOTIFYTIME=MAX(A.MKTime)
+		FROM TB_PersonNotification A WITH(NOLOCK)
+		LEFT JOIN TB_PersonNotificationRLog B WITH(NOLOCK) ON A.NotificationID=B.NotificationID
+		WHERE A.IDNO=@IDNO 
+		AND A.MKTime > DATEADD(day,-1,@NowTime)
+		AND B.NotificationID IS NULL
+		GROUP BY A.NotificationID
+		ORDER BY A.NotificationID DESC
+
 
 		IF @Audit = 1	--審核過以主檔判定，沒過用待審
 		BEGIN
@@ -117,12 +132,12 @@ BEGIN TRY
 				,Audit_Car			= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
 											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
 											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
-											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20 THEN -1
 											ELSE ISNULL(C.CarDriver_1,0) END		--汽車駕照
 				,Audit_Motor		= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
 											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
 											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
-											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20 THEN -1
 											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
 											WHEN ISNULL(C.CarDriver_1,0)=2 THEN 2
 											ELSE ISNULL(C.MotorDriver_1,0) END		--機車駕照
@@ -138,8 +153,8 @@ BEGIN TRY
 											--20210105 UPD BY JERRY 更新自拍照沒有，但是審核通過就不顯示未完成註冊訊息
 											WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR (C.Self_1=0 AND Audit<>1)  THEN 2
 											-- 20210504 ADD BY JET 未滿20歲且未上傳法定代理人，顯示2:完成註冊未上傳照片
-											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-																		AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN 2
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 >=18 
+																		AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20 THEN 2
 											WHEN A.Audit=0 THEN 3
 											WHEN A.Audit=2 THEN 4
 											--20210708 UPDATE BY OLIVIA 調整檢查順序，身份證/自拍照/簽名檔/未滿20歲未上傳法定代理人/駕照2選1
@@ -149,11 +164,11 @@ BEGIN TRY
 											WHEN A.Audit=1 AND C.Self_1=-1 THEN 6
 											WHEN A.Audit=1 AND C.Signture=1 THEN 5--檢查簽名檔
 											WHEN A.Audit=1 AND C.Signture=-1 THEN 6											
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=-1 THEN 6
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=1 THEN 5
 											--20210104 UPD BY JERRY 只要有一個審核通過，就不顯示審核異常
 											WHEN A.Audit=1 AND (C.CarDriver_1=2 OR C.MotorDriver_1=2) THEN 0
@@ -171,11 +186,11 @@ BEGIN TRY
 											WHEN A.Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
 											WHEN A.Audit=1 AND C.Signture=1 THEN '身分變更審核中'
 											WHEN A.Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=1 THEN '身分變更審核中'
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=-1 THEN '身分變更審核失敗'
 											WHEN A.Audit=1 AND C.CarDriver_1=1 THEN '身分變更審核中'
 											WHEN A.Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
@@ -189,8 +204,8 @@ BEGIN TRY
 											--20210708 UPDATE BY OLIVIA 照片狀態原判斷=0調整成判斷小於2的都要顯示
 											WHEN C.ID_1<2 OR (C.CarDriver_1<2 AND C.CarDriver_2<2) OR (C.Self_1<2 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
 											--20210708 UPDATE BY OLIVIA 照片狀態原判斷=0調整成判斷小於2的都要顯示
-											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-																		AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 >=18 
+																		AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20 THEN '完成註冊/審核，即可開始租車'
 											WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
 											WHEN C.CarDriver_1=1 THEN '身分審核中~'
 											WHEN C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
@@ -201,8 +216,8 @@ BEGIN TRY
 											--20210708 UPDATE BY OLIVIA 照片狀態原判斷=0調整成判斷小於2的都要顯示
 											WHEN C.ID_1<2 OR ((C.MotorDriver_1<2 AND C.MotorDriver_2<2) AND (C.CarDriver_1<2 AND C.CarDriver_2<2)) OR (C.Self_1<2 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
 											--20210708 UPDATE BY OLIVIA 照片狀態原判斷=0調整成判斷小於2的都要顯示
-											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-																		AND DATEDIFF(MONTH,A.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 >=18 
+																		AND DATEDIFF(MONTH,A.MEMBIRTH,@NowTime)/12 <20 THEN '完成註冊/審核，即可開始租車'
 											WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
 											WHEN C.MotorDriver_1=1 THEN '身分審核中~'
 											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
@@ -221,11 +236,17 @@ BEGIN TRY
 				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
 				,CMKStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Hims' AND Version=E.Version),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態
 				,IsShowBuy			= CASE WHEN ISNULL(D.Score,100) >= 60 THEN 'Y' ELSE 'N' END	-- 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
+				,HasNoticeMsg		= CASE WHEN R.IDNO IS NULL THEN @HasNoticeMsg 
+										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='N' THEN 'N' 
+										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
+										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
+				,AuthStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Auth' AND Version=E.Version),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
 			LEFT JOIN TB_MemberScoreMain D WITH(NOLOCK) ON D.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_MemberCMK E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
+			LEFT JOIN TB_NoticeRLog R WITH(NOLOCK) ON R.IDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO;
 		END
 		ELSE
@@ -239,12 +260,12 @@ BEGIN TRY
 				,Audit_Car			= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
 											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
 											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
-											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20 THEN -1
 											ELSE ISNULL(C.CarDriver_1,0) END		--汽車駕照
 				,Audit_Motor		= CASE WHEN ISNULL(C.ID_1,0)<>2 OR ISNULL(C.ID_2,0)<>2 THEN -1
 											WHEN ISNULL(C.Self_1,0) <> 2 THEN -1
 											WHEN ISNULL(C.Signture,0) <> 2 THEN -1
-											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN -1
+											WHEN ISNULL(C.Law_Agent,0) <> 2 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20 THEN -1
 											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
 											WHEN ISNULL(C.CarDriver_1,0)=2 THEN 2
 											ELSE ISNULL(C.MotorDriver_1,0) END		--機車駕照
@@ -260,8 +281,8 @@ BEGIN TRY
 											--20210105 UPD BY JERRY 更新自拍照沒有，但是審核通過就不顯示未完成註冊訊息
 											WHEN C.ID_1=0 OR (C.CarDriver_1=0 AND C.MotorDriver_1=0) OR (C.Self_1=0 AND Audit<>1)  THEN 2
 											-- 20210504 ADD BY JET 未滿20歲且未上傳法定代理人，顯示2:完成註冊未上傳照片
-											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-																		AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN 2
+											WHEN ISNULL(C.Law_Agent,0)=0 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 >=18 
+																		AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20 THEN 2
 											WHEN A.Audit=0 THEN 3
 											WHEN A.Audit=2 THEN 4											
 											--20210708 UPDATE BY OLIVIA 調整檢查順序，身份證/自拍照/簽名檔/未滿20歲未上傳法定代理人/駕照2選1
@@ -271,11 +292,11 @@ BEGIN TRY
 											WHEN A.Audit=1 AND C.Self_1=-1 THEN 6
 											WHEN A.Audit=1 AND C.Signture=1 THEN 5
 											WHEN A.Audit=1 AND C.Signture=-1 THEN 6
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=-1 THEN 6
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=1 THEN 5
 											--20210104 UPD BY JERRY 只要有一個審核通過，就不顯示審核異常
 											WHEN A.Audit=1 AND (C.CarDriver_1=2 OR C.MotorDriver_1=2) THEN 0
@@ -292,16 +313,16 @@ BEGIN TRY
 											WHEN A.Audit=1 AND C.MotorDriver_1=1 THEN '身分變更審核中'
 											WHEN A.Audit=1 AND C.Self_1=1 THEN '身分變更審核中'
 											WHEN A.Audit=1 AND C.Signture=1 THEN '身分變更審核中'
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=1 THEN '身分變更審核中'
 											WHEN A.Audit=1 AND C.ID_1=-1 THEN '身分變更審核失敗'
 											WHEN A.Audit=1 AND C.CarDriver_1=-1 THEN '身分變更審核失敗'
 											WHEN A.Audit=1 AND C.MotorDriver_1=-1 THEN '身分變更審核失敗'
 											WHEN A.Audit=1 AND C.Self_1=-1 THEN '身分變更審核失敗'
 											WHEN A.Audit=1 AND C.Signture=-1 THEN '身分變更審核失敗'
-											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-														AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20
+											WHEN A.Audit=1 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 >=18 
+														AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20
 														AND C.Law_Agent=-1 THEN '身分變更審核失敗'
 											ELSE '' END
 				,BlackList			= 'N'
@@ -311,8 +332,8 @@ BEGIN TRY
 											--20210708 UPDATE BY OLIVIA 照片狀態原判斷=0調整成判斷小於2的都要顯示
 											WHEN C.ID_1<2 OR (C.CarDriver_1<2 AND C.CarDriver_2<2) OR (C.Self_1<2 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
 											--20210708 UPDATE BY OLIVIA 照片狀態原判斷=0調整成判斷小於2的都要顯示
-											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-																		AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 >=18 
+																		AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20 THEN '完成註冊/審核，即可開始租車'
 											WHEN A.Audit = 0 AND C.CarDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
 											WHEN C.CarDriver_1=1 THEN '身分審核中~'
 											WHEN C.CarDriver_1=-1 THEN '審核不通過，請重新提交資料'
@@ -322,8 +343,8 @@ BEGIN TRY
 											WHEN ISNULL(E.MEMCNAME,'')='' OR ISNULL(CONVERT(VARCHAR, E.MEMBIRTH, 111),'')='' OR ISNULL(E.MEMADDR,'')='' THEN '完成註冊/審核，即可開始租車'
 											--20210708 UPDATE BY OLIVIA 狀態核狀態改判斷小於2
 											WHEN C.ID_1<2 OR ((C.CarDriver_1<2 AND C.CarDriver_2<2) AND (C.MotorDriver_1<2 AND C.MotorDriver_2<2)) OR (C.Self_1<2 AND A.Audit<>1)  THEN '完成註冊/審核，即可開始租車'
-											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 >=18 
-																		AND DATEDIFF(MONTH,E.MEMBIRTH,DATEADD(HOUR,8,GETDATE()))/12 <20 THEN '完成註冊/審核，即可開始租車'
+											WHEN ISNULL(C.Law_Agent,0)<2 AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 >=18 
+																		AND DATEDIFF(MONTH,E.MEMBIRTH,@NowTime)/12 <20 THEN '完成註冊/審核，即可開始租車'
 											WHEN A.Audit = 0 AND C.MotorDriver_1=0 THEN '上傳駕照通過審核，即可開始租車'
 											WHEN C.MotorDriver_1=1 THEN '身分審核中~'
 											--20210106 UPD BY JERRY 更新判斷邏輯，如果汽車駕照是審核通過機車就可以使用
@@ -342,12 +363,18 @@ BEGIN TRY
 				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
 				,CMKStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Hims' AND Version=F.Version),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態
 				,IsShowBuy			= CASE WHEN ISNULL(D.Score,100) >= 60 THEN 'Y' ELSE 'N' END	-- 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
+				,HasNoticeMsg		= CASE WHEN R.IDNO IS NULL THEN @HasNoticeMsg 
+										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='N' THEN 'N' 
+										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
+										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
+				,AuthStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Auth' AND Version=F.Version),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
 			LEFT JOIN TB_MemberScoreMain D WITH(NOLOCK) ON D.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_MemberDataOfAutdit E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_MemberCMK F WITH(NOLOCK) ON F.MEMIDNO=A.MEMIDNO
+			LEFT JOIN TB_NoticeRLog R WITH(NOLOCK) ON R.IDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO;
 		END
 
@@ -380,21 +407,5 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberInfo';
-
-
-
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberStatus';
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberInfo';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'會員狀態', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberInfo';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberInfo';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberInfo';
