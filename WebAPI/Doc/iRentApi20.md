@@ -3720,7 +3720,7 @@
 | TransDiscount     | 轉乘優惠                                             | int | 0 |
 | MileageBill     | 預估里程費                                             | int | 62 |
 | Bill     | 預估總金額                                             | int | 172 |
-| cancel_status     | 取消訂單原因(訂單修改狀態：0 = 無(訂單未刪除，正常預約狀態)、1 = 修改指派車輛(此訂單因其他預約單強迫延長而更改過訂單 or 後台重新配車過 or 取車時無車，重新配車)、2 = 此訂單被人工介入過(後台協助取還車 or 後台修改訂單資料)、3 = 訂單已取消(會員主動取消 or 逾時15分鐘未取車)、4 = 訂單已取消(因車輛仍在使用中又無法預約到其他車輛而取消)、5 = 整備使用(逾時未取或還車)、6 = 預授權失敗取消訂單)                                             | int | 0 |
+| cancel_status     | 取消狀態文字(目前分為"已取消"、"授權失敗已取消")   | string | "授權失敗已取消" |
 
 
 
@@ -3765,7 +3765,7 @@
                 "TransDiscount": 0,
                 "MileageBill": 62,
                 "Bill": 172,
-                "cancel_status": 3
+                "cancel_status": "已取消"
             },
             {
                 "order_number": "H11524658",
@@ -3796,7 +3796,7 @@
                 "TransDiscount": 0,
                 "MileageBill": 62,
                 "Bill": 172,
-                "cancel_status": 3
+                "cancel_status": "已取消"
             }
         ]
     }
