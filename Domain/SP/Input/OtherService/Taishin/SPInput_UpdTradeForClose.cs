@@ -9,7 +9,7 @@ namespace Domain.SP.Input.OtherService.Taishin
     public class SPInput_UpdTradeForClose: SPInput_UpdTrade
     {
         /// <summary>
-        /// 可否關帳 0:可關帳、1:不可關帳
+        /// 可否關帳 0:不可關帳、1:可關帳
         /// </summary>
         public int ChkClose { get; set; }
         /// <summary>

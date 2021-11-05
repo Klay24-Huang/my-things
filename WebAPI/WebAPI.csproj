@@ -277,6 +277,7 @@
     <Compile Include="Controllers\BuyNowToolController.cs" />
     <Compile Include="Controllers\CloseAccountFtpDownloadController.cs" />
     <Compile Include="Controllers\CloseAccountFtpUploadController.cs" />
+    <Compile Include="Controllers\CreditAuthJobV2Controller.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
     <Compile Include="Controllers\GetCarMapDataController.cs" />
@@ -526,12 +527,15 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_GetCarMapData.cs" />
+    <Compile Include="Models\Param\Bill\Input\IFN_CreditAuthRequest.cs" />
     <Compile Include="Models\Param\Bill\Input\IFN_TSIBCardTrade.cs" />
+    <Compile Include="Models\Param\Bill\Output\OFN_CreditAuthResult.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_CarRentInCompute.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_GetCarRentPrice.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CreditAuthJobV2.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetOrderInsuranceInfo.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPreCreditAuthJob.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInvitation.cs" />
@@ -823,7 +827,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Doc\" />
-    <Folder Include="Models\Param\Bill\Output\" />
     <Folder Include="Models\Param\CusFun\Output\" />
   </ItemGroup>
   <ItemGroup>
