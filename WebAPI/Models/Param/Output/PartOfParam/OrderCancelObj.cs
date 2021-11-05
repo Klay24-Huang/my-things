@@ -118,6 +118,6 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 取消訂單原因
         /// </summary>
-        public int cancel_status { get; set; }
+        public string cancel_status { get; set; }
     }
 }
