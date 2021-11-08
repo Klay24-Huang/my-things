@@ -456,8 +456,6 @@ namespace WebAPI.Models.ComboFunc
             return flag;
         }
 
-
-
         public bool DoAuthV4(IFN_CreditAuthRequest AuthInput, ref string errCode, ref OFN_CreditAuthResult AuthOutput)
         {
             bool flag = true;

@@ -277,6 +277,7 @@
     <Compile Include="Controllers\BuyNowToolController.cs" />
     <Compile Include="Controllers\CloseAccountFtpDownloadController.cs" />
     <Compile Include="Controllers\CloseAccountFtpUploadController.cs" />
+    <Compile Include="Controllers\CreditAuthReservationJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobV2Controller.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
