@@ -90,6 +90,9 @@ SET @IsSuccess      =ISNULL(@IsSuccess      ,-2);
 				Begin
 					Set @PRGID = Left(@ProName,20)
 				End
+				if(@UserID = '')
+					Set @UserID = @PRGID
+
 				Begin tran
 					UPDATE TB_Trade
 					SET IsSuccess=@IsSuccess,RetCode=@RetCode,RetMsg=@RetMsg,TaishinTradeNo=@TaishinTradeNo,CardNumber=@CardNumber,process_date=@process_date,AUTHAMT=@AUTHAMT,AuthIdResp=@AuthIdResp,UPDTime=@NowTime,MerchantMemberID=@MerchantMemberID
@@ -140,4 +143,4 @@ SET @IsSuccess      =ISNULL(@IsSuccess      ,-2);
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_UPDTrade';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_UPDTradeForClose_U01';
