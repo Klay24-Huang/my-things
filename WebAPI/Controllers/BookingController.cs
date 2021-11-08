@@ -405,10 +405,10 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 NType = 19,
                                 STime = DateTime.Now.AddSeconds(10),
-                                Title = "預授權通知",
+                                Title = "取授權通知",
                                 imageurl = "",
                                 url = "",
-                                Message = $"取授權通知:已於{DateTime.Now.ToString("MM/dd hh:mm")}預約取授權成功，金額 {preAuthAmt}，謝謝!"
+                                Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}預約取授權成功，金額 {preAuthAmt}，謝謝!"
 
                             };
                             commonService.sp_InsPersonNotification(spInput_InsPersonNotification, ref error);
