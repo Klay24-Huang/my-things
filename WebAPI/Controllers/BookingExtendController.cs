@@ -260,7 +260,7 @@ namespace WebAPI.Controllers
                 #region 立即授權
                 if (canAuth && preAuthAmt > 0)
                 {
-                    bool bindCard = false;
+                    bool bindCard = true;
                     bool authFlag = false;
                     string error = "";
 
@@ -268,22 +268,19 @@ namespace WebAPI.Controllers
                     var result = commonService.CheckBindCard(ref bindCard, IDNO, ref error);
                     string CardToken = result.cardToken;
                     #endregion
-                    #region 台新授權
+                    #region 有綁卡即可授權
                     if (bindCard)
                     {
                         int payType = 0; //租金
                         int autoClose = 0; //自動關帳
                         CreditAuthComm creditAuthComm = new CreditAuthComm();
                         authFlag = creditAuthComm.DoAuthV3(tmpOrder, IDNO, preAuthAmt, CardToken, payType, ref error, autoClose, funName, funName, ref WSAuthOutput);
-                        //if (!flag)
-                        //{
-                        //    errCode = "ERR604";
-                        //}
                     }
                     #endregion
-                    #region 寫入預授權
+                    #region 授權結果
                     if (authFlag)
                     {
+                        #region 寫入預授權
                         SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
                         {
                             IDNO = IDNO,
@@ -299,11 +296,8 @@ namespace WebAPI.Controllers
                             Status = 2
                         };
                         commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
-                    }
-                    #endregion
-                    #region 授權成功新增推播訊息
-                    if (authFlag)
-                    {
+                        #endregion
+                        #region 授權成功新增推播訊息
                         SPInput_InsPersonNotification spInput_InsPersonNotification = new SPInput_InsPersonNotification()
                         {
                             OrderNo = Convert.ToInt32(tmpOrder),
@@ -311,15 +305,36 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             NType = 19,
                             STime = DateTime.Now.AddSeconds(10),
-                            Title = "預授權通知",
+                            Title = "取授權通知",
                             imageurl = "",
                             url = "",
-                            Message = $"取授權通知:已於{DateTime.Now.ToString("MM/dd hh:mm")}延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
+                            Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
 
                         };
                         commonService.sp_InsPersonNotification(spInput_InsPersonNotification, ref error);
+                        #endregion
+                    }
+                    else
+                    {
+                        #region Adam哥上線記得打開
+                        ////發送MAIL通知據點人員
+                        //if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
+                        //{
+                        //    SendMail send = new SendMail();
+                        //    string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
+                        //    string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
+                        //    string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
+                        //    send.DoSendMail(Title, Body, Receiver);
+                        //}
+                        #endregion
                     }
                     #endregion
+
+                    //回傳錯誤代碼，但仍可延長用車
+                    if (!bindCard || !authFlag)
+                    {
+                        errCode = "ERR604";
+                    }
                 }
                 #endregion
             }

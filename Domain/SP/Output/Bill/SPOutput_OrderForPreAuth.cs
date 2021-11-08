@@ -95,6 +95,11 @@ namespace Domain.SP.Output.Bill
         /// </summary>
         public DateTime ExtendStopTime { get; set; }
 
+        /// <summary>
+        /// 所屬站點
+        /// </summary>
+        public string StationID { get; set; }
+
 
     }
 }

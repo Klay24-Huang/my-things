@@ -53,7 +53,8 @@ SELECT VW.order_number AS OrderNo,
 		       (SELECT ISNULL(SUM(Auth.final_price),0) FROM TB_OrderAuthAmount Auth WITH(NOLOCK) WHERE VW.order_number=Auth.order_number AND AuthType IN (1,3,4)) AS PreAuthAmt,	--1:預約 3:取車	4:延長用車		
 		       ISNULL(extendInfo.extendTimes,0) AS ExtendTimes,
 			   ISNULL(extendInfo.extendStartTime,'1911-01-01 00:00:00') AS ExtendStartTime,
-			   ISNULL(extendInfo.extendStopTime,'1911-01-01 00:00:00') AS ExtendStopTime
+			   ISNULL(extendInfo.extendStopTime,'1911-01-01 00:00:00') AS ExtendStopTime,
+			   VW.StationID
 		FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
