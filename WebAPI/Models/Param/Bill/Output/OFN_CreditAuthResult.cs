@@ -25,6 +25,11 @@ namespace WebAPI.Models.Param.Bill.Output
         public string Transaction_no { get; set; }
 
         /// <summary>
+        /// 銀行端回傳的交易編號
+        /// </summary>
+        public string BankTradeNo { get; set; }
+
+        /// <summary>
         /// 支付系統回傳的結果代碼
         /// </summary>
         public string AuthCode { get; set; }

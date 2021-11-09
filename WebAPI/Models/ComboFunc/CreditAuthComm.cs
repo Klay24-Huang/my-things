@@ -361,6 +361,7 @@ namespace WebAPI.Models.ComboFunc
                 AuthOutput.CardType = CardType;
                 AuthOutput.CheckoutMode = CheckoutMode;
                 AuthOutput.Transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
+                AuthOutput.BankTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
                 AuthOutput.CardNo = WSAuthOutput?.ResponseParams?.ResultData?.CardNumber?? FindCardResult.cardNumber;
             }
             
