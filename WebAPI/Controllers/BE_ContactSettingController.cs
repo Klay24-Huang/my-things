@@ -2,10 +2,12 @@
 using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.BE.Output;
+using Domain.SP.Input.Bill;
 using Domain.SP.Input.Car;
 using Domain.SP.Input.Rent;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
+using Domain.SP.Output.Bill;
 using Domain.SP.Output.Car;
 using Domain.SP.Output.OrderList;
 using Domain.SP.Output.Rent;
@@ -29,10 +31,11 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
+using WebAPI.Service;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -75,12 +78,17 @@ namespace WebAPI.Controllers
             bool clearFlag = false;
             DateTime SD = DateTime.Now, ReturnDate = DateTime.Now;
             List<BE_CarScheduleTimeLog> lstOrder = null;
+            int FinalPrice = 0; // 20211108 ADD BY YEH REASON:總價
+            CommonService commonService = new CommonService();
+            PreAmountData PreAmount = new PreAmountData();
+            List<TradeCloseList> TradeCloseLists = new List<TradeCloseList>();
+            int RewardPoint = 0;    // 20211109 ADD BY YEH REASON:換電獎勵
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_ContactSetting>(Contentjson);
+                apiInput = JsonConvert.DeserializeObject<IAPI_BE_ContactSetting>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -198,7 +206,7 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-                                string spName = new ObjType().GetSPName(ObjType.SPType.BE_BookingCancelNew);
+                                string spName = "usp_BE_BookingCancelNew";
                                 SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
                                 {
                                     LogID = LogID,
@@ -354,7 +362,7 @@ namespace WebAPI.Controllers
                                             unified_business_no = apiInput.unified_business_no,
                                             ParkingSpace = apiInput.parkingSpace
                                         };
-                                        string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
+                                        string SPName = "usp_BE_ContactFinish";
                                         SPOutput_Base PayOutput = new SPOutput_Base();
                                         SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base>(connetStr);
                                         flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
@@ -363,39 +371,139 @@ namespace WebAPI.Controllers
                                     else
                                     {
                                         //重新計價
-                                        flag = DoReCalRent(tmpOrder, IDNO, LogID, apiInput.UserID, apiInput.returnDate, ref errCode);
+                                        flag = DoReCalRent(tmpOrder, IDNO, LogID, apiInput.UserID, apiInput.returnDate, ref errCode, ref FinalPrice);
                                         if (flag)
                                         {
                                             if (clearFlag)
                                             {
-                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
-                                                if (CarFlag == false)
-                                                {
-                                                    //寫入車機錯誤
-                                                }
-                                                errCode = "000000";
+                                                #region Adam哥上線記得打開
+                                                //bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
+                                                //if (CarFlag == false)
+                                                //{
+                                                //    //寫入車機錯誤
+                                                //}
+                                                //errCode = "000000";
+                                                #endregion
                                             }
-                                            //已經付完款，直接更改狀態
-                                            SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
+
+                                            #region 取得預授權金額
+                                            if (flag)
                                             {
-                                                IDNO = IDNO,
-                                                OrderNo = tmpOrder,
-                                                UserID = apiInput.UserID,
-                                                transaction_no = "",
-                                                ReturnDate = ReturnDate,
-                                                bill_option = apiInput.bill_option,
-                                                CARRIERID = apiInput.CARRIERID,
-                                                NPOBAN = apiInput.NPOBAN,
-                                                unified_business_no = apiInput.unified_business_no,
-                                                ParkingSpace = apiInput.parkingSpace,
-                                                Mode = apiInput.Mode,
-                                                LogID = LogID
-                                            };
-                                            string SPName = new ObjType().GetSPName(ObjType.SPType.BE_ContactFinish);
-                                            SPOutput_Base PayOutput = new SPOutput_Base();
-                                            SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base>(connetStr);
-                                            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                                            baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                                                PreAmount = commonService.GetPreAmount(IDNO, Access_Token, tmpOrder, "N", LogID, ref flag, ref errCode);
+                                            }
+                                            #endregion
+
+                                            #region 訂單預授權判斷
+                                            if (flag)
+                                            {
+                                                TradeCloseLists = commonService.DoPreAmount(PreAmount, FinalPrice);
+                                            }
+                                            #endregion
+
+                                            #region SP存檔
+                                            #region 原本存檔(MARK)
+                                            ////已經付完款，直接更改狀態
+                                            //SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
+                                            //{
+                                            //    IDNO = IDNO,
+                                            //    OrderNo = tmpOrder,
+                                            //    UserID = apiInput.UserID,
+                                            //    transaction_no = "",
+                                            //    ReturnDate = ReturnDate,
+                                            //    bill_option = apiInput.bill_option,
+                                            //    CARRIERID = apiInput.CARRIERID,
+                                            //    NPOBAN = apiInput.NPOBAN,
+                                            //    unified_business_no = apiInput.unified_business_no,
+                                            //    ParkingSpace = apiInput.parkingSpace,
+                                            //    Mode = apiInput.Mode,
+                                            //    LogID = LogID
+                                            //};
+                                            //string SPName = "usp_BE_ContactFinish";
+                                            //SPOutput_Base PayOutput = new SPOutput_Base();
+                                            //SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base>(connetStr);
+                                            //flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
+                                            //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
+                                            #endregion
+
+                                            if (flag)
+                                            {
+                                                string spName = "usp_BE_ContactSetting_U01";
+
+                                                object[] objparms = new object[TradeCloseLists.Count == 0 ? 1 : TradeCloseLists.Count];
+
+                                                if (TradeCloseLists.Count > 0)
+                                                {
+                                                    for (int i = 0; i < TradeCloseLists.Count; i++)
+                                                    {
+                                                        objparms[i] = new
+                                                        {
+                                                            CloseID = TradeCloseLists[i].CloseID,
+                                                            AuthType = TradeCloseLists[i].AuthType,
+                                                            ChkClose = TradeCloseLists[i].ChkClose,
+                                                            CloseAmout = TradeCloseLists[i].CloseAmout,
+                                                            RefundAmount = TradeCloseLists[i].RefundAmount
+                                                        };
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    objparms[0] = new
+                                                    {
+                                                        CloseID = 0,
+                                                        AuthType = 0,
+                                                        ChkClose = 0,
+                                                        CloseAmout = 0,
+                                                        RefundAmount = 0
+                                                    };
+                                                }
+
+                                                object[][] parms1 = {
+                                                    new object[] {
+                                                        IDNO,
+                                                        tmpOrder,
+                                                        apiInput.UserID,
+                                                        ReturnDate,
+                                                        apiInput.bill_option,
+                                                        apiInput.unified_business_no,
+                                                        apiInput.CARRIERID,
+                                                        apiInput.NPOBAN,
+                                                        apiInput.parkingSpace,
+                                                        apiInput.Mode,
+                                                        LogID
+                                                    },
+                                                    objparms
+                                                };
+
+                                                DataSet ds1 = new DataSet();
+                                                string returnMessage = "";
+                                                string messageLevel = "";
+                                                string messageType = "";
+
+                                                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+                                                if (ds1.Tables.Count == 0)
+                                                {
+                                                    flag = false;
+                                                    errCode = "ERR999";
+                                                    errMsg = returnMessage;
+                                                }
+                                                else
+                                                {
+                                                    baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[1].Rows[0]["Error"]), ds1.Tables[1].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                                                    if (flag)
+                                                    {
+                                                        if (ds1.Tables[0].Rows.Count > 0)
+                                                        {
+                                                            RewardPoint = Convert.ToInt32(ds1.Tables[0].Rows[0]["Reward"]);
+                                                            if (RewardPoint > 0)
+                                                            {
+                                                                flag = DoNPR380(IDNO, RewardPoint, tmpOrder, LogID,ref errCode);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            #endregion
                                         }
                                     }
                                 }
@@ -408,7 +516,7 @@ namespace WebAPI.Controllers
                 else if (apiInput.Mode == 1 && apiInput.type == 2)
                 {
                     #region 整備取消
-                    string spName = new ObjType().GetSPName(ObjType.SPType.BE_CancelCleanOrder);
+                    string spName = "usp_BE_CancelCleanOrder";
                     SPInput_BE_BookingCancel spInput = new SPInput_BE_BookingCancel()
                     {
                         LogID = LogID,
@@ -459,7 +567,7 @@ namespace WebAPI.Controllers
             List<CardList> lstCardList = new List<CardList>();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             CarInfo info = new CarInfo();
-            string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.BE_BeforeBookingStart);
+            string CheckTokenName = "usp_BE_BeforeBookingStart";
             SPInput_BE_BeforeBookingStart spBeforeStart = new SPInput_BE_BeforeBookingStart()
             {
                 OrderNo = tmpOrder,
@@ -485,7 +593,6 @@ namespace WebAPI.Controllers
                 if (IsCens == 1)
                 {
                     #region 興聯
-
                     CensWebAPI webAPI = new CensWebAPI();
                     //取最新狀況
                     WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
@@ -519,7 +626,7 @@ namespace WebAPI.Controllers
                     //執行sp合約
                     if (flag)
                     {
-                        string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BE_BookingStart);
+                        string BookingStartName = "usp_BE_BookingStart";
                         SPInput_BE_BookingStart SPBookingStartInput = new SPInput_BE_BookingStart()
                         {
                             IDNO = IDNO,
@@ -693,7 +800,7 @@ namespace WebAPI.Controllers
                         //執行sp合約
                         if (flag)
                         {
-                            string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BE_BookingStart);
+                            string BookingStartName = "usp_BE_BookingStart";
                             SPInput_BE_BookingStart SPBookingStartInput = new SPInput_BE_BookingStart()
                             {
                                 IDNO = IDNO,
@@ -858,7 +965,7 @@ namespace WebAPI.Controllers
             List<CardList> lstCardList = new List<CardList>();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             MotorInfo info = new MotorInfo();
-            string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.BE_BeforeBookingStart);
+            string CheckTokenName = "usp_BE_BeforeBookingStart";
             SPInput_BE_BeforeBookingStart spBeforeStart = new SPInput_BE_BeforeBookingStart()
             {
                 OrderNo = tmpOrder,
@@ -914,7 +1021,7 @@ namespace WebAPI.Controllers
                 }
                 #endregion
                 #region 執行sp合約
-                string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BE_BookingStart);
+                string BookingStartName = "usp_BE_BookingStart";
                 SPInput_BE_BookingStart SPBookingStartInput = new SPInput_BE_BookingStart()
                 {
                     IDNO = IDNO,
@@ -960,71 +1067,80 @@ namespace WebAPI.Controllers
         #endregion
 
         #region 重新計價
-        private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, ref string errCode)
+        private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, ref string errCode, ref int FinalPrice)
         {
             #region 初始宣告
-            var cr_com = new CarRentCommon();
-            var cr_sp = new CarRentSp();
+            #region API共用
             bool flag = true;
-            float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
-            var carRepo = new CarRentRepo(connetStr);
-            var monSp = new MonSubsSp();
-            var trace = new TraceCom();
+            string APIName = "BE_ContactSettingController";
             string funName = "DoReCalRent";
-            List<Holiday> lstHoliday = null; //假日列表
-            List<OrderQueryFullData> OrderDataLists = null;
+            float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             OAPI_GetPayDetail outputApi = new OAPI_GetPayDetail();
-            int ProjType = 0;
+            string errMsg = "";
+            #endregion
+            #region 計算用
+            var cr_com = new CarRentCommon();
+            var cr_sp = new CarRentSp();
+            var carRepo = new CarRentRepo(connetStr);
+            var monSp = new MonSubsSp();
+            var trace = new TraceCom();
+            MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
+            BillCommon billCommon = new BillCommon();
+            CarRentInfo carInfo = new CarRentInfo();//汽車資料
+            #endregion
+            #region 一堆參數
+            List<OrderQueryFullData> OrderDataLists = null;
+            List<Holiday> lstHoliday = null; //假日列表
+            List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
+            var visMons = new List<MonthlyRentData>();//虛擬月租
+
+            int ProjType = 0;   //專案類型
+            string ProjID = ""; //專案代碼
+
+            int motoBaseMins = 6;   //機車基本分鐘數
+            int carBaseMins = 60;   //汽車基本分鐘數
+            int DayMaxMinute = 600; //單日分鐘數上限
+
             int TotalPoint = 0; //總點數
             int MotorPoint = 0; //機車點數
             int CarPoint = 0;   //汽車點數
-            int Discount = 0; //要折抵的點數
+            int Discount = 0;   //要折抵的點數
+            int gift_point = 0;         //使用時數(汽車)
+            int gift_motor_point = 0;   //使用時數(機車)
+            int ActualRedeemableTimePoint = 0; //實際可抵折點數
+
+            DateTime NowTime = DateTime.Now;
             DateTime SD = new DateTime();
             DateTime ED = new DateTime();
             DateTime FED = new DateTime();
             DateTime? FineDate = null;
-            bool hasFine = false; //是否逾時
-            DateTime NowTime = DateTime.Now;
+            bool hasFine = false;   //是否逾時
+            DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
+            DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
+            bool isSpring = false;  //是否為春節時段
 
-            int TotalRentMinutes = 0; //總租車時數
-            int TotalFineRentMinutes = 0; //總逾時時數
-            int ActualRedeemableTimePoint = 0; //實際可抵折點數
-            int CarRentPrice = 0; //車輛租金
+            int TotalRentMinutes = 0;       //總租車時數
+            int TotalFineRentMinutes = 0;   //總逾時時數
+            int CarRentPrice = 0;       //車輛租金
             int TransferPrice = 0;      //轉乘優惠折抵金額  20201201 ADD BY ADAM
-            MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
-            BillCommon billCommon = new BillCommon();
-            List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
-            bool UseMonthMode = false;
+            bool UseMonthMode = false;  //false:無月租;true:有月租
             int InsurancePerHours = 0;  //安心服務每小時價
-            int etagPrice = 0;      //ETAG費用 20201202 ADD BY ADAM
-            CarRentInfo carInfo = new CarRentInfo();//汽車資料
-            int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH 
+            int etagPrice = 0;          //ETAG費用 20201202 ADD BY ADAM
+            int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH
+            int End_Mile = 0;           //還車里程
+            int PreAmount = 0;          // 預授權金額 20211108 ADD BY YEH
+            int DiffAmount = 0;         // 差額 20211108 ADD BY YEH
+
+            string MonIds = "";//短期月租Id可多筆
+            var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
 
             int nor_car_PayDisc = 0;//只有一般時段時總折扣
             int nor_car_PayDiscPrice = 0;//只有一般時段時總折扣金額
-
-            int gift_point = 0;//使用時數(汽車)
-            int gift_motor_point = 0;//使用時數(機車)
-            int motoBaseMins = 6;//機車基本分鐘數
-            int carBaseMins = 60;//汽車基本分鐘數
-            int motoMaxMins = 200;//機車單日最大分鐘數
-
-            int End_Mile = 0;   //還車里程
-
-            bool isSpring = false;//是否為春節時段
-            var visMons = new List<MonthlyRentData>();//虛擬月租
-            DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
-            DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
-            var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
-            string errMsg = "";
-
             int UseOrderPrice = 0;//使用訂金(4捨5入)
             int OrderPrice = 0;//原始訂金
-            string MonIds = "";//短期月租Id可多筆
-
-            string ProjID = "";
+            #endregion
             #endregion
             #region trace-in
             trace.OrderNo = tmpOrder;
@@ -1051,7 +1167,7 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         UserID = UserID
                     };
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.BE_GetOrderStatusByOrderNo);
+                    string SPName = "usp_BE_GetOrderStatusByOrderNo";
                     SPOutput_Base spOutBase = new SPOutput_Base();
                     SQLHelper<SPInput_BE_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_BE_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
                     OrderDataLists = new List<OrderQueryFullData>();
@@ -1070,23 +1186,26 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-                #endregion
-
-                if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                
+                if (flag)
                 {
-                    trace.objs.Add(nameof(OrderDataLists), OrderDataLists);
+                    if (OrderDataLists != null && OrderDataLists.Count() > 0)
+                    {
+                        trace.objs.Add(nameof(OrderDataLists), OrderDataLists);
 
-                    var item = OrderDataLists[0];
-                    motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
-                    ProjType = item.ProjType;
-                    UseOrderPrice = item.UseOrderPrice;
-                    OrderPrice = item.OrderPrice;
-                    ProjID = item.ProjID;
+                        var item = OrderDataLists[0];
+                        motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
+                        ProjType = item.ProjType;
+                        UseOrderPrice = item.UseOrderPrice;
+                        OrderPrice = item.OrderPrice;
+                        ProjID = item.ProjID;
+                        PreAmount = item.PreAmount;
+                    }
                 }
+                
                 //取得專案狀態
                 if (flag)
                 {
-                    ProjType = OrderDataLists[0].ProjType;
                     SD = Convert.ToDateTime(OrderDataLists[0].final_start_time);
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
                                                         //機車路邊不計算預計還車時間
@@ -1144,6 +1263,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("SD,ED,FD計算");
                     #endregion
                 }
+                #endregion
 
                 #region 取得使用中訂閱制月租
                 //取得使用中訂閱制月租
@@ -1190,7 +1310,7 @@ namespace WebAPI.Controllers
                                 IDNO = IDNO,
                                 OrderNo = tmpOrder
                             };
-                            string SPName = new ObjType().GetSPName(ObjType.SPType.GetCarReturnMillage);
+                            string SPName = "usp_GetCarReturnMillage";
                             SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
                             SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
                             flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
@@ -1209,7 +1329,7 @@ namespace WebAPI.Controllers
                             IDNO = IDNO,
                             OrderNo = tmpOrder
                         };
-                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetCarReturnMillage);
+                        string SPName = "usp_GetCarReturnMillage";
                         SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
                         SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
                         flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
@@ -1292,7 +1412,7 @@ namespace WebAPI.Controllers
                     //春前
                     if (ED <= sprSD)
                     {
-                        var xre = billCommon.GetMotoRangeMins(SD, ED, 6, 200, lstHoliday);
+                        var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, 200, lstHoliday);
                         TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
                         var xDays = ED.Subtract(SD).TotalDays;
                         if (xDays > 1)
@@ -1300,7 +1420,7 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
-                        var xre = billCommon.GetMotoRangeMins(SD, ED, 6, 600, lstHoliday);
+                        var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, DayMaxMinute, lstHoliday);
                         TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
                     }
                 }
@@ -1308,16 +1428,20 @@ namespace WebAPI.Controllers
                 {
                     if (hasFine)
                     {
-                        var xre = billCommon.GetCarRangeMins(SD, ED, 60, 600, lstHoliday);
+                        var xre = billCommon.GetCarRangeMins(SD, ED, carBaseMins, DayMaxMinute, lstHoliday);
                         if (xre != null)
                             TotalRentMinutes += Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
                         var ov_re = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
                         if (ov_re != null)
+                        {
                             TotalRentMinutes += Convert.ToInt32(Math.Floor(ov_re.Item1 + ov_re.Item2));
+                            //20210913 ADD BY ADAM REASON.補上全部逾時分鐘數加總
+                            TotalFineRentMinutes = Convert.ToInt32(Math.Floor(ov_re.Item1 + ov_re.Item2));
+                        }
                     }
                     else
                     {
-                        var xre = billCommon.GetCarRangeMins(SD, FED, 60, 600, lstHoliday);
+                        var xre = billCommon.GetCarRangeMins(SD, FED, carBaseMins, DayMaxMinute, lstHoliday);
                         if (xre != null)
                             TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
                     }
@@ -1369,27 +1493,28 @@ namespace WebAPI.Controllers
 
                 #region 汽車計費資訊
                 int car_payAllMins = 0; //全部計費租用分鐘
-                int car_payInMins = 0;//未超時計費分鐘
-                int car_payOutMins = 0;//超時分鐘-顯示用
-                int car_inPrice = 0;//未超時費用
-                int car_outPrice = 0;//超時費用
-                int car_n_price = OrderDataLists[0].PRICE;
-                int car_h_price = OrderDataLists[0].PRICE_H;
+                int car_payInMins = 0;  //未超時計費分鐘
+                int car_payOutMins = 0; //超時分鐘-顯示用
+                int car_inPrice = 0;    //未超時費用
+                int car_outPrice = 0;   //超時費用
+                int car_n_price = OrderDataLists[0].PRICE;      // 平日價格
+                int car_h_price = OrderDataLists[0].PRICE_H;    // 假日價格
 
                 if (flag)
                 {
                     if (ProjType != 4)
                     {
-                        if (hasFine)
+                        if (hasFine)    // 逾時
                         {
                             var ord = OrderDataLists[0];
                             var xre = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
                             if (xre != null)
-                                car_payOutMins = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                                car_payOutMins = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));    //逾時分鐘
+                            //逾時費用
                             car_outPrice = billCommon.CarRentCompute(ED, FED, ord.WeekdayPrice, ord.HoildayPrice, 6, lstHoliday, true, 0);
                             car_payAllMins += car_payOutMins;
 
-                            var car_re = billCommon.CarRentInCompute(SD, ED, car_n_price, car_h_price, 60, 10, lstHoliday, new List<MonthlyRentData>(), Discount);
+                            var car_re = billCommon.CarRentInCompute(SD, ED, car_n_price, car_h_price, carBaseMins, 10, lstHoliday, new List<MonthlyRentData>(), Discount);
                             if (car_re != null)
                             {
                                 trace.traceAdd(nameof(car_re), car_re);
@@ -1401,7 +1526,7 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            var car_re = billCommon.CarRentInCompute(SD, FED, car_n_price, car_h_price, 60, 10, lstHoliday, new List<MonthlyRentData>(), Discount);
+                            var car_re = billCommon.CarRentInCompute(SD, FED, car_n_price, car_h_price, carBaseMins, 10, lstHoliday, new List<MonthlyRentData>(), Discount);
                             if (car_re != null)
                             {
                                 trace.traceAdd(nameof(car_re), car_re);
@@ -1482,17 +1607,15 @@ namespace WebAPI.Controllers
                     #endregion
                 }
                 #endregion
+
                 #region 查ETAG 20201202 ADD BY ADAM
                 if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要進來
                 {
-                    var orderNo = "H" + tmpOrder.ToString().PadLeft(7, '0');
-                    WebAPIOutput_ETAG010 wsOutput = new WebAPIOutput_ETAG010();
-                    HiEasyRentAPI wsAPI = new HiEasyRentAPI();
                     //ETAG查詢失敗也不影響流程
-                    var ordNo = "H" + tmpOrder.ToString().PadLeft(7, '0');
+                    var orderNo = "H" + tmpOrder.ToString().PadLeft(tmpOrder.ToString().Length, '0');
                     var input = new IBIZ_ETagCk()
                     {
-                        OrderNo = ordNo
+                        OrderNo = orderNo
                     };
                     var etag_re = cr_com.ETagCk(input);
                     if (etag_re != null)
@@ -1511,15 +1634,15 @@ namespace WebAPI.Controllers
                 {
                     outputApi.CanUseDiscount = 1;   //先暫時寫死，之後改專案設定，由專案設定引入
                     outputApi.CanUseMonthRent = 1;  //先暫時寫死，之後改專案設定，由專案設定引入
-                    outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase();
+                    outputApi.CarRent = new CarRentBase();
                     outputApi.DiscountAlertMsg = "";
                     outputApi.IsMonthRent = 0;  //先暫時寫死，之後改專案設定，由專案設定引入，第二包才會引入月租專案
                     outputApi.IsMotor = (ProjType == 4) ? 1 : 0;    //是否為機車
-                    outputApi.MonthRent = new Models.Param.Output.PartOfParam.MonthRentBase();  //月租資訊
-                    outputApi.MotorRent = new Models.Param.Output.PartOfParam.MotorRentBase();  //機車資訊
+                    outputApi.MonthRent = new MonthRentBase();  //月租資訊
+                    outputApi.MotorRent = new MotorRentBase();  //機車資訊
                     outputApi.PayMode = (ProjType == 4) ? 1 : 0;    //目前只有機車才會有以分計費模式
                     outputApi.ProType = ProjType;
-                    outputApi.Rent = new Models.Param.Output.PartOfParam.RentBase() //訂單基本資訊
+                    outputApi.Rent = new RentBase() //訂單基本資訊
                     {
                         BookingEndDate = ED.ToString("yyyy-MM-dd HH:mm:ss"),
                         BookingStartDate = SD.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -1534,7 +1657,7 @@ namespace WebAPI.Controllers
                     if (ProjType == 4)
                     {
                         TotalPoint = (CarPoint + MotorPoint);
-                        outputApi.MotorRent = new Models.Param.Output.PartOfParam.MotorRentBase()
+                        outputApi.MotorRent = new MotorRentBase()
                         {
                             BaseMinutePrice = OrderDataLists[0].BaseMinutesPrice,
                             BaseMinutes = OrderDataLists[0].BaseMinutes,
@@ -1544,7 +1667,7 @@ namespace WebAPI.Controllers
                     else
                     {
                         TotalPoint = CarPoint;
-                        outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase()
+                        outputApi.CarRent = new CarRentBase()
                         {
                             HoildayOfHourPrice = OrderDataLists[0].PRICE_H,
                             HourOfOneDay = 10,
@@ -1558,6 +1681,7 @@ namespace WebAPI.Controllers
                     TransferPrice = OrderDataLists[0].init_TransDiscount;
                     trace.FlowList.Add("建空模");
                 }
+                #endregion
 
                 #region 停車費
                 // 20210510 UPD BY YEH REASON.把車麻吉停車費打開
@@ -1585,7 +1709,7 @@ namespace WebAPI.Controllers
                 //20210510 ADD BY YEH REASON.串接CityParking停車場
                 if (flag && OrderDataLists[0].ProjType != 4)
                 {
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.GetCityParkingFee);
+                    string SPName = "usp_GetCityParkingFee";
                     SPInput_CalCityParkingFee SPInput = new SPInput_CalCityParkingFee()
                     {
                         IDNO = IDNO,
@@ -1615,14 +1739,11 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
-                #endregion
                 #region 月租
-                //note: 月租GetPayDetail
                 if (flag)
                 {
                     var item = OrderDataLists[0];
                     item = cr_com.dbValeFix(item);
-                    var motoDayMaxMinns = 200;
                     var input = new IBIZ_MonthRent()
                     {
                         IDNO = IDNO,
@@ -1630,7 +1751,7 @@ namespace WebAPI.Controllers
                         intOrderNO = tmpOrder,
                         ProjType = item.ProjType,
                         MotoBasePrice = item.BaseMinutesPrice,
-                        MotoDayMaxMins = motoDayMaxMinns,
+                        MotoDayMaxMins = DayMaxMinute,
                         MinuteOfPrice = item.MinuteOfPrice,
                         MinuteOfPriceH = item.MinuteOfPriceH,
                         hasFine = hasFine,
@@ -1642,8 +1763,7 @@ namespace WebAPI.Controllers
                         Discount = Discount,
                         PRICE = item.PRICE,
                         PRICE_H = item.PRICE_H,
-                        carBaseMins = 60,
-                        CancelMonthRent = (ProjID == "R024"),
+                        carBaseMins = carBaseMins,
                         MaxPrice = item.MaxPrice,    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                         FirstFreeMins = item.FirstFreeMins,
                         MonIds = MonIds
@@ -1674,11 +1794,11 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("月租");
                 }
                 #endregion
+
                 #region 開始計價
                 if (flag)
                 {
                     trace.FlowList.Add("開始計價");
-                    lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
                     if (ProjType == 4)
                     {
                         if (UseMonthMode)   //true:有月租;false:無月租
@@ -1706,7 +1826,7 @@ namespace WebAPI.Controllers
                             else
                             {
                                 // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 600, lstHoliday, new List<MonthlyRentData>(), Discount, 600, item.MaxPrice, item.BaseMinutesPrice);
+                                var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, DayMaxMinute, lstHoliday, new List<MonthlyRentData>(), Discount, DayMaxMinute, item.MaxPrice, item.BaseMinutesPrice);
                                 if (xre != null)
                                 {
                                     carInfo = xre;
@@ -1758,7 +1878,6 @@ namespace WebAPI.Controllers
                         }
 
                         #region 安心服務
-                        //安心服務
                         // 20210908 UPD BY YEH REASON:使用安心服務，安心服務每小時金額 = 主承租人每小時價格 + 副承租人每小時費率總和
                         InsurancePerHours = OrderDataLists[0].Insurance == 1 ? (Convert.ToInt32(OrderDataLists[0].InsurancePerHours) + OrderDataLists[0].JointInsurancePerHour) : 0;
                         if (InsurancePerHours > 0)
@@ -1811,21 +1930,27 @@ namespace WebAPI.Controllers
                     #region 總價計算
                     // 總價 = 車輛租金 + 停車費 + 里程費 + 逾時費用 + 安心服務費用 + 安心服務費用(逾時) + ETAG費用
                     var xTotalRental = xCarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice + outputApi.Rent.ETAGRental;
-                    xTotalRental -= UseOrderPrice;//使用訂金
 
-                    outputApi.UseOrderPrice = UseOrderPrice;
-                    outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金
-                    if (xTotalRental < 0)
-                    {
-                        outputApi.ReturnOrderPrice = (-1) * xTotalRental;
-                        int orderNo = Convert.ToInt32(OrderDataLists[0].OrderNo);
-                        carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                    #region 2021春節訂金已不使用
+                    //xTotalRental -= UseOrderPrice;//使用訂金
 
-                        //不含退還訂金
-                        OrderPrice = OrderPrice - outputApi.ReturnOrderPrice;
-                        OrderPrice = OrderPrice > 0 ? OrderPrice : 0;
-                        outputApi.UseOrderPrice = OrderPrice;
-                    }
+                    //outputApi.UseOrderPrice = UseOrderPrice;
+                    //outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金
+                    //if (xTotalRental < 0)
+                    //{
+                    //    outputApi.ReturnOrderPrice = (-1) * xTotalRental;
+                    //    int orderNo = Convert.ToInt32(OrderDataLists[0].OrderNo);
+                    //    carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+
+                    //    //不含退還訂金
+                    //    OrderPrice = OrderPrice - outputApi.ReturnOrderPrice;
+                    //    OrderPrice = OrderPrice > 0 ? OrderPrice : 0;
+                    //    outputApi.UseOrderPrice = OrderPrice;
+                    //}
+                    #endregion
+
+                    FinalPrice = xTotalRental;
+                    DiffAmount = xTotalRental - PreAmount;  // 差額 = 訂單總價 - 預授權金額
 
                     xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                     outputApi.Rent.TotalRental = xTotalRental;
@@ -1895,10 +2020,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 儲存使用月租時數
-
-                    if (!string.IsNullOrWhiteSpace(IDNO) && tmpOrder > 0 && LogID > 0
-                        && !string.IsNullOrWhiteSpace(MonIds)
-                        && carInfo != null && (carInfo.useMonthDiscW > 0 || carInfo.useMonthDiscH > 0))
+                    if (!string.IsNullOrWhiteSpace(IDNO) && tmpOrder > 0 && LogID > 0 && !string.IsNullOrWhiteSpace(MonIds) && carInfo != null && (carInfo.useMonthDiscW > 0 || carInfo.useMonthDiscH > 0))
                     {
                         string sp_errCode = "";
                         var monthId = MonIds.Split(',').Select(x => Convert.ToInt64(x)).FirstOrDefault();
@@ -1919,11 +2041,10 @@ namespace WebAPI.Controllers
                         monSp.sp_SetSubsBookingMonth(spin, ref sp_errCode);
                         trace.traceAdd("SetSubsBookingMonth", new { spin, sp_errCode });
                     }
-
                     #endregion
 
                     #region sp存檔
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.BE_CalFinalPrice);
+                    string SPName = "usp_BE_CalFinalPrice_U01";
                     SPInput_BE_CalFinalPrice SPInput = new SPInput_BE_CalFinalPrice()
                     {
                         IDNO = IDNO,
@@ -1939,8 +2060,15 @@ namespace WebAPI.Controllers
                         parkingFee = outputApi.Rent.ParkingFee,
                         TransDiscount = outputApi.Rent.TransferPrice,
                         EndMile = End_Mile,
+                        DiffAmount = DiffAmount,
+                        APIName = APIName,
                         LogID = LogID
                     };
+
+                    SPOutput_Base SPOutput = new SPOutput_Base();
+                    SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base>(connetStr);
+                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
 
                     #region trace
                     trace.objs.Add(nameof(TotalRentMinutes), TotalRentMinutes);
@@ -1952,10 +2080,6 @@ namespace WebAPI.Controllers
                     trace.objs.Add(nameof(carInfo), carInfo);
                     #endregion
 
-                    SPOutput_Base SPOutput = new SPOutput_Base();
-                    SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base>(connetStr);
-                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
                     trace.FlowList.Add("sp存檔");
                     #endregion
                 }
@@ -2000,6 +2124,34 @@ namespace WebAPI.Controllers
                 carRepo.AddTraceLog(errItem);
                 throw;
             }
+
+            return flag;
+        }
+        #endregion
+
+        #region 換電獎勵
+        public bool DoNPR380(string IDNO, int Reward, long OrderNo, long LogID, ref string errCode)
+        {
+            bool flag = false;
+            CommonFunc baseVerify = new CommonFunc();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            WebAPIOutput_NPR380Save wsOutput = new WebAPIOutput_NPR380Save();
+            HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+            flag = wsAPI.NPR380Save(IDNO, Reward.ToString(), "H" + OrderNo.ToString().PadLeft(OrderNo.ToString().Length, '0'), ref wsOutput);
+
+            //存檔
+            string SPName = "usp_SaveNPR380Result";
+            SPOutput_Base NPR380Output = new SPOutput_Base();
+            SPInput_SetRewardResult NPR380Input = new SPInput_SetRewardResult()
+            {
+                OrderNo = OrderNo,
+                Result = flag == true ? 1 : 0,
+                LogID = LogID
+            };
+            SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
+            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, NPR380Input, ref NPR380Output, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref NPR380Output, ref lstError, ref errCode);
 
             return flag;
         }

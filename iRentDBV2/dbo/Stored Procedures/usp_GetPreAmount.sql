@@ -1,22 +1,23 @@
 /***********************************************************************************************
 * Server   : sqyhi03az.database.windows.net
 * Database : IRENT_V2
-* 程式名稱 : usp_CreditAuth_Q01
+* 程式名稱 : usp_GetPreAmount
 * 系    統 : IRENT
 * 程式功能 : 取得訂單差額、預授權金額
 * 作    者 : YEH
-* 撰寫日期 : 20211028
+* 撰寫日期 : 20211109
 * 修改日期 : 
 
 * Example  : 
 ***********************************************************************************************/
 
-CREATE PROCEDURE [dbo].[usp_CreditAuth_Q01]
+CREATE PROCEDURE [dbo].[usp_GetPreAmount]
 (   
 	@MSG		VARCHAR(10)	OUTPUT	,
-	@IDNO		VARCHAR(10)			,	--帳號
-	@Token		VARCHAR(1024)		,	--Token
-	@OrderNo	BIGINT				,	--訂單編號
+	@IDNO		VARCHAR(10)			,	-- 帳號
+	@Token		VARCHAR(1024)		,	-- Token
+	@OrderNo	BIGINT				,	-- 訂單編號
+	@NeedToken	VARCHAR(1)			,	-- 是否需要Token
     @LogID		BIGINT
 )
 AS
@@ -30,17 +31,18 @@ BEGIN
     DECLARE	@SQLExceptionMsg	NVARCHAR(1000) = '';
 	DECLARE @IsSystem TINYINT = 1;
 	DECLARE @ErrorType TINYINT = 4;
-	DECLARE @FunName VARCHAR(50) = 'usp_CreditAuth_Q01';
+	DECLARE @FunName VARCHAR(50) = 'usp_GetPreAmount';
 	DECLARE @NowTime DATETIME;
 		
 	SET @IDNO = ISNULL(@IDNO,'');
 	SET @Token = ISNULL(@Token,'');
 	SET @OrderNo = ISNULL(@OrderNo,0);
+	SET @NeedToken = ISNULL(@NeedToken,'');
 	SET @LogID = ISNULL(@LogID,0);
 	SET @NowTime = DATEADD(HOUR,8,GETDATE());
 
 	BEGIN TRY
-		IF @IDNO='' OR @Token='' OR @OrderNo=0
+		IF @IDNO='' OR @NeedToken='' OR @OrderNo=0
 		BEGIN
 			SET @Error=1;
 			SET @ErrorCode = 'ERR900';
@@ -49,17 +51,20 @@ BEGIN
 		-- Token檢核
 		IF @Error=0
 		BEGIN
-			IF NOT EXISTS(SELECT * FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime)
+			IF @NeedToken = 'Y'	-- 需要Token才檢查
 			BEGIN
-				SET @Error=1;
-				SET @ErrorCode='ERR101';
-			END
-			ELSE
-			BEGIN
-				IF NOT EXISTS(SELECT * FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO)
+				IF NOT EXISTS(SELECT * FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime)
 				BEGIN
 					SET @Error=1;
 					SET @ErrorCode='ERR101';
+				END
+				ELSE
+				BEGIN
+					IF NOT EXISTS(SELECT * FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO)
+					BEGIN
+						SET @Error=1;
+						SET @ErrorCode='ERR101';
+					END
 				END
 			END
 		END
@@ -97,4 +102,3 @@ BEGIN
 END
 
 GO
-
