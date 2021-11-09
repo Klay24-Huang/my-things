@@ -282,7 +282,7 @@ namespace WebAPI.Controllers
                     }
                     //20210325 ADD BY ADAM REASON.車機指令優化
                     #region 開啟電源 
-                    if (flag)
+                    if (flag && false)  //測試先關掉
                     {
                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
@@ -305,7 +305,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 設定租約
-                    if (flag)
+                    if (flag && false)  //測試先關掉
                     {
                         //租約再下租約應該沒關係
                         //if (info.extDeviceStatus1 == 0)
