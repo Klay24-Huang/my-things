@@ -22,6 +22,7 @@ CREATE PROCEDURE [dbo].[usp_UpdateOrderAuthList_U02]
     @IDNO                          varchar(10),
 	@AutoClosed				int,
 	@final_price                 int,
+	@CardNumber            varchar(16),
 	@ProName              	VARCHAR(50),
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -77,9 +78,10 @@ BEGIN TRY
 
 				Set @ActionName = Case @AuthType When 1 then N'預約取授權' When 5 Then N'逾時取授權' Else '' End
 
+
 				Set @STime = DateAdd(SECOND,10,@NowTime)
 				Set @Title =  '取授權成功通知'
-				Set  @Message =  CONCAT(N'已於',Format(@NowTime,'MM-dd hh:mm','zh-TW'),@ActionName,N'成功，N金額',@final_price,N'，謝謝!')
+				Set  @Message =  CONCAT(N'已於',Format(@NowTime,'MM-dd hh:mm','zh-TW'),N'以末四碼',RIGHT(@CardNumber,4),N'信用卡',@ActionName,N'成功，N金額',@final_price,N'，謝謝!')
 
 				Exec @iError = usp_InsPersonNotification_I01 
 									  @OrderNo

@@ -1,5 +1,6 @@
 ﻿
 
+
 /***********************************************************************************************
 * Server   : sqyhi03az.database.windows.net
 * Database : IRENT_V2
@@ -68,18 +69,22 @@ BEGIN TRY
 	Select order_number,cancel_status ,start_time into #TB_OrderMain
 	From TB_OrderMain with(nolock)
 	Where order_number in (Select order_number From #TB_OrderAuth)
-
+	--授權前手動取消訂單
 	Update #TB_OrderAuth
 	Set AuthFlg = -2
 	From #TB_OrderAuth A 
 	Where Exists(Select 1 From #TB_OrderMain Where order_number = A.order_number And  cancel_status <> 0 )
+	--取出手機，失敗要發簡訊用
+	Select IDNO = MEMIDNO,Mobile = MEMTEL into #MemberData
+	From TB_MemberData with(nolock)
+	Where MEMIDNO in (Select distinct IDNO From #TB_OrderAuth)
 
-	SELECT A.IDNO,CardToken=SUBSTRING(MAX(CONVERT(VARCHAR,A.MKTime,120)+A.CardToken),20,8000)
-	INTO #TB_MemberCardBinding
-	FROM TB_MemberCardBinding A WITH(NOLOCK)
-	JOIN #TB_OrderAuth B WITH(NOLOCK) ON A.IDNO=B.IDNO
-	WHERE A.IsValid=1
-	GROUP BY A.IDNO
+	--SELECT A.IDNO,CardToken=SUBSTRING(MAX(CONVERT(VARCHAR,A.MKTime,120)+A.CardToken),20,8000)
+	--INTO #TB_MemberCardBinding
+	--FROM TB_MemberCardBinding A WITH(NOLOCK)
+	--JOIN #TB_OrderAuth B WITH(NOLOCK) ON A.IDNO=B.IDNO
+	--WHERE A.IsValid=1
+	--GROUP BY A.IDNO
 
 	SELECT 
 		A.authSeq,
@@ -92,15 +97,17 @@ BEGIN TRY
 		A.AutoClose,
 		A.isRetry,
 		A.AuthFlg,
-		CardToken=ISNULL(B.CardToken,'')
+		CardToken='',
+		C.Mobile
 	INTO #TB_OrderAuthList
 	FROM #TB_OrderAuth A
-	LEFT JOIN #TB_MemberCardBinding B ON A.IDNO=B.IDNO
-
+	--LEFT JOIN #TB_MemberCardBinding B ON A.IDNO=B.IDNO
+	Left Join #MemberData C ON A.IDNO = C.IDNO
+	
 	--信用卡且台新付款又不綁卡直接押失敗
-	Update #TB_OrderAuthList
-	Set AuthFlg = -1
-	Where CardType = 1 And CardToken = '' And AuthFlg = 0
+	--Update #TB_OrderAuthList
+	--Set AuthFlg = -1
+	--Where CardType = 1 And CardToken = '' And AuthFlg = 0
 
 	UPDATE A
 	SET U_SYSDT=CASE WHEN A.AuthFlg=9 THEN U_SYSDT ELSE @NowTime END,
@@ -117,38 +124,38 @@ BEGIN TRY
 	declare @authSeq varchar(14),@isRetry int,@order_number int,@IDNO varchar(10),@final_price int
 	,@CardType int,@AuthType int
 
-	DECLARE batch_OrderAuth CURSOR FOR
-		Select authSeq, isRetry,order_number,IDNO,final_price
-		from #TB_OrderAuthList Where  AuthFlg = -1 And AuthType = 1
-	OPEN batch_OrderAuth
-	FETCH NEXT FROM batch_OrderAuth into @authSeq, @isRetry ,@order_number,@IDNO,@final_price
-	WHILE @@FETCH_STATUS =0
-	BEGIN
-		Declare @iError int, @iErrorCode  VARCHAR(6)	,@iErrorMsg NVARCHAR(100),@iSQLExceptionCode VARCHAR(10),@iSQLExceptionMsg NVARCHAR(1000)
-		,@Token VARCHAR(1024) 
+	--DECLARE batch_OrderAuth CURSOR FOR
+	--	Select authSeq, isRetry,order_number,IDNO,final_price
+	--	from #TB_OrderAuthList Where  AuthFlg = -1 And AuthType = 1
+	--OPEN batch_OrderAuth
+	--FETCH NEXT FROM batch_OrderAuth into @authSeq, @isRetry ,@order_number,@IDNO,@final_price
+	--WHILE @@FETCH_STATUS =0
+	--BEGIN
+	--	Declare @iError int, @iErrorCode  VARCHAR(6)	,@iErrorMsg NVARCHAR(100),@iSQLExceptionCode VARCHAR(10),@iSQLExceptionMsg NVARCHAR(1000)
+	--	,@Token VARCHAR(1024) 
 
-		if(@isRetry = 0)
-		Begin
-			Declare @StartTime  datetime,@AppointmentTime datetime			
-			Select @StartTime = start_time From #TB_OrderMain Where order_number = @order_number
-			Set @AppointmentTime = DATEADD(hour,-4,@StartTime)
+	--	if(@isRetry = 0)
+	--	Begin
+	--		Declare @StartTime  datetime,@AppointmentTime datetime			
+	--		Select @StartTime = start_time From #TB_OrderMain Where order_number = @order_number
+	--		Set @AppointmentTime = DATEADD(hour,-4,@StartTime)
 
-			--寫入2次授權預約
-			EXEC @iError =  usp_InsOrderAuthReservation_I01 @order_number,@IDNO,@final_price
-			,1,1,0,1,0,'GetOrderAuthList','GetOrderAuthList',@AppointmentTime
-			,@iErrorCode output,@iErrorMsg output,@iSQLExceptionCode output,@iSQLExceptionMsg output
-		End
+	--		--寫入2次授權預約
+	--		EXEC @iError =  usp_InsOrderAuthReservation_I01 @order_number,@IDNO,@final_price
+	--		,1,1,0,1,0,'GetOrderAuthList','GetOrderAuthList',@AppointmentTime
+	--		,@iErrorCode output,@iErrorMsg output,@iSQLExceptionCode output,@iSQLExceptionMsg output
+	--	End
 
-		if(@isRetry = 1)
-		Begin
-		     --寫入取消訂單
-			Exec @iError = usp_BookingCancel_U01 @IDNO,@order_number,@Token,0,'授權失敗取消訂單',6,
-			@iErrorCode output,@iErrorMsg output,@iSQLExceptionCode output,@iSQLExceptionMsg output
-		End
-		FETCH NEXT FROM batch_OrderAuth into @authSeq, @isRetry ,@order_number,@IDNO,@final_price
-	END
-	CLOSE batch_OrderAuth
-	DEALLOCATE batch_OrderAuth
+	--	if(@isRetry = 1)
+	--	Begin
+	--	     --寫入取消訂單
+	--		Exec @iError = usp_BookingCancel_U01 @IDNO,@order_number,@Token,0,'授權失敗取消訂單',6,
+	--		@iErrorCode output,@iErrorMsg output,@iSQLExceptionCode output,@iSQLExceptionMsg output
+	--	End
+	--	FETCH NEXT FROM batch_OrderAuth into @authSeq, @isRetry ,@order_number,@IDNO,@final_price
+	--END
+	--CLOSE batch_OrderAuth
+	--DEALLOCATE batch_OrderAuth
 
 	SELECT A.authSeq,
 		A.order_number,
@@ -159,13 +166,15 @@ BEGIN TRY
 		A.AuthType,
 		AutoClosed  = A.AutoClose,
 		A.isRetry,
-		A.CardToken
+		A.CardToken,
+		A.Mobile
 	FROM #TB_OrderAuthList A WHERE AuthFlg = 0
 
 	DROP TABLE #TB_OrderAuthList
 	DROP TABLE #TB_OrderAuth
-	DROP TABLE #TB_MemberCardBinding
+	--DROP TABLE #TB_MemberCardBinding
 	Drop Table #TB_OrderMain
+	Drop Table #MemberData
 
 	--寫入錯誤訊息
 	IF @Error=1
