@@ -15,5 +15,9 @@ namespace Domain.SP.Input.Booking
         public Int64 OrderNo { set; get; }
         public string Token { set; get; }
         public Int64 LogID { set; get; }
+        /// <summary>
+        /// 自定義描述
+        /// </summary>
+        public string Descript { set; get; }
     }
 }

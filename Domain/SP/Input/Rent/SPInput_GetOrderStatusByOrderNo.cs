@@ -30,4 +30,16 @@ namespace Domain.SP.Input.Rent
         /// </summary>
         public int MINUTES { set; get; }
     }
+
+    public class SPInput_GetOrderAuthListV2 : SPInput_Base
+    {
+        /// <summary>
+        /// 發送通道
+        /// </summary>
+        public int GateNo { set; get; }
+        /// <summary>
+        /// 重發訂單
+        /// </summary>
+        public int Retry { set; get; }
+    }
 }

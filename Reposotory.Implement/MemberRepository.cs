@@ -14,7 +14,8 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using WebCommon;
-using ConfigurationManager = System.Configuration.ConfigurationManager; 
+using ConfigurationManager = System.Configuration.ConfigurationManager;
+using Domain.TB;
 
 namespace Reposotory.Implement
 {
@@ -852,6 +853,19 @@ namespace Reposotory.Implement
 
             lstAudits = GetObjList<BE_GetBlackListAccount>(ref flag, ref lstError, SQL, para, term);
 
+            return lstAudits;
+        }
+
+        public List<CloseAccount> GetCloseAccount()
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<CloseAccount> lstAudits = null;
+            SqlParameter[] para = new SqlParameter[0];
+            string term = "";
+            string SQL = $" EXEC usp_GetCloseAccount '' " ;
+
+            lstAudits = GetObjList<CloseAccount>(ref flag, ref lstError, SQL, para, term);
             return lstAudits;
         }
     }

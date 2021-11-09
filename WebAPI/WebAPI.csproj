@@ -51,6 +51,12 @@
     <Reference Include="Azure.Storage.Common, Version=12.5.2.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
       <HintPath>..\packages\Azure.Storage.Common.12.5.2\lib\netstandard2.0\Azure.Storage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="FluentFTP, Version=35.0.5.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentFTP.35.0.5\lib\net45\FluentFTP.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.Excel.2.1.1\lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ApplicationBlocks.Data">
       <HintPath>Reference\Microsoft.ApplicationBlocks.Data.dll</HintPath>
     </Reference>
@@ -66,6 +72,18 @@
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.5\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.Excel.2.1.1\lib\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.Excel.2.1.1\lib\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.Excel.2.1.1\lib\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.Excel.2.1.1\lib\NPOI.OpenXmlFormats.dll</HintPath>
     </Reference>
     <Reference Include="Pipelines.Sockets.Unofficial, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42ea0a778e13fbe2, processorArchitecture=MSIL">
       <HintPath>..\packages\Pipelines.Sockets.Unofficial.2.2.0\lib\net461\Pipelines.Sockets.Unofficial.dll</HintPath>
@@ -261,6 +279,10 @@
     <Compile Include="Controllers\BindQueryByTaishinController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BuyNowToolController.cs" />
+    <Compile Include="Controllers\CloseAccountFtpDownloadController.cs" />
+    <Compile Include="Controllers\CloseAccountFtpUploadController.cs" />
+    <Compile Include="Controllers\CreditAuthReservationJobController.cs" />
+    <Compile Include="Controllers\CreditAuthJobV2Controller.cs" />
     <Compile Include="Controllers\GetAccountStatusController.cs" />
     <Compile Include="Controllers\GetAccountValueController.cs" />
     <Compile Include="Controllers\GetCarMapDataController.cs" />
@@ -275,6 +297,7 @@
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\GetOrderInsuranceInfoController.cs" />
+    <Compile Include="Controllers\GetPreCreditAuthJobController.cs" />
     <Compile Include="Controllers\JointRentInvitationController.cs" />
     <Compile Include="Controllers\JointRentInviteeModifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
@@ -523,13 +546,17 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_ReCalculateByDiscount.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_GetCarMapData.cs" />
+    <Compile Include="Models\Param\Bill\Input\IFN_CreditAuthRequest.cs" />
     <Compile Include="Models\Param\Bill\Input\IFN_TSIBCardTrade.cs" />
+    <Compile Include="Models\Param\Bill\Output\OFN_CreditAuthResult.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_CarRentInCompute.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_GetCarRentPrice.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_Any.cs" />
     <Compile Include="Models\Param\CusFun\Input\ICF_TSIB_Escrow_PayTransaction.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CreditAuthJobV2.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetOrderInsuranceInfo.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetPreCreditAuthJob.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInvitation.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeModify.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeListQuery.cs" />
@@ -807,6 +834,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\RentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetWalletStoredMoneySet.cs" />
     <Compile Include="Models\PolygonModel.cs" />
+    <Compile Include="Service\CommonService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\WalletService.cs" />
     <Compile Include="Utils\Common.cs" />
@@ -853,7 +881,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Doc\" />
-    <Folder Include="Models\Param\Bill\Output\" />
     <Folder Include="Models\Param\CusFun\Output\" />
   </ItemGroup>
   <ItemGroup>

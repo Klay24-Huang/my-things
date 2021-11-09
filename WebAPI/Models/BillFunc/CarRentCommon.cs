@@ -1,7 +1,5 @@
-﻿using Domain.SP.BE.Input;
-using Domain.SP.Input.Arrears;
+﻿using Domain.SP.Input.Arrears;
 using Domain.SP.Input.Common;
-using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
@@ -19,8 +17,6 @@ using System.Linq;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.ComboFunc;
 using WebAPI.Models.Enum;
-using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Utils;
 using WebCommon;
@@ -30,8 +26,8 @@ namespace WebAPI.Models.BillFunc
     public class CarRentCommon
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
 
+        #region TokenCheck
         public OBIZ_TokenCk TokenCk(IBIZ_TokenCk sour)
         {
             var re = new OBIZ_TokenCk();
@@ -63,90 +59,14 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
+        #endregion
 
-        public OBIZ_CRNoMonth CRNoMonth(IBIZ_CRNoMonth sour)
-        {
-            var re = new OBIZ_CRNoMonth();
-            var billCommon = new BillCommon();
-            if (sour.hasFine)
-            {
-                var reInMins = billCommon.GetCarRangeMins(sour.SD, sour.ED, sour.carBaseMins, 600, sour.lstHoliday);
-                if (reInMins != null)
-                {
-                    re.car_payInMins = Convert.ToInt32(reInMins.Item1 + reInMins.Item2);
-                    re.car_payAllMins += re.car_payInMins;
-                    re.car_pay_in_wMins = reInMins.Item1;
-                    re.car_pay_in_hMins = reInMins.Item2;
-                }
-
-                var reOutMins = billCommon.GetCarOutComputeMins(sour.ED, sour.FED, 0, 360, sour.lstHoliday);
-                if (reOutMins != null)
-                {
-                    re.car_payOutMins = Convert.ToInt32(reOutMins.Item1 + reOutMins.Item2);
-                    re.car_payAllMins += re.car_payOutMins;
-                    re.car_pay_out_wMins = reOutMins.Item1;
-                    re.car_pay_out_hMins = reOutMins.Item2;
-                }
-
-                re.car_inPrice = billCommon.CarRentCompute(sour.SD, sour.ED, sour.car_n_price * 10, sour.car_h_price * 10, 10, sour.lstHoliday);
-                re.car_outPrice = billCommon.CarRentCompute(sour.ED, sour.FED, sour.WeekdayPrice, sour.HoildayPrice, 6, sour.lstHoliday, true, 0);
-            }
-            else
-            {
-                var reAllMins = billCommon.GetCarRangeMins(sour.SD, sour.FED, sour.carBaseMins, 600, sour.lstHoliday);
-                if (reAllMins != null)
-                {
-                    re.car_payAllMins = Convert.ToInt32(reAllMins.Item1 + reAllMins.Item2);
-                    re.car_payInMins = re.car_payAllMins;
-                    re.car_pay_in_wMins = reAllMins.Item1;
-                    re.car_pay_in_hMins = reAllMins.Item2;
-                }
-
-                re.car_inPrice = billCommon.CarRentCompute(sour.SD, sour.FED, sour.car_n_price * 10, sour.car_h_price * 10, 10, sour.lstHoliday);
-            }
-            re.flag = true;
-            return re;
-        }
-
+        #region 點數查詢
         /// <summary>
-        /// 非月租折扣計算
+        /// 點數查詢
         /// </summary>
         /// <param name="sour"></param>
         /// <returns></returns>
-        public OBIZ_CRNoMonthDisc CRNoMonthDisc(IBIZ_CRNoMonthDisc sour)
-        {
-            var re = new OBIZ_CRNoMonthDisc();
-            if (!sour.UseMonthMode)
-            {
-                if (sour.hasFine)
-                {
-                    var xre = new BillCommon().CarDiscToPara(sour.SD, sour.ED, sour.CarBaseMins, 600, sour.lstHoliday, sour.Discount);
-                    if (xre != null)
-                    {
-                        re.nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
-                        re.nor_car_wDisc = xre.Item2;
-                        re.nor_car_hDisc = xre.Item3;
-                    }
-                }
-                else
-                {
-                    var xre = new BillCommon().CarDiscToPara(sour.SD, sour.FED, sour.CarBaseMins, 600, sour.lstHoliday, sour.Discount);
-                    if (xre != null)
-                    {
-                        re.nor_car_PayDisc = Convert.ToInt32(Math.Floor(xre.Item1));
-                        re.nor_car_wDisc = xre.Item2;
-                        re.nor_car_hDisc = xre.Item3;
-                    }
-                }
-
-                var discPrice = Convert.ToDouble(sour.car_n_price) * (re.nor_car_wDisc / 60) + Convert.ToDouble(sour.car_h_price) * (re.nor_car_hDisc / 60);
-                //re.nor_car_PayDiscPrice = Convert.ToInt32(Math.Floor(discPrice));
-                re.nor_car_PayDiscPrice = Convert.ToInt32(Math.Round(discPrice, 0, MidpointRounding.AwayFromZero));
-                re.UseDisc = re.nor_car_PayDisc;
-            }
-
-            return re;
-        }
         public OBIZ_NPR270Query NPR270Query(IBIZ_NPR270Query sour)
         {
             var re = new OBIZ_NPR270Query();
@@ -188,7 +108,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region ETAG010查詢費用
         public OBIZ_ETagCk ETagCk(IBIZ_ETagCk sour)
         {
             var re = new OBIZ_ETagCk();
@@ -213,7 +135,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 車麻吉
         /// <summary>
         /// 車麻吉
         /// </summary>
@@ -237,7 +161,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 汽機車月租,不含逾時(有存檔)
         /// <summary>
         /// 汽機車月租,不含逾時(有存檔)
         /// </summary>
@@ -265,13 +191,8 @@ namespace WebAPI.Models.BillFunc
 
             //1.0 先還原這個單號使用的
             re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
-
             re.errCode = errCode;
             int RateType = (sour.ProjType == 4) ? 1 : 0;
-            //if (sour.hasFine)
-            //    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.ED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
-            //else
-            //    monthlyRentDatas = monthlyRentRepository.GetSubscriptionRates(sour.IDNO, sour.SD.ToString("yyyy-MM-dd HH:mm:ss"), sour.FED.ToString("yyyy-MM-dd HH:mm:ss"), RateType, sour.ShortTermIds);
 
             if (sour != null && !string.IsNullOrWhiteSpace(sour.MonIds))
             {
@@ -279,16 +200,16 @@ namespace WebAPI.Models.BillFunc
 
                 //假日優惠費率置換:只限汽車月租,只置換假日
                 List<int> CarProTypes = new List<int>() { 0, 3 };
-                if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0 && CarProTypes.Any(x=>x == sour.ProjType) && sour.intOrderNO > 0)
+                if (monthlyRentDatas != null && monthlyRentDatas.Count() > 0 && CarProTypes.Any(x => x == sour.ProjType) && sour.intOrderNO > 0)
                 {
                     string xErrMsg = "";
                     foreach (var m in monthlyRentDatas)
                     {
                         var pri = cr_sp.sp_GetEstimate("", "", sour.LogID, ref xErrMsg, sour.intOrderNO);
                         if (pri != null && pri.PRICE_H > 0)
-                            m.HoildayRateForCar = Convert.ToSingle(pri.PRICE_H)/10; //20210731 ADD BY ADAM REASON.補上除以10
+                            m.HoildayRateForCar = Convert.ToSingle(pri.PRICE_H) / 10; //20210731 ADD BY ADAM REASON.補上除以10
                     }
-                    trace.FlowList.Add("置換汽車假日優惠費率");                    
+                    trace.FlowList.Add("置換汽車假日優惠費率");
                 }
             }
 
@@ -312,7 +233,7 @@ namespace WebAPI.Models.BillFunc
                 re.IsMonthRent = 1;
 
                 if (re.flag)
-                {                    
+                {
                     try
                     {
                         if (sour.ProjType == 4)
@@ -360,7 +281,6 @@ namespace WebAPI.Models.BillFunc
                                 sour.VisMons != null && sour.VisMons.Count() > 0)
                                 motoMonth = motoMonth.Where(x => !sour.VisMons.Any(y => y.MonthlyRentId == x.MonthlyRentId)).ToList();
 
-                            //motoMonth = motoMonth.Where(x => x.MotoTotalHours > 0 || x.MotoWorkDayMins >0 || x.MotoHolidayMins > 0).ToList();
                             if (motoMonth.Count > 0)
                             {
                                 int UseLen = motoMonth.Count;
@@ -431,7 +351,7 @@ namespace WebAPI.Models.BillFunc
                         }
                         trace.FlowList.Add("月租計算");
                     }
-                    catch(Exception ex) 
+                    catch (Exception ex)
                     {
                         int FunId = SiteUV.GetFunId(funNm);
                         trace.BaseMsg = ex.Message;
@@ -445,7 +365,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 汽機車月租,不含逾時(不存檔)
         /// <summary>
         /// 汽機車月租,不含逾時(不存檔)
         /// </summary>
@@ -602,7 +524,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region GetPayDetail InputCheck
         public OBIZ_InCheck InCheck(IBIZ_InCheck sour)
         {
             var re = new OBIZ_InCheck();
@@ -655,7 +579,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 避免db回傳0
         /// <summary>
         /// 避免db回傳0
         /// </summary>
@@ -669,7 +595,9 @@ namespace WebAPI.Models.BillFunc
             sour.PRICE_H = sour.PRICE_H == 0 ? 168 : sour.PRICE_H;
             return sour;
         }
+        #endregion
 
+        #region 取得虛擬月租
         public OBIZ_SpringInit GetVisualMonth(IBIZ_SpringInit sour)
         {
             var re = new OBIZ_SpringInit();
@@ -770,7 +698,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 春節專案
         /// <summary>
         /// 春節專案
         /// </summary>
@@ -1016,11 +946,10 @@ namespace WebAPI.Models.BillFunc
                 return true;
             return false;
         }
-
+        #endregion
     }
 
     #region repo
-    //note: repo
     public class CarRentRepo : BaseRepository
     {
         private string defConStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -1032,6 +961,7 @@ namespace WebAPI.Models.BillFunc
         {
             this.ConnectionString = ConnStr;
         }
+        #region RePayDetail(重新計算租金明細)用
         public List<MonthlyRentHis> GetMonthlyRentHistory(string MonthlyRentIds, string OrderNo)
         {
             bool flag = false;
@@ -1065,7 +995,17 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
+        public bool SetInitPriceByOrderNo(OrderQueryFullData sour)
+        {
+            bool flag = true;
+            string SQL = "";
 
+            SQL = "UPDATE TB_OrderMain SET init_price= " + sour.init_price + " WHERE order_number = " + sour.OrderNo.ToString();
+            ExecNonResponse(ref flag, SQL);
+            return flag;
+        }
+        #endregion
+        #region 取得短期
         /// <summary>
         /// 取得短期
         /// </summary>
@@ -1091,12 +1031,14 @@ namespace WebAPI.Models.BillFunc
             string strED = EndDate.ToString("yyyy-MM-dd HH:mm");
 
             string SQL = "SELECT DISTINCT MonthlyRentId, ProjNM FROM TB_MonthlyRent WHERE Mode = {7} AND IDNO = '{0}'";
-            SQL +=  " AND ((EndDate > '{1}' AND EndDate <= '{2}') OR (StartDate >= '{3}' AND StartDate < '{4}') OR (StartDate <= '{5}' AND EndDate >= '{6}'))";
-            
+            SQL += " AND ((EndDate > '{1}' AND EndDate <= '{2}') OR (StartDate >= '{3}' AND StartDate < '{4}') OR (StartDate <= '{5}' AND EndDate >= '{6}'))";
+
             SQL = string.Format(SQL, IDNO, strSD, strED, strSD, strED, strSD, strED, Mode.ToString());
             re = GetObjList<MonBase>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
+        #endregion
+        #region 春節專案用
         public ProjectDiscountTBVM GetFirstProDisc(string ProjID, string CarTypeNm)
         {
             bool flag = false;
@@ -1121,47 +1063,9 @@ namespace WebAPI.Models.BillFunc
                 re = xre.FirstOrDefault();
             return re;
         }
-        /// <summary>
-        /// 取得里程費
-        /// </summary>
-        /// <param name="ProjID"></param>
-        /// <param name="BkTime"></param>
-        /// <returns></returns>
-        public double GetMilageBase(string ProjID, DateTime BkTime)
-        {
-            double re = 0;
-            var xre = GetMilageSetting(ProjID, BkTime);
-            if (xre != null && xre.Count() > 0)
-            {
-                var fItem = xre.FirstOrDefault();
-                re = fItem.MilageBase;
-            }
-
-            return re;
-        }
-        /// <summary>
-        /// 取得里程資全部資訊
-        /// </summary>
-        /// <param name="ProjID"></param>
-        /// <param name="BkTime"></param>
-        /// <returns></returns>
-        public List<MilageSettingTBVM> GetMilageSetting(string ProjID, DateTime BkTime)
-        {
-            var re = new List<MilageSettingTBVM>();
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            if (string.IsNullOrWhiteSpace(ProjID) || BkTime == null)
-                throw new Exception("ProjID, BkTime為必填");
-            string SQL = @"
-            select ProjID, CarType ,SDate ,EDate ,MilageBase ,use_flag from TB_MilageSetting m
-            where m.use_flag = 1  
-            AND '{0}' BETWEEN m.SDate AND m.EDate
-            and UPPER(m.ProjID) = UPPER('{1}') ";
-            string strBkTime = BkTime.ToString("yyyy-MM-dd HH:mm:ss");
-            SQL = String.Format(SQL, strBkTime, ProjID);
-            re = GetObjList<MilageSettingTBVM>(ref flag, ref lstError, SQL, null, "");
-            return re;
-        }
+        #endregion
+        #region 2021春節訂金資訊
+        #region 取得2021春節訂金資訊(目前已無用)
         /// <summary>
         /// 取得訂金資訊
         /// </summary>
@@ -1174,67 +1078,13 @@ namespace WebAPI.Models.BillFunc
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             if (order_number <= 0)
                 throw new Exception("order_number為必填");
-            string SQL = @"
-	            select p.order_number, p.PAYDATE, p.PAYAMT, p.RETURNAMT, p.NORDNO from TB_NYPayList p
-	            where p.order_number = {0} ";
+            string SQL = @"select p.order_number, p.PAYDATE, p.PAYAMT, p.RETURNAMT, p.NORDNO from TB_NYPayList p WITH(NOLOCK) where p.order_number = {0} ";
             SQL = String.Format(SQL, order_number.ToString());
             re = GetObjList<NYPayList>(ref flag, ref lstError, SQL, null, "");
             return re;
         }
-
-        public List<TraceLogTBVM> GetTraceLog(int OrderNo, string ApiMsg, string TraceType, string OrderNos = "")
-        {
-            var re = new List<TraceLogTBVM>();
-            var sour = new TraceLogTBVM()
-            {
-                OrderNo = OrderNo,
-                ApiMsg = ApiMsg,
-                TraceType = TraceType
-            };
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SQL = @"
-                select top 100 t.ApiId,t.ApiMsg,t.ApiNm,t.CodeVersion,t.FlowStep,t.OrderNo,t.traceId,t.TraceType 
-                from Tb_TraceLog t  where 1=1 ";
-
-            if (string.IsNullOrWhiteSpace(OrderNos))
-            {
-                if (sour.OrderNo > 0)
-                    SQL += " and t.OrderNo = " + sour.OrderNo;
-            }
-            else
-                SQL += " and t.OrderNo in(" + OrderNos + ") ";
-
-            if (!string.IsNullOrWhiteSpace(sour.ApiMsg))
-                SQL += " and t.ApiMsg like '%" + sour.ApiMsg + "%' ";
-            if (!string.IsNullOrWhiteSpace(sour.TraceType))
-                SQL += " and t.TraceType like '%" + sour.TraceType + "%' ";
-            re = GetObjList<TraceLogTBVM>(ref flag, ref lstError, SQL, null, "");
-            return re;
-        }
-
-        public string GetCarTypeGroupCode(string CarNo)
-        {
-            string re = "";
-            var sqlRe = new List<GetFullProjectVM>();
-            bool flag = false;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            if (string.IsNullOrWhiteSpace(CarNo))
-                throw new Exception("CarNo 為必填");
-            string SQL = @"
-	            select top 1 g.CarTypeGroupCode from TB_Car c
-	            join TB_CarType t on t.CarType = c.CarType
-	            join TB_CarTypeGroupConsist gc on gc.CarType = t.CarType
-	            join TB_CarTypeGroup g on gc.CarTypeGroupID = g.CarTypeGroupID
-	            where c.CarNo = '{0}'";
-            SQL = String.Format(SQL, CarNo.ToString());
-            sqlRe = GetObjList<GetFullProjectVM>(ref flag, ref lstError, SQL, null, "");
-
-            if (sqlRe != null && sqlRe.Count() > 0)
-                re = sqlRe.FirstOrDefault().CarTypeGroupCode;
-            return re;
-        }
-
+        #endregion
+        #region 更新返還訂金
         /// <summary>
         /// 更新返還訂金
         /// </summary>
@@ -1255,75 +1105,32 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-        public bool UpdOrderMainByOrderNo(int orderNo, double init_price, double InsPrice)
+        #endregion
+        #endregion
+        #region GetCarTypeGroupCode
+        public string GetCarTypeGroupCode(string CarNo)
         {
-            if (orderNo == 0)
-                throw new Exception("orderNo必填");
-
-            bool flag = true;
+            string re = "";
+            var sqlRe = new List<GetFullProjectVM>();
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if (string.IsNullOrWhiteSpace(CarNo))
+                throw new Exception("CarNo 為必填");
             string SQL = @"
-                UPDATE o
-                SET o.init_price= {0},
-                o.InsurancePurePrice = {1}
-                from TB_OrderMain o WHERE 
-                o.order_number in ({2})";
-            SQL = String.Format(SQL, init_price.ToString(), InsPrice.ToString(), orderNo.ToString());
-            ExecNonResponse(ref flag, SQL);
-            return flag;
-        }
-        public bool SetInitPriceByOrderNo(OrderQueryFullData sour)
-        {
-            bool flag = true;
-            string SQL = "";
+	            select top 1 g.CarTypeGroupCode from TB_Car c WITH(NOLOCK)
+	            join TB_CarType t WITH(NOLOCK) on t.CarType = c.CarType
+	            join TB_CarTypeGroupConsist gc WITH(NOLOCK) on gc.CarType = t.CarType
+	            join TB_CarTypeGroup g WITH(NOLOCK) on gc.CarTypeGroupID = g.CarTypeGroupID
+	            where c.CarNo = '{0}'";
+            SQL = String.Format(SQL, CarNo.ToString());
+            sqlRe = GetObjList<GetFullProjectVM>(ref flag, ref lstError, SQL, null, "");
 
-            SQL = "UPDATE TB_OrderMain SET init_price= " + sour.init_price + " WHERE order_number = " + sour.OrderNo.ToString();
-            ExecNonResponse(ref flag, SQL);
-            return flag;
+            if (sqlRe != null && sqlRe.Count() > 0)
+                re = sqlRe.FirstOrDefault().CarTypeGroupCode;
+            return re;
         }
-        public bool AddErrLog(string FunName, string Msg, string ErrorCode = "")
-        {
-            return AddErrLog(FunName, ErrorCode, 0, 999, Msg);
-        }
-        public bool AddErrLog(string FunName, string ErrorCode, int ErrType, int SQLErrorCode, string SQLErrorDesc)
-        {
-            if (string.IsNullOrWhiteSpace(FunName))
-                FunName = "x";
-            if (string.IsNullOrWhiteSpace(ErrorCode))
-                FunName = "x";
-            if (string.IsNullOrWhiteSpace(SQLErrorDesc))
-                FunName = "x";
-
-            bool flag = true;
-            string SQL = "";
-            SQL = "INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])";
-            SQL += " VALUES ('" + FunName + "'," +
-                "'" + ErrorCode + "'," + ErrType.ToString() + "," + SQLErrorCode.ToString() + "," +
-                "'" + SQLErrorDesc + "',9999,1)";
-            ExecNonResponse(ref flag, SQL);
-            return flag;
-        }
-        public bool AddApiLog(int APIID, string Msg, string OrderNo = "")
-        {
-            return AddApiLog(APIID, "99999", Msg, OrderNo);
-        }
-        public bool AddApiLog(int APIID, string CLIENTIP, string APIInput, string ORDNO)
-        {
-            if (string.IsNullOrWhiteSpace(CLIENTIP))
-                CLIENTIP = "x";
-            if (string.IsNullOrWhiteSpace(APIInput))
-                APIInput = "x";
-            if (string.IsNullOrWhiteSpace(ORDNO))
-                ORDNO = "x";
-
-            bool flag = true;
-            string SQL = "";
-            SQL = "INSERT INTO TB_APILog(APIID,CLIENTIP,APIInput,ORDNO)";
-            SQL += " VALUES (" + APIID + "," +
-                "'" + CLIENTIP + "','" + APIInput + "','" + ORDNO + "'" +
-              ")";
-            ExecNonResponse(ref flag, SQL);
-            return flag;
-        }    
+        #endregion
+        #region TraceLog
         public bool AddTraceLog(int apiId, string funName, TraceCom trace, bool flag)
         {
             if (!string.IsNullOrWhiteSpace(trace.BaseMsg))
@@ -1393,47 +1200,16 @@ namespace WebAPI.Models.BillFunc
             ExecNonResponse(ref flag, SQL);
             return flag;
         }
-        public bool AddGoldFlowLog(GoldFlowLogVM sour)
-        {
-            if (sour != null)
-            {
-                var def = new GoldFlowLogVM();
-                if (string.IsNullOrWhiteSpace(sour.CodeVersion))
-                    sour.CodeVersion = def.CodeVersion;
-                if (string.IsNullOrWhiteSpace(sour.ApiNm))
-                    sour.ApiNm = def.ApiNm;
-                if (string.IsNullOrWhiteSpace(sour.ApiMsg))
-                    sour.ApiMsg = def.ApiMsg;
-                if (string.IsNullOrWhiteSpace(sour.FlowStep))
-                    sour.FlowStep = def.FlowStep;
-                if (string.IsNullOrWhiteSpace(sour.FlowType))
-                    sour.FlowType = def.FlowType;
-
-                return xAddGoldFlowLog(sour);
-            }
-            return false;
-        }
-        private bool xAddGoldFlowLog(GoldFlowLogVM sour)
-        {
-            bool flag = true;
-            string SQL = "";
-            SQL = "INSERT INTO Tb_GoldFlowLog (CodeVersion, OrderNo, ApiId, ApiNm, ApiMsg, FlowStep, FlowType)";
-            SQL += " VALUES ('" + sour.CodeVersion + "',"
-                + sour.OrderNo.ToString() + "," + sour.ApiId.ToString() + "," +
-                "'" + sour.ApiNm + "','" + sour.ApiMsg + "','" + sour.FlowStep + "','" + sour.FlowType.ToString() + "'" +
-              ")";
-            ExecNonResponse(ref flag, SQL);
-            return flag;
-        }
+        #endregion
     }
-
+    #region 取得專案資訊
     public class CarRentSp
     {
-        public GetFullProjectVM sp_GetEstimate(string PROJID, string CARTYPE, long LogID, ref string errMsg, Int64 OrderNo=0)
+        public GetFullProjectVM sp_GetEstimate(string PROJID, string CARTYPE, long LogID, ref string errMsg, Int64 OrderNo = 0)
         {
             var re = new GetFullProjectVM();
 
-            if(!string.IsNullOrWhiteSpace(PROJID) || !string.IsNullOrWhiteSpace(CARTYPE))
+            if (!string.IsNullOrWhiteSpace(PROJID) || !string.IsNullOrWhiteSpace(CARTYPE))
             {
                 if (string.IsNullOrWhiteSpace(PROJID) || string.IsNullOrWhiteSpace(CARTYPE))
                     throw new Exception("PROJID, CARTYPE 必填");
@@ -1485,7 +1261,8 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
     }
-
+    #endregion
+    #region 欠費查詢
     public class ArrearsSp
     {
         public List<ArrearsQueryDetail> sp_ArrearsQuery(WebAPIOutput_NPR330QueryData[] apiList, SPInput_ArrearsQuery spInput, ref string errMsg)
@@ -1582,14 +1359,11 @@ namespace WebAPI.Models.BillFunc
             }
         }
     }
-
+    #endregion
     #endregion
 
     #region VM
-    //note: vm
-
     #region 春節月租
-
     public class IBIZ_SpringInit
     {
         public string IDNO { get; set; }
@@ -1639,94 +1413,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public List<MonthlyRentData> VisMons { get; set; } = new List<MonthlyRentData>();
     }
-
-    //public class MonRentDataVM: MonthlyRentData
-    //{
-    //    public string CarType { get; set; }
-    //}
-
     #endregion
-
-    public class IBIZ_GetPayDetail
-    {
-        /// <summary>
-        /// 訂單編號
-        /// </summary>
-        public string OrderNo { set; get; }
-        /// <summary>
-        /// 汽車使用的點數
-        /// </summary>
-        public int Discount { set; get; }
-
-        /// <summary>
-        /// 機車使用的點數
-        /// </summary>
-        public int MotorDiscount { set; get; }
-
-        public string UserID { get; set; }//呼叫BE_ContactSettingController需要
-        public Int64 LogID { get; set; }//呼叫BE_ContactSettingController需要
-        public string returnDate { get; set; }//呼叫BE_ContactSettingController需要
-
-        public string funName { get; set; }
-
-        public bool isGuest { get; set; } = true;
-
-        public string Access_Token { get; set; }
-
-        public string ClientIP { get; set; }
-
-        public string errMsg { get; set; }
-
-        public string errCode { get; set; }
-
-        //取出訂單資訊
-        public eumOrderData OrderData { get; set; }
-
-        /// <summary>
-        /// 若Ck_Token=false時必填
-        /// </summary>
-        public string xIDNO { set; get; }
-
-        /// <summary>
-        /// 防呆驗證
-        /// </summary>
-        public bool InCheck { get; set; } = false;
-
-        /// <summary>
-        /// 是否存入使用月租使用紀錄表
-        /// </summary>
-        public bool db_InsMonthlyHistory { get; set; } = false;
-
-        /// <summary>
-        /// 次否執行usp_CalFinalPrice存檔
-        /// </summary>
-        public bool db_CalFinalPrice { get; set; } = false;
-
-        /// <summary>
-        /// 是否驗證token
-        /// </summary>
-        public bool Ck_Token { get; set; } = false;
-
-        /// <summary>
-        /// 與短租查時數
-        /// </summary>
-        public bool Call_NPR270Query { get; set; } = false;
-
-        /// <summary>
-        /// 查ETAG
-        /// </summary>
-        public bool Call_ETAG { get; set; } = false;
-
-        /// <summary>
-        /// 檢查有無車麻吉停車費用
-        /// </summary>
-        public bool Call_CarMagi { get; set; } = false;
-    }
-    public class OBIZ_GetPayDetail : OAPI_GetPayDetail
-    {
-        public bool flag { get; set; } = false;
-        public Dictionary<string, object> objOutput { get; set; }//輸出
-    }
+    #region 底層output
     public class BIZ_CRBase
     {
         public bool flag { get; set; }
@@ -1743,6 +1431,8 @@ namespace WebAPI.Models.BillFunc
             lstError = new List<ErrorInfo>();
         }
     }
+    #endregion
+    #region Token
     public class IBIZ_TokenCk
     {
         public Int64 LogID { get; set; }
@@ -1752,43 +1442,8 @@ namespace WebAPI.Models.BillFunc
     {
         public string IDNO { set; get; }
     }
-    /// <summary>
-    /// 非月租租金計算in
-    /// </summary>
-    public class IBIZ_CRNoMonth
-    {
-        /// <summary>
-        /// 汽車平日價-未逾時
-        /// </summary>
-        public int car_n_price { get; set; }
-        /// <summary>
-        /// 汽車假日價-未逾時
-        /// </summary>
-        public int car_h_price { get; set; }
-        /// <summary>
-        /// 汽車平日價-逾時
-        /// </summary>
-        public int WeekdayPrice { get; set; }
-        /// <summary>
-        /// 汽車假日價-逾時
-        /// </summary>
-        public int HoildayPrice { get; set; }
-        public DateTime SD { get; set; }
-        public DateTime ED { get; set; }
-        public DateTime FED { get; set; }
-        /// <summary>
-        /// 是否逾時
-        /// </summary>
-        public bool hasFine { get; set; }
-        /// <summary>
-        /// 汽車基本分鐘數
-        /// </summary>
-        public int carBaseMins { get; set; }
-        /// <summary>
-        /// 假日列表
-        /// </summary>
-        public List<Holiday> lstHoliday { get; set; }
-    }
+    #endregion
+    #region 非月租租金計算out
     /// <summary>
     /// 非月租租金計算out
     /// </summary>
@@ -1831,51 +1486,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public int car_outPrice { get; set; }
     }
-    public class IBIZ_CRNoMonthDisc
-    {
-        /// <summary>
-        /// false:無月租;true:有月租
-        /// </summary>
-        public bool UseMonthMode { get; set; }
-        /// <summary>
-        /// 是否逾時
-        /// </summary>
-        public bool hasFine { get; set; }
-        public DateTime SD { get; set; }
-        public DateTime ED { get; set; }
-        public DateTime FED { get; set; }
-        /// <summary>
-        /// 汽車基本分鐘數
-        /// </summary>
-        public double CarBaseMins { get; set; }
-        /// <summary>
-        /// 假日列表
-        /// </summary>
-        public List<Holiday> lstHoliday { get; set; }
-        public int Discount { get; set; }
-        public int car_n_price { get; set; } = 0;//汽車平日價
-        public int car_h_price { get; set; } = 0;//汽車假日價
-    }
-    public class OBIZ_CRNoMonthDisc : BIZ_CRBase
-    {
-        /// <summary>
-        /// 只有一般時段時平日折扣
-        /// </summary>
-        public double nor_car_wDisc { get; set; }
-        /// <summary>
-        /// 只有一般時段時價日折扣
-        /// </summary>
-        public double nor_car_hDisc { get; set; }
-        /// <summary>
-        /// 只有一般時段時總折扣
-        /// </summary>
-        public int nor_car_PayDisc { get; set; }
-        /// <summary>
-        /// 只有一般時段時總折扣金額
-        /// </summary>
-        public int nor_car_PayDiscPrice { get; set; }
-        public int UseDisc { get; set; }
-    }
+    #endregion
+    #region 點數查詢
     public class IBIZ_NPR270Query
     {
         public string IDNO { get; set; }
@@ -1891,6 +1503,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public int CarPoint { get; set; }
     }
+    #endregion
+    #region eTag
     public class IBIZ_ETagCk
     {
         /// <summary>
@@ -1905,6 +1519,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public int etagPrice { get; set; }
     }
+    #endregion
+    #region 車麻吉停車費
     public class IBIZ_CarMagi
     {
         public Int64 LogID { get; set; }
@@ -1923,15 +1539,25 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public int ParkingFee { set; get; }
     }
+    #endregion
+    #region 月租
     public class IBIZ_MonthRent
     {
         /// <summary>
-        /// 取消所有月租
+        /// 帳號
         /// </summary>
-        public bool CancelMonthRent { get; set; } = false;
         public string IDNO { get; set; }
+        /// <summary>
+        /// LogID
+        /// </summary>
         public Int64 LogID { get; set; }
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
         public Int64 intOrderNO { get; set; }
+        /// <summary>
+        /// 專案類型
+        /// </summary>
         public int ProjType { get; set; }
         /// <summary>
         /// 機車基消
@@ -1953,8 +1579,17 @@ namespace WebAPI.Models.BillFunc
         /// 是否逾時
         /// </summary>
         public bool hasFine { get; set; }
+        /// <summary>
+        /// 實際取車時間
+        /// </summary>
         public DateTime SD { get; set; }
+        /// <summary>
+        /// 預計還車時間
+        /// </summary>
         public DateTime ED { get; set; }
+        /// <summary>
+        /// 實際還車時間
+        /// </summary>
         public DateTime FED { get; set; }
         /// <summary>
         /// 機車基本分鐘數
@@ -1985,6 +1620,10 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public double FirstFreeMins { get; set; }
         /// <summary>
+        /// 取消所有月租
+        /// </summary>
+        public bool CancelMonthRent { get; set; } = false;
+        /// <summary>
         /// 月租Id(可多筆)
         /// </summary>
         public string MonIds { get; set; }
@@ -1992,7 +1631,10 @@ namespace WebAPI.Models.BillFunc
         /// 每日上限金額      // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
         /// </summary>
         public int MaxPrice { get; set; }
-        public List<MonthlyRentData> VisMons { get; set; }//虛擬月租
+        /// <summary>
+        /// 虛擬月租
+        /// </summary>
+        public List<MonthlyRentData> VisMons { get; set; }
     }
     public class OBIZ_MonthRent : BIZ_CRBase
     {
@@ -2023,6 +1665,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public int CarRental { set; get; }
     }
+    #endregion
+    #region GetPayDetail inputcheck
     public class IBIZ_InCheck
     {
         /// <summary>
@@ -2052,6 +1696,8 @@ namespace WebAPI.Models.BillFunc
         public long longOrderNo { get; set; }
         public int Discount { set; get; }
     }
+    #endregion
+    #region 月租
     public class MonthlyRentHis
     {
         public int MonthlyRentId { get; set; }
@@ -2062,6 +1708,8 @@ namespace WebAPI.Models.BillFunc
         public double UseMotoWorkDayMins { get; set; }
         public double UseMotoHolidayMins { get; set; }
     }
+    #endregion
+    #region TraceLog
     public class TraceLogVM
     {
         public string CodeVersion { get; set; } = "x";
@@ -2072,22 +1720,9 @@ namespace WebAPI.Models.BillFunc
         public string FlowStep { get; set; } = "x";
         public eumTraceType TraceType { get; set; } = eumTraceType.none;
     }
-    public class GoldFlowLogVM
-    {
-        public string CodeVersion { get; set; } = "x";
-        public long OrderNo { get; set; } = 0;
-        public int ApiId { get; set; } = 0;
-        public string ApiNm { get; set; } = "x";
-        public string ApiMsg { get; set; } = "x";
-        public string FlowStep { get; set; } = "x";
-        public string FlowType { get; set; } = "x";
-    }
-
     #endregion
-
+    #endregion
     #region TBVM
-    //note: tbvm
-
     public class ProjectDiscountTBVM
     {
         public string ProjID { get; set; }
@@ -2101,35 +1736,6 @@ namespace WebAPI.Models.BillFunc
         public double DISCOUNT { get; set; }
         public double PHOURS { get; set; }
     }
-
-    public class MilageSettingTBVM
-    {
-        /// <summary>
-        /// 專案代碼
-        /// </summary>
-        public string ProjID { get; set; }
-        /// <summary>
-        /// 車型
-        /// </summary>
-        public string CarType { get; set; }
-        /// <summary>
-        /// 起始日期
-        /// </summary>
-        public DateTime SDate { get; set; }
-        /// <summary>
-        /// 結束日期
-        /// </summary>
-        public DateTime EDate { get; set; }
-        /// <summary>
-        /// 每公里費用
-        /// </summary>
-        public double MilageBase { get; set; }
-        /// <summary>
-        /// 是否啟用(0:否;1:是;2:待上線)
-        /// </summary>
-        public Int16 use_flag { get; set; }
-    }
-
     public class NYPayList
     {
         public Int64 order_number { get; set; }
@@ -2138,28 +1744,8 @@ namespace WebAPI.Models.BillFunc
         public int RETURNAMT { get; set; }
         public string NORDNO { get; set; }
     }
-
-    public class TraceLogTBVM
-    {
-        public int traceId { get; set; }
-        public string CodeVersion { get; set; }
-        public Int64 OrderNo { get; set; }
-        public int ApiId { get; set; }
-        public string ApiNm { get; set; }
-        public string ApiMsg { get; set; }
-        public string FlowStep { get; set; }
-        public string TraceType { get; set; }
-    }
-
     #endregion
-
     #region eunm
-    //note: eunm
-    public enum eumOrderData
-    {
-        GetPayDetail,
-        ContactSetting
-    }
     public enum eumTraceType
     {
         none,
@@ -2169,18 +1755,8 @@ namespace WebAPI.Models.BillFunc
         logicErr,
         mark
     }
-
-    public enum eumFlowType
-    {
-        none,
-        gold,
-    }
-
     #endregion
-
     #region TraceVm
-    //note: tracevm
-
     public class TraceBase
     {
         public TraceBase()
@@ -2206,7 +1782,6 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
     }
-
     public class TraceCom : TraceBase
     {
         private Dictionary<string, object> _objs { get; set; }
@@ -2251,50 +1826,6 @@ namespace WebAPI.Models.BillFunc
         {
             return _objs;
         }
-    }
-
-    public class PayTraceBase : TraceBase
-    {
-        public string errCode { get; set; }
-        public int TotalRentMinutes { get; set; }
-        public int Discount { get; set; }
-        public int CarPoint { get; set; }
-        public int MotorPoint { get; set; }
-        public List<OrderQueryFullData> OrderDataLists { get; set; }
-        public OBIZ_CRNoMonth CRNoMonth { get; set; }
-        public OBIZ_NPR270Query NPR270Query { get; set; }
-        public OBIZ_ETagCk ETagCk { get; set; }
-        public OBIZ_CarMagi CarMagi { get; set; }
-        public OBIZ_MonthRent MonthRent { get; set; }
-        public CarRentInfo carInfo { get; set; }
-        public OBIZ_CRNoMonthDisc CRNoMonthDisc { get; set; }
-    }
-    public class GetPayDetailTrace : PayTraceBase
-    {
-        public bool hasFine { get; set; } = false; //是否逾時
-        public int TotalPoint { get; set; }
-        public int TransferPrice { get; set; }
-        public OBIZ_TokenCk TokenCk { get; set; }
-        public IAPI_GetPayDetail apiInput { get; set; }
-        public OBIZ_InCheck InCheck { get; set; }
-        public OAPI_GetPayDetail outputApi { get; set; }
-        public SPInput_CalFinalPrice SPInput { get; set; }
-    }
-
-    public class ContactSetTrace : PayTraceBase
-    {
-        #region input
-        public Int64 in_tmpOrder { get; set; }
-        public string in_IDNO { get; set; }
-        public Int64 in_LogID { get; set; }
-        public string in_UserID { get; set; }
-        public string in_returnDate { get; set; }
-        public string in_errCode { get; set; }
-        #endregion
-        public int TotalPoint { get; set; }
-        public int TransferPrice { get; set; }
-        public OAPI_GetPayDetail outputApi { get; set; }
-        public SPInput_BE_CalFinalPrice SPInput { get; set; }
     }
     #endregion
 }

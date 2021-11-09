@@ -44,6 +44,7 @@
     <Compile Include="CarMachine\BLEInfo.cs" />
     <Compile Include="CarMachine\CardList.cs" />
     <Compile Include="Common\BackEnd\OperatorItem.cs" />
+    <Compile Include="Common\CodeData.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="MemberData\InvoiceData.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="SP\Input\Bill\SPInput_GetBuyNowInfo.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetInsurancePrice.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_GetOrderInfo.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetProjectPriceBase.cs" />
     <Compile Include="SP\Input\Bill\SPInput_SetRewardResult.cs" />
     <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
@@ -203,6 +205,10 @@
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyHistory.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyPayData.cs" />
     <Compile Include="SP\Input\Notification\SPInput_InsPersonNotification.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_OrderAuthReservation.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_OrderAuth.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_UpdateOrderAuthListV2.cs" />
+    <Compile Include="SP\Output\OrderList\PreOrderAuth.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetCancelOrder.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetFinishOrder.cs" />
     <Compile Include="SP\Input\OrderList\SPInput_GetOrderDetail.cs" />
@@ -225,6 +231,8 @@
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdWalletStoreShopLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsWalletStoreShopLog.cs" />
     <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTrade.cs" />
+    <Compile Include="SP\Input\OtherService\Taishin\SPInput_UpdTradeForClose.cs" />
+    <Compile Include="SP\Input\OtherService\Taishin\SPInput_InsTradeForClose.cs" />
     <Compile Include="SP\Input\Other\SPInput_NewsRead_I01.cs" />
     <Compile Include="SP\Input\Other\SPInput_NoticeRead_I01.cs" />
     <Compile Include="SP\Input\Other\SPInput_PersonNotificationRead_I01.cs" />
@@ -265,6 +273,7 @@
     <Compile Include="SP\Input\Rent\SPInput_GetMonthGroup.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetMonthList.cs" />
     <Compile Include="SP\Input\Rent\SPInput_GetOrderStatusByOrderNo.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_GetPreCreditAuthList.cs" />
     <Compile Include="SP\Input\Rent\SPInput_InsFeedBack.cs" />
     <Compile Include="SP\Input\Rent\SPInput_InsOpenDoorCode.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OpenDoorFinish.cs" />
@@ -276,6 +285,7 @@
     <Compile Include="SP\Input\SPInput_InsAPILog.cs" />
     <Compile Include="SP\Input\SPInput_InsError.cs" />
     <Compile Include="SP\Input\JointRent\SPInput_JointRentInviteeVerify.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_InsOrderAuthAmount.cs" />
     <Compile Include="SP\Input\Station\SPInput_InsFavoriteStation.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_ArrearsPaySubs.cs" />
     <Compile Include="SP\Input\Subscription\SPInput_BuyNowAddMonth_Q01.cs" />
@@ -332,7 +342,9 @@
     <Compile Include="SP\Output\Bill\SPOutput_GetInsurancePrice.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetMilageSetting.cs" />
     <Compile Include="SP\Output\Bill\SPOutput_GetRewardPoint.cs" />
+    <Compile Include="SP\Output\Bill\SPOutput_OrderForPreAuth.cs" />
     <Compile Include="SP\Output\Bill\SPOut_GetBuyNowInfo.cs" />
+    <Compile Include="SP\Output\Bill\TradeCloseList.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_BeforeBookingStart.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_Booking.cs" />
     <Compile Include="SP\Output\Booking\SPOutput_BookingCancel.cs" />
@@ -541,6 +553,7 @@
     <Compile Include="TB\BackEnd\iRentCarBase.cs" />
     <Compile Include="TB\BackEnd\iRentManager.cs" />
     <Compile Include="TB\BackEnd\BE_TogetherPassenger.cs" />
+    <Compile Include="TB\EstimateData.cs" />
     <Compile Include="TB\BannerData.cs" />
     <Compile Include="TB\BatExchangeStationData.cs" />
     <Compile Include="TB\BonusData.cs" />
@@ -552,6 +565,7 @@
     <Compile Include="TB\CarPIC.cs" />
     <Compile Include="TB\CarTypeData.cs" />
     <Compile Include="TB\CityData.cs" />
+    <Compile Include="TB\CloseAccount.cs" />
     <Compile Include="TB\Code.cs" />
     <Compile Include="TB\ErrorMessageList.cs" />
     <Compile Include="TB\FeedBackPIC.cs" />

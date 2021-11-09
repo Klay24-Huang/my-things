@@ -23,6 +23,7 @@
 - [GetMemberMedal 取得會員徽章](#GetMemberMedal)
 - [SetMemberCMK 更新會員條款](#SetMemberCMK)
 - [TransWebMemCMK 拋轉官網會員同意資料](#TransWebMemCMK)
+- [GetMemberRedPoint 取得會員紅點通知](#GetMemberRedPoint)
 
 首頁地圖相關
 
@@ -48,12 +49,14 @@
 - [BookingDelete 刪除訂單](#BookingDelete)
 - [OrderDetail 訂單明細](#OrderDetail)
 - [GetOrderInsuranceInfo 訂單安心服務資格及價格查詢](#GetOrderInsuranceInfo)
+- [GetCancelOrderList 取得取消訂單列表](#GetCancelOrderList)
 
 取還車跟車機操控相關
 
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
 - [BookingStart 汽車取車](#BookingStart)
 - [BookingStartMotor 機車取車](#BookingStartMotor)
+- [BookingExtend 延長用車](#BookingExtend)
 - [ReturnCar 還車](#ReturnCar)
 - [GetPayDetail 取得租金明細](#GetPayDetail)
 - [CreditAuth 付款與還款](#CreditAuth)
@@ -206,7 +209,6 @@
 
 20210906 取得租金明細(GetPayDetail)欄位修正
 
-20210907 增加推播相關
 
 20210909 共同承租人回應邀請(JointRentIviteeFeedBack) Input欄位調整&錯誤代碼修正
 
@@ -252,13 +254,20 @@
 
 20211021 次序調整、內容修正、API位置統一放置頂端
 
+20211021 新增取得會員紅點通知(GetMemberRedPoint)
+
+20211028 補延長用車(BookingExtend)、補預約(Booking)、汽車取車(BookingStart)錯誤代碼
+
+20211102 更新 汽車取車(BookingStart)、延長用車(BookingExtend)錯誤代碼
+
+20211103 新增取得取消訂單列表(GetCancelOrderList)
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
 | ------- | ----------------------------------- | ---------------------------------------- |
 | iOS     | https://irentcar-app.azurefd.net/   | https://irentcar-app-test.azurefd.net/   |
 | ANDROID | https://irent-app-jpw.ai-irent.net/ | https://irent-app-jpw-test.ai-irent.net/ |
-
 
 # Header參數相關說明
 
@@ -786,6 +795,7 @@
 | CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                     | string | Y          |
 | IsShowBuy       | 是否顯示購買牌卡 (Y:是 N:否)                                 | string | Y          |
 | HasNoticeMsg    | 是否有推播訊息 (Y:是 N:否)                                   | string | Y          |
+| AuthStatus      | 預授權條款狀態 (Y:重新確認 N:不需重新確認)                   | string | Y          |
 
 
 * Output範例
@@ -824,7 +834,8 @@
             "BLOCK_EDATE": "",
             "CMKStatus": "Y",
             "IsShowBuy": "Y",
-			"HasNoticeMsg": "Y"
+			"HasNoticeMsg": "Y",
+            "AuthStatus": "Y"
         }
     }
 }
@@ -1085,15 +1096,17 @@
 * 動作 [POST]
 * Input 傳入參數說明
 
-| 參數名稱  | 參數說明                       | 必要 |  型態  | 範例 |
-| --------- | ------------------------------ | :--: | :----: | ---- |
-| CHKStatus | 是否同意 (Y：同意 / N：不同意) |  Y   | string | Y    |
+| 參數名稱  | 參數說明                                     | 必要 |  型態  | 範例 |
+| --------- | -------------------------------------------- | :--: | :----: | ---- |
+| CHKStatus | 是否同意 (Y：同意 / N：不同意)               |  Y   | string | Y    |
+| SeqNo     | 流水號<br>1:會員條款狀態<br>2:預授權條款狀態 |  Y   |  int   | 0    |
 
 * Input範例
 
 ```
 {
-    "CHKStatus": "Y"
+    "CHKStatus": "Y",
+    "SeqNo": 2
 }
 ```
 
@@ -1186,9 +1199,76 @@
 }
 ```
 
-# 首頁地圖相關
+## GetMemberRedPoint 取得會員紅點通知
 
-## GetBanner 取得廣告資訊
+### [/api/GetMemberRedPoint/]
+
+- 20211020發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output 回傳參數說明
+
+| 參數名稱     | 參數說明                       |  型態  | 範例    |
+| ------------ | ------------------------------ | :----: | ------- |
+| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
+| ErrorCode    | 錯誤碼                         | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
+| ErrorMessage | 錯誤訊息                       | string | Success |
+| Data         | 資料物件                       | object |         |
+| RedPointList | 紅點清單                       |  List  |         |
+
+* RedPointList參數說明
+
+| 參數名稱 | 參數說明                                                     | 型態 | 範例 |
+| -------- | ------------------------------------------------------------ | :--: | ---- |
+| RedNo    | 紅點序號<br>1:漢堡點<br/>2:我的成就<br/>3:徽章<br/>4:積分<br/>5:小鈴鐺 | int  | 1    |
+| FLAG     | 紅點FLAG (0:隱藏 1:顯示)                                     | int  | 1    |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "RedPointList": [
+            {
+                "RedNo": 1,
+                "FLAG": 0
+            },
+            {
+                "RedNo": 2,
+                "FLAG": 0
+            },
+            {
+                "RedNo": 3,
+                "FLAG": 0
+            },
+            {
+                "RedNo": 4,
+                "FLAG": 0
+            }
+        ]
+    }
+}
+```
 
 ### [/api/GetBanner/]
 
@@ -1330,6 +1410,147 @@
 }
 ```
 
+## GetBanner 取得廣告資訊
+
+
+### [/api/GetBanner/]
+
+* 20210316發佈
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+* 動作 [GET]
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data回傳參數說明
+
+| 參數名稱  | 參數說明     | 型態 | 範例 |
+| --------- | ------------ | :--: | ---- |
+| BannerObj | 廣告資訊列表 | List |      |
+
+* BannerObj 參數說明
+
+| 參數名稱    | 參數說明   |  型態  | 範例                                                    |
+| ----------- | ---------- | :----: | ------------------------------------------------------- |
+| MarqueeText | 跑馬燈文字 | string | 測試Banner1                                             |
+| PIC         | 圖片       | string | https://irentv2data.blob.core.windows.net/banner/01.png |
+| URL         | 網頁網址   | string | https://www.easyrent.com.tw/upload/event/109event/2042/ |
+
+* Output範例
+
+```Output範例
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "BannerObj": [
+            {
+                "MarqueeText": "測試Banner1",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/01.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner2",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/02.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            },
+            {
+                "MarqueeText": "測試Banner3",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/03.png",
+                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+            }
+        ]
+    }
+}
+```
+
+## GetMapMedal 取得地圖徽章
+
+### [/api/GetMapMedal/]
+
+- 20210521發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data回傳參數說明
+
+| 參數名稱  | 參數說明 | 型態 | 範例 |
+| --------- | -------- | :--: | ---- |
+| MedalList | 徽章明細 | List |      |
+
+* MedalList 參數說明
+
+| 參數名稱      | 參數說明 |  型態  | 範例     |
+| ------------- | -------- | :----: | -------- |
+| MileStone     | 徽章代碼 | string | newhand  |
+| MileStoneName | 徽章名稱 | string | 新手上路 |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "MedalList": [
+            {
+                "MileStone": "newhand",
+                "MileStoneName": "新手上路"
+            },
+            {
+                "MileStone": "car_range_lv1",
+                "MileStoneName": "出遊"
+            }
+        ]
+    }
+}
+```
+
 ## GetFavoriteStation取得常用站點
 
 ### [/api/GetFavoriteStation/]
@@ -1337,7 +1558,6 @@
 * 20210315發佈
 
 * ASP.NET Web API (REST API)
-
 * 傳送跟接收採JSON格式
 
 * HEADER帶入AccessToken**(必填)**
@@ -2900,6 +3120,8 @@
 | LastPickTime | 最晚的取車時間               | string | 20210608020120 |
 | WalletNotice | 僅綁錢包通知0:不顯示  1:顯示 |  int   | 1              |
 
+[^註]: WalletNotice參數 For電子錢包
+
 
 * Output範例
 
@@ -2916,7 +3138,40 @@
         "WalletNotice": 1
     }
 }
+
+{
+    "Result": "0",
+    "ErrorCode": "ERR602",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "因授權失敗未完成預約，請檢查卡片餘額或是重新綁卡",
+    "Data": {}
+}
 ```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                                   | 說明                                                       |
+| -------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
+| ERR156   | 目前預約數合計5筆，無法再預約                              | 三種類型預約合計已經有5筆，又再預約                        |
+| ERR157   | 目前同站租還預約數合計3筆，無法再預約                      | 目前同站租還預約數合計3筆，又再預約                        |
+| ERR158   | 目前路邊租還預約數合計1筆，無法再預約                      | 目前路邊租還預約數合計1筆5筆，又再預約                     |
+| ERR159   | 目前機車預約數合計1筆，無法再預約                          | 目前機車預約數合計已經有1筆，又再預約                      |
+| ERR160   | 預約時間有重疊                                             | 目前同站租還有重疊的預約                                   |
+| ERR161   | 預約失敗                                                   | 同站租還預約不到車                                         |
+| ERR162   | 預約失敗                                                   | 路邊租還預約不到車                                         |
+| ERR163   | 預約失敗                                                   | 機車預約不到車                                             |
+| ERR164   | 找不到此專案                                               | 預約時找不到這個專案代碼                                   |
+| ERR165   | 找不到此專案                                               | 預約時找不到這個車號                                       |
+| ERR233   | 尚有費用未繳，請先至未繳費用完成付款                       | 欠費的狀態不可以預約，繳完後才可以預約                     |
+| ERR241   | 目前限3日以上的春節期間預約                                | 目前限3日以上的春節期間預約                                |
+| ERR242   | 目前限1日以上的春節期間預約                                | 目前限1日以上的春節期間預約                                |
+| ERR243   | 此據點因即將暫停營業恕無法接受您的預約，請重新選擇其他據點 | 此據點因即將暫停營業恕無法接受您的預約，請重新選擇其他據點 |
+| ERR248   | 尚未開通汽車服務，請至會員中心確認                         | 尚未開通汽車服務，請至會員中心確認                         |
+| ERR287   | 你的會員積分低於50分，故暫時無法租用車輛                   | 你的會員積分低於50分，故暫時無法租用車輛                   |
+| ERR730   | 查詢綁定卡號失敗                                           | 查詢綁定卡號失敗                                           |
+| ERR905   | 11/10 02:00~06:00系統維護暫停服務                          | 定維時使用                                                 |
+| ERR602   | 因取授權失敗未完成預約，請檢查卡片餘額或是重新綁卡         | 因取授權失敗未完成預約                                     |
 
 ------
 
@@ -3532,6 +3787,161 @@
 }
 ```
 
+## GetCancelOrderList 取得取消訂單列表
+
+### [/api/GetCancelOrderList/]
+
+* 20211103新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| NowPage  | 現在頁碼 |  Y   | string | H0000029 |
+
+
+* input範例
+
+```
+{
+    "NowPage" : "1"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data回傳參數說明
+
+| 參數名稱              | 參數說明                                                     |  型態  | 範例                                                   |
+| --------------------- | ------------------------------------------------------------ | :----: | ------------------------------------------------------ |
+| order_number          | 訂單編號                                                     |string  |H11538852|
+| CarNo  | 車號                                                  |  int   | RDE-6193                                                     |
+| Price | 預估租金                             |  int   | 200               |
+| ProjID     | 專案代碼                                             | string | R220 |
+| SD     | 預計取車時間                                             | datetime | 2021-07-27T12:10:00 |
+| ED     | 預計還車時間                                             | datetime | 2021-07-27T13:10:00 |
+| Seat     | 座椅數                                             | int | 4 |
+| CarBrend     | 車子品牌                                             | string | TOYOTA |
+| Score     | 分數                                             | float | 5.0 |
+| OperatorICon     | ?                                             | string | supplierIrent |
+| CarTypeImg     | 車型圖                                             | string | priusC |
+| CarTypeName     | 車型名稱                                           | string | PRIUSc |
+| PRONAME     | 專案名稱                                             | string | 同站汽車110起推廣專案 |
+| MilOfHours     | 預估每小時多少公里                                | int | 20 |
+| MilageUnit     | 每公里多少錢                                             | float | 3.1 |
+| Milage     | 預估里程費                                             | int | 62 |
+| CarOfArea     | 站別類型                                             | string | 同站 |
+| StationName     | 站別名稱                                             | string | iRent礁溪轉運站-內站 |
+| IsMotor     | 是否為機車(0:否、1:是)                                             | int | 0 |
+| WeekdayPrice     | 平日價                                             | float | 2300.0 |
+| HoildayPrice     | 假日售價                                             | float | 2300.0 |
+| WeekdayPriceByMinutes     | 假日售價                                             | float | 0.0 |
+| HoildayPriceByMinutes     | 假日售價                                             | float | 0.0 |
+| CarRentBill     | 預估租金                                             | int | 110 |
+| InsuranceBill     | 預估安心保險費用                                             | int | 0 |
+| TransDiscount     | 轉乘優惠                                             | int | 0 |
+| MileageBill     | 預估里程費                                             | int | 62 |
+| Bill     | 預估總金額                                             | int | 172 |
+| cancel_status     | 取消狀態文字(目前分為"已取消"、"授權失敗已取消")   | string | "授權失敗已取消" |
+
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "TotalPage": 2,
+        "CancelObj": [
+            {
+                "order_number": "H11538852",
+                "CarNo": "RDE-6193",
+                "Price": 110,
+                "ProjID": "R220",
+                "SD": "2021-07-27T12:10:00",
+                "ED": "2021-07-27T13:10:00",
+                "Seat": 5,
+                "CarBrend": "TOYOTA",
+                "Score": 5.0,
+                "OperatorICon": "supplierIrent",
+                "CarTypeImg": "priusC",
+                "CarTypeName": "PRIUSc",
+                "PRONAME": "同站汽車110起推廣專案",
+                "MilOfHours": 20,
+                "MilageUnit": 3.1,
+                "Milage": 62,
+                "CarOfArea": "同站",
+                "StationName": "iRent礁溪轉運站-內站",
+                "IsMotor": 0,
+                "WeekdayPrice": 2300.0,
+                "HoildayPrice": 2300.0,
+                "WeekdayPriceByMinutes": 0.0,
+                "HoildayPriceByMinutes": 0.0,
+                "CarRentBill": 110,
+                "InsuranceBill": 0,
+                "TransDiscount": 0,
+                "MileageBill": 62,
+                "Bill": 172,
+                "cancel_status": "已取消"
+            },
+            {
+                "order_number": "H11524658",
+                "CarNo": "RDF-0272",
+                "Price": 110,
+                "ProjID": "R220",
+                "SD": "2021-07-26T16:10:00",
+                "ED": "2021-07-26T17:10:00",
+                "Seat": 5,
+                "CarBrend": "TOYOTA",
+                "Score": 5.0,
+                "OperatorICon": "supplierIrent",
+                "CarTypeImg": "priusC",
+                "CarTypeName": "PRIUSc",
+                "PRONAME": "同站汽車110起推廣專案",
+                "MilOfHours": 20,
+                "MilageUnit": 3.1,
+                "Milage": 62,
+                "CarOfArea": "同站",
+                "StationName": "iRent礁溪火車站",
+                "IsMotor": 0,
+                "WeekdayPrice": 2300.0,
+                "HoildayPrice": 2300.0,
+                "WeekdayPriceByMinutes": 0.0,
+                "HoildayPriceByMinutes": 0.0,
+                "CarRentBill": 110,
+                "InsuranceBill": 0,
+                "TransDiscount": 0,
+                "MileageBill": 62,
+                "Bill": 172,
+                "cancel_status": "已取消"
+            }
+        ]
+    }
+}
+```
+
 # 取還車跟車機操控相關
 
 ## ChangeUUCard 變更悠遊卡
@@ -3656,6 +4066,24 @@
 }
 ```
 
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                           | 說明                                     |
+| -------- | -------------------------------------------------- | ---------------------------------------- |
+| ERR171   | 超過取車時間或此訂單已失效                         | 取車時超過取車時效或已被取消             |
+| ERR172   | 目前尚有合約使用中，請確認是否有未完成還車         | 取車時尚有訂單未完成                     |
+| ERR173   | 預計還車時間不正確                                 | 取車時修改的預計還車時間，格式不正確     |
+| ERR174   | 預計還車時間需大於現在                             | 取車時修改的預計還車時間小於現在時間     |
+| ERR234   | 尚有費用未繳，請先至未繳費用完成付款               | 欠費的狀態不可以取車，繳完後才可以取車   |
+| ERR239   | 會員狀態審核不通過不可取車                         | 會員狀態審核不通過不可取車               |
+| ERR240   | 前車未還，請聯絡客服                               | 前車未還，請聯絡客服                     |
+| ERR287   | 你的會員積分低於50分，故暫時無法租用車輛           | 你的會員積分低於50分，故暫時無法租用車輛 |
+| ERR468   | 車機回報資訊異常，請重新再試                       |                                          |
+| ERR603   | 因取授權失敗未完成取車，請檢查卡片餘額或是重新綁卡 | 因取授權失敗未完成取車                   |
+| ERR730   | 查詢綁定卡號失敗                                   | 查詢綁定卡號失敗                         |
+
+------
+
 ## BookingStartMotor 機車取車
 
 ### [/api/BookingStartMotor/]
@@ -3712,7 +4140,83 @@
 }
 ```
 
+## BookingExtend延長用車
 
+### [/api/BookingExtend/]
+
+* 20211028補資料
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例                |
+| -------- | -------- | :--: | :----: | ------------------- |
+| OrderNo  | 訂單編號 |  Y   | string | H11766161           |
+| ED       | 還車時間 |  Y   | string | 2021-10-28 15:00:00 |
+
+* input範例
+
+```
+{
+    "OrderNo" : "H11766161",
+    "ED" : "2021-10-28 15:00:00"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+
+{
+    "Result": "0",
+    "ErrorCode": "ERR604",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "延長用車取授權未成功，請盡速檢查卡片餘額或是重新綁卡",
+    "Data": {}
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                                     | 說明                                   |
+| :------- | ------------------------------------------------------------ | -------------------------------------- |
+| ERR176   | 延長用車時間不正確                                           | 延長用車時間參數不正確                 |
+| ERR177   | 延長用車時間需大於現在                                       | 延長用車時間比現在時間小               |
+| ERR178   | 延長用車時間需大於原預計還車時間                             | 延長用車時間比原預計還車時間小         |
+| ERR179   | 用車時間合計不能超過七天                                     | 延長用車後，合計此合約用車時間大於七天 |
+| ERR180   | 此訂單不符合延長用車或找不到此訂單。                         | 資料表查詢不到此筆訂單或不符合延長用車 |
+| ERR181   | 此車輛已經其他預約，無法延長用車。                           | 此車輛已經其他預約，無法延長用車。     |
+| ERR182   | 您延長用車時間重疊到您之後的預約用車時間，請先取消重疊的訂單再做延長。 | 延長用車時間重疊到之後的預約用車時間   |
+| ERR237   | 延長用車時間最少1小時                                        | 延長用車時間最少1小時                  |
+| ERR604   | 延長用車取授權未成功，請盡速檢查卡片餘額或是重新綁卡         | 延長用車取授權未成功                   |
+------
 ## ReturnCar 還車
 
 ### [/api/ReturnCar/]
@@ -4051,10 +4555,21 @@
 }
 ```
 
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                           | 說明                         |
+| -------- | ---------------------------------- | ---------------------------- |
+| ERR203   | 找不到符合的訂單編號               | 租金計算時找不到此訂單編號   |
+| ERR204   | 訂單狀態不符                       | 租金計算時訂單狀態不符       |
+| ERR206   | 折抵時數須以30分鐘為單位           | 汽車使用的折抵時數非30的倍數 |
+| ERR207   | 折抵時數超過可使用的時數           | 折抵時數超過目前所擁有的時數 |
+| ERR208   | 還車已超過三十分鐘，請重新點擊還車 | 點下還車鍵已超過三十分鐘     |
+| ERR303   | 折抵時數總和超過使用時數           | 折抵時數總和超過使用時數     |
+| ERR914   | 資料邏輯錯誤                       | 資料邏輯錯誤                 |
+
 ## CreditAuth 付款與還款
 
 ### [/api/CreditAuth/]
-
 * 20210909 補資料
 
 * ASP.NET Web API (REST API)
@@ -5986,7 +6501,6 @@
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
 
-
 * Output範例
 
 ```
@@ -6549,6 +7063,7 @@
 | 錯誤代碼 | 說明 |
 | ------- | ------- |
 | ERR919 | 對方不能租車，請對方確認會員狀態哦！ |
+| ERR920 | 同時段有合約或預約，不能邀請哦！ |
 | ERR921 | 已至邀請人數上限，請手動移除非邀請對象哦！ |
 | ERR924 | 無法取消共同承租邀請 |
 | ERR925 | 無法進行共同承租重新邀請 |
