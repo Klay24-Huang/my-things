@@ -454,6 +454,7 @@
     <Compile Include="Models\BillFunc\StationCommon.cs" />
     <Compile Include="Models\ComboFunc\ContactComm.cs" />
     <Compile Include="Models\ComboFunc\CreditAuthComm.cs" />
+    <Compile Include="Models\ComboFunc\CreditAuthJobComm.cs" />
     <Compile Include="Models\ComboFunc\MachiComm.cs" />
     <Compile Include="Models\ComboFunc\PointerComm.cs" />
     <Compile Include="Models\Enum\ObjType.cs" />
