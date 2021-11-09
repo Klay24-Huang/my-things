@@ -1,13 +1,10 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Notification;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Bill;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.Rent;
 using Domain.TB;
-using Domain.WebAPI.output.Taishin;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -17,7 +14,8 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.ComboFunc;
-using WebAPI.Models.Enum;
+using WebAPI.Models.Param.Bill.Input;
+using WebAPI.Models.Param.Bill.Output;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Service;
@@ -54,7 +52,7 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SPOutput_GetBookingStartTime spOut = null;
-            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+            OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
             string Contentjson = "";
             bool isGuest = true;
 
@@ -260,30 +258,30 @@ namespace WebAPI.Controllers
                 #region 立即授權
                 if (canAuth && preAuthAmt > 0)
                 {
-                    bool bindCard = false;
                     bool authFlag = false;
                     string error = "";
 
-                    #region 檢查信用卡是否綁卡
-                    var result = commonService.CheckBindCard(ref bindCard, IDNO, ref error);
-                    string CardToken = result.cardToken;
-                    #endregion
-                    #region 台新授權
-                    if (bindCard)
+                    #region 立即授權
+                    CreditAuthComm creditAuthComm = new CreditAuthComm();
+                    var AuthInput = new IFN_CreditAuthRequest
                     {
-                        int payType = 0; //租金
-                        int autoClose = 0; //自動關帳
-                        CreditAuthComm creditAuthComm = new CreditAuthComm();
-                        authFlag = creditAuthComm.DoAuthV3(tmpOrder, IDNO, preAuthAmt, CardToken, payType, ref error, autoClose, funName, funName, ref WSAuthOutput);
-                        //if (!flag)
-                        //{
-                        //    errCode = "ERR604";
-                        //}
-                    }
+                        CheckoutMode = 0,
+                        OrderNo = tmpOrder,
+                        IDNO = IDNO,
+                        Amount = preAuthAmt,
+                        PayType = 0,
+                        autoClose = 0,
+                        funName = funName,
+                        insUser = funName
+                    };
+                    authFlag = creditAuthComm.DoAuthV4(AuthInput, ref error, ref AuthOutput);
                     #endregion
-                    #region 寫入預授權
+                    #region 授權結果
                     if (authFlag)
                     {
+                        string merchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no;
+                        string bankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo;
+                        #region 寫入預授權
                         SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
                         {
                             IDNO = IDNO,
@@ -294,16 +292,14 @@ namespace WebAPI.Controllers
                             final_price = preAuthAmt,
                             OrderNo = tmpOrder,
                             PRGName = funName,
-                            MerchantTradNo = WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo,
-                            BankTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo,
+                            MerchantTradNo = merchantTradNo,
+                            BankTradeNo = bankTradeNo,
                             Status = 2
                         };
                         commonService.sp_InsOrderAuthAmount(spInput_InsOrderAuthAmount, ref error);
-                    }
-                    #endregion
-                    #region 授權成功新增推播訊息
-                    if (authFlag)
-                    {
+                        #endregion
+                        #region 授權成功新增推播訊息
+                        string cardNo = (AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0));
                         SPInput_InsPersonNotification spInput_InsPersonNotification = new SPInput_InsPersonNotification()
                         {
                             OrderNo = Convert.ToInt32(tmpOrder),
@@ -311,13 +307,31 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             NType = 19,
                             STime = DateTime.Now.AddSeconds(10),
-                            Title = "預授權通知",
+                            Title = "取授權成功通知",
                             imageurl = "",
                             url = "",
-                            Message = $"取授權通知:已於{DateTime.Now.ToString("MM/dd hh:mm")}延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
+                            Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}以末四碼{cardNo}信用卡延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
 
                         };
                         commonService.sp_InsPersonNotification(spInput_InsPersonNotification, ref error);
+                        #endregion
+                    }
+                    else
+                    {
+                        //回傳錯誤代碼，但仍可延長用車
+                        errCode = "ERR604";
+
+                        #region Adam哥上線記得打開
+                        ////發送MAIL通知據點人員
+                        //if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
+                        //{
+                        //    SendMail send = new SendMail();
+                        //    string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
+                        //    string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
+                        //    string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
+                        //    send.DoSendMail(Title, Body, Receiver);
+                        //}
+                        #endregion
                     }
                     #endregion
                 }

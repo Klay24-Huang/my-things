@@ -1,4 +1,5 @@
-﻿/***********************************************************************************************
+﻿
+/***********************************************************************************************
 * Serve    : sqyhi03az.database.windows.net
 * Database : IRENT_V2
 * 程式名稱 : usp_InsTradeForClose_I01
@@ -9,7 +10,7 @@
 * 修改日期 :
 Example :
 ***********************************************************************************************/
-Create PROCEDURE [dbo].[usp_InsTradeForClose_I01]
+CREATE PROCEDURE [dbo].[usp_InsTradeForClose_I01]
 	@OrderNo                BIGINT                , --訂單編號
 	@MerchantTradeNo		VARCHAR(30)			  ,
 	@CreditType             TINYINT               ,
@@ -38,7 +39,7 @@ SET @ErrorMsg='SUCCESS';
 SET @SQLExceptionCode='';
 SET @SQLExceptionMsg='';
 
-SET @FunName='usp_InsTrade';
+SET @FunName='usp_InsTradeForClose_I01';
 SET @IsSystem=0;
 SET @ErrorType=0;
 SET @IsSystem=0;
@@ -50,10 +51,7 @@ SET @MerchantTradeNo =ISNULL(@MerchantTradeNo,'');
 SET @CreditType      =ISNULL(@CreditType      ,0);
 SET @CardToken       =ISNULL(@CardToken,'');
 SET @amount          =ISNULL(@amount          ,0);
-
-
 		BEGIN TRY
-
 		     IF @CreditType=0			--還車才會有訂單編號，其餘的都是認@MerchantTradeNo
 			 BEGIN
 			 	  IF @OrderNo=0 OR @MerchantTradeNo=''  OR @amount=0 OR @CardToken=''
@@ -73,37 +71,9 @@ SET @amount          =ISNULL(@amount          ,0);
 		  --0.再次檢核token
 		 IF @Error=0
 		 BEGIN
-		     IF @CreditType=0
-			 BEGIN
-				   SELECT @MemberID=ISNULL(IDNO,'') FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo
-				   SELECT @hasData=COUNT(1) FROM TB_Trade WITH(NOLOCK) WHERE OrderNo=@OrderNo AND CreditType=@CreditType;
-					IF @hasData=0
-					BEGIN
-						INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken,AutoClose)
-						VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken,@AutoClose);
-					END
-					ELSE
-					BEGIN
-					   SET @hasData=0;
-						SELECT @hasData=COUNT(1) FROM TB_Trade WITH(NOLOCK) WHERE OrderNo=@OrderNo AND IsSuccess=1 AND CreditType=@CreditType;
-						IF @hasData=0
-						BEGIN
-							UPDATE TB_Trade 
-							SET  MerchantTradeNo=@MerchantTradeNo,CreditType=@CreditType,amount=@amount,CardToken=@CardToken
-							WHERE OrderNo=@OrderNo AND CreditType=@CreditType;
-						END
-						ELSE
-						BEGIN
-							SET @Error=1;
-							SET @ErrorCode='ERR763'
-						END
-					END
-			 END
-			 ELSE
-			 BEGIN
-				INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken,AutoClose)
-				VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken,@AutoClose);
-			 END
+			INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken,AutoClose)
+			VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken,@AutoClose);
+
 
 		 END
 		--寫入錯誤訊息
@@ -131,4 +101,4 @@ SET @amount          =ISNULL(@amount          ,0);
 		END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsTrade';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsTradeForClose_I01';

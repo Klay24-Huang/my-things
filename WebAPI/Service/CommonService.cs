@@ -110,36 +110,7 @@ namespace WebAPI.Service
         }
         #endregion
 
-        #region 檢查信用卡是否綁卡
-        /// <summary>
-        /// 檢查信用卡是否綁卡
-        /// </summary>
-        /// <param name="flag"></param>
-        /// <param name="IDNO">會員編號</param>
-        /// <param name="errCode"></param>
-        /// <returns></returns>
-        public (bool hasFind, string cardToken) CheckBindCard(ref bool flag, string IDNO, ref string errCode)
-        {
-            (bool hasFind, string cardToken) result = (false, "");
-            //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
-            DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errCode);
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                result.hasFind = true;
-                result.cardToken = ds.Tables[0].Rows[0]["CardToken"].ToString();
-            }
-            else
-            {
-                flag = false;
-                errCode = "ERR730";
-            }
-            ds.Dispose();
-            return result;
-        }
-        #endregion
-
         #region 新增預授權
-        /// <summary>
         /// 新增預授權
         /// </summary>
         /// <param name="spInput"></param>

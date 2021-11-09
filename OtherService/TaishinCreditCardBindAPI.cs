@@ -40,6 +40,7 @@ namespace OtherService
         private string ECRefund = ConfigurationManager.AppSettings["ECRefund"].ToString();                          //退貨
         private string Auth = ConfigurationManager.AppSettings["Auth"].ToString();              //直接授權   
         private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();
+        private string CreditCardTest = ConfigurationManager.AppSettings["CreditCardTest"].ToString();
 
         private static MemoryCache _cache = MemoryCache.Default;
 
@@ -1241,9 +1242,9 @@ namespace OtherService
 
         public async Task<WebAPIOutput_Auth> DoCreditCardAuthSendForClose(WebAPIInput_Auth input,int AutoClose,string FunName,string InsUser)
         {
-
-            string Site = ECBaseURL + Auth;
             WebAPIOutput_Auth output = null;
+            
+            string Site = ECBaseURL + Auth;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
@@ -1259,38 +1260,43 @@ namespace OtherService
             //}
             try
             {
-
-                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
-                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
-
-                using (Stream reqStream = request.GetRequestStream())
+                if (CreditCardTest == "0")
                 {
-                    reqStream.Write(byteArray, 0, byteArray.Length);
-                    reqStream.Dispose();
-                }
-                //發出Request
-                string responseStr = "";
-                using (WebResponse response = request.GetResponse())
-                {
+                    System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                    string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                    byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
 
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    using (Stream reqStream = request.GetRequestStream())
                     {
-                        responseStr = reader.ReadToEnd();
-                        RTime = DateTime.Now;
-                        output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
-
-                        //20201125紀錄接收資料
-                        logger.Trace(responseStr);
-                        reader.Close();
-                        reader.Dispose();
+                        reqStream.Write(byteArray, 0, byteArray.Length);
+                        reqStream.Dispose();
                     }
+                    //發出Request
+                    string responseStr = "";
+                    using (WebResponse response = request.GetResponse())
+                    {
 
-                    //增加關閉連線的呼叫
-                    response.Close();
-                    response.Dispose();
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                        {
+                            responseStr = reader.ReadToEnd();
+                            RTime = DateTime.Now;
+                            output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
+
+                            //20201125紀錄接收資料
+                            logger.Trace(responseStr);
+                            reader.Close();
+                            reader.Dispose();
+                        }
+
+                        //增加關閉連線的呼叫
+                        response.Close();
+                        response.Dispose();
+                    }
                 }
-             
+                else
+                {
+                    output = ForTest(input.RequestParams.TradeAmount);
+                }
             }
             catch (Exception ex)
             {
@@ -1299,6 +1305,7 @@ namespace OtherService
                 {
                     RtnCode = "0",
                     RtnMessage = ex.Message
+
                 };
             }
             finally
@@ -1702,8 +1709,8 @@ namespace OtherService
             List<CreditCardPayInfo> CreditCardPayInfoColl = new List<CreditCardPayInfo>()
             {
                 new CreditCardPayInfo{ PayType = 0,PayTypeStr = "租金",PayTypeCode="F_"},
-                new CreditCardPayInfo{ PayType = 1,PayTypeStr = "罰金",PayTypeCode="P_"},
-                new CreditCardPayInfo{ PayType = 2,PayTypeStr = "eTag",PayTypeCode="E_"},
+                new CreditCardPayInfo{ PayType = 1,PayTypeStr = "罰金",PayTypeCode="P_"},//沒在用
+                new CreditCardPayInfo{ PayType = 2,PayTypeStr = "eTag",PayTypeCode="E_"},//沒在用
                 new CreditCardPayInfo{ PayType = 3,PayTypeStr = "補繳",PayTypeCode="G_"},
                 new CreditCardPayInfo{ PayType = 4,PayTypeStr = "訂閱",PayTypeCode="M_"},
                 new CreditCardPayInfo{ PayType = 5,PayTypeStr = "訂閱",PayTypeCode="MA_"},
@@ -1711,6 +1718,80 @@ namespace OtherService
             };
 
             return CreditCardPayInfoColl;
+        }
+
+        private WebAPIOutput_Auth ForTest(string TradeAmount)
+        {           
+            Random rnd = new Random();
+            int result = rnd.Next(1, 1);
+            if(result == 0)
+            {
+                return ForTestTrue(TradeAmount);
+            }
+            else
+            {
+                return ForTestFalse(TradeAmount);
+            }
+        }
+
+        private WebAPIOutput_Auth ForTestTrue(string TradeAmount)
+        {
+            WebAPIOutput_Auth output = 
+            new WebAPIOutput_Auth()
+            {
+                RtnCode = "1000",
+                RtnMessage = "",
+
+                ResponseParams = new AuthResponseParams
+                {
+                    ResultCode = "1000",
+                    ResultMessage = "交易成功",
+                    ResultData = new Domain.WebAPI.output.Taishin.ResultData.AuthResultData
+                    {
+                        CardNumber = "****************",
+                        ServiceTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                        ServiceTradeTime = DateTime.Now.ToString("HHmmss"),
+                        ServiceTradeNo = Guid.NewGuid().ToString().Replace("-", ""),
+                        PayAmount = TradeAmount,
+                        AuthIdResp = "0"
+
+                    }
+                },
+
+            };
+
+            return output;
+
+        }
+
+        private WebAPIOutput_Auth ForTestFalse(string TradeAmount)
+        {
+            WebAPIOutput_Auth output =
+            new WebAPIOutput_Auth()
+            {
+                RtnCode = "100",
+                RtnMessage = "",
+
+                ResponseParams = new AuthResponseParams
+                {
+                    ResultCode = "100",
+                    ResultMessage = "交易失敗",
+                    ResultData = new Domain.WebAPI.output.Taishin.ResultData.AuthResultData
+                    {
+                        CardNumber = "****************",
+                        ServiceTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                        ServiceTradeTime = DateTime.Now.ToString("HHmmss"),
+                        ServiceTradeNo = Guid.NewGuid().ToString().Replace("-", ""),
+                        PayAmount = "0",
+                        AuthIdResp = "3"
+
+                    }
+                },
+
+            };
+
+            return output;
+
         }
     }
 

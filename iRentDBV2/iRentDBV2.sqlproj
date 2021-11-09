@@ -596,8 +596,6 @@
     <Build Include="dbo\Stored Procedures\usp_InsOrderAuth_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetPreCreditAuthList_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetOrderInfoForPreAuth_Q01.sql" />
-    <Build Include="dbo\Stored Procedures\usp_BE_ContactSetting_U01.sql" />
-    <Build Include="dbo\Stored Procedures\usp_GetPreAmount.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

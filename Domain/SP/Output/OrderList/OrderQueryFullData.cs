@@ -348,4 +348,18 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string CardToken { set; get; }
     }
+
+
+    public class OrderAuthListV2: OrderAuthList
+    {
+        public int AutoClosed { get; set; }
+
+        public int AuthType { get; set; }
+        
+        public int CardType { get; set; }
+
+        public int isRetry { get; set; }
+
+        public string Mobile { get; set; }      
+    }
 }
