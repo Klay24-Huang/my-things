@@ -1265,6 +1265,7 @@ namespace WebAPI.Controllers
                 }
             }
             return flag;
+        }
         private bool CkFinalStopTime(string final_stop_time)
         {
 
@@ -1275,8 +1276,7 @@ namespace WebAPI.Controllers
             }
             return false;
         }
-
-        }
+        
         #endregion
 
         #region Prometheus

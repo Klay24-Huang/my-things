@@ -317,10 +317,10 @@ namespace WebAPI.Controllers
                     RStationID = StationID,
                     StationID = StationID,
                     Token = Access_Token,
-                    Insurance = apiInput.Insurance,
-                    InsurancePurePrice = InsurancePurePrice,
-                    PayMode = PayMode,
-                    LogID = LogID,
+                    //Insurance = apiInput.Insurance,
+                    //InsurancePurePrice = InsurancePurePrice,
+                    //PayMode = PayMode,
+                    //LogID = LogID,
                     //20211012 ADD BY ADAM REASON.增加手機定位點
                     //PhoneLat = apiInput.PhoneLat,
                     //PhoneLon = apiInput.PhoneLon
