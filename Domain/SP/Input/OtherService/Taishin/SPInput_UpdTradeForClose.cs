@@ -21,5 +21,7 @@ namespace Domain.SP.Input.OtherService.Taishin
 
         public string UserID { get; set; }
 
+        public int AuthType { get; set; }
+
     }
 }

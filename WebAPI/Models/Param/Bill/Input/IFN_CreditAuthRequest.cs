@@ -39,6 +39,9 @@ namespace WebAPI.Models.Param.Bill.Input
         /// 執行程式人員
         /// </summary>
         public string insUser { get; set; }
-
+        /// <summary>
+        /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車)
+        /// </summary>
+        public int AuthType { get; set; }
     }
 }

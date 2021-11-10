@@ -290,7 +290,6 @@ namespace WebAPI.Models.ComboFunc
             string funName = AuthInput.funName;
             string insUser = AuthInput.insUser;
 
-           
             var FindCardResult = CheckTaishinBindCard(ref flag, IDNO, ref errCode);
             
             if (flag)
@@ -339,7 +338,7 @@ namespace WebAPI.Models.ComboFunc
                 };
                 WSAuthInput.RequestParams.Item.Add(item);
                 WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, IDNO, autoClose, funName, insUser, ref errCode, ref WSAuthOutput);
+                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, IDNO, autoClose, funName, insUser, ref errCode, ref WSAuthOutput, AuthInput.AuthType);
                 logger.Trace("DoCreditCardAuth:" + JsonConvert.SerializeObject(WSAuthOutput));
 
                 if (WSAuthOutput.RtnCode != "1000")

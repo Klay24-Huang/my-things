@@ -138,7 +138,8 @@ namespace WebAPI.Controllers
                                 PayType = 0,
                                 autoClose = OrderAuth.AutoClosed,
                                 funName = funName,
-                                insUser = funName
+                                insUser = funName,
+                                AuthType = OrderAuth.AuthType
                             };
 
                             payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
