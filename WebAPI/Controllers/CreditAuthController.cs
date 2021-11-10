@@ -123,8 +123,8 @@ namespace WebAPI.Controllers
             int Amount = 0;
             List<OrderQueryFullData> OrderDataLists = null;
             int RewardPoint = 0;    //20201201 ADD BY ADAM REASON.換電獎勵
-            int DiffAmount = 0;     //20211028 ADD BY YEH REASON:差額
-            int RemainingAmount = 0;    //20211028 ADD BY YEH REASON:剩餘金額
+            CommonService commonService = new CommonService();
+            PreAmountData PreAmount = new PreAmountData();
             List<TradeCloseList> TradeCloseLists = new List<TradeCloseList>();
 
             //設定連線字串
@@ -234,7 +234,7 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 Token = Access_Token
                             };
-                            CommonService commonService = new CommonService();
+                            
                             OrderDataLists = commonService.GetOrderStatusByOrderNo(spInput, ref flag, ref errCode);
 
                             trace.traceAdd("OrderDataLists", OrderDataLists);
@@ -483,109 +483,18 @@ namespace WebAPI.Controllers
                         #region 取得預授權金額
                         if (flag)
                         {
-                            string SPName = "usp_CreditAuth_Q01";
+                            PreAmount = commonService.GetPreAmount(IDNO, Access_Token, tmpOrder, "Y", LogID, ref flag, ref errCode);
 
-                            object[][] parms1 = {
-                                new object[] {
-                                    IDNO,
-                                    Access_Token,
-                                    tmpOrder,
-                                    LogID
-                            }};
-
-                            DataSet ds1 = null;
-                            string returnMessage = "";
-                            string messageLevel = "";
-                            string messageType = "";
-
-                            ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
-
-                            if (ds1.Tables.Count != 3)
-                            {
-                                flag = false;
-                                errCode = "ERR999";
-                                errMsg = returnMessage;
-                            }
-                            else
-                            {
-                                baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
-
-                                if (flag)
-                                {
-                                    //20210524 ADD BY ADAM REASON.針對無資料要判斷
-                                    if (ds1.Tables[0].Rows.Count > 0)
-                                        DiffAmount = Convert.ToInt32(ds1.Tables[0].Rows[0]["DiffAmount"]);
-
-                                    DataTable dt = ds1.Tables[1];
-
-                                    if (dt.Rows.Count > 0)
-                                    {
-                                        foreach (DataRow dr in dt.Rows)
-                                        {
-                                            var TmpList = new TradeCloseList
-                                            {
-                                                CloseID = Convert.ToInt32(dr["CloseID"]),
-                                                AuthType = Convert.ToInt32(dr["AuthType"]),
-                                                CloseAmout = Convert.ToInt32(dr["CloseAmout"]),
-                                                ChkClose = Convert.ToInt32(dr["ChkClose"])
-                                            };
-
-                                            TradeCloseLists.Add(TmpList);
-                                        }
-                                    }
-                                }
-                            }
-
-                            trace.traceAdd("usp_CreditAuth_Q01", new { flag, errCode });
+                            trace.traceAdd("GetPreAmount", new { flag, errCode });
                         }
                         #endregion
 
                         #region 訂單預授權判斷
                         if (flag)
                         {
-                            if (DiffAmount > 0) // 補授權
-                            {
-                                // 補授權，將目前已收的款項壓上要關帳
-                                foreach (var item in TradeCloseLists)
-                                {
-                                    item.ChkClose = 1;
-                                }
-                            }
-                            else if (DiffAmount == 0)  // 不補不退
-                            {
-                                // 不補不退，將目前已收的款項壓上要關帳
-                                foreach (var item in TradeCloseLists)
-                                {
-                                    item.ChkClose = 1;
-                                }
-                            }
-                            else if (DiffAmount < 0)   // 調整授權金
-                            {
-                                // 逐筆更新關帳金額，還有餘額則要退款
-                                RemainingAmount = Amount;   // 剩餘金額 = 總價(final_price)
-                                foreach (var item in TradeCloseLists)
-                                {
-                                    if (RemainingAmount > 0)
-                                    {
-                                        RemainingAmount = RemainingAmount - item.CloseAmout;    // 剩餘金額 = 剩餘金額 - 關帳金額
+                            TradeCloseLists = commonService.DoPreAmount(PreAmount, Amount);
 
-                                        if (RemainingAmount < 0)    // 剩餘金額<0，代表要退款
-                                        {
-                                            item.RefundAmount = Math.Abs(RemainingAmount);
-                                        }
-
-                                        item.CloseAmout = item.CloseAmout - item.RefundAmount;  // 關帳金額 = 關帳金額 - 退款金額
-
-                                        item.ChkClose = 1;  // 整筆對上或調整金額，壓上1:要關
-                                    }
-                                    else
-                                    {
-                                        item.RefundAmount = item.CloseAmout;    // 整筆退的金額壓至退款金額
-
-                                        item.ChkClose = 2;  // 整筆退壓上2:退貨
-                                    }
-                                }
-                            }
+                            trace.traceAdd("DoPreAmount", new { flag, errCode });
                         }
                         #endregion
 
