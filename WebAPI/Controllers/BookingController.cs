@@ -10,9 +10,6 @@ using Domain.SP.Output.Booking;
 using Domain.SP.Output.Wallet;
 using Domain.SP.Output.Common;
 using Domain.TB;
-using Domain.WebAPI.Input.Taishin;
-using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
-using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
 using OtherService;
@@ -35,6 +32,8 @@ using WebAPI.Models.ComboFunc;
 using WebAPI.Service;
 using Domain.SP.Input.Rent;
 using Domain.SP.Input.Notification;
+using WebAPI.Models.Param.Bill.Input;
+using WebAPI.Models.Param.Bill.Output;
 
 namespace WebAPI.Controllers
 {
@@ -90,18 +89,17 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;
             string IDNO = "";
             string CarTypeCode = "";
-            bool hasFind = false;
-            string CardToken = "";
             string SPName = "";
             string error = "";
 
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-            WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+            OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
             SPOutput_Booking spOut = new SPOutput_Booking();
             BillCommon billCommon = new BillCommon();
             CommonService commonService = new CommonService();
             bool CreditFlag = true;     // 信用卡綁卡
+            CreditAuthComm creditAuthComm = new CreditAuthComm();
             bool WalletFlag = false;    // 綁定錢包
             int WalletNotice = 0;       // 錢包餘額不足通知 (0:不顯示 1:顯示)
             #endregion
@@ -183,7 +181,7 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    flag = baseVerify.CheckDate(apiInput.SDate, apiInput.EDate, ref errCode, ref SDate, ref EDate); //同站
+                    flag = baseVerify.CheckDate(apiInput.SDate, apiInput.EDate, ref errCode, ref SDate, ref EDate);//同站
 
                     if (flag)
                     {
@@ -219,9 +217,7 @@ namespace WebAPI.Controllers
             #region 檢查信用卡是否綁卡
             if (flag)
             {
-                var result = commonService.CheckBindCard(ref flag, IDNO, ref errCode);
-                CardToken = result.cardToken;
-                hasFind = result.hasFind;
+                var result = creditAuthComm.CheckTaishinBindCard(ref flag, IDNO, ref errCode);
             }
             #endregion
 
@@ -384,17 +380,25 @@ namespace WebAPI.Controllers
                     if (preAuthAmt > 0)
                     {
                         #region 立即授權
-                        if (canAuth && !string.IsNullOrWhiteSpace(CardToken))
+                        if (canAuth)
                         {
-                            int payType = 0; //租金
-                            int autoClose = 0; //自動關帳
-                            CreditAuthComm creditAuthComm = new CreditAuthComm();
-                            authflag = creditAuthComm.DoAuthV3(spOut.OrderNum, IDNO, preAuthAmt, CardToken, payType, ref errCode, autoClose, funName, funName, ref WSAuthOutput);
+                            var AuthInput = new IFN_CreditAuthRequest
+                            {
+                                CheckoutMode = 0,
+                                OrderNo = spOut.OrderNum,
+                                IDNO = IDNO,
+                                Amount = preAuthAmt,
+                                PayType = 0,
+                                autoClose = 0,
+                                funName = funName,
+                                insUser = funName
+                            };
+                            authflag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                         }
                         #endregion
                         #region 寫入預授權
-                        string merchantTradNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
-                        string bankTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
+                        string merchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no;
+                        string bankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo;
                         SPInput_InsOrderAuthAmount spInput_InsOrderAuthAmount = new SPInput_InsOrderAuthAmount()
                         {
                             IDNO = IDNO,
@@ -414,6 +418,7 @@ namespace WebAPI.Controllers
                         #region 新增推播訊息
                         if (authflag)
                         {
+                            string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0);
                             SPInput_InsPersonNotification spInput_InsPersonNotification = new SPInput_InsPersonNotification()
                             {
                                 OrderNo = Convert.ToInt32(spOut.OrderNum),
@@ -421,10 +426,10 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 NType = 19,
                                 STime = DateTime.Now.AddSeconds(10),
-                                Title = "取授權通知",
+                                Title = "取授權成功通知",
                                 imageurl = "",
                                 url = "",
-                                Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}預約取授權成功，金額 {preAuthAmt}，謝謝!"
+                                Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}以末四碼{cardNo}信用卡預約取授權成功，金額 {preAuthAmt}，謝謝!"
 
                             };
                             commonService.sp_InsPersonNotification(spInput_InsPersonNotification, ref error);
@@ -439,9 +444,10 @@ namespace WebAPI.Controllers
                                 IDNO = IDNO,
                                 LogID = LogID,
                                 Token = Access_Token,
+                                Cancel_Status_in = 6,
                                 Descript = $"預授權失敗【取消訂單】，金額{preAuthAmt}"
                             };
-                            flag=commonService.sp_BookingCancel(spInput_BookingCancel, ref errCode);
+                            flag = commonService.sp_BookingCancel(spInput_BookingCancel, ref errCode);
                             if (flag)
                             {
                                 flag = false;

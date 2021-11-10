@@ -776,7 +776,7 @@ namespace WebAPI.Controllers
                             Discount = Discount,
                             PRICE = item.PRICE,
                             PRICE_H = item.PRICE_H,
-                            carBaseMins = 60,
+                            carBaseMins = carBaseMins,
                             MaxPrice = item.MaxPrice,    // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
                             FirstFreeMins = item.FirstFreeMins,
                             MonIds = MonIds
@@ -1036,9 +1036,7 @@ namespace WebAPI.Controllers
                         #endregion
 
                         #region 儲存使用月租時數
-                        if (!string.IsNullOrWhiteSpace(IDNO) && tmpOrder > 0 && LogID > 0
-                            && !string.IsNullOrWhiteSpace(MonIds)
-                            && carInfo != null && (carInfo.useMonthDiscW > 0 || carInfo.useMonthDiscH > 0))
+                        if (!string.IsNullOrWhiteSpace(IDNO) && tmpOrder > 0 && LogID > 0 && !string.IsNullOrWhiteSpace(MonIds) && carInfo != null && (carInfo.useMonthDiscW > 0 || carInfo.useMonthDiscH > 0))
                         {
                             string sp_errCode = "";
                             var monthId = MonIds.Split(',').Select(x => Convert.ToInt64(x)).FirstOrDefault();

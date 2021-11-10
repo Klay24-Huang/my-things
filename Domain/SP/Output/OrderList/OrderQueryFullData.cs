@@ -359,5 +359,7 @@ namespace Domain.SP.Output.OrderList
         public int CardType { get; set; }
 
         public int isRetry { get; set; }
+
+        public string Mobile { get; set; }      
     }
 }

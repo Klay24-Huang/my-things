@@ -5,7 +5,7 @@
 * 系    統 : IRENT
 * 程式功能 : 授權結果存檔
 * 作    者 : Umeko
-* 撰寫日期 : 20211101
+* 撰寫日期 : 20211108
 * 修改日期 : 
 
 * Example  : 
@@ -80,7 +80,8 @@ BEGIN TRY
 
 				Set @STime = DateAdd(SECOND,10,@NowTime)
 				Set @Title =  '取授權成功通知'
-				Set  @Message =  CONCAT(N'已於',Format(@NowTime,'MM-dd hh:mm','zh-TW'),@ActionName,N'成功，N金額',@final_price,N'，謝謝!')
+				Set  @Message =  CONCAT(N'已於',Format(@NowTime,'MM-dd hh:mm','zh-TW'),N'以末四碼',RIGHT(@CardNumber,4),N'信用卡',@ActionName,N'成功，N金額',@final_price,N'，謝謝!')
+
 
 				Exec @iError = usp_InsPersonNotification_I01 
 									  @OrderNo

@@ -1,5 +1,4 @@
-﻿using Domain.SP.Input;
-using Domain.SP.Input.Bill;
+﻿using Domain.SP.Input.Bill;
 using Domain.SP.Input.Booking;
 using Domain.SP.Input.Notification;
 using Domain.SP.Input.Rent;
@@ -12,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Web;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Utils;
@@ -29,6 +26,7 @@ namespace WebAPI.Service
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
 
+        #region 取得安心服務每小時價格
         /// <summary>
         /// 取得安心服務每小時價格
         /// </summary>
@@ -65,7 +63,9 @@ namespace WebAPI.Service
             result.InsurancePerHours = insurancePerHours;
             return result;
         }
+        #endregion
 
+        #region 訂單資訊(For計算預授權金額用)
         /// <summary>
         /// 訂單資訊(For計算預授權金額用)
         /// </summary>
@@ -85,14 +85,15 @@ namespace WebAPI.Service
                 re = objUti.GetFirstRow<SPOutput_OrderForPreAuth>(ds.Tables[0]);
             return re;
         }
+        #endregion
 
+        #region 試算預授權金額
         /// <summary>
         /// 試算預授權金額
         /// </summary>
         /// <param name="input">試算資料</param>
         /// <param name="dayMaxHour">單日時數上限</param>
         /// <returns></returns>
-
         public int EstimatePreAuthAmt(EstimateData input, int dayMaxHour = 10)
         {
             BillCommon billCommon = new BillCommon();
@@ -107,35 +108,9 @@ namespace WebAPI.Service
             //預授權金額
             return Rent + InsurancePurePrice + MilagePrice; //(租金+安心服務+里程費)
         }
+        #endregion
 
-        /// <summary>
-        /// 檢查信用卡是否綁卡
-        /// </summary>
-        /// <param name="flag"></param>
-        /// <param name="IDNO">會員編號</param>
-        /// <param name="errCode"></param>
-        /// <returns></returns>
-        public (bool hasFind, string cardToken) CheckBindCard(ref bool flag, string IDNO, ref string errCode)
-        {
-            (bool hasFind, string cardToken) result = (false, "");
-            //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
-            DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errCode);
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                result.hasFind = true;
-                result.cardToken = ds.Tables[0].Rows[0]["CardToken"].ToString();
-            }
-            else
-            {
-                flag = false;
-                errCode = "ERR730";
-            }
-            ds.Dispose();
-            return result;
-        }
-
-
-        /// <summary>
+        #region 新增預授權
         /// 新增預授權
         /// </summary>
         /// <param name="spInput"></param>
@@ -166,7 +141,9 @@ namespace WebAPI.Service
 
             return flag;
         }
+        #endregion
 
+        #region 新增個人推播訊息
         /// <summary>
         /// 新增個人推播訊息
         /// </summary>
@@ -198,8 +175,9 @@ namespace WebAPI.Service
 
             return flag;
         }
+        #endregion
 
-
+        #region 取消訂單
         /// <summary>
         /// 取消訂單
         /// </summary>
@@ -231,6 +209,7 @@ namespace WebAPI.Service
 
             return flag;
         }
+        #endregion
 
         #region 取得訂單完整資訊
         /// <summary>
@@ -256,6 +235,7 @@ namespace WebAPI.Service
         }
         #endregion
 
+        #region 寫入信用卡授權排程清單
         /// <summary>
         /// 寫入信用卡授權排程清單
         /// </summary>
@@ -273,15 +253,16 @@ namespace WebAPI.Service
 
             return flag;
         }
+        #endregion
 
-
+        #region 寫入預約信用卡授權排程清單
         /// <summary>
         /// 寫入預約信用卡授權排程清單
         /// </summary>
         /// <param name="Input"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool InsertOrderAuthReservation(SPInput_OrderAuthReservation Input, ref string errCode , ref List<ErrorInfo> lstError)
+        public bool InsertOrderAuthReservation(SPInput_OrderAuthReservation Input, ref string errCode, ref List<ErrorInfo> lstError)
         {
             string SPName = "usp_InsOrderAuth_I01";
             SPOutput_Base spOut = new SPOutput_Base();
@@ -292,5 +273,136 @@ namespace WebAPI.Service
 
             return flag;
         }
+        #endregion
+
+        #region 取得預授權金額
+        /// <summary>
+        /// 取得預授權金額
+        /// </summary>
+        /// <param name="IDNO">帳號</param>
+        /// <param name="Token">Token</param>
+        /// <param name="OrderNo">訂單編號</param>
+        /// <param name="NeedToken">是否需要Token</param>
+        /// <param name="LogID"></param>
+        /// <param name="flag"></param>
+        /// <param name="errCode">錯誤代碼</param>
+        /// <returns></returns>
+        public PreAmountData GetPreAmount(string IDNO, string Token, Int64 OrderNo, string NeedToken, Int64 LogID, ref bool flag, ref string errCode)
+        {
+            PreAmountData Result = new PreAmountData() {
+                DiffAmount = 0,
+                TradeCloseList = new List<TradeCloseList>()
+            }; // 回傳結果
+            var lstError = new List<ErrorInfo>();
+
+            string SPName = "usp_GetPreAmount";
+
+            object[][] parms1 = {
+                new object[] {
+                    IDNO,
+                    Token,
+                    OrderNo,
+                    NeedToken,
+                    LogID
+            }};
+
+            DataSet ds1 = null;
+            string returnMessage = "";
+            string messageLevel = "";
+            string messageType = "";
+
+            ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+
+            if (ds1.Tables.Count != 3)
+            {
+                flag = false;
+                errCode = "ERR999";
+            }
+            else
+            {
+                baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[2].Rows[0]["Error"]), ds1.Tables[2].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    if (ds1.Tables[0].Rows.Count > 0)
+                        Result.DiffAmount = Convert.ToInt32(ds1.Tables[0].Rows[0]["DiffAmount"]);
+
+                    DataTable dt = ds1.Tables[1];
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            var TmpList = new TradeCloseList
+                            {
+                                CloseID = Convert.ToInt32(dr["CloseID"]),
+                                AuthType = Convert.ToInt32(dr["AuthType"]),
+                                CloseAmout = Convert.ToInt32(dr["CloseAmout"]),
+                                ChkClose = Convert.ToInt32(dr["ChkClose"])
+                            };
+
+                            Result.TradeCloseList.Add(TmpList);
+                        }
+                    }
+                }
+            }
+
+            return Result;
+        }
+        #endregion
+
+        #region 訂單預授權判斷
+        public List<TradeCloseList> DoPreAmount(PreAmountData PreAmount,int FinalPrice)
+        {
+            List<TradeCloseList> Result = new List<TradeCloseList>();   // 回傳結果
+            Result = PreAmount.TradeCloseList;
+            int RemainingAmount = FinalPrice;   // 剩餘金額 = 總價(final_price)
+
+            if (PreAmount.DiffAmount > 0) // 補授權
+            {
+                // 補授權，將目前已收的款項壓上要關帳
+                foreach (var item in Result)
+                {
+                    item.ChkClose = 1;
+                }
+            }
+            else if (PreAmount.DiffAmount == 0)  // 不補不退
+            {
+                // 不補不退，將目前已收的款項壓上要關帳
+                foreach (var item in Result)
+                {
+                    item.ChkClose = 1;
+                }
+            }
+            else if (PreAmount.DiffAmount < 0)   // 調整授權金
+            {
+                // 逐筆更新關帳金額，還有餘額則要退款
+                foreach (var item in Result)
+                {
+                    if (RemainingAmount > 0)
+                    {
+                        RemainingAmount = RemainingAmount - item.CloseAmout;    // 剩餘金額 = 剩餘金額 - 關帳金額
+
+                        if (RemainingAmount < 0)    // 剩餘金額<0，代表要退款
+                        {
+                            item.RefundAmount = Math.Abs(RemainingAmount);
+                        }
+
+                        item.CloseAmout = item.CloseAmout - item.RefundAmount;  // 關帳金額 = 關帳金額 - 退款金額
+
+                        item.ChkClose = 1;  // 整筆對上或調整金額，壓上1:要關
+                    }
+                    else
+                    {
+                        item.RefundAmount = item.CloseAmout;    // 整筆退的金額壓至退款金額
+
+                        item.ChkClose = 2;  // 整筆退壓上2:退貨
+                    }
+                }
+            }
+
+            return Result;
+        }
+        #endregion
     }
 }

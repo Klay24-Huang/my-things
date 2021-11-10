@@ -610,18 +610,19 @@
     <Build Include="dbo\Stored Procedures\usp_UPDTradeForClose_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsTradeForClose_I01.sql" />
     <Build Include="dbo\User Defined Types\TY_TradeClose.sql" />
-    <Build Include="dbo\Stored Procedures\usp_CreditAuth_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_CreditAuth_U01.sql" />
     <Build Include="dbo\Tables\TB_OrderAuthReservation.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsOrderAuthReservation_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_InsOrderAuth_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetPreCreditAuthList_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetOrderInfoForPreAuth_Q01.sql" />
-    <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList_U02.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_ContactSetting_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetPreAmount.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetOrderAuthList_Q02.sql" />
-    <Build Include="dbo\Stored Procedures\usp_SendReturnCarControl_I01.sql" />
-    <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthReservationList_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetOrderAuthReservationList_Q01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthReservationList_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList_U02.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SendReturnCarControl_I01.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
