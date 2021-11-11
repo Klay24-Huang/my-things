@@ -430,6 +430,7 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 Token = Access_Token,
                                 Cancel_Status_in = 6,
+                                CheckToken=1,
                                 Descript = $"預授權失敗【取消訂單】，金額{preAuthAmt}"
                             };
                             flag = commonService.sp_BookingCancel(spInput_BookingCancel, ref errCode);
