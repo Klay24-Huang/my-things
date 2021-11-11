@@ -391,7 +391,8 @@ namespace WebAPI.Controllers
                                 PayType = 0,
                                 autoClose = 0,
                                 funName = funName,
-                                insUser = funName
+                                insUser = funName,
+                                AuthType = 1
                             };
                             authflag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                         }
@@ -445,6 +446,7 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 Token = Access_Token,
                                 Cancel_Status_in = 6,
+                                CheckToken=1,
                                 Descript = $"預授權失敗【取消訂單】，金額{preAuthAmt}"
                             };
                             flag = commonService.sp_BookingCancel(spInput_BookingCancel, ref errCode);

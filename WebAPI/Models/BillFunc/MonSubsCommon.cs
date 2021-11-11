@@ -208,7 +208,7 @@ namespace WebAPI.Models.BillFunc
                                 //flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, sour.IDNO, ref errCode, ref WSAuthOutput);
                                 //trace.traceAdd("DoCreditCardAuthV2", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
                                 //20211106 ADD BY ADAM REASON.預授權
-                                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, sour.IDNO, CreditAutoClose, "TSIBCardTrade", sour.IDNO, ref errCode, ref WSAuthOutput);
+                                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, sour.IDNO, CreditAutoClose, "TSIBCardTrade", sour.IDNO, ref errCode, ref WSAuthOutput,8);
                                 trace.traceAdd("DoCreditCardAuthV3", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
 
                                 if (WSAuthOutput.RtnCode != "1000")

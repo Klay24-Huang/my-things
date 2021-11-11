@@ -23,6 +23,7 @@ CREATE PROCEDURE [dbo].[usp_UPDTradeForClose_U01]
 	@IsSuccess              INT					  ,
 	@ChkClose            INT,                                         --可否關帳
 	@CardType               INT,
+	@AuthType              Int,
 	@ProName              varchar(50),                                         --程式名稱
 	@UserID                   varchar(20),
 	@LogID                  BIGINT                ,
@@ -99,7 +100,7 @@ SET @IsSuccess      =ISNULL(@IsSuccess      ,-2);
 					WHERE OrderNo=@OrderNo AND MerchantTradeNo=@MerchantTradeNo
 					
 					Insert into [dbo].[TB_TradeClose]([TradeID], [OrderNo], [MerchantTradeNo], [CardType], [AuthType], [ChkClose], [CloseAmout], [CloseTime], [A_PRGID], [A_USERID], [U_PRGID], [U_USERID])
-					values(@TradeID,@OrderNo,@MerchantTradeNo,@CardType,0,@ChkClose,@AUTHAMT,dbo.GET_TWDATE(),@PRGID,@UserID,@PRGID,@UserID)
+					values(@TradeID,@OrderNo,@MerchantTradeNo,@CardType,@AuthType,@ChkClose,@AUTHAMT,dbo.GET_TWDATE(),@PRGID,@UserID,@PRGID,@UserID)
 				Commit
 			END
 		END
