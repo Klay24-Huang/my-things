@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
             WebAPI_CreateAccountAndStoredMoney wallet = null;
             WebAPIOutput_StoreValueCreateAccount output = null;
             SPInput_WalletStore spInput_Wallet = null;
-            var apiOutput = new OAPI_WalletStoredByCredit();
+            OAPI_WalletStoreBase apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -121,7 +121,7 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("防呆");
                 }
                 #endregion
-
+                #region TB
                 #region Token判斷
                 if (flag && isGuest == false)
                 {
@@ -129,7 +129,6 @@ namespace WebAPI.Controllers
 
                 }
                 #endregion
-
                 #region 取錢包會員資料&儲值金額限制檢核
                 if (flag)
                 {
@@ -138,7 +137,6 @@ namespace WebAPI.Controllers
                     spOutput = walletInfo.Info;
                 }
                 #endregion
-
                 #region 送台新查詢信用卡→直接授權
                 if (flag)
                 {
@@ -199,7 +197,7 @@ namespace WebAPI.Controllers
                                     Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
                                     MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
                                     MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
-                                    MerchantTradeNo = string.Format("{0}WalletSave{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    MerchantTradeNo = string.Format("{0}W_{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                                     NonRedeemAmt = apiInput.StoreMoney.ToString() + "00",
                                     NonRedeemdescCode = "",
                                     Remark1 = "",
@@ -243,7 +241,6 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
-
                 #region 台新錢包儲值
                 if (flag)
                 {
@@ -281,8 +278,8 @@ namespace WebAPI.Controllers
                     flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
                     trace.traceAdd("DoStoreValueCreateAccount", new { wallet, MerchantId, utcTimeStamp, SignCode, output, errCode });
                     trace.FlowList.Add("錢包儲值");
-                    
-                    if (!flag)
+
+                    if (!flag && (output.ReturnCode == "9999" || output.ReturnCode != "0000" || output.ReturnCode != "M000"))
                     {
                         #region 寫入開戶儲值錯誤LOG
                         SPInput_InsTaishinStoredMoneyError spInput = new SPInput_InsTaishinStoredMoneyError()
@@ -344,29 +341,35 @@ namespace WebAPI.Controllers
                             LogID = LogID
                         };
 
-                        flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);                     
+                        flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);
 
                         trace.traceAdd("WalletStore", new { spInput_Wallet, flag, errCode });
                         trace.FlowList.Add("寫入錢包紀錄");
                     }
                     #endregion
-
                 }
                 #endregion
-
-                apiOutput.StoreMoney = apiInput.StoreMoney;
-                apiOutput.StroeResult = flag ? 1 : 0;
-                apiOutput.Timestamp = spInput_Wallet == null ? string.Format("{0:yyyy/MM/dd hh:mm}", DateTime.Now) : string.Format("{0:yyyy/MM/dd hh:mm}", spInput_Wallet.LastTransDate);
-
+                if (flag)
+                {
+                    apiOutput = new OAPI_WalletStoreBase()
+                    {
+                        StoreMoney = apiInput.StoreMoney
+                    };
+                }
+                else
+                {
+                    errCode = "";
+                    errMsg = "";
+                }
 
                 trace.traceAdd("TraceFinal", new { errCode, errMsg });
                 carRepo.AddTraceLog(apiId, funName, trace, flag);
+                #endregion
             }
             catch (Exception ex)
             {
                 flag = false;
                 errCode = "ERR918";
-                apiOutput.StroeResult = 0;
                 trace.BaseMsg = ex.Message;
             }
 

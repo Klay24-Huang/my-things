@@ -61,15 +61,16 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreShopController";
-            int apiId = 222; 
+            int apiId = 222;
 
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
             TaishinWallet WalletAPI = new TaishinWallet();
             IAPI_WalletStoreShop apiInput = null;
-            var apiOutput = new OAPI_WalletStoreShop();
+            OAPI_WalletStoreShop apiOutput = null;
             var spOutput = new SPOutput_GetWallet();
+            WebAPIOutput_GetBarCode outGetBarCode = null;
 
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -126,6 +127,7 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
+                #region TB
                 #region Token判斷
                 if (flag && isGuest == false)
                 {
@@ -133,7 +135,6 @@ namespace WebAPI.Controllers
 
                 }
                 #endregion
-
                 #region 儲值金額限制檢核
                 if (flag)
                 {
@@ -142,7 +143,6 @@ namespace WebAPI.Controllers
                     spOutput = walletInfo.Info;
                 }
                 #endregion
-
                 #region 取得台新APIToken
                 if (flag)
                 {
@@ -152,17 +152,11 @@ namespace WebAPI.Controllers
                     {
                         cvsPayToken = output_GetTaishinCvsPayToken.access_token;
                     }
-                    else
-                    {
-                        errCode = "ERR939";
-                        errMsg = "超商條碼Token產生失敗，請洽系統管理員";
-                    }
 
                     trace.traceAdd("DoGetTaishinCvsPayToken", new { output_GetTaishinCvsPayToken });
                     trace.FlowList.Add("取得台新APIToken");
                 }
                 #endregion
-
                 #region 產生超商銷帳編號
                 DateTime dueDate = DateTime.Now.AddHours(3);
                 if (flag)
@@ -184,15 +178,12 @@ namespace WebAPI.Controllers
                     else
                     {
                         flag = false;
-                        errCode = "ERR938";
-                        errMsg = "銷帳編號產生失敗，請洽系統管理員";
                     }
 
                     trace.traceAdd("sp_GetCvsPaymentId", new { spOutput_GetCvsPaymentId });
                     trace.FlowList.Add("產生銷帳編號");
                 }
                 #endregion
-
                 #region 超商繳費資訊上傳-新增
                 if (flag)
                 {
@@ -234,14 +225,8 @@ namespace WebAPI.Controllers
 
                     WebAPIOutput_CreateCvsPayInfo output_CreateCvsPayInfo = new WebAPIOutput_CreateCvsPayInfo();
                     flag = WalletAPI.DoStoreShopCreateCvsPayInfo(webAPI_CreateCvsPayInfo, cvsPayToken, hmacVal, ref errCode, ref output_CreateCvsPayInfo);
-                    if (!flag || output_CreateCvsPayInfo == null)
-                    {
-                        errCode = "ERR941";
-                        errMsg = "超商繳費資訊新增失敗，請洽系統管理員";
-                    }
                 }
                 #endregion
-
                 #region Barcode查詢
                 if (flag)
                 {
@@ -263,51 +248,55 @@ namespace WebAPI.Controllers
 
                     hmacVal = WalletAPI.GetHmacVal(webAPI_GetBarcode, webAPI_GetBarcode.header.cTxSn);
 
-                    WebAPIOutput_GetBarCode outGetBarCode = new WebAPIOutput_GetBarCode();
+                    outGetBarCode = new WebAPIOutput_GetBarCode();
                     flag = WalletAPI.DoStoreShopGetBarcode(webAPI_GetBarcode, cvsPayToken, hmacVal, ref errCode, ref outGetBarCode);
-
-                    //台新回傳Base64String需轉向輸出給APP
-                    if (flag && outGetBarCode.body.barcode64 != null)
-                    {
-                        byte[] binaryData = Convert.FromBase64String(outGetBarCode.body.barcode64);
-                        using (var memoryStream = new MemoryStream(binaryData))
-                        {
-                            var rotateImage = System.Drawing.Image.FromStream(memoryStream);
-                            rotateImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            base64String = ImageToBase64(rotateImage, System.Drawing.Imaging.ImageFormat.Png);
-                        }
-                    }
-
-                    if (flag && !string.IsNullOrWhiteSpace(base64String))
-                    {
-                        apiOutput.StoreMoney = apiInput.StoreMoney;
-                        apiOutput.Barcode64 = base64String;
-                        apiOutput.ShopBarCode1 = outGetBarCode.body.code1;
-                        apiOutput.ShopBarCode2 = outGetBarCode.body.code2;
-                        apiOutput.ShopBarCode3 = outGetBarCode.body.code3;
-                        apiOutput.PayDeadline = dueDate.ToString("yyyy/MM/dd HH:mm");
-                    }
-                    else
-                    {
-                        errCode = "ERR940";
-                        errMsg = "超商條碼產生失敗，請洽系統管理員";
-                    }
 
                     trace.traceAdd("DoStoreShopGetBarcode", new { webAPI_GetBarcode, cvsPayToken, hmacVal, errCode, outGetBarCode });
                     trace.FlowList.Add("台新回傳Barcode");
                 }
                 #endregion
+                #region 台新回傳Base64需轉向輸出給APP
+                if (flag && outGetBarCode.body.barcode64 != null)
+                {
+                    byte[] binaryData = Convert.FromBase64String(outGetBarCode.body.barcode64);
+                    using (var memoryStream = new MemoryStream(binaryData))
+                    {
+                        var rotateImage = System.Drawing.Image.FromStream(memoryStream);
+                        rotateImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                        base64String = ImageToBase64(rotateImage, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                }
+                #endregion
+                #region 輸出
+                if (flag && !string.IsNullOrWhiteSpace(base64String))
+                {
+                    apiOutput = new OAPI_WalletStoreShop()
+                    {
+                        StoreMoney = apiInput.StoreMoney,
+                        Barcode64 = base64String,
+                        ShopBarCode1 = outGetBarCode.body.code1,
+                        ShopBarCode2 = outGetBarCode.body.code2,
+                        ShopBarCode3 = outGetBarCode.body.code3,
+                        PayDeadline = dueDate.ToString("yyyy/MM/dd HH:mm")
+                    };
 
-                apiOutput.StroeResult = flag ? 1 : 0;
+                }
+                else
+                {
+                    errCode = "ERR940";
+                    errMsg = "超商條碼產生失敗，請洽系統管理員";
+                }
+                #endregion
 
                 trace.traceAdd("TraceFinal", new { errCode, errMsg });
                 carRepo.AddTraceLog(apiId, funName, trace, flag);
+                #endregion
+
             }
             catch (Exception ex)
             {
                 flag = false;
                 errCode = "ERR918";
-                apiOutput.StroeResult = 0;
                 trace.BaseMsg = ex.Message;
             }
 

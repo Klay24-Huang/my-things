@@ -738,7 +738,6 @@
     <Compile Include="Models\Param\Output\OAPI_RefrashToken.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletInfoCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreBase.cs" />
-    <Compile Include="Models\Param\Output\OAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeTransHistory.cs" />

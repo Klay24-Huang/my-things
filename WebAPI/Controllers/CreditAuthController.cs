@@ -1363,10 +1363,10 @@ namespace WebAPI.Controllers
                     RTime = DateTime.Now;
                     JsonSerializer serializer = new JsonSerializer();
                     var p =
-                        (IRentAPIOutput_Generic<OAPI_WalletStoredByCredit>)serializer.Deserialize(new JTokenReader(resault.Data), typeof(IRentAPIOutput_Generic<OAPI_WalletStoredByCredit>));
+                        (IRentAPIOutput_Generic<OAPI_WalletStoreBase>)serializer.Deserialize(new JTokenReader(resault.Data), typeof(IRentAPIOutput_Generic<OAPI_WalletStoreBase>));
                     if (p.result == 1)
                     {
-                        flag = (p.Data.StroeResult == 1) ? true : false;
+                        flag = (p.result == 1) ? true : false;
                     }
                     else
                     {
