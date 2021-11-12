@@ -127,10 +127,10 @@ namespace WebAPI.Controllers
             {
                 SPInput_BookingCancel spInput = new SPInput_BookingCancel()
                 {
-                     OrderNo= tmpOrder,
-                      IDNO=IDNO,
-                       LogID=LogID,
-                        Token=Access_Token
+                    OrderNo= tmpOrder,
+                    IDNO=IDNO,
+                    LogID=LogID,
+                    Token=Access_Token
                 };
                 string SPName = new ObjType().GetSPName(ObjType.SPType.BookingCancel);
                 SPOutput_Base spOut = new SPOutput_Base();
