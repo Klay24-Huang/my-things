@@ -27,6 +27,7 @@ namespace WebAPI.Controllers
     /// 錢包轉贈
     /// </summary>
     /// 2021-09-28 UPD BY YANKEY 調整日期輸出格式
+    /// 2021-11/08 UPD BY YANKEY 調整輸出格式-不輸出data
     public class WalletTransferStoredValueController : ApiController
     {
         private string connetStr    = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -40,7 +41,7 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             var wsp = new WalletSp();
-            var wMap = new WalletMap();
+            var wMap = new WalletMap(); 
             var cr_com = new CarRentCommon();
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -381,13 +382,13 @@ namespace WebAPI.Controllers
                 #endregion
                 //2021-09-28 UPD BY YANKEY 調整日期輸出格式
                 //apiOutput.SystemTime = DateTime.Now.ToString("G", CultureInfo.CreateSpecificCulture("zh-CN"));    //Display:"2021/9/28 15:36:52"
-                apiOutput.SystemTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");                                                  //Display:"2021-09-28T15:41:03"
-                apiOutput.TranResult = flag ? 1 : 0;
+                //apiOutput.SystemTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");                                                  //Display:"2021-09-28T15:41:03"
+                //apiOutput.TranResult = flag ? 1 : 0;
             }
             catch (Exception ex)
             {
                 flag = false;
-                apiOutput.TranResult = 0;
+                //apiOutput.TranResult = 0;
                 trace.BaseMsg = ex.Message;
             }
 
