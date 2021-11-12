@@ -97,7 +97,7 @@ namespace WebAPI.Controllers
             OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
             SPOutput_Booking spOut = new SPOutput_Booking();
             BillCommon billCommon = new BillCommon();
-	    CommonService commonService = new CommonService();
+	        CommonService commonService = new CommonService();
             CreditAuthComm creditAuthComm = new CreditAuthComm();
             bool CreditFlag = true;     // 信用卡綁卡
             bool WalletFlag = false;    // 綁定錢包
@@ -222,36 +222,36 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 檢查錢包是否開通
-            	if (ProjType == 4)  // 4:機車
+            if (ProjType == 4)  // 4:機車
+            {
+                SPName = "usp_CreditAndWalletQuery_Q01";
+                SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
                 {
-                    string SPName = "usp_CreditAndWalletQuery_Q01";
-                    SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
-                    {
-                        IDNO = IDNO,
-                        Token = Access_Token,
-                        LogID = LogID
-                    };
-                    SPOut_CreditAndWalletQuery spOut = new SPOut_CreditAndWalletQuery();
-                    SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
-                    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
+                };
+                SPOut_CreditAndWalletQuery spOut2 = new SPOut_CreditAndWalletQuery();
+                SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut2, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
-                    if (flag)
-                    {
-                        WalletFlag = spOut.WalletStatus == "2" ? true : false;
-                    }
-                    #endregion
-
-                    if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
-                    {
-                        flag = false;
-                        errCode = "ERR292";
-                    }
-                    else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包，要給APP值顯示通知
-                    {
-                        WalletNotice = 1;
-                    }
+                if (flag)
+                {
+                    WalletFlag = spOut2.WalletStatus == "2" ? true : false;
                 }
+                    
+
+                if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
+                {
+                    flag = false;
+                    errCode = "ERR292";
+                }
+                else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包，要給APP值顯示通知
+                {
+                    WalletNotice = 1;
+                }
+            }
             #endregion
 
             #region 檢查欠費
@@ -329,7 +329,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                string SPName = "usp_Booking";
+                SPName = "usp_Booking";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
