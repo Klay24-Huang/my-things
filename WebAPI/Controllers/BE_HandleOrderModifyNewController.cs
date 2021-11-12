@@ -21,6 +21,17 @@ using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 using Newtonsoft.Json;
 using NLog;
+using Newtonsoft.Json.Linq;
+using WebAPI.Models.Param.Input;
+using Domain.WebAPI.output;
+using WebAPI.Models.Param.Output;
+using Domain.SP.Input.OtherService.Common;
+using OtherService.Common;
+using Domain.WebAPI.Input.Taishin.Wallet;
+using Domain.SP.Output.Wallet;
+using Domain.WebAPI.output.Taishin.Wallet;
+using Domain.SP.Input.Wallet;
+using WebAPI.Service;
 
 namespace WebAPI.Controllers
 {
@@ -182,6 +193,7 @@ namespace WebAPI.Controllers
                                 flag = false;
                                 errCode = "ERR760";
                             }
+
                             //else if (Convert.ToInt32(STATUS) >3)
                             //{
                             //    //20210113先by pass
@@ -209,8 +221,9 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
+                            
                             //查詢有無綁卡
-                            if (apiInput.DiffPrice > 0) //刷退，
+                            if (apiInput.DiffPrice > 0 && obj.PayMode == "0") //刷退，
                             {
                                 WebAPIOutput_GetPaymentInfo WSAuthQueryOutput = new WebAPIOutput_GetPaymentInfo();
                                 if (obj.ServerOrderNo != "")
@@ -304,6 +317,126 @@ namespace WebAPI.Controllers
                                 {
                                     /*傳送短租136*/
                                     flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
+                                }
+                            }
+
+                            //電子錢包
+                            if (apiInput.DiffPrice > 0 && obj.PayMode == "1") //刷退錢包
+                            {
+                                var trace = new TraceCom();
+                                var APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
+                                var MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+                                WebAPIOutput_StoreValueCreateAccount output = null;
+                                WebAPI_CreateAccountAndStoredMoney wallet = null;
+                                var wsp = new WalletSp();
+                                var spOutput = new SPOutput_GetWallet();
+                                try
+                                {
+                                    #region 台新錢包儲值
+                                    if (flag)
+                                    {
+                                        DateTime NowTime = DateTime.Now;
+                                        string guid = Guid.NewGuid().ToString().Replace("-", "");
+                                        int nowCount = 1;
+                                        wallet = new WebAPI_CreateAccountAndStoredMoney()
+                                        {
+                                            ApiVersion = "0.1.01",
+                                            GUID = guid,
+                                            MerchantId = MerchantId,
+                                            POSId = "",
+                                            StoreId = "",
+                                            StoreName = "",
+                                            StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
+                                            StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
+                                            MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
+                                            Name = spOutput.Name,
+                                            PhoneNo = spOutput.PhoneNo,
+                                            Email = spOutput.Email,
+                                            ID = IDNO,
+                                            AccountType = "2",
+                                            CreateType = "1",
+                                            AmountType = "2",
+                                            Amount = apiInput.DiffPrice,
+                                            Bonus = 0,
+                                            BonusExpiredate = "",
+                                            SourceFrom = "9"
+                                        };
+
+                                        var body = JsonConvert.SerializeObject(wallet);
+                                        TaishinWallet WalletAPI = new TaishinWallet();
+                                        string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                                        string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                                        flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+
+                                        trace.traceAdd("DoStoreValueCreateAccount", new { wallet, MerchantId, utcTimeStamp, SignCode, output, errCode });
+                                        trace.FlowList.Add("退費轉錢包");
+
+                                        if (flag == false)
+                                        {
+                                            errCode = "ERR918"; //Api呼叫失敗
+                                            errMsg = output.Message;
+                                        }
+                                    }
+                                    #endregion
+
+                                    #region 寫入錢包紀錄
+                                    if (flag)
+                                    {
+                                        string formatString = "yyyyMMddHHmmss";
+                                        SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
+                                        {
+                                            IDNO = output.Result.ID,
+                                            WalletMemberID = output.Result.MemberId,
+                                            WalletAccountID = output.Result.AccountId,
+                                            Status = Convert.ToInt32(output.Result.Status),
+                                            Email = output.Result.Email,
+                                            PhoneNo = output.Result.PhoneNo,
+                                            StoreAmount = apiInput.DiffPrice,
+                                            WalletBalance = output.Result.Amount,
+                                            CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
+                                            LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
+                                            LastStoreTransId = output.Result.StoreTransId,
+                                            LastTransId = output.Result.TransId,
+                                            TaishinNO = output.Result.TransId,
+                                            OrderNo = apiInput.OrderNo.Substring(1),
+                                            TradeType = "Store_Return",
+                                            PRGName = "84",
+                                            Mode = 4,
+                                            InputSource = 2,
+                                            Token = Access_Token,
+                                            LogID = LogID
+                                        };
+
+                                        flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);
+
+                                        trace.traceAdd("WalletStore", new { spInput_Wallet, flag, errCode });
+                                        trace.FlowList.Add("寫入錢包紀錄");
+                                    }
+                                    #endregion
+                                }
+                                finally
+                                {
+                                    //SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                                    //{
+                                    //    MKTime = MKTime,
+                                    //    UPDTime = RTime,
+                                    //    WebAPIInput = JsonConvert.SerializeObject(Input),
+                                    //    WebAPIName = funName,
+                                    //    WebAPIOutput = JsonConvert.SerializeObject(resault),
+                                    //    WebAPIURL = url
+                                    //};
+                                    //new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+                                    if (flag)
+                                    {
+                                        //直接更新
+                                        flag = SaveToTB(obj, apiInput, tmpOrder, LogID, ref errCode, ref lstError);
+                                    }
+                                    if (flag)
+                                    {
+                                        /*傳送短租136*/
+                                        flag = DoSendNPR136(tmpOrder, LogID, apiInput.DiffPrice, apiInput.UserID, ref errCode, ref lstError);
+                                    }
                                 }
                             }
                         }

@@ -54,7 +54,6 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
@@ -86,55 +85,31 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
             #region TB
+            #region Token判斷
             //Token判斷
             if (flag && isGuest == false)
             {
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
-            #region 送台新查詢
+            #region 信用卡
             if (flag)
             {
-                TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-                PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
-                {
-                    ApiVer = ApiVer,
-                    ApposId = TaishinAPPOS,
-                    RequestParams = new GetCreditCardListRequestParamasData()
-                    {
-                        MemberId = IDNO,
-                    },
-                    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                    TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
-                };
-
-
-                //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
-                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
-                if (ds.Tables.Count > 0)
-                {
-                    apiOutput = new OAPI_CreditAndWalletQuery()
-                    {
-                        HasBind = (ds.Tables[0].Rows.Count == 0) ? 0 : 1,
-                        BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindList>()
-                    };
-                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-                    {
-                        Models.Param.Output.PartOfParam.CreditCardBindList obj = new Models.Param.Output.PartOfParam.CreditCardBindList()
-                        {
-                            AvailableAmount = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["AvailableAmount"].ToString()),
-                            BankNo = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["BankNo"].ToString()),
-                            CardName = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardName"].ToString()),
-                            CardNumber = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardNumber"].ToString()),
-                            CardToken = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardToken"].ToString())
-                        };
-                        apiOutput.BindListObj.Add(obj);
-                    }
-                }
-                ds.Dispose();
-
+                //TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
+                //PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
+                //{
+                //    ApiVer = ApiVer,
+                //    ApposId = TaishinAPPOS,
+                //    RequestParams = new GetCreditCardListRequestParamasData()
+                //    {
+                //        MemberId = IDNO,
+                //    },
+                //    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
+                //    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+                //    TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
+                //};
 
                 //WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
                 //flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
@@ -159,7 +134,32 @@ namespace WebAPI.Controllers
                 //        apiOutput.BindListObj.Add(obj);
                 //    }
                 //}
+
+                //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (ds.Tables.Count > 0)
+                {
+                    apiOutput = new OAPI_CreditAndWalletQuery()
+                    {
+                        HasBind = (ds.Tables[0].Rows.Count == 0) ? 0 : 1,
+                        BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindList>()
+                    };
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        Models.Param.Output.PartOfParam.CreditCardBindList obj = new Models.Param.Output.PartOfParam.CreditCardBindList()
+                        {
+                            AvailableAmount = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["AvailableAmount"].ToString()),
+                            BankNo = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["BankNo"].ToString()),
+                            CardName = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardName"].ToString()),
+                            CardNumber = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardNumber"].ToString()),
+                            CardToken = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardToken"].ToString())
+                        };
+                        apiOutput.BindListObj.Add(obj);
+                    }
+                }
+                ds.Dispose();
             }
+            #endregion
             #region 台新錢包
             // 錢包先點掉，防火牆不通，先不取資料
             //if (flag)
@@ -211,10 +211,38 @@ namespace WebAPI.Controllers
             //    }
             //}
             #endregion
+            #region 回傳結果
+            if (flag)
+            {
+                string SPName = "usp_CreditAndWalletQuery_Q01";
+                SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
+                {
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
+                };
+                SPOut_CreditAndWalletQuery spOut = new SPOut_CreditAndWalletQuery();
+                SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
+                if (flag)
+                {
+                    apiOutput.PayMode = spOut.PayMode;
+                    apiOutput.HasWallet = spOut.WalletStatus == "2" ? 1 : 0;
+                    apiOutput.TotalAmount = spOut.WalletAmout;
+                    apiOutput.MEMSENDCD = spOut.MEMSENDCD;
+                    apiOutput.UNIMNO = spOut.UNIMNO;
+                    apiOutput.CARRIERID = spOut.CARRIERID;
+                    apiOutput.NPOBAN = spOut.NPOBAN;
+                    apiOutput.AutoStored = spOut.AutoStored;
+                }
+            }
             #endregion
+            #endregion
+
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
