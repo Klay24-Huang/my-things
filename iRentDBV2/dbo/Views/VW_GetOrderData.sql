@@ -1,4 +1,14 @@
-﻿
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : VW_GetOrderData
+* 系    統 : IRENT
+* 程式功能 : 訂單資訊
+* 作    者 : 
+* 撰寫日期 : 
+* 修改日期 : 20211108 UPD BY AMBER REASON:新增所屬站點(StationID)欄位
+* Example  : 
+***********************************************************************************************/
 
 CREATE VIEW [dbo].[VW_GetOrderData]
 AS
@@ -56,6 +66,7 @@ AS
 		,Car.LastOrderNo
 		,Car.available AS IsReturnCar
 		,Car.NowOrderNo	--20201026 ADD BY ADAM
+		,Car.StationID  --20211108 ADD BY AMBER
 		,CarInfo.IsMotor --20201006 - eason
 		,CarInfo.WeekdayPrice --20201006 - eason
 		,CarInfo.HoildayPrice	--20201006 - eason  
@@ -84,6 +95,7 @@ AS
 		,ISNULL(CarStatus.Latitude,0) AS CarLatitude
 		,ISNULL(CarStatus.Longitude,0) AS CarLongitude
 		,ISNULL(CarStatus.Millage,0) As Millage
+		,ISNULL(CarStatus.deviceRSOC,0) AS deviceRSOC	--20210523 ADD BY ADAM REASON.增加儀表板電量
 		,Station.Content AS [Content]
 		,Station.Latitude
 		,Station.Longitude
@@ -104,229 +116,6 @@ AS
 	LEFT JOIN [dbo].[TB_PriceByMinutes] AS PriceByMinutes WITH(NOLOCK) ON PriceByMinutes.CarType=Car.CarType AND PriceByMinutes.ProjID=VW.PROJID
 	LEFT JOIN [dbo].[TB_CarStatus] AS CarStatus WITH(NOLOCK) ON CarStatus.CarNo=OrderMain.CarNo AND CarInfo.CID=CarStatus.CID		--20201127 ADD BY ADAM REASON.過濾多的CID
 	LEFT JOIN [dbo].[TB_iRentStation] AS Station WITH(NOLOCK) ON Station.StationID=OrderMain.lend_place
-GO
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
 
 
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'訂單資訊', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
 
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_DiagramPaneCount', @value = 2, @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_DiagramPane2', @value = N'0
-            TopColumn = 0
-         End
-         Begin Table = "CarStatus"
-            Begin Extent = 
-               Top = 666
-               Left = 38
-               Bottom = 796
-               Right = 247
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-         Begin Table = "Station"
-            Begin Extent = 
-               Top = 798
-               Left = 38
-               Bottom = 928
-               Right = 227
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-      End
-   End
-   Begin SQLPane = 
-   End
-   Begin DataPane = 
-      Begin ParameterDefaults = ""
-      End
-      Begin ColumnWidths = 9
-         Width = 284
-         Width = 1500
-         Width = 1500
-         Width = 1500
-         Width = 1500
-         Width = 1500
-         Width = 1500
-         Width = 1500
-         Width = 1500
-      End
-   End
-   Begin CriteriaPane = 
-      Begin ColumnWidths = 11
-         Column = 1440
-         Alias = 900
-         Table = 1170
-         Output = 720
-         Append = 1400
-         NewValue = 1170
-         SortType = 1350
-         SortOrder = 1410
-         GroupBy = 1350
-         Filter = 1350
-         Or = 1350
-         Or = 1350
-         Or = 1350
-      End
-   End
-End
-', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_DiagramPane1', @value = N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
-Begin DesignProperties = 
-   Begin PaneConfigurations = 
-      Begin PaneConfiguration = 0
-         NumPanes = 4
-         Configuration = "(H (1[22] 4[22] 2[37] 3) )"
-      End
-      Begin PaneConfiguration = 1
-         NumPanes = 3
-         Configuration = "(H (1 [50] 4 [25] 3))"
-      End
-      Begin PaneConfiguration = 2
-         NumPanes = 3
-         Configuration = "(H (1 [50] 2 [25] 3))"
-      End
-      Begin PaneConfiguration = 3
-         NumPanes = 3
-         Configuration = "(H (4 [30] 2 [40] 3))"
-      End
-      Begin PaneConfiguration = 4
-         NumPanes = 2
-         Configuration = "(H (1 [56] 3))"
-      End
-      Begin PaneConfiguration = 5
-         NumPanes = 2
-         Configuration = "(H (2 [66] 3))"
-      End
-      Begin PaneConfiguration = 6
-         NumPanes = 2
-         Configuration = "(H (4 [50] 3))"
-      End
-      Begin PaneConfiguration = 7
-         NumPanes = 1
-         Configuration = "(V (3))"
-      End
-      Begin PaneConfiguration = 8
-         NumPanes = 3
-         Configuration = "(H (1[56] 4[18] 2) )"
-      End
-      Begin PaneConfiguration = 9
-         NumPanes = 2
-         Configuration = "(H (1 [75] 4))"
-      End
-      Begin PaneConfiguration = 10
-         NumPanes = 2
-         Configuration = "(H (1[66] 2) )"
-      End
-      Begin PaneConfiguration = 11
-         NumPanes = 2
-         Configuration = "(H (4 [60] 2))"
-      End
-      Begin PaneConfiguration = 12
-         NumPanes = 1
-         Configuration = "(H (1) )"
-      End
-      Begin PaneConfiguration = 13
-         NumPanes = 1
-         Configuration = "(V (4))"
-      End
-      Begin PaneConfiguration = 14
-         NumPanes = 1
-         Configuration = "(V (2))"
-      End
-      ActivePaneConfig = 0
-   End
-   Begin DiagramPane = 
-      Begin Origin = 
-         Top = 0
-         Left = 0
-      End
-      Begin Tables = 
-         Begin Table = "OrderMain"
-            Begin Extent = 
-               Top = 6
-               Left = 38
-               Bottom = 136
-               Right = 238
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-         Begin Table = "OrderDetil"
-            Begin Extent = 
-               Top = 138
-               Left = 38
-               Bottom = 268
-               Right = 260
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-         Begin Table = "Car"
-            Begin Extent = 
-               Top = 6
-               Left = 276
-               Bottom = 136
-               Right = 443
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-         Begin Table = "CarInfo"
-            Begin Extent = 
-               Top = 270
-               Left = 38
-               Bottom = 400
-               Right = 265
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-         Begin Table = "Operator"
-            Begin Extent = 
-               Top = 402
-               Left = 38
-               Bottom = 532
-               Right = 225
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-         Begin Table = "VW"
-            Begin Extent = 
-               Top = 402
-               Left = 263
-               Bottom = 532
-               Right = 466
-            End
-            DisplayFlags = 280
-            TopColumn = 0
-         End
-         Begin Table = "PriceByMinutes"
-            Begin Extent = 
-               Top = 534
-               Left = 38
-               Bottom = 664
-               Right = 247
-            End
-            DisplayFlags = 28', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'VW_GetOrderData';

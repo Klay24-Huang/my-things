@@ -41,7 +41,7 @@ namespace Domain.SP.BE.Input
         public int Insurance_price { set; get; } = 0;
 
         /// <summary>
-        ///  罰金
+        /// 逾時費用
         /// </summary>
         public int fine_price { set; get; } = 0;
 
@@ -69,5 +69,15 @@ namespace Domain.SP.BE.Input
         /// 還車里程
         /// </summary>
         public int EndMile { get; set; }
+
+        /// <summary>
+        /// 差額
+        /// </summary>
+        public int DiffAmount { get; set; }
+
+        /// <summary>
+        /// API名稱
+        /// </summary>
+        public string APIName { get; set; }
     }
 }

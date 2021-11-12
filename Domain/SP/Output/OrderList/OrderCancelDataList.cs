@@ -107,6 +107,6 @@ namespace Domain.SP.Output.OrderList
         /// <summary>
         /// 訂單取消原因
         /// </summary>
-        public int cancel_status { get; set; }
+        public string cancel_status { get; set; }
     }
 }

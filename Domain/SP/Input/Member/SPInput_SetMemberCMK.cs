@@ -20,6 +20,11 @@ namespace Domain.SP.Input.Member
         public string Version { get; set; }
 
         /// <summary>
+        /// 流水號
+        /// </summary>
+        public int SeqNo { get; set; }
+
+        /// <summary>
         /// 同意來源管道
         /// <para>I:IRENT</para>
         /// <para>W:官網</para>

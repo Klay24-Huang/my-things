@@ -116,8 +116,8 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public int Bill { set; get; }
         /// <summary>
-        /// 訂單取消原因
+        /// 取消訂單原因
         /// </summary>
-        public int cancel_status { get; set; }
+        public string cancel_status { get; set; }
     }
 }
