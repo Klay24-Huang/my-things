@@ -18,6 +18,7 @@ using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
+using WebAPI.Models.Enum;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -319,7 +320,7 @@ namespace WebAPI.Controllers
                         flag = SQLInsMotorBattLogHelp.ExecuteSPNonQuery(SPInsMotorBattLogName, SPInsMotorBattLogInput, ref SPInsMotorBattLogOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPInsMotorBattLogOutput, ref lstError, ref errCode);
                     }
-                    #endregion
+                    
                     #region 設定租約
                     if (flag)
                     {
