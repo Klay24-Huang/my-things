@@ -19,5 +19,6 @@ namespace Domain.TB.BackEnd
         public string Longitude { get; set; }
         public string CarOfArea { get; set; }
         public string Memo { get; set; }
+        public float Millage { get; set; }
     }
 }
