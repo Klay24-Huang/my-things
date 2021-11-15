@@ -1,5 +1,6 @@
 ﻿using Domain.SP.Input.OtherService.Common;
 using Domain.WebAPI.Input.Hotai.Member;
+using Domain.WebAPI.Input.Hotai.Member.Param;
 using Domain.WebAPI.output.Hotai.Member;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -71,15 +72,29 @@ namespace OtherService
         public bool DoSendSmsOtp(WebAPIInput_SendSmsOtp input, ref WebAPIOutput_SendSmsOtp output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = SendSmsOtpURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_SendSmsOtp>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.otpCode = wsOut.otpCode;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -94,15 +109,30 @@ namespace OtherService
         public bool DoSmsOtpValidation(WebAPIInput_SmsOtpValidation input, ref WebAPIOutput_OtpValidation output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = SmsOtpValidationURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_OtpValidation>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.otpId = wsOut.otpId;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -117,17 +147,31 @@ namespace OtherService
         public bool DoRefreshToken(WebAPIInput_RefreshToken input, ref WebAPIOutput_Token output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = RefreshTokenURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Token>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.access_token = wsOut.access_token;
                 output.refresh_token = wsOut.refresh_token;
                 output.token_type = wsOut.token_type;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -143,15 +187,29 @@ namespace OtherService
         public bool DoSendEmailOtp(string token, WebAPIInput_SendEmailOtp input, ref WebAPIOutput_SendSmsOtp output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = SendEmailOtpURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_SendSmsOtp>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.otpCode = wsOut.otpCode;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -167,15 +225,29 @@ namespace OtherService
         public bool DoEmailOtpValidatation(string token, WebAPIInput_EmailOtpValidatation input, ref WebAPIOutput_OtpValidation output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = EmailOtpValidatationURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_OtpValidation>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.otpId = wsOut.otpId;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -190,14 +262,27 @@ namespace OtherService
         public bool DoCheckToken(string token, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string apiUrl = CheckTokenURL;
             string action = "GET";
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody("", apiUrl, action);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            string apiUrl = CheckTokenURL;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = token,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody("", apiUrl, action),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -212,11 +297,21 @@ namespace OtherService
         public bool DoGetEmail(WebAPIInput_GetEmail input, ref WebAPIOutput_GetEmail output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = GetEmailURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_GetEmail>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetEmail>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.email = wsOut.email;
@@ -239,11 +334,21 @@ namespace OtherService
         public bool DoOtpValidatation(WebAPIInput_OtpValidatation input, ref WebAPIOutput_OtpValidation output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = OtpValidatationURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_OtpValidation>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.otpId = wsOut.otpId;
@@ -267,11 +372,21 @@ namespace OtherService
         public bool DoSignOut(string token, WebAPIInput_SignOut input, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = SignOutURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
@@ -293,11 +408,21 @@ namespace OtherService
         public bool DoSignin(WebAPIInput_Signin input, ref WebAPIOutput_Signin output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = SigninURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Signin>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Signin>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.isCheckEmail = wsOut.isCheckEmail;
@@ -323,16 +448,30 @@ namespace OtherService
         public bool DoCheckSignup(WebAPIInput_CheckSignup input, ref WebAPIOutput_CheckSignup output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = CheckSignupURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_CheckSignup>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_CheckSignup>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.isSignup = wsOut.isSignup;
                 output.status = wsOut.status;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -346,17 +485,31 @@ namespace OtherService
         public bool DoSignup(WebAPIInput_Signup input, ref WebAPIOutput_Token output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = SignupURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Token>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.access_token = wsOut.access_token;
                 output.refresh_token = wsOut.refresh_token;
                 output.token_type = wsOut.token_type;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -371,14 +524,28 @@ namespace OtherService
         public bool DoSignupProfile(string token, WebAPIInput_SignupProfile input, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = SignupProfileURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -392,14 +559,28 @@ namespace OtherService
         public bool DoResetPassword(WebAPIInput_ResetPassword input, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = ResetPasswordURL;
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -413,11 +594,20 @@ namespace OtherService
         public bool DoIsMissingMemberProfile(string token, ref WebAPIOutput_IsMissingMemberProfile output)
         {
             bool flag = false;
-            string apiUrl = IsMissingMemberProfileURL;
             string action = "GET";
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody("", apiUrl, action);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_IsMissingMemberProfile>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            string apiUrl = IsMissingMemberProfileURL;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = token,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody("", apiUrl, action),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_IsMissingMemberProfile>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.isMissing = wsOut.isMissing;
@@ -428,6 +618,10 @@ namespace OtherService
                 output.missingEmail = wsOut.missingEmail;
                 output.missingSex = wsOut.missingSex;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -441,11 +635,20 @@ namespace OtherService
         public bool DoGetMemberProfile(string token, ref WebAPIOutput_GetMemberProfile output)
         {
             bool flag = false;
-            string apiUrl = GetMemberProfileURL;
             string action = "GET";
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody("", apiUrl, action);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_GetMemberProfile>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            string apiUrl = GetMemberProfileURL;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = token,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody("", apiUrl, action),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetMemberProfile>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.name = wsOut.name;
@@ -457,6 +660,10 @@ namespace OtherService
                 output.township = wsOut.township;
                 output.address = wsOut.address;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -471,14 +678,28 @@ namespace OtherService
         public bool DoUpdateMemberProfile(string token, WebAPIInput_UpdateMemberProfile input, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = UpdateMemberProfileURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -493,14 +714,28 @@ namespace OtherService
         public bool DoConfirmPassword(string token, WebAPIInput_ConfirmPassword input, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = ConfirmPasswordURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -515,14 +750,28 @@ namespace OtherService
         public bool DoUpdateAccount(string token, WebAPIInput_UpdateAccount input, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = UpdateAccountURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -537,14 +786,28 @@ namespace OtherService
         public bool DoUpdatePassword(string token, WebAPIInput_UpdatePassword input, ref WebAPIOutput_Base output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = UpdatePasswordURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_Base>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -560,9 +823,18 @@ namespace OtherService
             bool flag = false;
             string action = "GET";
             string apiUrl = CheckBenefitsAndPrivacyVersionURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody("", apiUrl, action);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_BenefitsAndPrivacyVersion>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = token,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody("", apiUrl, action),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.memberBenefitsVersion = wsOut.memberBenefitsVersion;
@@ -570,6 +842,10 @@ namespace OtherService
                 output.privacyPolicyVersion = wsOut.privacyPolicyVersion;
                 output.privacyPolicy = wsOut.privacyPolicy;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -584,11 +860,21 @@ namespace OtherService
         public bool DoUpdateBenefitsAndPrivacyVersion(string token, WebAPIInput_UpdateBenefitsAndPrivacyVersion input, ref WebAPIOutput_BenefitsAndPrivacyVersion output)
         {
             bool flag = false;
-            string encryptString = EncryptAESHandle(JsonConvert.SerializeObject(input));
+            string json = JsonConvert.SerializeObject(input);
+            string encryptString = EncryptAESHandle(json);
             string apiUrl = UpdateBenefitsAndPrivacyVersionURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody(encryptString, apiUrl);
-            var wsOut = DoHotaiMemeberApiSend<WebAPIInput_UpdateBenefitsAndPrivacyVersion, WebAPIOutput_BenefitsAndPrivacyVersion>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = json,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody(encryptString, apiUrl),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.memberBenefitsVersion = wsOut.memberBenefitsVersion;
@@ -596,6 +882,10 @@ namespace OtherService
                 output.privacyPolicyVersion = wsOut.privacyPolicyVersion;
                 output.privacyPolicy = wsOut.privacyPolicy;
                 flag = true;
+            }
+            else
+            {
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -611,113 +901,27 @@ namespace OtherService
             bool flag = false;
             string action = "GET";
             string apiUrl = GetPrivacyURL;
-            HttpWebRequest request = CreateRequestHeader(token);
-            RequestBody requestBody = CreateRequestBody("", apiUrl, action);
-            var wsOut = DoHotaiMemeberApiSend<string, WebAPIOutput_GetPrivacy>(request, requestBody, apiUrl, MethodBase.GetCurrentMethod().Name).Result;
+            ApiRequestParam apiRequest = new ApiRequestParam()
+            {
+                BaseUrl = HotaiMemberFrontEndURL,
+                ApiUrl = apiUrl,
+                DoDecrypt = true,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = token,
+                Request = CreateRequestHeader(token),
+                Body = CreateRequestBody("", apiUrl, action),
+            };
+
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetPrivacy>(apiRequest).Result;
             if (wsOut.RtnCode == "1000")
             {
                 output.memberBenefits = wsOut.memberBenefits;
                 output.privacyPolicy = wsOut.privacyPolicy;
                 flag = true;
             }
-            return flag;
-        }
-
-        /// <summary>
-        /// 集團服務
-        /// </summary>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public bool DoGroupApps(string device, ref WebAPIOutput_GroupApps output)
-        {
-            bool flag = false;
-            string action = "GET";
-            string funName = MethodBase.GetCurrentMethod().Name;
-            string apiUrl = $"{GroupAppsURL}/deviceOS?{device}";
-            HttpWebRequest request = CreateRequestHeader();
-            RequestBody requestBody = CreateRequestBody("", apiUrl, action);
-            DateTime MKTime = DateTime.Now;
-            DateTime RTime = MKTime;
-
-            try
+            else
             {
-                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                try
-                {
-                    string postBody = JsonConvert.SerializeObject(requestBody);//將匿名物件序列化為json字串
-                    byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
-
-                    using (Stream reqStream = request.GetRequestStream())
-                    {
-                        reqStream.Write(byteArray, 0, byteArray.Length);
-                    }
-
-                    string responseStr = "";
-                    using (WebResponse response = request.GetResponse())
-                    {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                        {
-                            responseStr = reader.ReadToEnd();
-                            RTime = DateTime.Now;
-                            if (!string.IsNullOrWhiteSpace(responseStr))
-                            {
-                                var json = DecryptAESHandle(responseStr);
-                                logger.Trace($"{funName} json: " + json);
-                                IEnumerable<GroupApps> result = JsonConvert.DeserializeObject<IEnumerable<GroupApps>>(json);
-                                output.groupApps = (List<GroupApps>)result;
-                            }
-                            output.RtnCode = "1000";
-                        }
-                    }
-                    flag = output.RtnCode == "1000" ? true : false;
-                }
-                catch (WebException ex)
-                {
-                    WebResponse webResponse = (WebResponse)ex.Response;
-                    var info = new ErrorInfo();
-                    if (webResponse != null)
-                    {
-                        using (StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
-                        {
-                            string responseStr = reader.ReadToEnd();
-                            if (!string.IsNullOrWhiteSpace(responseStr))
-                            {
-                                var json = DecryptAESHandle(responseStr);
-                                var result = JsonConvert.DeserializeObject<WebAPIOutput_Base>(json);
-                                logger.Trace($"{funName} json: " + json);
-                                info.ErrorCode = result.errors.First().Key.ToString();
-                                info.ErrorMsg = string.Join(",", (((JArray)result.errors.First().Value).Select(x => (string)x).ToList()));
-                            }
-                        }
-                    }
-                    webResponse.Close();
-                    RTime = DateTime.Now;
-                    output.RtnCode = info.ErrorCode;
-                    output.RtnMessage = info.ErrorMsg;
-                    logger.Trace($"{funName} Exception: " + ex.Message);
-                }
-            }
-            catch (Exception e)
-            {
-                output.RtnCode = "9999";
-                output.RtnMessage = e.Message;
-            }
-
-            finally
-            {
-                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
-                {
-                    MKTime = MKTime,
-                    UPDTime = RTime,
-                    WebAPIInput = "",
-                    WebAPIName = funName,
-                    WebAPIOutput = JsonConvert.SerializeObject(output),
-                    WebAPIURL = apiUrl
-                };
-                flag = true;
-                string errCode = "";
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -734,78 +938,35 @@ namespace OtherService
             string apiUrl = $"{GetMobilePhoneToOneIDURL}/{mobilePhone}";
             string URL = HotaiMemberBackEndURL + apiUrl;
             string funName = MethodBase.GetCurrentMethod().Name;
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
             request.Method = "GET";
             request.Headers.Add("APP_ID", HotaiAppId);
             request.Headers.Add("APPKEY", HotaiAppKey);
-            DateTime MKTime = DateTime.Now;
-            DateTime RTime = MKTime;
-            try
+            request.ContentType = "application/json";
+
+            ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                try
-                {
-                    #region 發出Request
-                    using (WebResponse response = request.GetResponse())
-                    {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                        {
-                            string responseStr = "";
-                            responseStr = reader.ReadToEnd();
-                            RTime = DateTime.Now;
-                            output = JsonConvert.DeserializeObject<WebAPIOutput_GetMobilePhoneToOneID>(responseStr);
-                            output.RtnCode = "1000";
-                        }
-                    }
-                    #endregion
-                }
-                catch (WebException ex)
-                {
-                    WebResponse webResponse = (WebResponse)ex.Response;
-                    var info = new ErrorInfo();
-                    if (webResponse != null)
-                    {
-                        using (StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
-                        {
-                            string responseStr = reader.ReadToEnd();
-                            if (!string.IsNullOrWhiteSpace(responseStr))
-                            {
-                                output = JsonConvert.DeserializeObject<WebAPIOutput_GetMobilePhoneToOneID>(responseStr);
-                                //logger.Trace($"{funName} json: " + json);
-                                info.ErrorCode = output.errors.First().Key.ToString();
-                                info.ErrorMsg = string.Join(",", (((JArray)output.errors.First().Value).Select(x => (string)x).ToList()));
-                            }
-                        }
-                    }
-                    webResponse.Close();
+                BaseUrl = HotaiMemberBackEndURL,
+                ApiUrl = $"{GetMobilePhoneToOneIDURL}/{mobilePhone}",
+                DoDecrypt = false,
+                FunName = MethodBase.GetCurrentMethod().Name,
+                JsonString = mobilePhone,
+                Request = request,
+                Body = null,
+                SendRequest = false
+            };
 
-                    RTime = DateTime.Now;
-                    output.RtnCode = info.ErrorCode;
-                    output.RtnMessage = info.ErrorMsg;
-                }
+            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetMobilePhoneToOneID>(apiRequest).Result;
 
-                flag = output.RtnCode == "1000" ? true : false;
+            if (wsOut.RtnCode == "1000")
+            {
+                output.memberSeq = wsOut.memberSeq;
+                flag = true;
             }
-            catch (Exception e)
+            else
             {
-                output.RtnCode = "9999";
-                output.RtnMessage = e.Message;
-            }
-            finally
-            {
-                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
-                {
-                    MKTime = MKTime,
-                    UPDTime = RTime,
-                    WebAPIInput = JsonConvert.SerializeObject(mobilePhone),
-                    WebAPIName = funName,
-                    WebAPIOutput = JsonConvert.SerializeObject(output),
-                    WebAPIURL = URL
-                };
-
-                string errCode = "";
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+                output.RtnMessage = wsOut.RtnMessage;
             }
 
             return flag;
@@ -821,60 +982,43 @@ namespace OtherService
         /// <param name="apiUrl"></param>
         /// <param name="funName"></param>
         /// <returns></returns>               
-        private async Task<TResponse> DoHotaiMemeberApiSend<String, TResponse>(HttpWebRequest request, RequestBody requestBody, string apiUrl, string funName) where TResponse : WebAPIOutput_Base
+        private async Task<TResponse> DoHotaiMemeberApiSend<TResponse>(ApiRequestParam apiRequest) where TResponse : WebAPIOutput_Base
         {
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-            string URL = HotaiMemberBackEndURL + apiUrl;
+            string URL = apiRequest.BaseUrl + apiRequest.ApiUrl;
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
-            var postBody = JsonConvert.SerializeObject(requestBody);
+            var postBody = JsonConvert.SerializeObject(apiRequest.Body);
             var output = Activator.CreateInstance<TResponse>();
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 try
                 {
-                    byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
-                    using (Stream reqStream = request.GetRequestStream())
+                    if (apiRequest.SendRequest)
                     {
-                        reqStream.Write(byteArray, 0, byteArray.Length);
+                        byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+                        using (Stream reqStream = apiRequest.Request.GetRequestStream())
+                        {
+                            reqStream.Write(byteArray, 0, byteArray.Length);
+                        }
                     }
 
                     #region 發出Request
-                    HttpWebResponse myHttpWebResponse = (HttpWebResponse)request.GetResponse();
-                    if (myHttpWebResponse.StatusCode== HttpStatusCode.OK)
+                    using (WebResponse response = apiRequest.Request.GetResponse())
                     {
-                        using (WebResponse response = request.GetResponse())
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                         {
-                            using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                            string responseStr = "";
+                            responseStr = reader.ReadToEnd();
+                            RTime = DateTime.Now;
+                            if (!string.IsNullOrWhiteSpace(responseStr))
                             {
-                                string responseStr = "";
-                                responseStr = reader.ReadToEnd();
-                                RTime = DateTime.Now;
-                                if (!string.IsNullOrWhiteSpace(responseStr))
-                                {
-                                    var json = DecryptAESHandle(responseStr);
-                                    logger.Trace($"{funName} json: " + json);
-                                    output = JsonConvert.DeserializeObject<TResponse>(json);
-                                }
-                                output.RtnCode = "1000";
+                                var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
+                                output = JsonConvert.DeserializeObject<TResponse>(json);
                             }
+                            output.RtnCode = "1000";
                         }
-                    }
-                    else
-                    {
-                        //using (StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
-                        //{
-                        //    string responseStr = reader.ReadToEnd();
-                        //    if (!string.IsNullOrWhiteSpace(responseStr))
-                        //    {
-                        //        var json = DecryptAESHandle(responseStr);
-                        //        output = JsonConvert.DeserializeObject<TResponse>(json);
-                        //        logger.Trace($"{funName} json: " + json);
-                        //        info.ErrorCode = output.errors.First().Key.ToString();
-                        //        info.ErrorMsg = string.Join(",", (((JArray)output.errors.First().Value).Select(x => (string)x).ToList()));
-                        //    }
-                        //}
                     }
                     #endregion
 
@@ -890,13 +1034,15 @@ namespace OtherService
                             string responseStr = reader.ReadToEnd();
                             if (!string.IsNullOrWhiteSpace(responseStr))
                             {
-                                var json = DecryptAESHandle(responseStr);
+                                var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
                                 output = JsonConvert.DeserializeObject<TResponse>(json);
-                                logger.Trace($"{funName} json: " + json);
                                 info.ErrorCode = output.errors.First().Key.ToString();
                                 info.ErrorMsg = string.Join(",", (((JArray)output.errors.First().Value).Select(x => (string)x).ToList()));
                             }
                         }
+
+                        output.RtnCode = info.ErrorCode;
+                        output.RtnMessage = info.ErrorMsg;
                     }
                     webResponse.Close();
                 }
@@ -906,7 +1052,6 @@ namespace OtherService
             {
                 output.RtnCode = "9999";
                 output.RtnMessage = e.Message;
-                //logger.Trace($"{funName} Exception: " + ex.Message);
             }
             finally
             {
@@ -914,8 +1059,8 @@ namespace OtherService
                 {
                     MKTime = MKTime,
                     UPDTime = RTime,
-                    WebAPIInput = JsonConvert.SerializeObject(postBody),
-                    WebAPIName = funName,
+                    WebAPIInput = JsonConvert.SerializeObject(apiRequest.JsonString),
+                    WebAPIName = apiRequest.FunName,
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = URL
                 };
@@ -969,12 +1114,5 @@ namespace OtherService
             return encrypt;
         }
 
-        public class RequestBody
-        {
-            public string Body { get; set; }
-            public string Method { get; set; }
-            public string Route { get; set; }
-
-        }
     }
 }

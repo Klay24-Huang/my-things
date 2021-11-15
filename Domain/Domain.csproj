@@ -635,6 +635,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR380Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_TransIRentMemCMK.cs" />
+    <Compile Include="WebAPI\Input\Hotai\Member\Param\ApiRequestParam.cs" />
     <Compile Include="WebAPI\Input\Mochi\WebAPIInput_MochiLogin.cs" />
     <Compile Include="WebAPI\Input\Param\BLECode.cs" />
     <Compile Include="WebAPI\Input\Param\ClientCardNoObj.cs" />
