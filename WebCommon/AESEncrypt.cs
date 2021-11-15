@@ -133,14 +133,14 @@ namespace WebCommon
         /// <param name="key">因為是256 所以你密碼必須為32英文字=32*8=256</param>
         /// <param name="iv">IV為128 所以為 16 * 8= 128</param>
         /// <returns></returns>
-        public static string EncryptAES128(string source, string key, string iv)
+        public static string EncryptAES128(string source, string key, string iv, CipherMode cipherMode = CipherMode.ECB, PaddingMode paddingMode = PaddingMode.PKCS7)
         {
             byte[] sourceBytes = Encoding.UTF8.GetBytes(source);
             var aes = new RijndaelManaged();
             aes.Key = Encoding.UTF8.GetBytes(key);
             aes.IV = Encoding.UTF8.GetBytes(iv);
-            aes.Mode = CipherMode.ECB;
-            aes.Padding = PaddingMode.PKCS7;
+            aes.Mode = cipherMode;
+            aes.Padding = paddingMode;
 
             ICryptoTransform transform = aes.CreateEncryptor();
 
@@ -155,14 +155,14 @@ namespace WebCommon
         /// <param name="key">因為是256 所以你密碼必須為32英文字=32*8=256</param>
         /// <param name="iv">IV為128 所以為 16 * 8= 128</param>
         /// <returns></returns>
-        public static string DecryptAES128(string encryptData, string key, string iv)
+        public static string DecryptAES128(string encryptData, string key, string iv, CipherMode cipherMode = CipherMode.ECB, PaddingMode paddingMode = PaddingMode.PKCS7)
         {
             var encryptBytes = Convert.FromBase64String(encryptData);
             var aes = new RijndaelManaged();
             aes.Key = Encoding.UTF8.GetBytes(key);
             aes.IV = Encoding.UTF8.GetBytes(iv);
-            aes.Mode = CipherMode.ECB;
-            aes.Padding = PaddingMode.PKCS7;
+            aes.Mode = cipherMode;
+            aes.Padding = paddingMode;
             ICryptoTransform transform = aes.CreateDecryptor();
 
             return Encoding.UTF8.GetString(transform.TransformFinalBlock(encryptBytes, 0, encryptBytes.Length));
