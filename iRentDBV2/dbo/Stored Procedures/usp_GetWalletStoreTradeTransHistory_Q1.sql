@@ -1,12 +1,4 @@
-﻿/****** Object:  StoredProcedure [dbo].[usp_GetWalletStoreTradeTransHistory_Q1]    Script Date: 2021/9/28 上午 10:28:39 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-
-/***********************************************************************************************
+﻿/***********************************************************************************************
 * Serve    : sqyhi03az.database.windows.net
 * Database : IRENT_V2
 * 程式名稱 : usp_GetWalletStoreTradeTransHistory_Q1
@@ -164,5 +156,3 @@ BEGIN
 
 END
 GO
-
-
