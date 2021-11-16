@@ -336,4 +336,31 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string CardToken { set; get; }
     }
+
+    /// <summary>
+    /// 春節訂金
+    /// </summary>
+    public class OrderAuthNYList
+    {
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public int order_number { set; get; }
+        /// <summary>
+        /// 授權金額
+        /// </summary>
+        public int final_price { set; get; }
+        /// <summary>
+        /// 會員編號
+        /// </summary>
+        public string IDNO { set; get; }
+        /// <summary>
+        /// CardToken
+        /// </summary>
+        public string CardToken { set; get; }
+        /// <summary>
+        /// 台新訂單編號
+        /// </summary>
+        public string transaction_no { set; get; }
+    }
 }
