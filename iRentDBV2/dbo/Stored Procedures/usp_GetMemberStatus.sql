@@ -21,6 +21,7 @@
 			 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
 			 20210917 ADD BY ADAM REASON.是否有推播判斷
 			 20211105 UPD BY YEH REASON:增加預授權條款狀態
+			 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
 * Example  : 
 ***********************************************************************************************/
 
@@ -241,12 +242,14 @@ BEGIN TRY
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
 										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
 				,AuthStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Auth' AND Version=E.Version),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態
+				,BindHotai			= ISNULL((IIF(F.OneID <> '', 'Y', 'N')), 'N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
 			LEFT JOIN TB_MemberScoreMain D WITH(NOLOCK) ON D.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_MemberCMK E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_NoticeRLog R WITH(NOLOCK) ON R.IDNO=A.MEMIDNO
+			LEFT JOIN TB_MemberHotai F WITH(NOLOCK) ON F.IDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO;
 		END
 		ELSE
@@ -368,6 +371,7 @@ BEGIN TRY
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
 										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
 				,AuthStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Auth' AND Version=F.Version),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態
+				,BindHotai			= ISNULL((IIF(G.OneID <> '', 'Y', 'N')), 'N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
@@ -375,6 +379,7 @@ BEGIN TRY
 			LEFT JOIN TB_MemberDataOfAutdit E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_MemberCMK F WITH(NOLOCK) ON F.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_NoticeRLog R WITH(NOLOCK) ON R.IDNO=A.MEMIDNO
+			LEFT JOIN TB_MemberHotai G WITH(NOLOCK) ON G.IDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO;
 		END
 
@@ -408,4 +413,3 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberStatus';
-GO
