@@ -86,15 +86,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.otpCode = wsOut.otpCode;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -124,15 +119,10 @@ namespace OtherService
             };
 
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.otpId = wsOut.otpId;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -161,17 +151,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.access_token = wsOut.access_token;
-                output.refresh_token = wsOut.refresh_token;
-                output.token_type = wsOut.token_type;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -201,15 +184,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.otpCode = wsOut.otpCode;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -239,15 +217,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.otpId = wsOut.otpId;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -275,14 +248,10 @@ namespace OtherService
                 Body = CreateRequestBody("", apiUrl, action),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -311,15 +280,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetEmail>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_GetEmail>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.email = wsOut.email;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -348,15 +312,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.otpId = wsOut.otpId;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -386,14 +345,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
 
@@ -422,19 +377,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Signin>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Signin>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.isCheckEmail = wsOut.isCheckEmail;
-                output.memberState = wsOut.memberState;
-                output.access_token = wsOut.access_token;
-                output.refresh_token = wsOut.refresh_token;
-                output.token_type = wsOut.token_type;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -462,17 +408,12 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_CheckSignup>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_CheckSignup>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.isSignup = wsOut.isSignup;
-                output.status = wsOut.status;
                 flag = true;
             }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
-            }
+
             return flag;
         }
 
@@ -499,17 +440,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.access_token = wsOut.access_token;
-                output.refresh_token = wsOut.refresh_token;
-                output.token_type = wsOut.token_type;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -538,14 +472,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -573,14 +503,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -607,22 +533,11 @@ namespace OtherService
                 Body = CreateRequestBody("", apiUrl, action),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_IsMissingMemberProfile>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_IsMissingMemberProfile>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.isMissing = wsOut.isMissing;
-                output.memberState = wsOut.memberState;
-                output.missingBirthday = wsOut.missingBirthday;
-                output.missingId = wsOut.missingId;
-                output.missingName = wsOut.missingName;
-                output.missingEmail = wsOut.missingEmail;
-                output.missingSex = wsOut.missingSex;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
-            }
+            }        
             return flag;
         }
 
@@ -648,22 +563,10 @@ namespace OtherService
                 Body = CreateRequestBody("", apiUrl, action),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetMemberProfile>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
-            {
-                output.name = wsOut.name;
-                output.email = wsOut.email;
-                output.birthday = wsOut.birthday;
-                output.sex = wsOut.sex;
-                output.id = wsOut.id;
-                output.county = wsOut.county;
-                output.township = wsOut.township;
-                output.address = wsOut.address;
+            output = DoHotaiMemeberApiSend<WebAPIOutput_GetMemberProfile>(apiRequest).Result;
+            if (output.RtnCode == "1000")
+            {         
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -692,14 +595,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -728,14 +627,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -764,14 +659,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -800,14 +691,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -834,18 +721,10 @@ namespace OtherService
                 Body = CreateRequestBody("", apiUrl, action),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.memberBenefitsVersion = wsOut.memberBenefitsVersion;
-                output.memberBenefits = wsOut.memberBenefits;
-                output.privacyPolicyVersion = wsOut.privacyPolicyVersion;
-                output.privacyPolicy = wsOut.privacyPolicy;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -874,18 +753,10 @@ namespace OtherService
                 Body = CreateRequestBody(encryptString, apiUrl),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.memberBenefitsVersion = wsOut.memberBenefitsVersion;
-                output.memberBenefits = wsOut.memberBenefits;
-                output.privacyPolicyVersion = wsOut.privacyPolicyVersion;
-                output.privacyPolicy = wsOut.privacyPolicy;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -912,16 +783,10 @@ namespace OtherService
                 Body = CreateRequestBody("", apiUrl, action),
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetPrivacy>(apiRequest).Result;
-            if (wsOut.RtnCode == "1000")
+            output = DoHotaiMemeberApiSend<WebAPIOutput_GetPrivacy>(apiRequest).Result;
+            if (output.RtnCode == "1000")
             {
-                output.memberBenefits = wsOut.memberBenefits;
-                output.privacyPolicy = wsOut.privacyPolicy;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
             return flag;
         }
@@ -957,16 +822,11 @@ namespace OtherService
                 SendRequest = false
             };
 
-            var wsOut = DoHotaiMemeberApiSend<WebAPIOutput_GetMobilePhoneToOneID>(apiRequest).Result;
+            output = DoHotaiMemeberApiSend<WebAPIOutput_GetMobilePhoneToOneID>(apiRequest).Result;
 
-            if (wsOut.RtnCode == "1000")
+            if (output.RtnCode == "1000")
             {
-                output.memberSeq = wsOut.memberSeq;
                 flag = true;
-            }
-            else
-            {
-                output.RtnMessage = wsOut.RtnMessage;
             }
 
             return flag;

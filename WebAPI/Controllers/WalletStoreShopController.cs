@@ -61,8 +61,6 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreShopController";
-            int apiId = 222;
-
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
@@ -287,11 +285,7 @@ namespace WebAPI.Controllers
                     errMsg = "超商條碼產生失敗，請洽系統管理員";
                 }
                 #endregion
-
-                trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                carRepo.AddTraceLog(apiId, funName, trace, flag);
                 #endregion
-
             }
             catch (Exception ex)
             {
@@ -299,6 +293,9 @@ namespace WebAPI.Controllers
                 errCode = "ERR918";
                 trace.BaseMsg = ex.Message;
             }
+
+            trace.traceAdd("TraceFinal", new { errCode, errMsg });
+            carRepo.AddTraceLog(222, funName, trace, flag);
 
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
