@@ -1000,7 +1000,7 @@ namespace OtherService
         /// <param name="errCode"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoCreditCardAuthV3(PartOfCreditCardAuth wsInput, string IDNO, int AutoClosed,string funName,string InsUser, ref string errCode, ref WebAPIOutput_Auth output)
+        public bool DoCreditCardAuthV3(PartOfCreditCardAuth wsInput, string IDNO, int AutoClosed,string funName,string InsUser, ref string errCode, ref WebAPIOutput_Auth output ,int AuthType=0)
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
@@ -1029,14 +1029,15 @@ namespace OtherService
                 MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
                 MemberID = IDNO,
                 CardToken = Input.RequestParams.CardToken,
-                AutoClose = AutoClosed
+                AutoClose = AutoClosed,
+                AuthType = AuthType
             };
 
             new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);
 
             if (flag)
             {
-                output = DoCreditCardAuthSendForClose(Input,AutoClosed, funName, InsUser).Result;
+                output = DoCreditCardAuthSendForClose(Input,AutoClosed, AuthType, funName , InsUser).Result;
                 if (output.RtnCode == "1000")
                 {
                     //if (output.Data == null)
@@ -1240,7 +1241,7 @@ namespace OtherService
         }
 
 
-        public async Task<WebAPIOutput_Auth> DoCreditCardAuthSendForClose(WebAPIInput_Auth input,int AutoClose,string FunName,string InsUser)
+        public async Task<WebAPIOutput_Auth> DoCreditCardAuthSendForClose(WebAPIInput_Auth input,int AutoClose, int AuthType, string FunName, string InsUser)
         {
             WebAPIOutput_Auth output = null;
             
@@ -1337,7 +1338,9 @@ namespace OtherService
                     ChkClose = (AutoClose == 1) ? 1 : 0,
                     CardType = 1,
                     ProName = FunName,
-                    UserID = (InsUser == FunName) ? "" : ((InsUser.Length > 20) ? InsUser.Substring(0, 20) : InsUser)
+                    UserID = (InsUser == FunName) ? "" : ((InsUser.Length > 20) ? InsUser.Substring(0, 20) : InsUser),
+                    AuthType = AuthType
+                    
                 };
                 if (output.RtnCode == "0")
                 {
@@ -1721,17 +1724,19 @@ namespace OtherService
         }
 
         private WebAPIOutput_Auth ForTest(string TradeAmount)
-        {           
-            Random rnd = new Random();
-            int result = rnd.Next(1, 1);
-            if(result == 0)
-            {
-                return ForTestTrue(TradeAmount);
-            }
-            else
-            {
-                return ForTestFalse(TradeAmount);
-            }
+        {
+            return ForTestTrue(TradeAmount);
+            //Random rnd = new Random();
+            //int result = rnd.Next(1, 1);
+            
+            //if (result == 0)
+            //{
+            //    return ForTestTrue(TradeAmount);
+            //}
+            //else
+            //{
+            //    return ForTestFalse(TradeAmount);
+            //}
         }
 
         private WebAPIOutput_Auth ForTestTrue(string TradeAmount)

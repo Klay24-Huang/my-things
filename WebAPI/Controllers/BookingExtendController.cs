@@ -272,7 +272,8 @@ namespace WebAPI.Controllers
                         PayType = 0,
                         autoClose = 0,
                         funName = funName,
-                        insUser = funName
+                        insUser = funName,
+                        AuthType = 4
                     };
                     authFlag = creditAuthComm.DoAuthV4(AuthInput, ref error, ref AuthOutput);
                     #endregion

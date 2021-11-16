@@ -18,6 +18,7 @@ CREATE PROCEDURE [dbo].[usp_InsTradeForClose_I01]
 	@CardToken              VARCHAR(128)          ,
 	@amount                 INT                   ,
 	@AutoClose             INT,                                         --是否自動關帳
+	@AuthType              INT,
 	@LogID                  BIGINT                ,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -73,7 +74,7 @@ SET @amount          =ISNULL(@amount          ,0);
 		 BEGIN
 			INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken,AutoClose)
 			VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken,@AutoClose);
-
+			--@AuthType
 
 		 END
 		--寫入錯誤訊息
