@@ -18,13 +18,10 @@ namespace OtherService
     public class HotaiPaymentAPI
     {
 		protected static Logger logger = LogManager.GetCurrentClassLogger();
-		
 		private string PaymentUrl = ConfigurationManager.AppSettings["HotaiPaymentURL"].ToString();                                
 		private string EntryURL = ConfigurationManager.AppSettings["HotaiPaymentSingleEntry"].ToString();                                
-		
 		private byte[] Key = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
 		private byte[] IV = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
-
 
 		public void GetHotaiCardList(WebAPIInput_GetCreditCards input)
 		{
@@ -56,10 +53,10 @@ namespace OtherService
 			var a = HotaiPaymentApiPost<object, Body_CardFbinding>(Body, "POST", "/creditcard/fbinding", input.AccessToken);
 		}
 
-		private (bool Succ, string errCode, string Message, TResponse Data)
+		private (bool Succ, string ErrCode, string Message, TResponse Data)
 			HotaiPaymentApiPost<TResponse, TRequest>(TRequest Body, string Method, string API, string access_token)
 		{
-			(bool Succ, string errCode, string Message, TResponse Data) valueTuple =
+			(bool Succ, string ErrCode, string Message, TResponse Data) valueTuple =
 				(false, "000000", "", default(TResponse));
 
 			string BaseUrl = PaymentUrl;
@@ -76,21 +73,20 @@ namespace OtherService
 
 			logger.Info($"Post Body:{content}");
 
-			var result = ApiPost.DoApiPostJson<TRequest>(requestUrl, content, "POST", header);
+			var result = ApiPost.DoApiPostJson(requestUrl, content, "POST", header);
 
 			valueTuple.Succ = result.Succ;
-			valueTuple.errCode = result.errCode;
+			valueTuple.ErrCode = result.ErrCode;
 
 			if (result.Succ)
 			{
-				var a = HotaiReponseDncrypt(result.Data);
+				var a = HotaiReponseDncrypt(result.ResponseData);
 
 				valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(a);
 			}
 
 			return valueTuple;
 		}
-
 
 		private HotaiPCRequestBody SetRequestBody(string Body, string Api, string Method )
 		{
