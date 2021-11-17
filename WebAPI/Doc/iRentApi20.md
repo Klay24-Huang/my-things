@@ -40,6 +40,7 @@
 - [GetAnyRentProject 取得專案與資費(路邊)](#GetAnyRentProject)
 - [MotorRent 取得路邊租還機車](#MotorRent)
 - [GetMotorRentProject 取得專案與資費(機車)](#GetMotorRentProject)
+- [GetEstimate 資費明細(預估租金)](#GetEstimate)
 
 預約以及訂單相關
 
@@ -262,6 +263,8 @@
 20211102 更新 汽車取車(BookingStart)、延長用車(BookingExtend)錯誤代碼
 
 20211103 新增取得取消訂單列表(GetCancelOrderList)
+
+20211104 資費明細(預估租金)補上，WalletTransferStoredValue,WalletStoredByCredit,WalletStoreVisualAccount,WalletStoreShop 移除掉Data內的Result
 
 20211116 錢包儲值-信用卡(WalletStoredByCredit)新增API Input參數，錢包儲值-商店條碼 虛擬帳號  調整輸出參數
 
@@ -2884,6 +2887,93 @@
 }
 
 ```
+
+## GetEstimate 資費明細(預估租金)
+
+### [/api/GetEstimate/]
+
+* 20211104補上
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明         | 必要 |  型態  | 範例        |
+| --------- | ---------------- | :--: | :----: | ----------- |
+| ProjID    | 專案代碼         |  Y   | string | P735        |
+| CarNo     | 車號             |  Y   | string | RCG-0521    |
+| CarType   | 車型代碼         |  Y   | string |             |
+| SDate     | 預計取車時間     |  N   | string |             |
+| EDate     | 預計還車時間     |  N   | string |             |
+| Insurance | 是否加購安心服務 |  Y   |  int   | 1           |
+| MonId     | 選擇的訂閱制月租 |  Y   |  int   | 123456      |
+
+* input範例
+
+```
+{
+	"ProjID": "P735",
+	"CarNo": "",
+    "CarType": "COROLLA CROSS",
+	"SDate": "2021-05-11 10:30:00",
+    "EDate": "2021-05-11 11:30:00",
+    "Insurance": 0,
+    "MonId": 1234
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+
+* Data回傳參數說明
+
+| 參數名稱           | 參數說明         | 型態 | 範例 |
+| ------------------ | ---------------- | :--: | ---- |
+| CarRentBill		 | 租金				| int  | 3795 |
+| MileageBill		 | 里程費			| int  | 1280  |
+| MileagePerKM		 | 里程每公里費用	| double | 3.2 |
+| InsurancePerHour	 | 安心服務每小時   | int  | 50 |
+| InsuranceBill 	 | 安心服務費用		| int | 1000 |
+| TransDiscount		 | 轉乘優惠			| int | 0 |
+| Bill				 | 總計				| int | 6075 |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "CarRentBill": 3795,
+        "MileageBill": 1280,
+        "MileagePerKM": 3.2,
+        "InsurancePerHour": 50,
+        "InsuranceBill": 1000,
+        "TransDiscount": 0,
+        "Bill": 6075
+    }
+}
+```
+
+
 
 # 預約以及訂單相關
 
@@ -7548,12 +7638,12 @@
 
 * Data 回傳參數說明
 
-| 參數名稱       | 參數說明           |  型態  | 範例                |
-| -------------- | ------------------ | :----: | ------------------- |
-| StoreMoney     | 儲值金額           |  int   | 456                 |
-| PayDeadline    | 繳費期限(距今+3日) | string | 2021/10/18 23:59    |
-| BankCode       | 銀行代碼           | string | 812                 |
-| VirtualAccount | 轉入虛擬帳號       | string | 8552 0028 6660 2912 |
+| 參數名稱       | 參數說明              |  型態  | 範例                |
+| -------------- | --------------------- | :----: | ------------------- |
+| StoreMoney     | 儲值金額              |  int   | 456                 |
+| PayDeadline    | 繳費期限(距今+3日)    | string | 2021/10/18 23:59    |
+| BankCode       | 銀行代碼              | string | 812                 |
+| VirtualAccount | 轉入虛擬帳號          | string | 8552 0028 6660 2912 |
 
 * Output範例
 
@@ -7821,6 +7911,7 @@
 | ---------- | --------------------- | :----: | ---------------- |
 | TranResult | 轉贈結果 (1成功0失敗) |  int   | 1                |
 | SystemTime | 系統回傳時間          | string | 2021/03/31 23:19 |
+
 
 * Output範例
 
