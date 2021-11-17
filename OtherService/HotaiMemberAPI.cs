@@ -28,39 +28,40 @@ namespace OtherService
     /// </summary>
     public class HotaiMemberAPI
     {
-        private string HotaiMemberFrontEndURL = ConfigurationManager.AppSettings["HotaiMemberFrontEndURL"].ToString();                                //FrontEndApi
-        private string HotaiMemberBackEndURL = ConfigurationManager.AppSettings["HotaiMemberBackEndURL"].ToString();                                  //BackEndApi
-        private string CheckSignupURL = ConfigurationManager.AppSettings["CheckSignupURL"].ToString();                                                //註冊檢查  
-        private string SendSmsOtpURL = ConfigurationManager.AppSettings["SendSmsOtpURL"].ToString();                                                  //發送簡訊OTP
-        private string SmsOtpValidationURL = ConfigurationManager.AppSettings["SmsOtpValidationURL"].ToString();                                      //簡訊 OTP 驗證
-        private string RefreshTokenURL = ConfigurationManager.AppSettings["RefreshTokenURL"].ToString();                                              //更新 Token
-        private string SendEmailOtpURL = ConfigurationManager.AppSettings["SendEmailOtpURL"].ToString();                                              //發送 Email OTP
-        private string EmailOtpValidatationURL = ConfigurationManager.AppSettings["EmailOtpValidatationURL"].ToString();                              //Email OTP 驗證
-        private string CheckTokenURL = ConfigurationManager.AppSettings["CheckTokenURL"].ToString();                                                  //檢查 Token
-        private string GetEmailURL = ConfigurationManager.AppSettings["GetEmailURL"].ToString();                                                      //取得 Email
-        private string OtpValidatationURL = ConfigurationManager.AppSettings["OtpValidatationURL"].ToString();                                        //驗證會員資訊,取得 OTP 編號
-        private string SignOutURL = ConfigurationManager.AppSettings["SignOutURL"].ToString();                                                        //登出
-        private string SigninURL = ConfigurationManager.AppSettings["SigninURL"].ToString();                                                          //登入
-        private string SignupURL = ConfigurationManager.AppSettings["SignupURL"].ToString();                                                          //註冊
-        private string SignupProfileURL = ConfigurationManager.AppSettings["SignupProfileURL"].ToString();                                            //註冊個人資料(一般)
-        private string ResetPasswordURL = ConfigurationManager.AppSettings["ResetPasswordURL"].ToString();                                            //重設密碼
-        private string IsMissingMemberProfileURL = ConfigurationManager.AppSettings["IsMissingMemberProfileURL"].ToString();                          //缺少個人資料
-        private string GetMemberProfileURL = ConfigurationManager.AppSettings["GetMemberProfileURL"].ToString();                                      //取得個人資料
-        private string UpdateMemberProfileURL = ConfigurationManager.AppSettings["UpdateMemberProfileURL"].ToString();                                //更新個人資料
-        private string ConfirmPasswordURL = ConfigurationManager.AppSettings["ConfirmPasswordURL"].ToString();                                        //確認密碼
-        private string UpdateAccountURL = ConfigurationManager.AppSettings["UpdateAccountURL"].ToString();                                            //修改帳號
-        private string UpdatePasswordURL = ConfigurationManager.AppSettings["UpdatePasswordURL"].ToString();                                          //修改密碼
-        private string CheckBenefitsAndPrivacyVersionURL = ConfigurationManager.AppSettings["CheckBenefitsAndPrivacyVersionURL"].ToString();          //檢查會員權益及隱私條款版本
-        private string UpdateBenefitsAndPrivacyVersionURL = ConfigurationManager.AppSettings["UpdateBenefitsAndPrivacyVersionURL"].ToString();        //同意新款會員權益及隱私條款
-        private string GetPrivacyURL = ConfigurationManager.AppSettings["GetPrivacyURL"].ToString();                                                  //取得會員權益及隱私條款
-        private string GroupAppsURL = ConfigurationManager.AppSettings["GroupAppsURL"].ToString();                                                    //集團服務
-        private string GetMobilePhoneToOneIDURL = ConfigurationManager.AppSettings["GetMobilePhoneToOneIDURL"].ToString();                            //使用手機取得會員 OneID
-        private string HotaiAppId = ConfigurationManager.AppSettings["HotaiAppId"].ToString();
-        private string HotaiAppVersion = ConfigurationManager.AppSettings["HotaiAppVersion"].ToString();
-        private string HotaiApiVersion = ConfigurationManager.AppSettings["HotaiApiVersion"].ToString();
-        private string HotaiAppKey = ConfigurationManager.AppSettings["HotaiAppKey"].ToString();
-        private string HotaiKey = ConfigurationManager.AppSettings["HotaiKey"].ToString();
-        private string HotaiIV = ConfigurationManager.AppSettings["HotaiIV"].ToString();
+        private string FrontEndURL = ConfigurationManager.AppSettings["HotaiMemberFrontEndURL"].ToString();
+        private string SingleEntry = ConfigurationManager.AppSettings["HotaiMemberSingleEntry"].ToString();
+        private string BackEndURL = ConfigurationManager.AppSettings["HotaiMemberBackEndURL"].ToString();                               
+        private string AppId = ConfigurationManager.AppSettings["HotaiAppId"].ToString();
+        private string AppVersion = ConfigurationManager.AppSettings["HotaiAppVersion"].ToString();
+        private string ApiVersion = ConfigurationManager.AppSettings["HotaiApiVersion"].ToString();
+        private string AppKey = ConfigurationManager.AppSettings["HotaiAppKey"].ToString();
+        private string Key = ConfigurationManager.AppSettings["HotaiKey"].ToString();
+        private string IV = ConfigurationManager.AppSettings["HotaiIV"].ToString();
+        private string CheckSignupURL = "api/signup/check";                                                //註冊檢查  
+        private string SendSmsOtpURL = "api/otp/sms";                                                      //發送簡訊OTP
+        private string SmsOtpValidationURL = "api/otp/sms-validatation";                                   //簡訊 OTP 驗證
+        private string RefreshTokenURL = "api/token/refresh";                                              //更新 Token
+        private string SendEmailOtpURL = "api/otp/email";                                                  //發送 Email OTP
+        private string EmailOtpValidatationURL = "api/otp/email-validatation";                             //Email OTP 驗證
+        private string CheckTokenURL = "api/token/check";                                                  //檢查 Token
+        private string GetEmailURL = "api/otp/sms-email";                                                  //取得 Email
+        private string OtpValidatationURL = "api/otp/validatation";                                        //驗證會員資訊,取得 OTP 編號
+        private string SignOutURL = "api/signOut";                                                         //登出
+        private string SigninURL = "api/signin";                                                           //登入
+        private string SignupURL = "api/signup";                                                           //註冊
+        private string SignupProfileURL = "api/member/signup-profile";                                     //註冊個人資料(一般)
+        private string ResetPasswordURL = "api/member/reset-password";                                     //重設密碼
+        private string IsMissingMemberProfileURL = "api/member/missing-profile";                           //缺少個人資料
+        private string GetMemberProfileURL = "api/member/profile";                                         //取得個人資料
+        private string UpdateMemberProfileURL = "api/member/update-profile";                               //更新個人資料
+        private string ConfirmPasswordURL = "api/member/confirm-password";                                 //確認密碼
+        private string UpdateAccountURL = "api/member/update-account";                                     //修改帳號
+        private string UpdatePasswordURL = "api/member/update-password";                                   //修改密碼
+        private string CheckBenefitsAndPrivacyVersionURL = "api/member/check-benefits-privacy-version";    //檢查會員權益及隱私條款版本
+        private string UpdateBenefitsAndPrivacyVersionURL = "api/member/update-benefits-privacy-version";  //同意新款會員權益及隱私條款
+        private string GetPrivacyURL = "api/privacy";                                                      //取得會員權益及隱私條款
+        private string GroupAppsURL = "api/group-apps";                                                    //集團服務
+        private string GetMobilePhoneToOneIDURL = "api/subsystem/member/MobilePhoneToOneID";               //使用手機取得會員 OneID
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace OtherService
             string apiUrl = SendSmsOtpURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -109,7 +110,7 @@ namespace OtherService
             string apiUrl = SmsOtpValidationURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -142,7 +143,7 @@ namespace OtherService
             string apiUrl = RefreshTokenURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -175,7 +176,7 @@ namespace OtherService
             string apiUrl = SendEmailOtpURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -208,7 +209,7 @@ namespace OtherService
             string apiUrl = EmailOtpValidatationURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -239,7 +240,7 @@ namespace OtherService
             string apiUrl = CheckTokenURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -271,7 +272,7 @@ namespace OtherService
             string apiUrl = GetEmailURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -303,7 +304,7 @@ namespace OtherService
             string apiUrl = OtpValidatationURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -336,7 +337,7 @@ namespace OtherService
             string apiUrl = SignOutURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -368,7 +369,7 @@ namespace OtherService
             string apiUrl = SigninURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -399,7 +400,7 @@ namespace OtherService
             string apiUrl = CheckSignupURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -431,7 +432,7 @@ namespace OtherService
             string apiUrl = SignupURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -463,7 +464,7 @@ namespace OtherService
             string apiUrl = SignupProfileURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -494,7 +495,7 @@ namespace OtherService
             string apiUrl = ResetPasswordURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -524,7 +525,7 @@ namespace OtherService
             string apiUrl = IsMissingMemberProfileURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -537,7 +538,7 @@ namespace OtherService
             if (output.RtnCode == "1000")
             {
                 flag = true;
-            }        
+            }
             return flag;
         }
 
@@ -554,7 +555,7 @@ namespace OtherService
             string apiUrl = GetMemberProfileURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -565,7 +566,7 @@ namespace OtherService
 
             output = DoHotaiMemeberApiSend<WebAPIOutput_GetMemberProfile>(apiRequest).Result;
             if (output.RtnCode == "1000")
-            {         
+            {
                 flag = true;
             }
             return flag;
@@ -586,7 +587,7 @@ namespace OtherService
             string apiUrl = UpdateMemberProfileURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -618,7 +619,7 @@ namespace OtherService
             string apiUrl = ConfirmPasswordURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -650,7 +651,7 @@ namespace OtherService
             string apiUrl = UpdateAccountURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -682,7 +683,7 @@ namespace OtherService
             string apiUrl = UpdatePasswordURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -712,7 +713,7 @@ namespace OtherService
             string apiUrl = CheckBenefitsAndPrivacyVersionURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -744,7 +745,7 @@ namespace OtherService
             string apiUrl = UpdateBenefitsAndPrivacyVersionURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -774,7 +775,7 @@ namespace OtherService
             string apiUrl = GetPrivacyURL;
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberFrontEndURL,
+                BaseUrl = $"{FrontEndURL}{SingleEntry}",
                 ApiUrl = apiUrl,
                 DoDecrypt = true,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -801,18 +802,17 @@ namespace OtherService
         {
             bool flag = false;
             string apiUrl = $"{GetMobilePhoneToOneIDURL}/{mobilePhone}";
-            string URL = HotaiMemberBackEndURL + apiUrl;
-            string funName = MethodBase.GetCurrentMethod().Name;
+            string URL = BackEndURL + apiUrl;
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
             request.Method = "GET";
-            request.Headers.Add("APP_ID", HotaiAppId);
-            request.Headers.Add("APPKEY", HotaiAppKey);
+            request.Headers.Add("APP_ID", AppId);
+            request.Headers.Add("APPKEY", AppKey);
             request.ContentType = "application/json";
 
             ApiRequestParam apiRequest = new ApiRequestParam()
             {
-                BaseUrl = HotaiMemberBackEndURL,
+                BaseUrl = BackEndURL,
                 ApiUrl = $"{GetMobilePhoneToOneIDURL}/{mobilePhone}",
                 DoDecrypt = false,
                 FunName = MethodBase.GetCurrentMethod().Name,
@@ -833,7 +833,7 @@ namespace OtherService
         }
 
         /// <summary>
-        /// 會員通用API
+        /// 會員POST API
         /// </summary>
         /// <typeparam name="String"></typeparam>
         /// <typeparam name="TResponse"></typeparam>
@@ -853,60 +853,57 @@ namespace OtherService
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                try
+
+                if (apiRequest.SendRequest)
                 {
-                    if (apiRequest.SendRequest)
+                    byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+                    using (Stream reqStream = apiRequest.Request.GetRequestStream())
                     {
-                        byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
-                        using (Stream reqStream = apiRequest.Request.GetRequestStream())
-                        {
-                            reqStream.Write(byteArray, 0, byteArray.Length);
-                        }
+                        reqStream.Write(byteArray, 0, byteArray.Length);
                     }
-
-                    #region 發出Request
-                    using (WebResponse response = apiRequest.Request.GetResponse())
-                    {
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                        {
-                            string responseStr = "";
-                            responseStr = reader.ReadToEnd();
-                            RTime = DateTime.Now;
-                            if (!string.IsNullOrWhiteSpace(responseStr))
-                            {
-                                var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
-                                output = JsonConvert.DeserializeObject<TResponse>(json);
-                            }
-                            output.RtnCode = "1000";
-                        }
-                    }
-                    #endregion
-
-                }
-                catch (WebException ex)
-                {
-                    WebResponse webResponse = (WebResponse)ex.Response;
-                    var info = new ErrorInfo();
-                    if (webResponse != null)
-                    {
-                        using (StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
-                        {
-                            string responseStr = reader.ReadToEnd();
-                            if (!string.IsNullOrWhiteSpace(responseStr))
-                            {
-                                var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
-                                output = JsonConvert.DeserializeObject<TResponse>(json);
-                                info.ErrorCode = output.errors.First().Key.ToString();
-                                info.ErrorMsg = string.Join(",", (((JArray)output.errors.First().Value).Select(x => (string)x).ToList()));
-                            }
-                        }
-
-                        output.RtnCode = info.ErrorCode;
-                        output.RtnMessage = info.ErrorMsg;
-                    }
-                    webResponse.Close();
                 }
 
+                #region 發出Request
+                using (WebResponse response = apiRequest.Request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        string responseStr = "";
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        if (!string.IsNullOrWhiteSpace(responseStr))
+                        {
+                            var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
+                            output = JsonConvert.DeserializeObject<TResponse>(json);
+                        }
+                        output.RtnCode = "1000";
+                    }
+                }
+                #endregion
+
+            }
+            catch (WebException ex)
+            {
+                WebResponse webResponse = (WebResponse)ex.Response;
+                var info = new ErrorInfo();
+                if (webResponse != null)
+                {
+                    using (StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
+                    {
+                        string responseStr = reader.ReadToEnd();
+                        if (!string.IsNullOrWhiteSpace(responseStr))
+                        {
+                            var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
+                            output = JsonConvert.DeserializeObject<TResponse>(json);
+                            info.ErrorCode = output.errors.First().Key.ToString();
+                            info.ErrorMsg = string.Join(",", (((JArray)output.errors.First().Value).Select(x => (string)x).ToList()));
+                        }
+                    }
+
+                    output.RtnCode = info.ErrorCode;
+                    output.RtnMessage = info.ErrorMsg;
+                }
+                webResponse.Close();
             }
             catch (Exception e)
             {
@@ -932,17 +929,18 @@ namespace OtherService
             }
             return output;
         }
+        
         private HttpWebRequest CreateRequestHeader(string token = "", string action = "POST", string authType = "Bearer")
         {
-            string URL = HotaiMemberFrontEndURL;
+            string URL = $"{FrontEndURL}{SingleEntry}";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
             if (!string.IsNullOrWhiteSpace(token))
             {
                 request.Headers.Add("Authorization", $"{authType} {token}");
             }
-            request.Headers.Add("APP_ID", HotaiAppId);
-            request.Headers.Add("APP_VERSION", HotaiAppVersion);
-            request.Headers.Add("API_VERSION", HotaiApiVersion);
+            request.Headers.Add("APP_ID",AppId);
+            request.Headers.Add("APP_VERSION", AppVersion);
+            request.Headers.Add("API_VERSION", ApiVersion);
             request.Method = action;
             request.ContentType = "application/json";
             return request;
@@ -963,14 +961,14 @@ namespace OtherService
         private string EncryptAESHandle(string source)
         {
             string encrypt = "";
-            encrypt = AESEncrypt.EncryptAES128(source, HotaiKey, HotaiIV, CipherMode.CBC, PaddingMode.PKCS7);
+            encrypt = AESEncrypt.EncryptAES128(source, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
             return encrypt;
         }
 
         private string DecryptAESHandle(string encryptData)
         {
             string encrypt = "";
-            encrypt = AESEncrypt.DecryptAES128(encryptData, HotaiKey, HotaiIV, CipherMode.CBC, PaddingMode.PKCS7);
+            encrypt = AESEncrypt.DecryptAES128(encryptData, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
             return encrypt;
         }
 
