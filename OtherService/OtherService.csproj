@@ -66,6 +66,7 @@
     <Compile Include="FETDeviceMaintainAPI.cs" />
     <Compile Include="HiEasyRentAPI.cs" />
     <Compile Include="HotaiMemberAPI.cs" />
+    <Compile Include="HotaiPaymentAPI.cs" />
     <Compile Include="MochiParkAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaishinCreditCardBindAPI.cs" />
