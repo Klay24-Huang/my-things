@@ -19,9 +19,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 信用卡自訂名稱
         /// </summary>
         public string CardName { get; set; }
-  /// <summary>
-  /// 剩餘額度
-  /// </summary>
+        /// <summary>
+        /// 剩餘額度
+        /// </summary>
         public string AvailableAmount { get; set; }
         /// <summary>
         /// 替代性信用卡卡號或替代表銀行卡號
