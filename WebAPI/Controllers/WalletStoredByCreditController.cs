@@ -153,7 +153,7 @@ namespace WebAPI.Controllers
                         OrderNo = 0,
                         IDNO = IDNO,
                         Amount = apiInput.StoreMoney,
-                        PayType = 6,
+                        PayType = 7,
                         autoClose = 0,
                         funName = funName,
                         insUser = funName,
@@ -242,6 +242,7 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     string formatString = "yyyyMMddHHmmss";
+                    string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);
                     spInput_Wallet = new SPInput_WalletStore()
                     {
                         IDNO = output.Result.ID,
@@ -258,6 +259,7 @@ namespace WebAPI.Controllers
                         LastTransId = output.Result.TransId,
                         TaishinNO = string.IsNullOrWhiteSpace(AuthOutput.BankTradeNo) ? "" : AuthOutput.BankTradeNo,
                         TradeType = TradeType,
+                        TradeKey= cardNo,
                         PRGName = funName,
                         Mode = Mode,
                         InputSource = 1,
