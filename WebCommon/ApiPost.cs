@@ -25,7 +25,7 @@ namespace WebCommon
         {
             (bool Succ, string errCode, string Message, TResponse Data) valueTuple =
                 (false, "000000", "", default(TResponse));
-
+           
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = WebRequestMethods.Http.Post;
             request.ContentType = "application/json";
@@ -83,7 +83,7 @@ namespace WebCommon
             }
             finally
             {
-
+             
                 //增加關閉Request的處理
                 request.Abort();
             }
@@ -91,11 +91,18 @@ namespace WebCommon
             return valueTuple;
         }
 
-        public static (bool Succ, string errCode, string Message, string Data) DoApiPostJson<TRequest>(string url, string content, string Method, WebHeaderCollection Header)
+        /// <summary>
+        /// Post Json for a API Result
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <param name="url"></param>
+        /// <param name="content"></param>
+        /// <param name="Method"></param>
+        /// <param name="Header"></param>
+        /// <returns></returns>
+        public static PostJsonResultInfo DoApiPostJson(string url, string content, string Method, WebHeaderCollection Header)
         {
-            (bool Succ, string errCode, string Message, string Data) valueTuple =
-                (false, "000000", "", "");
-
+            var resultInfo = new PostJsonResultInfo();
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 
@@ -114,7 +121,6 @@ namespace WebCommon
                 using (var requestStream = request.GetRequestStream())
                 {
                     requestStream.Write(jsonBytes, 0, jsonBytes.Length);
-                    //requestStream.Flush();
                 }
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
@@ -125,48 +131,43 @@ namespace WebCommon
 
                         if (result.Length <= 0) throw new Exception($"errCode:ERR918");
 
-                        valueTuple.Succ = true;
-                        valueTuple.Data = result;
+                        resultInfo.Succ = true;
+                        resultInfo.ResponseData = result;
+                        resultInfo.ProtocolStatusCode = (int)response.StatusCode;
                     }
                 }
             }
             catch (WebException webex)
             {
-                valueTuple.Succ = false;
-                valueTuple.errCode = "ERR917";
-                valueTuple.Message = webex.Message;
+                resultInfo.Succ = false;
+                resultInfo.ErrCode = "ERR917";
+                resultInfo.Message = webex.Message;
 
-                if (webex.Status == WebExceptionStatus.ProtocolError)
-                {
-                    var response = webex.Response as HttpWebResponse;
-                    //if (response != null)
-                    //{
-                    //    Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
-                    //}
-                }
+                var response = webex.Response as HttpWebResponse;
 
-                if (webex.Response != null)
+                if (response != null)
                 {
+                    resultInfo.ProtocolStatusCode = (int)response.StatusCode;
                     using (StreamReader reader = new StreamReader(webex.Response.GetResponseStream()))
                     {
                         string responseContent = reader.ReadToEnd();
-                        valueTuple.Data = responseContent;
+                        resultInfo.ResponseData = responseContent;
                     }
                 }
 
             }
             catch (Exception ex)
             {
-                valueTuple.Succ = false;
+                resultInfo.Succ = false;
                 if (ex.Message.Contains("errCode:"))
                 {
                     string errCode = ex.Message.Split(':')[1]; //Api呼叫失敗
-                    valueTuple.errCode = errCode;
+                    resultInfo.ErrCode = errCode;
                 }
                 else
                 {
-                    valueTuple.errCode = "ERR913";//發生錯誤,請洽系統管理員
-                    valueTuple.Message = ex.Message;
+                    resultInfo.ErrCode = "ERR913";//發生錯誤,請洽系統管理員
+                    resultInfo.Message = ex.Message;
                 }
             }
             finally
@@ -176,9 +177,8 @@ namespace WebCommon
                 request.Abort();
             }
 
-            return valueTuple;
+            return resultInfo;
 
         }
-
     }
 }
