@@ -362,5 +362,33 @@ namespace Domain.SP.Output.OrderList
         /// 台新訂單編號
         /// </summary>
         public string transaction_no { set; get; }
+        /// <summary>
+        /// 短租預約編號
+        /// </summary>
+        public string ORDNO { set; get; }
+        /// <summary>
+        /// 發票寄送方式 => TB_OrderMain.bill_option
+        /// </summary>
+        public string INVKIND { set; get; }
+        /// <summary>
+        /// 統編
+        /// </summary>
+        public string UNIMNO { set; get; }
+        /// <summary>
+        /// 發票載具條碼
+        /// </summary>
+        public string CARRIERID { set; get; }
+        /// <summary>
+        /// 愛心碼
+        /// </summary>
+        public string NPOBAN { set; get; }
+        /// <summary>
+        /// 卡號
+        /// </summary>
+        public string CARDNO { set; get; }
+        /// <summary>
+        /// 網刷訂單編號
+        /// </summary>
+        public string NORDNO { set; get; }
     }
 }

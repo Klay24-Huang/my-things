@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
     public class CreditAuthNYJobController : ApiController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         private string APIToken = ConfigurationManager.AppSettings["TaishinWalletAPIToken"].ToString();
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
@@ -171,6 +171,25 @@ namespace WebAPI.Controllers
                             logger.Trace("usp_OrderNYList_I01 Error:" + JsonConvert.SerializeObject(lstError));
                         }
                         baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
+
+                        if (flag)
+                        {
+                            OtherService.HiEasyRentAPI NPR138 = new HiEasyRentAPI();
+                            WebAPIInput_NPR138Save NPR138Input = new WebAPIInput_NPR138Save()
+                            {
+                                ORDNO = OrderAuthList[i].ORDNO,
+                                IRENTORDNO = string.Format("H{0}", OrderAuthList[i].order_number.ToString().PadLeft(8, '0')),
+                                INVKIND = OrderAuthList[i].INVKIND,
+                                INVTITLE = "",
+                                UNIMNO = OrderAuthList[i].UNIMNO,
+                                CARRIERID = OrderAuthList[i].CARRIERID,
+                                NPOBAN = OrderAuthList[i].NPOBAN,
+                                CARDNO = WSAuthOutput.ResponseParams.ResultData.CardNumber,
+                                NORDNO = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo
+                            };
+                            WebAPIOutput_NPR138Save NPR138Output = new WebAPIOutput_NPR138Save();
+                            flag = NPR138.NPR138Save(NPR138Input, ref NPR138Output);
+                        }
                     }
                     catch (Exception ex)
                     {

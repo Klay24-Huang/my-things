@@ -1109,25 +1109,25 @@ namespace OtherService
                     //  tmpOrder = Convert.ToInt64(tmp);
                     creditType = 3;
                 }
-                else if (Input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
                 {
-                    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("M_");
-                    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("M_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
                     //  tmpOrder = Convert.ToInt64(tmp);
                     creditType = 4;
                 }
-                else if (Input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
                 {
-                    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("MA_");
-                    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("MA_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
                     //  tmpOrder = Convert.ToInt64(tmp);
                     creditType = 5;
                 }
                 //20211116 ADD BY ADAM REASON.春節定金
-                else if (Input.RequestParams.MerchantTradeNo.IndexOf("D_") > -1)
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("D_") > -1)
                 {
-                    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("D_");
-                    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("D_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
                     //  tmpOrder = Convert.ToInt64(tmp);
                     creditType = 6;
                 }
