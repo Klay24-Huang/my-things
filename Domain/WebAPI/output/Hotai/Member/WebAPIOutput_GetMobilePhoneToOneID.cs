@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     ///  使用手機取得會員 OneID
     /// </summary>
-    public class WebAPIOutput_GetMobilePhoneToOneID : WebAPIOutput_Base
+    public class WebAPIOutput_GetMobilePhoneToOneID
     {
         /// <summary>
         /// 會員編號(GUID)

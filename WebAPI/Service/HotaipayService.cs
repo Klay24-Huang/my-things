@@ -127,7 +127,7 @@ namespace WebAPI.Service
                 };
 
                 WebAPIOutput_Token outputToken = new WebAPIOutput_Token();
-                flag = hotaiMemberAPI.DoRefreshToken(inputToken, ref outputToken);
+                flag = hotaiMemberAPI.DoRefreshToken(inputToken, ref outputToken,ref errCode);
 
                 #region 更新和泰會員綁定記錄
                 if (flag)
@@ -151,9 +151,9 @@ namespace WebAPI.Service
                     output.OneID = SPOut.OneID;
                 }
             }
-            else
+
+            if (!flag)
             {
-                flag = false;
                 errCode = "ERR941";
             }
             return flag;

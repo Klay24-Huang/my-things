@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 驗證會員資訊，取得 OTP 編號
     /// </summary>
-    public class WebAPIOutput_OtpValidation : WebAPIOutput_Base
+    public class WebAPIOutput_OtpValidation
     {
         /// <summary>
         /// OTP 編號(GUID)

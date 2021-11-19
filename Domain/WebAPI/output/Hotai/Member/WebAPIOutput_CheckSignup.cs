@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     ///  註冊檢查
     /// </summary>
-    public class WebAPIOutput_CheckSignup: WebAPIOutput_Base
+    public class WebAPIOutput_CheckSignup
     {
         /// <summary>
         /// 是否註冊

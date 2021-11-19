@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 更新 Token
     /// </summary>
-    public class WebAPIOutput_Token :WebAPIOutput_Base
+    public class WebAPIOutput_Token
     {
         /// <summary>
         /// 取得令牌

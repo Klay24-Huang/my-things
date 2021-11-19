@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 取得會員權益及隱私條款
     /// </summary>
-    public class WebAPIOutput_GetPrivacy : WebAPIOutput_Base
+    public class WebAPIOutput_GetPrivacy
     {     
         /// <summary>
         /// 會員權益 (文字中有\n或\\n，表示需斷行處理)
