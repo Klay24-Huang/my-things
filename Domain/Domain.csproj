@@ -639,7 +639,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR380Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_TransIRentMemCMK.cs" />
-    <Compile Include="WebAPI\Input\Hotai\Member\Param\ApiRequestParam.cs" />
+    <Compile Include="WebAPI\Input\Hotai\Member\HotaiMemberRequestBody.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\HotaiPCRequestBody.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_AddCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CardFbinding.cs" />
@@ -753,7 +753,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData3.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData4.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_TransIRentMemCMK.cs" />
-    <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Base.cs" />
+    <Compile Include="WebAPI\output\Hotai\Member\ResponseErrorInfo.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_BenefitsAndPrivacyVersion.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_CheckSignup.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_GetEmail.cs" />
