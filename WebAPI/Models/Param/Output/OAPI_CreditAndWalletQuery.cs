@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using WebAPI.Models.Param.Bill;
 using WebAPI.Models.Param.Output.PartOfParam;
 
 namespace WebAPI.Models.Param.Output
@@ -71,5 +72,17 @@ namespace WebAPI.Models.Param.Output
         /// <para>1:同意</para>
         /// </summary>
         public int AutoStored { get; set; }
+
+        /// <summary>
+        /// 是否有和泰PAY
+        /// <para>0:無</para>
+        /// <para>1:有</para>
+        /// </summary>
+        public int HasHotaiPay { get; set; }
+
+        /// <summary>
+        /// 和泰PAY卡清單
+        /// </summary>
+        public List<HotaiCardInfo> HotaiListObj { get; set; }
     }
 }
