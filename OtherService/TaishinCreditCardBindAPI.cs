@@ -945,6 +945,14 @@ namespace OtherService
                 //  tmpOrder = Convert.ToInt64(tmp);
                 creditType = 5;
             }
+            //20211116 ADD BY ADAM REASON.春節定金
+            else if (Input.RequestParams.MerchantTradeNo.IndexOf("D_") > -1)
+            {
+                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("D_");
+                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                //  tmpOrder = Convert.ToInt64(tmp);
+                creditType = 6;
+            }
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
             {
                 amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,        //台新奇妙的規則  金額都要除100才是正確的金額
@@ -1100,6 +1108,28 @@ namespace OtherService
                     tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
                     //  tmpOrder = Convert.ToInt64(tmp);
                     creditType = 3;
+                }
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("M_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 4;
+                }
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("MA_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 5;
+                }
+                //20211116 ADD BY ADAM REASON.春節定金
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("D_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("D_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 6;
                 }
                 SPInput_UpdTrade UpdInput = new SPInput_UpdTrade()
                 {

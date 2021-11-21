@@ -336,4 +336,52 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string CardToken { set; get; }
     }
+
+    /// <summary>
+    /// 春節訂金
+    /// </summary>
+    public class OrderAuthNYList
+    {
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public int order_number { set; get; }
+        /// <summary>
+        /// 授權金額
+        /// </summary>
+        public int final_price { set; get; }
+        /// <summary>
+        /// 會員編號
+        /// </summary>
+        public string IDNO { set; get; }
+        /// <summary>
+        /// CardToken
+        /// </summary>
+        public string CardToken { set; get; }
+        /// <summary>
+        /// 台新訂單編號
+        /// </summary>
+        public string transaction_no { set; get; }
+        /// <summary>
+        /// 短租預約編號
+        /// </summary>
+        public string ORDNO { set; get; }
+        /// <summary>
+        /// 發票寄送方式 => TB_OrderMain.bill_option
+        /// </summary>
+        public string INVKIND { set; get; }
+        /// <summary>
+        /// 統編
+        /// </summary>
+        public string UNIMNO { set; get; }
+        /// <summary>
+        /// 發票載具條碼
+        /// </summary>
+        public string CARRIERID { set; get; }
+        /// <summary>
+        /// 愛心碼
+        /// </summary>
+        public string NPOBAN { set; get; }
+        
+    }
 }
