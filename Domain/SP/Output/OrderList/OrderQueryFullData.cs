@@ -382,13 +382,6 @@ namespace Domain.SP.Output.OrderList
         /// 愛心碼
         /// </summary>
         public string NPOBAN { set; get; }
-        /// <summary>
-        /// 卡號
-        /// </summary>
-        public string CARDNO { set; get; }
-        /// <summary>
-        /// 網刷訂單編號
-        /// </summary>
-        public string NORDNO { set; get; }
+        
     }
 }

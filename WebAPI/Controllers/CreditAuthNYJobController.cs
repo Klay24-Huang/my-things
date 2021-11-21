@@ -82,6 +82,7 @@ namespace WebAPI.Controllers
             Int64 tmpOrder = 0;
             int Amount = 0;
             List<OrderAuthNYList> OrderAuthList = null;
+            string INVNO = "";
             #endregion
             #region 防呆
             if (flag)
@@ -148,7 +149,7 @@ namespace WebAPI.Controllers
                         {
                             flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
                         }
-                        //logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(WSAuthOutput));
+                        logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(WSAuthOutput));
 
                         SPInput_OrderNYList_I01 UpdateOrderAuthList = new SPInput_OrderNYList_I01()
                         {
@@ -159,11 +160,22 @@ namespace WebAPI.Controllers
                             transaction_no = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo,
                             MerchantTradeNo = PayInput.transaction_no,
                         };
+                        //故意寫錯的
+                        //SPInput_OrderNYList_I01 UpdateOrderAuthList = new SPInput_OrderNYList_I01()
+                        //{
+                        //    OrderNo = OrderAuthList[i].order_number,
+                        //    AuthFlg = -1,
+                        //    AuthCode = "9999",
+                        //    AuthMessage = "ERROR",
+                        //    transaction_no = "",
+                        //    MerchantTradeNo = PayInput.transaction_no,
+                        //};
                         //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題
                         //                            所以把存檔功能先提早完成再進行信用卡授權
                         string SPName = "usp_OrderNYList_I01";
-                        SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
-                        SQLHelper<SPInput_OrderNYList_I01, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_OrderNYList_I01, SPOutput_GetRewardPoint>(connetStr);
+
+                        SPOutput_Base PayOutput = new SPOutput_Base();
+                        SQLHelper<SPInput_OrderNYList_I01, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_OrderNYList_I01, SPOutput_Base>(connetStr);
                         flag = SQLPayHelp.ExecuteSPNonQuery(SPName, UpdateOrderAuthList, ref PayOutput, ref lstError);
                         if (flag == false)
                         {
@@ -172,7 +184,8 @@ namespace WebAPI.Controllers
                         }
                         baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
 
-                        if (flag)
+                        
+                        if (flag && UpdateOrderAuthList.AuthFlg == 1)
                         {
                             OtherService.HiEasyRentAPI NPR138 = new HiEasyRentAPI();
                             WebAPIInput_NPR138Save NPR138Input = new WebAPIInput_NPR138Save()
@@ -189,6 +202,25 @@ namespace WebAPI.Controllers
                             };
                             WebAPIOutput_NPR138Save NPR138Output = new WebAPIOutput_NPR138Save();
                             flag = NPR138.NPR138Save(NPR138Input, ref NPR138Output);
+                            if (flag)
+                            {
+                                INVNO = NPR138Output.Data[0].INVNO.ToString();
+                            }
+                        }
+
+                        if (flag && INVNO != "")
+                        {
+                            SPInput_OrderNYList_U01 UpdOrderNYList = new SPInput_OrderNYList_U01()
+                            {
+                                OrderNo = OrderAuthList[i].order_number,
+                                INVNO = INVNO
+                            };
+                            SPName = "usp_OrderNYList_U01";
+
+                            SPOutput_Base U01Output = new SPOutput_Base();
+                            SQLHelper<SPInput_OrderNYList_U01, SPOutput_Base> SQLU01Help = new SQLHelper<SPInput_OrderNYList_U01, SPOutput_Base>(connetStr);
+                            flag = SQLU01Help.ExecuteSPNonQuery(SPName, UpdOrderNYList, ref U01Output, ref lstError);
+
                         }
                     }
                     catch (Exception ex)

@@ -22,6 +22,13 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// 回覆訊息
         /// </summary>
         public string Message { set; get; }
-        public Object[] Data { set; get; }
+        public List<WebAPIOutput_NPR138SaveData> Data { set; get; }
+    }
+
+    public class WebAPIOutput_NPR138SaveData
+    {
+        public string INVNO { get; set; }
+        public string RCVNO { get; set; }
+
     }
 }
