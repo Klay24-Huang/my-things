@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
     public class CreditAuthNYJobController : ApiController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string APIToken = ConfigurationManager.AppSettings["TaishinWalletAPIToken"].ToString();
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
@@ -205,6 +205,10 @@ namespace WebAPI.Controllers
                             if (flag)
                             {
                                 INVNO = NPR138Output.Data[0].INVNO.ToString();
+                            }
+                            else
+                            {
+                                INVNO = "";
                             }
                         }
 
