@@ -1,5 +1,6 @@
 ﻿using Domain.WebAPI.Input.Hotai.Payment;
 using Domain.WebAPI.Input.Hotai.Payment.Param;
+using Domain.WebAPI.output.Hotai.Payment;
 using Newtonsoft.Json;
 using NLog;
 using System;
@@ -20,37 +21,123 @@ namespace OtherService
 		protected static Logger logger = LogManager.GetCurrentClassLogger();
 		private string PaymentUrl = ConfigurationManager.AppSettings["HotaiPaymentURL"].ToString();                                
 		private string EntryURL = ConfigurationManager.AppSettings["HotaiPaymentSingleEntry"].ToString();                                
+		private string _bindCardURL = ConfigurationManager.AppSettings["CTBCBindCard"].ToString();
+		private string _fastBind = ConfigurationManager.AppSettings["CTBCFastBind"].ToString();
 		private byte[] Key = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
 		private byte[] IV = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
 
-		public void GetHotaiCardList(WebAPIInput_GetCreditCards input)
+		public bool GetHotaiCardList(WebAPIInput_GetCreditCards input, ref WebAPIOutput_GetCreditCards output)
 		{
-	
-			var a = HotaiPaymentApiPost<object, object>(null, "GET", "/creditcard/card", input.AccessToken);
+			logger.Info("GetHotaiCardList init");
+			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<List<HotaiCardInfo>>, object>(null, "GET", "/creditcard/card", input.AccessToken);
+
+			List<HotaiCardInfo> hotaiCards = apiResult.Succ ?
+				apiResult.Data.Data?.Where(t => t.IsAvailable && !t.IsOverwrite).ToList() :
+				new List<HotaiCardInfo>();
+
+			output.HotaiCards = hotaiCards;
+			output.CardCount = hotaiCards.Count;
+
+			logger.Info($"hotaiCards:{JsonConvert.SerializeObject(hotaiCards)}");
+			return output.CardCount > 0 ? true : false;
 		}
 
-		//手動綁定信用卡
-		public void AddCard(WebAPIInput_AddCard input)
+		/// <summary>
+		/// 手動綁定信用卡
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public bool AddCard(WebAPIInput_AddCard input, ref WebAPIOutput_AddHotaiCards output)
 		{
-            var Body = new Body_AddCard
+			logger.Info("AddCard init");
+			var Body = new Body_AddCard
 			{
-                RedirectURL = input.RedirectURL
+				RedirectURL = input.RedirectURL
 			};
 
-			var a = HotaiPaymentApiPost<object, Body_AddCard>(Body, "POST", "/creditcard/ad", input.AccessToken);
+			logger.Info($"AddCard requset body {JsonConvert.SerializeObject(Body)}");
+			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResAddCard>, Body_AddCard>(Body, "POST", "/creditcard/add", input.AccessToken);
 
+
+			logger.Info($"AddCard body {JsonConvert.SerializeObject(apiResult)}");
+			if (apiResult.Succ)
+			{
+				output.Succ = apiResult.Succ;
+				output.GotoUrl = _bindCardURL;
+				output.PostData = apiResult.Data?.Data;
+			}
+
+			return apiResult.Succ;
 		}
-
-		public void FastAddCard(WebAPIInput_FastAddCard input)
+		/// <summary>
+		/// 快速步驟
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public bool FastAddCard(WebAPIInput_FastAddCard input, ref WebAPIOutput_FastAddHotaiCard output)
 		{
+			logger.Info("FastAddCard init");
 			var Body = new Body_CardFbinding
 			{
 				RedirectURL = input.RedirectURL,
 				IdNo = input.IDNO,
 				Birthday = input.Birthday
 			};
+			logger.Info($"FastAddCard requset body {JsonConvert.SerializeObject(Body)}");
 
-			var a = HotaiPaymentApiPost<object, Body_CardFbinding>(Body, "POST", "/creditcard/fbinding", input.AccessToken);
+			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResFastBind>, Body_CardFbinding>(Body, "POST", "/creditcard/fbinding", input.AccessToken);
+			if (apiResult.Succ)
+			{
+				output.Succ = apiResult.Succ;
+				output.GotoUrl = _fastBind;
+				output.PostData = apiResult.Data?.Data;
+			}
+			return apiResult.Succ;
+
+		}
+
+		/// <summary>
+		/// 信用卡授權請求
+		/// </summary>
+		/// <returns></returns>
+		public bool CreaditCardPay(WebAPIInput_CreditCardPay input)
+		{
+			var Body = new Body_CreditCardPay
+			{
+				TokenID = input.TokenID,
+				MerID = input.MerID,
+				TerMinnalID = input.TerMinnalID,
+				Lidm = input.Lidm,
+				PurchAmt = input.PurchAmt,
+				TxType = input.TxType,
+				AutoCap = input.AutoCap,
+				RedirectUrl = input.RedirectUrl,
+				OrderDesc = input.OrderDesc,
+				Pid = input.Pid,
+				Birthday = input.Birthday,
+				Customize = input.Customize,
+				MerchantName = input.MerchantName,
+				NumberOfPay = input.NumberOfPay,
+				PromoCode = input.PromoCode,
+				ProdCode = input.ProdCode
+			};
+
+			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResCreditCardPay>, Body_CreditCardPay>(Body, "POST", "/creditcard/pay/json", input.AccessToken);
+			var reqjsonpwd = "";
+
+			if (apiResult.Succ)
+			{
+				reqjsonpwd = apiResult.Data?.Data?.reqjsonpwd ?? "";
+			}
+
+			//var CTBCResult = new PostJsonResultInfo();
+			//if (!string.IsNullOrWhiteSpace(reqjsonpwd))
+			//	CTBCResult = ApiPost.DoApiPostForm(_bindCardURL, reqjsonpwd, "POSTk", null);
+			
+
+			return apiResult.Succ;
 		}
 
 		private (bool Succ, string ErrCode, string Message, TResponse Data)
@@ -67,24 +154,36 @@ namespace OtherService
 
 			var body = Body == null ? "" : JsonConvert.SerializeObject(Body);
 
+			logger.Info($@"Request Info--requestUrl:{requestUrl}
+									   --method:{Method}
+									   --header:{header}
+							           --origana body
+									   --{body}");
+
 			var resinfo = SetRequestBody(body, API, Method);
-			
+
 			string content = JsonConvert.SerializeObject(resinfo);
 
-			logger.Info($"Post Body:{content}");
+			logger.Info($"Request Info -- Encrypt:{content}");
 
-			var result = ApiPost.DoApiPostJson(requestUrl, content, "POST", header);
+			var result = ApiPost.DoApiPostJson(requestUrl, content, "Post", header);
 
 			valueTuple.Succ = result.Succ;
 			valueTuple.ErrCode = result.ErrCode;
 
+			logger.Info($"response Info -- {JsonConvert.SerializeObject(result)}");
 			if (result.Succ)
 			{
 				var a = HotaiReponseDncrypt(result.ResponseData);
 
 				valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(a);
 			}
-
+			else
+			{
+				if (result.ProtocolStatusCode == 401)
+					valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(result.ResponseData);
+			}
+			
 			return valueTuple;
 		}
 

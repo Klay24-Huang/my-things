@@ -639,7 +639,9 @@
     <Compile Include="WebAPI\Input\Hotai\Payment\HotaiPCRequestBody.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_AddCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CardFbinding.cs" />
+    <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CreditCardPay.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_AddCard.cs" />
+    <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_CreditCardPay.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_FastAddCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_GetCreditCards.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_PaymentBase.cs" />
@@ -762,8 +764,16 @@
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_SendSmsOtp.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Signin.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Token.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotaiCardInfo.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotaiResCreditCardPay.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotaiResFastBind.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotaiResAddCard.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotaiTXNInfoForAdd.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotalCardBinInfo.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\WebAPIOutput_AddHotaiCards.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\WebAPIOutput_FastAddHotaiCard.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\WebAPIOutput_GetCreditCards.cs" />
-    <Compile Include="WebAPI\output\Hotai\Payment\WebAPIOutput_PaymentBase.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\WebAPIOutput_PaymentGeneric.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_MochiLogin.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_ParkData.cs" />
     <Compile Include="WebAPI\output\Mochi\WebAPIOutput_QueryBillByCar.cs" />
