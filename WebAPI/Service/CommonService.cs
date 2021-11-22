@@ -264,7 +264,7 @@ namespace WebAPI.Service
         /// <returns></returns>
         public bool InsertOrderAuthReservation(SPInput_OrderAuthReservation Input, ref string errCode, ref List<ErrorInfo> lstError)
         {
-            string SPName = "usp_InsOrderAuth_I01";
+            string SPName = "usp_InsOrderAuthReservation_I01";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_OrderAuthReservation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_OrderAuthReservation, SPOutput_Base>(connetStr);
 
