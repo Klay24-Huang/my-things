@@ -232,6 +232,7 @@
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
+    <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\WalletWithdrowInvoiceController.cs" />
     <Compile Include="Controllers\BE_HandleCarMachineController.cs" />
     <Compile Include="Controllers\BE_HandleCarOnlineController.cs" />
@@ -291,15 +292,15 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
-    <Compile Include="Controllers\GetPayInfoController.cs" />
-    <Compile Include="Controllers\GetPayInfoReturnCarController.cs" />
-    <Compile Include="Controllers\GetWalletStoredMoneySetController.cs" />
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\GetOrderInsuranceInfoController.cs" />
     <Compile Include="Controllers\GetPreCreditAuthJobController.cs" />
     <Compile Include="Controllers\JointRentInvitationController.cs" />
     <Compile Include="Controllers\JointRentInviteeModifyController.cs" />
+    <Compile Include="Controllers\GetPayInfoController.cs" />
+    <Compile Include="Controllers\GetPayInfoReturnCarController.cs" />
+    <Compile Include="Controllers\GetWalletStoredMoneySetController.cs" />
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
     <Compile Include="Controllers\JointRentIviteeFeedBackController.cs" />
@@ -494,6 +495,13 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Bill\CreditCardInfo.cs" />
+    <Compile Include="Models\Param\Bill\HotaiCardInfo.cs" />
+    <Compile Include="Models\Param\Bill\Input\IFN_HotaiQueryCardForOne.cs" />
+    <Compile Include="Models\Param\Bill\Output\OFN_HotaiCreditCard.cs" />
+    <Compile Include="Models\Param\Bill\Output\OFN_HotaiCreditCardList.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
+    <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_HandleCarMachine.cs" />
@@ -542,6 +550,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_MemberQuery.cs" />
@@ -797,7 +806,6 @@
     <Compile Include="Models\Param\Output\OAPI_RefrashToken.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletInfoCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreBase.cs" />
-    <Compile Include="Models\Param\Output\OAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreShop.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeHistoryHidden.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletStoreTradeTransHistory.cs" />
@@ -837,6 +845,7 @@
     <Compile Include="Models\PolygonModel.cs" />
     <Compile Include="Service\CommonService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\HotaipayService.cs" />
     <Compile Include="Service\WalletService.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Utils\objUti.cs" />

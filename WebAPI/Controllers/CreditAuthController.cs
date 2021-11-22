@@ -235,7 +235,20 @@ namespace WebAPI.Controllers
                     //訂單
                     if (apiInput.PayType == 0)
                     {
-                        #region 0:租金
+                        //#region 還車時間檢查 
+                        //if (flag)
+                        //{
+                        //    var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
+                        //    if (!ckTime)
+                        //    {
+                        //        flag = false;
+                        //        errCode = "ERR245";
+                        //        ProcessedJobCount7.Inc();//唐加prometheus
+                        //    }
+                        //    trace.traceAdd("ckTime", ckTime);
+                        //}
+
+                        //#endregion
 
                         #region 取出訂單資訊
                         if (flag)
@@ -874,7 +887,7 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
-                    #endregion
+                    
                 }
                 #endregion
 
@@ -1175,17 +1188,6 @@ namespace WebAPI.Controllers
             }
             return flag;
         }
-        private bool CkFinalStopTime(string final_stop_time)
-        {
-
-            if (DateTime.TryParse(final_stop_time, out DateTime FD))
-            {
-                if (DateTime.Now.Subtract(FD).TotalMinutes < 15)
-                    return true;
-            }
-            return false;
-        }
-        
         #endregion
 
         #region Prometheus
@@ -1271,6 +1273,7 @@ namespace WebAPI.Controllers
                     break;
             }
         }
+        
         
         private (bool flag, SPInput_WalletPay paymentInfo) PayWalletFlow(long OrderNo, int Amount, string IDNO, string TradeType, bool breakAutoStore, string funName, long LogID, string Access_Token, ref string errCode)
         {
@@ -1547,10 +1550,10 @@ namespace WebAPI.Controllers
                     RTime = DateTime.Now;
                     JsonSerializer serializer = new JsonSerializer();
                     var p =
-                        (IRentAPIOutput_Generic<OAPI_WalletStoredByCredit>)serializer.Deserialize(new JTokenReader(resault.Data), typeof(IRentAPIOutput_Generic<OAPI_WalletStoredByCredit>));
+                        (IRentAPIOutput_Generic<OAPI_WalletStoreBase>)serializer.Deserialize(new JTokenReader(resault.Data), typeof(IRentAPIOutput_Generic<OAPI_WalletStoreBase>));
                     if (p.result == 1)
                     {
-                        flag = (p.Data.StroeResult == 1) ? true : false;
+                        flag = (p.result == 1) ? true : false;
                     }
                     else
                     {

@@ -2,6 +2,7 @@
 using Domain.SP.Input.Bill;
 using Domain.SP.Input.Booking;
 using Domain.SP.Input.Subscription;
+using Domain.SP.Input.Common;
 using Domain.SP.Input.Wallet;
 using Domain.SP.Input.Common;
 using Domain.SP.Output;
@@ -97,9 +98,9 @@ namespace WebAPI.Controllers
             OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
             SPOutput_Booking spOut = new SPOutput_Booking();
             BillCommon billCommon = new BillCommon();
-            CommonService commonService = new CommonService();
-            bool CreditFlag = true;     // 信用卡綁卡
+	        CommonService commonService = new CommonService();
             CreditAuthComm creditAuthComm = new CreditAuthComm();
+            bool CreditFlag = true;     // 信用卡綁卡
             bool WalletFlag = false;    // 綁定錢包
             int WalletNotice = 0;       // 錢包餘額不足通知 (0:不顯示 1:顯示)
             #endregion
@@ -206,7 +207,8 @@ namespace WebAPI.Controllers
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
-            #region 取得安心服務每小時價格          
+
+            #region 取得安心服務每小時價格
             if (flag)
             {
                 var result = commonService.GetInsurancePrice(IDNO, CarTypeCode, LogID, ref errCode);
@@ -218,6 +220,37 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 var result = creditAuthComm.CheckTaishinBindCard(ref flag, IDNO, ref errCode);
+            }
+            #endregion
+            #region 檢查錢包是否開通
+            if (ProjType == 4)  // 4:機車
+            {
+                SPName = "usp_CreditAndWalletQuery_Q01";
+                SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
+                {
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
+                };
+                SPOut_CreditAndWalletQuery spOut2 = new SPOut_CreditAndWalletQuery();
+                SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut2, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    WalletFlag = spOut2.WalletStatus == "2" ? true : false;
+                }
+                    
+
+                if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
+                {
+                    flag = false;
+                    errCode = "ERR292";
+                }
+                else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包，要給APP值顯示通知
+                {
+                    WalletNotice = 1;
+                }
             }
             #endregion
 
@@ -242,7 +275,7 @@ namespace WebAPI.Controllers
                 {
                     LastPickCarTime = SDate.AddMinutes(AnyRentDefaultPickTime);
                 }
-                else if (ProjType == 4)
+                else if (ProjType == 4) // 路邊機車
                 {
                     LastPickCarTime = SDate.AddMinutes(MotorRentDefaultPickTime);
                 }
@@ -296,33 +329,29 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
+                SPName = "usp_Booking";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
-                    CarNo = (string.IsNullOrWhiteSpace(apiInput.CarNo)) ? "" : apiInput.CarNo,
-                    Price = price,
-                    Insurance = apiInput.Insurance,
-                    CarType = CarType,
-                    ED = EDate,
-                    StopPickTime = LastPickCarTime,
                     IDNO = IDNO,
-                    InsurancePurePrice = InsurancePurePrice,
-                    LogID = LogID,
-                    PayMode = PayMode,
                     ProjID = apiInput.ProjID,
                     ProjType = ProjType,
-                    RStationID = StationID,
                     StationID = StationID,
+                    CarType = CarType,
+                    RStationID = StationID,
+                    SD = SDate,
+                    ED = EDate,
+                    StopPickTime = LastPickCarTime,
+                    Price = price,
+                    CarNo = (string.IsNullOrWhiteSpace(apiInput.CarNo)) ? "" : apiInput.CarNo,
                     Token = Access_Token,
-                    //Insurance = apiInput.Insurance,
-                    //InsurancePurePrice = InsurancePurePrice,
-                    //PayMode = PayMode,
-                    //LogID = LogID,
+                    Insurance = apiInput.Insurance,
+                    InsurancePurePrice = InsurancePurePrice,
+                    PayMode = PayMode,
+                    LogID = LogID,
                     //20211012 ADD BY ADAM REASON.增加手機定位點
                     //PhoneLat = apiInput.PhoneLat,
                     //PhoneLon = apiInput.PhoneLon
-                    SD = SDate
                 };
-                SPName = "usp_Booking";
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
@@ -526,6 +555,7 @@ namespace WebAPI.Controllers
             #endregion
         }
 
+        #region 春節租金-汽車
         /// <summary>
         /// 春節租金-汽車
         /// </summary>
@@ -572,5 +602,6 @@ namespace WebAPI.Controllers
             int MilagePrice = Convert.ToInt32(billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday));
             return price + InsurancePurePrice + MilagePrice; //(租金+安心服務+里程費)
         }
+        #endregion
     }
 }

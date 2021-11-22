@@ -232,7 +232,7 @@ namespace WebAPI.Controllers
                     };
                     //20211104 ADD BY ADAM REASON.訂閱制定金修改
                     //string SPName = new ObjType().GetSPName(ObjType.SPType.GetProjectPriceBase);
-                    string SPName = "usp_GetProjectPriceBase_T20211104";    //上正式在調整回來
+                    string SPName = "usp_GetProjectPriceBase_V20211104";    //上正式在調整回來
                     SPOutput_Base spOutBase = new SPOutput_Base();
                     SQLHelper<SPInput_GetProjectPriceBase, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetProjectPriceBase, SPOutput_Base>(connetStr);
                     DataSet ds = new DataSet();

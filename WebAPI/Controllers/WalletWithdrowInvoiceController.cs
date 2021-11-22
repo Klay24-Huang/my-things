@@ -17,7 +17,7 @@ using WebAPI.Models.Param.Output;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 車機綁定
+    /// 寫入手續費發票
     /// </summary>
     public class WalletWithdrowInvoiceController : ApiController
     {
@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletWithdrowInvoice";
+            string funName = "WalletWithdrowInvoiceController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_WalletWithdrowInvoice apiInput = null;

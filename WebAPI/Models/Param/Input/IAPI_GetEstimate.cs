@@ -39,6 +39,6 @@ namespace WebAPI.Models.Param.Input
         /// <summary>
         /// 訂閱制代碼 20211104 ADD BY ADAM
         /// </summary>
-        public int MonId { set; get; }
+        public int MonId { set; get; } = 0;
     }
 }

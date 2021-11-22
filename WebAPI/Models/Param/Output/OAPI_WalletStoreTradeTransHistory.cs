@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace WebAPI.Models.Param.Output
 {
@@ -13,30 +10,32 @@ namespace WebAPI.Models.Param.Output
     public class OAPI_WalletStoreTradeTrans
     {
         /// <summary>
-        /// 帳款流水號 Key
+        /// 帳款流水號
         /// </summary>
         public int SEQNO { get; set; }
+
         /// <summary>
-        /// 台新交易編號(IR編)Key
+        /// 交易年分
         /// </summary>
         public int TradeYear { get; set; }
+
         /// <summary>
-        /// 交易日期(EX:1/25)
+        /// 交易日期
         /// </summary>
         public string TradeDate { get; set; }
 
         /// <summary>
-        /// 交易時間(EX:12:23)
+        /// 交易時間
         /// </summary>
         public string TradeTime { get; set; }
 
         /// <summary>
-        /// 交易類別(文字): 儲值, 付款-租汽車, 轉入...
+        /// 交易類別
         /// </summary>
         public string TradeTypeNm { get; set; }
 
         /// <summary>
-        /// 交易類別註記(文字): 信用卡*1234, H1234567, 轉贈人 姓O名... 
+        /// 交易類別註記
         /// </summary>
         public string TradeNote { get; set; }
 
@@ -48,7 +47,6 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// APP上是否顯示：0:隱藏,1:顯示
         /// </summary>
-       public int ShowFLG { get; set; }
+        public int ShowFLG { get; set; }
     }
-
 }

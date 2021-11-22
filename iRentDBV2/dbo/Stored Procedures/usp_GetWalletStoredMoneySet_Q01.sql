@@ -7,11 +7,12 @@
 * 作    者 : AMBER
 * 撰寫日期 : 20210909
 * 修改日期 : 20210916 UPD BY AMBER REASON: 調整資料撈取邏輯
+             20211111 UPD BY AMBER REASON: StoreType新增和泰PAY選項
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetWalletStoredMoneySet_Q01]
 (   
-    @StoreType              TINYINT               , --儲值方式(1:信用卡,2:虛擬帳號,3:超商繳費)
+    @StoreType              TINYINT               , --儲值方式(1:信用卡,2:虛擬帳號,3:超商繳費,4:和泰PAY)
 	@IDNO			        VARCHAR(20)           , --身分證號
 	@Token                  VARCHAR(1024)         ,	--JWT TOKEN
     @LogID			        BIGINT                ,
@@ -75,7 +76,6 @@ BEGIN TRY
 
 	IF @Error=0   
 		BEGIN
-			IF  @StoreType <> 0
 			BEGIN
 			SET @StoreType=CAST(@StoreType as varchar(10)) 
 			END
@@ -92,7 +92,7 @@ BEGIN TRY
 			l.Code2 AS StoreMax,
 			QuickBtns = 
 		    (SELECT STRING_AGG(Code1,',') WITHIN GROUP (ORDER BY Code2)
-			FROM TB_WalletCodeTable WHERE  Code3=@StoreType AND CodeGroup='StoreOption' AND UseFlg=1 AND (Code0=c.Code3 OR Code3 IN (1,2)) ),
+			FROM TB_WalletCodeTable WHERE  Code3=@StoreType AND CodeGroup='StoreOption' AND UseFlg=1 AND (Code0=c.Code3 OR Code3 IN (1,2,4)) ),
 			CASE  c.Code2 WHEN '' THEN 0 ELSE 1 END AS defSet
 			FROM TB_MemberData m WITH(NOLOCK)
 			LEFT JOIN TB_UserWallet w WITH(NOLOCK)  ON w.IDNO=m.MEMIDNO 			
@@ -123,6 +123,5 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetWalletStoredMoneySet_Q01';
 END
-
 
 

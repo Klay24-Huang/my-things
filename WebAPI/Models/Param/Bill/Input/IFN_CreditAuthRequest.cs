@@ -24,7 +24,7 @@ namespace WebAPI.Models.Param.Bill.Input
         /// </summary>
         public int Amount { get; set; }
         /// <summary>
-        /// 付費項目(0 租金,1 罰金(沒在用),2 eTag(沒在用),3 補繳,4 訂閱,5 訂閱,6 錢包)
+        /// 付費項目(0 租金,1 罰金(沒在用),2 eTag(沒在用),3 補繳,4 訂閱,5 訂閱,6 春節訂金,7 錢包)
         /// </summary>
         public int PayType { get; set; }
         /// <summary>

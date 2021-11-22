@@ -20,6 +20,8 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 using WebAPI.Utils;
+using WebAPI.Service;
+using WebAPI.Models.Param.Bill.Output;
 
 namespace WebAPI.Controllers
 {
@@ -57,6 +59,9 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+
+            HotaipayService HotaipayService = new HotaipayService();
+            OFN_HotaiCreditCardList HotaiCards = new OFN_HotaiCreditCardList();
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
@@ -97,44 +102,6 @@ namespace WebAPI.Controllers
             #region 信用卡
             if (flag)
             {
-                //TaishinCreditCardBindAPI WebAPI = new TaishinCreditCardBindAPI();
-                //PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
-                //{
-                //    ApiVer = ApiVer,
-                //    ApposId = TaishinAPPOS,
-                //    RequestParams = new GetCreditCardListRequestParamasData()
-                //    {
-                //        MemberId = IDNO,
-                //    },
-                //    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
-                //    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-                //    TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
-                //};
-
-                //WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
-                //flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
-                //if (flag)
-                //{
-                //    int Len = wsOutput.ResponseParams.ResultData.Count;
-                //    apiOutput = new OAPI_CreditAndWalletQuery()
-                //    {
-                //        HasBind = (Len == 0) ? 0 : 1,
-                //        BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindList>()
-                //    };
-                //    for (int i = 0; i < Len; i++)
-                //    {
-                //        Models.Param.Output.PartOfParam.CreditCardBindList obj = new Models.Param.Output.PartOfParam.CreditCardBindList()
-                //        {
-                //            AvailableAmount = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].AvailableAmount),
-                //            BankNo = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].BankNo),
-                //            CardName = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardName),
-                //            CardNumber = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardNumber),
-                //            CardToken = baseVerify.BaseCheckString(wsOutput.ResponseParams.ResultData[i].CardToken)
-                //        };
-                //        apiOutput.BindListObj.Add(obj);
-                //    }
-                //}
-
                 //20201219 ADD BY JERRY 更新綁卡查詢邏輯，改由資料庫查詢
                 DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
                 if (ds.Tables.Count > 0)
@@ -160,7 +127,7 @@ namespace WebAPI.Controllers
                 ds.Dispose();
             }
             #endregion
-            #region 台新錢包
+            #region 台新錢包(MARK)
             // 錢包先點掉，防火牆不通，先不取資料
             //if (flag)
             //{
@@ -210,6 +177,27 @@ namespace WebAPI.Controllers
             //        }
             //    }
             //}
+            #endregion
+            #region 和泰PAY
+            if (flag)
+            {
+                var HotaiFlag = HotaipayService.DoQueryCardList(IDNO, ref HotaiCards, ref errCode);
+                flag = HotaiFlag;
+                if (flag)
+                {
+                    if (HotaiCards.CreditCards != null && HotaiCards.CreditCards.Count > 0)
+                    {
+                        var DefaultCard = HotaiCards.CreditCards.Find(x => x.IsDefault == 1);
+                        apiOutput.HasHotaiPay = (DefaultCard != null) ? 1 : 0;
+                        apiOutput.HotaiListObj = HotaiCards.CreditCards;
+                    }
+                    else
+                    {
+                        apiOutput.HasHotaiPay = 0;
+                        apiOutput.HotaiListObj = new List<Models.Param.Bill.HotaiCardInfo>();
+                    }
+                }
+            }
             #endregion
             #region 回傳結果
             if (flag)

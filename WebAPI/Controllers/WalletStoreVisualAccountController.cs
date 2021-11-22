@@ -57,13 +57,11 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreVisualAccountController";
-            int apiId = 221;
-
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
             IAPI_WalletStoreBase apiInput = null;
-            var apiOutput = new OAPI_WalletStoreVisualAccount();
+            OAPI_WalletStoreVisualAccount apiOutput = null;
 
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -82,7 +80,6 @@ namespace WebAPI.Controllers
                 #region 防呆
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
-                flag = true;
                 if (flag)
                 {
                     //寫入API Log
@@ -113,14 +110,13 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
+                #region TB
                 #region Token判斷
                 if (flag && isGuest == false)
                 {
                     flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
-
                 }
                 #endregion
-
                 #region 儲值金額限制檢核
                 if (flag)
                 {
@@ -128,15 +124,14 @@ namespace WebAPI.Controllers
                     flag = walletInfo.flag;
                 }
                 #endregion
-
-                #region TB
+                #region 產虛擬帳號
                 if (flag)
                 {
                     flag = CreateWalletStoreVisualAccount(apiInput, ref virtualAccount, ref payDeadLine, IDNO, LogID, Access_Token, ref flag, ref errCode);
                     trace.traceAdd("CreateVisualAccount", new { apiInput, virtualAccount, payDeadLine, errCode });
                     trace.FlowList.Add("產虛擬帳號");
                 }
-
+                #endregion
                 if (flag)
                 {
                     apiOutput = new OAPI_WalletStoreVisualAccount()
@@ -144,23 +139,22 @@ namespace WebAPI.Controllers
                         StoreMoney = apiInput.StoreMoney,
                         PayDeadline = string.Format("{0:yyyy/MM/dd 23:59}", payDeadLine),
                         BankCode = "812",
-                        VirtualAccount = SplitOnLength(virtualAccount,4," ")
+                        VirtualAccount = SplitOnLength(virtualAccount, 4, " ")
                     };
                 }
+              
+             
                 #endregion
-
-                apiOutput.StroeResult = flag ? 1 : 0;
-
-                trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
-                carRepo.AddTraceLog(apiId, funName, trace, flag);
             }
             catch (Exception ex)
             {
                 flag = false;
                 errCode = "ERR918";
-                apiOutput.StroeResult = 0;
                 trace.BaseMsg = ex.Message;
             }
+
+            trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
+            carRepo.AddTraceLog(221, funName, trace, flag);
 
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)

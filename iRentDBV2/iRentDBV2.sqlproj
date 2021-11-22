@@ -581,6 +581,11 @@
     <Build Include="dbo\Stored Procedures\usp_GetOrderInsuranceInfo.sql" />
     <Build Include="dbo\Stored Procedures\usp_JointRentIviteeFeedBack_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_TestPushService_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsMonthlyPayData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMonthlyPayInvData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsBlackList2.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BE_InsBlackList.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CheckMobileUse.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetWalletStoreTradeTransHistory_Q1.sql" />
     <Build Include="dbo\Stored Procedures\usp_WalletStoreTradeHistoryHidden_U1.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetWalletStoredMoneySet_Q01.sql" />
@@ -596,13 +601,7 @@
     <Build Include="dbo\Stored Procedures\usp_WalletStoreShop_I02.sql" />
     <Build Include="dbo\Stored Procedures\usp_WalletStoreShop_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_DonePayBack_V3.sql" />
-    <Build Include="dbo\Stored Procedures\usp_BE_GetOrderDetail.sql" />
     <Build Include="dbo\Stored Procedures\usp_WalletStoredByCredit_I01.sql" />
-    <Build Include="dbo\Stored Procedures\usp_InsMonthlyPayData.sql" />
-    <Build Include="dbo\Stored Procedures\usp_GetMonthlyPayInvData.sql" />
-    <Build Include="dbo\Stored Procedures\usp_BE_InsBlackList2.sql" />
-    <Build Include="dbo\Stored Procedures\usp_BE_InsBlackList.sql" />
-    <Build Include="dbo\Stored Procedures\usp_CheckMobileUse.sql" />
     <Build Include="dbo\Stored Procedures\usp_OrderAuthAmount_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_CalFinalPrice_U01.sql" />
     <Build Include="dbo\Tables\TB_TradeClose.sql" />
@@ -623,6 +622,7 @@
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthReservationList_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList_U02.sql" />
     <Build Include="dbo\Stored Procedures\usp_SendReturnCarControl_I01.sql" />
+    <Build Include="dbo\Tables\TB_MemberCMK.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

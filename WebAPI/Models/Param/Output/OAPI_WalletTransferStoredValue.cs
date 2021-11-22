@@ -7,6 +7,7 @@ namespace WebAPI.Models.Param.Output
 {
     public class OAPI_WalletTransferStoredValue
     {
+        /*
         /// <summary>
         /// 轉贈結果 (1成功0失敗)
         /// </summary>
@@ -15,5 +16,6 @@ namespace WebAPI.Models.Param.Output
         /// 時間戳章
         /// </summary>
         public string SystemTime { get; set; }
+        */
     }
 }

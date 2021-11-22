@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             var apiInput = new IAPI_GetWalletStoredMoneySet();
-            var outputApi = new OAPI_GetWalletStoredMoneySet();
+            OAPI_GetWalletStoredMoneySet outputApi = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -65,7 +65,7 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                if (apiInput == null || apiInput.StoreType < 0 && apiInput.StoreType <4)
+                if (apiInput == null || apiInput.StoreType < 1 || apiInput.StoreType > 4)
                 {
                     flag = false;
                     errCode = "ERR900";//參數遺漏
@@ -95,8 +95,8 @@ namespace WebAPI.Controllers
                 {
                     LogID = LogID,
                     Token = Access_Token,
-                    IDNO= IDNO,
-                    StoreType=apiInput.StoreType
+                    IDNO = IDNO,
+                    StoreType = apiInput.StoreType
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_GetWalletStoredMoneySet, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetWalletStoredMoneySet, SPOutput_Base>(connetStr);
@@ -104,19 +104,22 @@ namespace WebAPI.Controllers
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(spName, sPInput_GetWallet, ref spOut, ref walletStoredMoneySets, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag && walletStoredMoneySets.Count > 0)
+                if (walletStoredMoneySets.Count > 0)
                 {
-                    outputApi.StoredMoneySet = walletStoredMoneySets.Select(t => new GetWalletStoredMoneySet
+                    outputApi = new OAPI_GetWalletStoredMoneySet()
                     {
-                        StoreType = t.StoreType,
-                        StoreTypeDetail = t.StoreTypeDetail,
-                        StoreLimit = t.StoreLimit,
-                        StoreMax = t.StoreMax,
-                        WalletBalance = t.WalletBalance,
-                        Rechargeable = t.Rechargeable,
-                        defSet = t.defSet,
-                        QuickBtns = t.QuickBtns.Split(',').Select(Int32.Parse).ToList()
-                }).ToList();                   
+                        StoredMoneySet = walletStoredMoneySets.Select(t => new GetWalletStoredMoneySet
+                        {
+                            StoreType = t.StoreType,
+                            StoreTypeDetail = t.StoreTypeDetail,
+                            StoreLimit = t.StoreLimit,
+                            StoreMax = t.StoreMax,
+                            WalletBalance = t.WalletBalance,
+                            Rechargeable = t.Rechargeable,
+                            defSet = t.defSet,
+                            QuickBtns = (string.IsNullOrWhiteSpace(t.QuickBtns)) ? new List<int>(0) : t.QuickBtns.Split(',').Select(Int32.Parse).ToList()
+                        }).ToList()
+                    };
                 }
             }
             #endregion
