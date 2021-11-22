@@ -115,12 +115,15 @@ namespace WebCommon
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                byte[] jsonBytes = Encoding.UTF8.GetBytes(content);//要發送的字串轉為byte[]
-                request.ContentLength = jsonBytes.Length;
-
-                using (var requestStream = request.GetRequestStream())
+                if (!string.IsNullOrWhiteSpace(content))
                 {
-                    requestStream.Write(jsonBytes, 0, jsonBytes.Length);
+                    byte[] jsonBytes = Encoding.UTF8.GetBytes(content);//要發送的字串轉為byte[]
+                    request.ContentLength = jsonBytes.Length;
+
+                    using (var requestStream = request.GetRequestStream())
+                    {
+                        requestStream.Write(jsonBytes, 0, jsonBytes.Length);
+                    }
                 }
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
