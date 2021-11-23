@@ -122,5 +122,12 @@
         /// <para>N：不需重新確認</para>
         /// </summary>
         public string AuthStatus { get; set; }
+
+        /// <summary>
+        /// 和泰OneID綁定狀態
+        /// <para>Y：綁定</para>
+        /// <para>N：未綁</para>
+        /// </summary>
+        public string BindHotai { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 取得個人資料
     /// </summary>
-    public class WebAPIOutput_GetMemberProfile : WebAPIOutput_Base
+    public class WebAPIOutput_GetMemberProfile
     {
         /// <summary>
         /// 姓名

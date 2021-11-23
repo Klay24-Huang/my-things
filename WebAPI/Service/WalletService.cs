@@ -1,50 +1,26 @@
-﻿using Domain.SP.Input.Bill;
-using Domain.SP.Input.Rent;
-using Domain.SP.Input.Subscription;
+﻿using Domain.SP.Input.OtherService.Taishin;
+using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
-using Domain.SP.Output.Bill;
-using Domain.SP.Output.Rent;
-using OtherService.Enum;
+using Domain.SP.Output.Wallet;
+using NLog;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Web;
+using WebAPI.Models.BaseFunc;
+using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
 using WebCommon;
-using System.Configuration;
-using WebAPI.Models.BaseFunc;
-using Domain.SP.Output.Subscription;
-using WebAPI.Models.Param.Bill.Input;
-using Domain.WebAPI.output.Taishin;
-using OtherService;
-using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
-using Domain.WebAPI.Input.Taishin;
-using System.Threading;
-using WebAPI.Models.Param.Output.PartOfParam;
-using WebAPI.Models.Param.Output;
-using Domain.TB;
-using Reposotory.Implement;
-using WebAPI.Models.Param.CusFun.Input;
-using Domain.WebAPI.Input.Taishin.Wallet;
-using Newtonsoft.Json;
-using Domain.WebAPI.output.Taishin.Wallet;
-using Domain.MemberData;
-using Domain.SP.Input.Member;
-using Domain.WebAPI.Input.HiEasyRentAPI;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using NLog;
-using Domain.SP.Output.Wallet;
-using Domain.SP.Input.Wallet;
-using Domain.SP.Input.OtherService.Taishin;
-using WebAPI.Models.Param.Input;
 
 namespace WebAPI.Service
 {
     public class WalletService
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        public (bool flag , SPOutput_GetWallet Info)  CheckStoreAmtLimit (int StoreMoney, string IDNO, long LogID, string Access_Token, ref string errCode) 
+
+        #region 儲值金額限制檢核
+        public (bool flag, SPOutput_GetWallet Info) CheckStoreAmtLimit(int StoreMoney, string IDNO, long LogID, string Access_Token, ref string errCode)
         {
             (bool flag, SPOutput_GetWallet Info) re = (false, new SPOutput_GetWallet());
             CommonFunc baseVerify = new CommonFunc();
@@ -82,27 +58,38 @@ namespace WebAPI.Service
             re.Info = sPOutput_GetWallet;
             return re;
         }
+        #endregion
     }
 
     public class WalletSp
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         protected static Logger logger = LogManager.GetCurrentClassLogger();
+        CommonFunc baseVerify = new CommonFunc();
 
-        public List<SPOut_GetWalletStoreTradeTransHistory> sp_GetWalletStoreTradeTransHistory(SPInput_GetWalletStoreTradeTransHistory spInput, ref string errCode)
+        #region 取得電子錢包歷史紀錄
+        /// <summary>
+        /// 取得電子錢包歷史紀錄
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public (bool flag, List<SPOut_GetWalletStoreTradeTransHistory> result) sp_GetWalletStoreTradeTransHistory(SPInput_GetWalletStoreTradeTransHistory spInput, ref string errCode)
         {
-            var re = new List<SPOut_GetWalletStoreTradeTransHistory>();
+            (bool flag, List<SPOut_GetWalletStoreTradeTransHistory> History) result = (false, new List<SPOut_GetWalletStoreTradeTransHistory>());
+            var flag = true;
+            var lstError = new List<ErrorInfo>();
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetWalletStoreTradeTransHistory);
                 string SPName = "usp_GetWalletStoreTradeTransHistory_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
-                        spInput.LogID,
+                        spInput.Token,
                         spInput.SD,
-                        spInput.ED
+                        spInput.ED,
+                        spInput.LogID
                     },
                 };
 
@@ -113,26 +100,35 @@ namespace WebAPI.Service
 
                 ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
-                if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+                if (ds1.Tables.Count == 0)
                 {
-                    if (ds1.Tables.Count >= 2)
-                        re = objUti.ConvertToList<SPOut_GetWalletStoreTradeTransHistory>(ds1.Tables[0]);
-                    else if (ds1.Tables.Count == 1)
+                    result.flag = false;
+                    errCode = "ERR999";
+                }
+                else
+                {
+                    baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[1].Rows[0]["Error"]), ds1.Tables[1].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+
+                    result.flag = flag; // 將SP驗證結果接起來
+
+                    if (flag)
                     {
-                        var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
-                        if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
-                            errCode = re_db.ErrorMsg;
+                        if (ds1.Tables[0].Rows.Count > 0)
+                        {
+                            result.History = objUti.ConvertToList<SPOut_GetWalletStoreTradeTransHistory>(ds1.Tables[0]);
+                        }
                     }
                 }
-
-                return re;
             }
             catch (Exception ex)
             {
-                errCode = ex.ToString();
-                throw ex;
+                //errCode = ex.ToString();
+                //throw ex;
             }
+
+            return result;
         }
+        #endregion
 
         public List<SPOut_WalletTransferCheck> sp_WalletTransferCheck(SPInput_WalletTransferCheck spInput, ref string errCode)
         {
@@ -140,7 +136,6 @@ namespace WebAPI.Service
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.WalletTransferCheck);
                 string SPName = "usp_WalletTransferCheck_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -209,7 +204,7 @@ namespace WebAPI.Service
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
-                     if (ds1.Tables.Count == 1)
+                    if (ds1.Tables.Count == 1)
                     {
                         var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
                         if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
@@ -380,7 +375,7 @@ namespace WebAPI.Service
             }
 
             return flag;
-        }    
+        }
 
         public bool sp_WalletPay(SPInput_WalletPay spInput, ref string errCode)
         {
@@ -476,6 +471,7 @@ namespace WebAPI.Service
         }
     }
 
+    #region SPout轉List
     public class WalletMap
     {
         public List<OAPI_WalletStoreTradeTrans> FromSPOut_GetWalletStoreTradeTransHistory(List<SPOut_GetWalletStoreTradeTransHistory> sour)
@@ -493,7 +489,7 @@ namespace WebAPI.Service
                           TradeTypeNm = a.CodeName,
                           TradeNote = a.TradeNote,
                           TradeAMT = Convert.ToInt32(a.TradeAMT),
-                          ShowFLG = 1
+                          ShowFLG = a.ShowFLG
                       }).ToList();
             }
 
@@ -533,4 +529,5 @@ namespace WebAPI.Service
             return re;
         }
     }
+    #endregion
 }

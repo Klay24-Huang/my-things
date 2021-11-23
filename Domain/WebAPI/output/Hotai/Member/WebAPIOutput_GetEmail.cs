@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 取得 Email
     /// </summary>
-    public class WebAPIOutput_GetEmail : WebAPIOutput_Base
+    public class WebAPIOutput_GetEmail
     {
         /// <summary>
         /// email

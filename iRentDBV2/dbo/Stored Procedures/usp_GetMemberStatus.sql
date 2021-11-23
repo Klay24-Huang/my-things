@@ -21,6 +21,8 @@
 			 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
 			 20210917 ADD BY ADAM REASON.是否有推播判斷
 			 20211105 UPD BY YEH REASON:增加預授權條款狀態
+			 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
+			 20211117 UPD BY YEH REASON:調整條款狀態判斷條件
 * Example  : 
 ***********************************************************************************************/
 
@@ -87,6 +89,7 @@ BEGIN TRY
 	BEGIN
 		DROP TABLE IF EXISTS #OrderProjCount;
 		DROP TABLE IF EXISTS #CMKDef;
+		DROP TABLE IF EXISTS #MemberCMK;
 
 		--統計在線案件數量
 		SELECT ProjType,COUNT(ProjType) AS Total
@@ -98,12 +101,19 @@ BEGIN TRY
 		AND stop_time > DATEADD(DAY,-90,GETDATE())
 		GROUP BY ProjType;
 
-		-- 20210813 UPD BY YEH REASON:取得設定檔資料
+		-- 20210813 UPD BY YEH REASON:取得條款設定檔資料
 		SELECT VerType,MAX(Version) AS Version
 		INTO #CMKDef
 		FROM TB_CMKDef
 		WHERE @NowTime >= SDATE
 		GROUP BY VerType;
+
+		-- 20211117 UPD BY YEH REASON:取得會員條款檔資料清單
+		SELECT ISNULL(A.VerType,'') AS VerType
+			,ISNULL(B.Version,'') AS Version
+		INTO #MemberCMK
+		FROM #CMKDef A WITH(NOLOCK) 
+		LEFT JOIN TB_MemberCMK B ON B.VerType=A.VerType AND B.MEMIDNO=@IDNO;
 
 		SELECT @Audit=Audit FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
 
@@ -234,19 +244,20 @@ BEGIN TRY
 										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) < 3 THEN 1
 										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) >= 3 THEN 2 END
 				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
-				,CMKStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Hims' AND Version=E.Version),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態
+				,CMKStatus			= ISNULL((SELECT 'N' FROM #MemberCMK WHERE VerType='Hims' AND Version<>''),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態		20211117 UPD BY YEH REASON:調整條款狀態判斷條件
 				,IsShowBuy			= CASE WHEN ISNULL(D.Score,100) >= 60 THEN 'Y' ELSE 'N' END	-- 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
 				,HasNoticeMsg		= CASE WHEN R.IDNO IS NULL THEN @HasNoticeMsg 
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='N' THEN 'N' 
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
 										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
-				,AuthStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Auth' AND Version=E.Version),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態
+				,AuthStatus			= ISNULL((SELECT 'N' FROM #MemberCMK WHERE VerType='Auth' AND Version<>''),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態	20211117 UPD BY YEH REASON:調整條款狀態判斷條件
+				,BindHotai			= ISNULL((IIF(E.OneID <> '', 'Y', 'N')), 'N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
 			LEFT JOIN TB_MemberScoreMain D WITH(NOLOCK) ON D.MEMIDNO=A.MEMIDNO
-			LEFT JOIN TB_MemberCMK E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_NoticeRLog R WITH(NOLOCK) ON R.IDNO=A.MEMIDNO
+			LEFT JOIN TB_MemberHotai E WITH(NOLOCK) ON E.IDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO;
 		END
 		ELSE
@@ -361,25 +372,27 @@ BEGIN TRY
 										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) < 3 THEN 1
 										WHEN ISNULL(D.ISBLOCK,0) = 1 AND ISNULL(D.BLOCK_CNT,0) >= 3 THEN 2 END
 				,BLOCK_EDATE		= ISNULL(CONVERT(varchar, D.BLOCK_EDATE, 111),'')
-				,CMKStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Hims' AND Version=F.Version),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態
+				,CMKStatus			= ISNULL((SELECT 'N' FROM #MemberCMK WHERE VerType='Hims' AND Version<>''),'Y')	-- 20210811 UPD BY YEH REASON:增加會員條款狀態		20211117 UPD BY YEH REASON:調整條款狀態判斷條件
 				,IsShowBuy			= CASE WHEN ISNULL(D.Score,100) >= 60 THEN 'Y' ELSE 'N' END	-- 20210910 UPD BY YEH REASON:增加是否顯示購買牌卡
 				,HasNoticeMsg		= CASE WHEN R.IDNO IS NULL THEN @HasNoticeMsg 
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='N' THEN 'N' 
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
 										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
-				,AuthStatus			= ISNULL((SELECT 'N' FROM #CMKDef WHERE VerType='Auth' AND Version=F.Version),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態
+				,AuthStatus			= ISNULL((SELECT 'N' FROM #MemberCMK WHERE VerType='Auth' AND Version<>''),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態	20211117 UPD BY YEH REASON:調整條款狀態判斷條件
+				,BindHotai			= ISNULL((IIF(F.OneID <> '', 'Y', 'N')), 'N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
 			LEFT JOIN TB_MemberScoreMain D WITH(NOLOCK) ON D.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_MemberDataOfAutdit E WITH(NOLOCK) ON E.MEMIDNO=A.MEMIDNO
-			LEFT JOIN TB_MemberCMK F WITH(NOLOCK) ON F.MEMIDNO=A.MEMIDNO
 			LEFT JOIN TB_NoticeRLog R WITH(NOLOCK) ON R.IDNO=A.MEMIDNO
+			LEFT JOIN TB_MemberHotai F WITH(NOLOCK) ON F.IDNO=A.MEMIDNO
 			WHERE A.MEMIDNO=@IDNO;
 		END
 
 		DROP TABLE IF EXISTS #OrderProjCount;
 		DROP TABLE IF EXISTS #CMKDef;
+		DROP TABLE IF EXISTS #MemberCMK;
 	END
 		
 	--寫入錯誤訊息
@@ -408,4 +421,3 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberStatus';
-GO

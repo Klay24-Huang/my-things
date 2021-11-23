@@ -89,6 +89,11 @@ namespace Domain.SP.Input.Wallet
         public string TradeType { set; get; }
 
         /// <summary>
+        /// 信用卡後5碼
+        /// </summary>
+        public string TradeKey { set; get; } = "";
+
+        /// <summary>
         /// 程式名稱
         /// </summary>
         public string PRGName { set; get; }

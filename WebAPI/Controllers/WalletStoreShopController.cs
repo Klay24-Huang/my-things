@@ -61,8 +61,6 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreShopController";
-            int apiId = 222;
-
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
@@ -70,7 +68,7 @@ namespace WebAPI.Controllers
             IAPI_WalletStoreShop apiInput = null;
             OAPI_WalletStoreShop apiOutput = null;
             var spOutput = new SPOutput_GetWallet();
-            WebAPIOutput_GetBarCode outGetBarCode = null;
+            WebAPIOutput_GetBarCode outBarCode = null;
 
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -83,6 +81,7 @@ namespace WebAPI.Controllers
             string paymentId = "";
             string hmacVal = "";
             string base64String = "";
+            DateTime dueDate = new DateTime();
 
             #endregion
             trace.traceAdd("apiIn", value);
@@ -91,8 +90,6 @@ namespace WebAPI.Controllers
             {
                 #region 防呆
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
-
-                flag = true;
                 if (flag)
                 {
                     //寫入API Log
@@ -126,7 +123,6 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("防呆");
                 }
                 #endregion
-
                 #region TB
                 #region Token判斷
                 if (flag && isGuest == false)
@@ -142,156 +138,152 @@ namespace WebAPI.Controllers
                     flag = walletInfo.flag;
                     spOutput = walletInfo.Info;
                 }
-                #endregion
-                #region 取得台新APIToken
+                #endregion               
+               
                 if (flag)
                 {
-                    WebAPIOutput_GetTaishinCvsPayToken output_GetTaishinCvsPayToken = new WebAPIOutput_GetTaishinCvsPayToken();
-                    flag = WalletAPI.DoGetTaishinCvsPayToken(ref output_GetTaishinCvsPayToken);
-                    if (flag && output_GetTaishinCvsPayToken != null)
+                    #region 取得台新APIToken
+                    WebAPIOutput_GetTaishinCvsPayToken outToken = new WebAPIOutput_GetTaishinCvsPayToken();
+                    flag = WalletAPI.DoGetTaishinCvsPayToken(ref outToken);
+                    if (flag && outToken != null)
                     {
-                        cvsPayToken = output_GetTaishinCvsPayToken.access_token;
+                        cvsPayToken = outToken.access_token;
                     }
-
-                    trace.traceAdd("DoGetTaishinCvsPayToken", new { output_GetTaishinCvsPayToken });
+                    trace.traceAdd("DoGetTaishinCvsPayToken", new { outToken });
                     trace.FlowList.Add("取得台新APIToken");
-                }
-                #endregion
-                #region 產生超商銷帳編號
-                DateTime dueDate = DateTime.Now.AddHours(3);
-                if (flag)
-                {
-                    string cvsIdentifier = GetCvsCode(apiInput.CvsType).Item3; //超商業者識別碼
-                    SPInput_GetCvsPaymentId spInput_GetCvsPaymentId = new SPInput_GetCvsPaymentId()
+                    #endregion
+                    #region 產生超商銷帳編號
+                    dueDate = DateTime.Now.AddHours(3);
+                    if (flag)
                     {
-                        IDNO = IDNO,
-                        Token = Access_Token,
-                        LogID = LogID,
-                        CvsIdentifier = cvsIdentifier
-                    };
+                        string cvsIdentifier = GetCvsCode(apiInput.CvsType).Item3; //超商業者識別碼
+                        SPInput_GetCvsPaymentId inputPayment = new SPInput_GetCvsPaymentId()
+                        {
+                            IDNO = IDNO,
+                            Token = Access_Token,
+                            LogID = LogID,
+                            CvsIdentifier = cvsIdentifier
+                        };
 
-                    SPOutput_GetCvsPaymentId spOutput_GetCvsPaymentId = wsp.sp_GetCvsPaymentId(spInput_GetCvsPaymentId, ref errCode);
-                    if (!string.IsNullOrWhiteSpace(spOutput_GetCvsPaymentId.PaymentId))
+                        SPOutput_GetCvsPaymentId outputPayment= wsp.sp_GetCvsPaymentId(inputPayment, ref errCode);
+                        if (!string.IsNullOrWhiteSpace(outputPayment.PaymentId))
+                        {
+                            paymentId = outputPayment.PaymentId;
+                        }
+                        else
+                        {
+                            flag = false;
+                        }
+
+                        trace.traceAdd("sp_GetCvsPaymentId", new { outputPayment });
+                        trace.FlowList.Add("產生銷帳編號");
+                    }
+                    #endregion
+                    #region 超商繳費資訊上傳-新增
+                    if (flag)
                     {
-                        paymentId = spOutput_GetCvsPaymentId.PaymentId;
+                        cvsCode = GetCvsCode(apiInput.CvsType).Item2; //超商代收代號
+                        IHUBReqHeader header = SetReqHeader(CreateCvsPayInfo);
+
+                        List<CVSPayInfoDetailReq> payInfoList = new List<CVSPayInfoDetailReq>();
+                        CVSPayInfoDetailReq detailReq = new CVSPayInfoDetailReq
+                        {
+                            paidDue = dueDate.ToString("yyyyMMdd"),
+                            paymentId = paymentId,
+                            payAmount = apiInput.StoreMoney,
+                            payPeriod = 1,
+                            overPaid = "N",
+                            custId = IDNO,
+                            custMobile = spOutput.PhoneNo,
+                            custEmail = spOutput.Email,
+                            memo = ""
+                        };
+                        payInfoList.Add(detailReq);
+
+
+                        WebAPI_CreateCvsPayInfo inputCvsPay = new WebAPI_CreateCvsPayInfo()
+                        {
+                            header = header,
+                            body = new CvsPayInfoReq()
+                            {
+                                txType = "i",
+                                txDate = DateTime.Now.ToString("yyyyMMdd"),
+                                txBatchNo = DateTime.Now.ToString("yyyyMMddHHmmssfff"),
+                                recordCount = 1,
+                                totalAmount = apiInput.StoreMoney,
+                                cvsCode = new CvsCode { cvsCode = cvsCode, cvsType = apiInput.CvsType },
+                                detail = payInfoList
+                            }
+                        };
+
+                        hmacVal = WalletAPI.GetHmacVal(inputCvsPay, inputCvsPay.header.cTxSn);
+
+                        WebAPIOutput_CreateCvsPayInfo outCvsPay = new WebAPIOutput_CreateCvsPayInfo();
+                        flag = WalletAPI.DoStoreShopCreateCvsPayInfo(inputCvsPay, cvsPayToken, hmacVal, ref errCode, ref outCvsPay);
+                    }
+                    #endregion
+                    #region Barcode查詢
+                    if (flag)
+                    {
+                        IHUBReqHeader header = SetReqHeader(GetBarCode);
+                        WebAPI_GetBarcode inputBarcode = new WebAPI_GetBarcode()
+                        {
+                            header = header,
+                            body = new BarcodeReq()
+                            {
+                                cvsCode = cvsCode,
+                                dueDate = dueDate.ToString("yyyyMMdd"),
+                                cvsType = apiInput.CvsType,
+                                payAmount = apiInput.StoreMoney,
+                                paymentId = paymentId,
+                                memo = "",
+                                payPeriod = 1
+                            }
+                        };
+
+                        hmacVal = WalletAPI.GetHmacVal(inputBarcode, inputBarcode.header.cTxSn);
+
+                        outBarCode = new WebAPIOutput_GetBarCode();
+                        flag = WalletAPI.DoStoreShopGetBarcode(inputBarcode, cvsPayToken, hmacVal, ref errCode, ref outBarCode);
+
+                        trace.traceAdd("DoStoreShopGetBarcode", new { inputBarcode, cvsPayToken, hmacVal, errCode, outBarCode });
+                        trace.FlowList.Add("台新回傳Barcode");
+                    }
+                    #endregion
+                    #region 台新回傳Base64需轉向輸出給APP
+                    if (flag && outBarCode.body.barcode64 != null)
+                    {
+                        byte[] binaryData = Convert.FromBase64String(outBarCode.body.barcode64);
+                        using (var memoryStream = new MemoryStream(binaryData))
+                        {
+                            var rotateImage = System.Drawing.Image.FromStream(memoryStream);
+                            rotateImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            base64String = ImageToBase64(rotateImage, System.Drawing.Imaging.ImageFormat.Png);
+                        }
+                    }
+                    #endregion
+                    #region 輸出
+                    if (flag && !string.IsNullOrWhiteSpace(base64String))
+                    {
+                        apiOutput = new OAPI_WalletStoreShop()
+                        {
+                            StoreMoney = apiInput.StoreMoney,
+                            Barcode64 = base64String,
+                            ShopBarCode1 = outBarCode.body.code1,
+                            ShopBarCode2 = outBarCode.body.code2,
+                            ShopBarCode3 = outBarCode.body.code3,
+                            PayDeadline = dueDate.ToString("yyyy/MM/dd HH:mm")
+                        };
+
                     }
                     else
                     {
-                        flag = false;
+                        errCode = "ERR940";
+                        errMsg = "超商條碼產生失敗，請洽系統管理員";
                     }
-
-                    trace.traceAdd("sp_GetCvsPaymentId", new { spOutput_GetCvsPaymentId });
-                    trace.FlowList.Add("產生銷帳編號");
-                }
+                    #endregion
+                }   
                 #endregion
-                #region 超商繳費資訊上傳-新增
-                if (flag)
-                {
-                    cvsCode = GetCvsCode(apiInput.CvsType).Item2; //超商代收代號
-                    IHUBReqHeader header = SetReqHeader(CreateCvsPayInfo);
-
-                    List<CVSPayInfoDetailReq> payInfoList = new List<CVSPayInfoDetailReq>();
-                    CVSPayInfoDetailReq detailReq = new CVSPayInfoDetailReq
-                    {
-                        paidDue = dueDate.ToString("yyyyMMdd"),
-                        paymentId = paymentId,
-                        payAmount = apiInput.StoreMoney,
-                        payPeriod = 1,
-                        overPaid = "N",
-                        custId = IDNO,
-                        custMobile = spOutput.PhoneNo,
-                        custEmail = spOutput.Email,
-                        memo = ""
-                    };
-                    payInfoList.Add(detailReq);
-
-
-                    WebAPI_CreateCvsPayInfo webAPI_CreateCvsPayInfo = new WebAPI_CreateCvsPayInfo()
-                    {
-                        header = header,
-                        body = new CvsPayInfoReq()
-                        {
-                            txType = "i",
-                            txDate = DateTime.Now.ToString("yyyyMMdd"),
-                            txBatchNo = DateTime.Now.ToString("yyyyMMddHHmmssfff"),
-                            recordCount = 1,
-                            totalAmount = apiInput.StoreMoney,
-                            cvsCode = new CvsCode { cvsCode = cvsCode, cvsType = apiInput.CvsType },
-                            detail = payInfoList
-                        }
-                    };
-
-                    hmacVal = WalletAPI.GetHmacVal(webAPI_CreateCvsPayInfo, webAPI_CreateCvsPayInfo.header.cTxSn);
-
-                    WebAPIOutput_CreateCvsPayInfo output_CreateCvsPayInfo = new WebAPIOutput_CreateCvsPayInfo();
-                    flag = WalletAPI.DoStoreShopCreateCvsPayInfo(webAPI_CreateCvsPayInfo, cvsPayToken, hmacVal, ref errCode, ref output_CreateCvsPayInfo);
-                }
-                #endregion
-                #region Barcode查詢
-                if (flag)
-                {
-                    IHUBReqHeader header = SetReqHeader(GetBarCode);
-                    WebAPI_GetBarcode webAPI_GetBarcode = new WebAPI_GetBarcode()
-                    {
-                        header = header,
-                        body = new BarcodeReq()
-                        {
-                            cvsCode = cvsCode,
-                            dueDate = dueDate.ToString("yyyyMMdd"),
-                            cvsType = apiInput.CvsType,
-                            payAmount = apiInput.StoreMoney,
-                            paymentId = paymentId,
-                            memo = "",
-                            payPeriod = 1
-                        }
-                    };
-
-                    hmacVal = WalletAPI.GetHmacVal(webAPI_GetBarcode, webAPI_GetBarcode.header.cTxSn);
-
-                    outGetBarCode = new WebAPIOutput_GetBarCode();
-                    flag = WalletAPI.DoStoreShopGetBarcode(webAPI_GetBarcode, cvsPayToken, hmacVal, ref errCode, ref outGetBarCode);
-
-                    trace.traceAdd("DoStoreShopGetBarcode", new { webAPI_GetBarcode, cvsPayToken, hmacVal, errCode, outGetBarCode });
-                    trace.FlowList.Add("台新回傳Barcode");
-                }
-                #endregion
-                #region 台新回傳Base64需轉向輸出給APP
-                if (flag && outGetBarCode.body.barcode64 != null)
-                {
-                    byte[] binaryData = Convert.FromBase64String(outGetBarCode.body.barcode64);
-                    using (var memoryStream = new MemoryStream(binaryData))
-                    {
-                        var rotateImage = System.Drawing.Image.FromStream(memoryStream);
-                        rotateImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                        base64String = ImageToBase64(rotateImage, System.Drawing.Imaging.ImageFormat.Png);
-                    }
-                }
-                #endregion
-                #region 輸出
-                if (flag && !string.IsNullOrWhiteSpace(base64String))
-                {
-                    apiOutput = new OAPI_WalletStoreShop()
-                    {
-                        StoreMoney = apiInput.StoreMoney,
-                        Barcode64 = base64String,
-                        ShopBarCode1 = outGetBarCode.body.code1,
-                        ShopBarCode2 = outGetBarCode.body.code2,
-                        ShopBarCode3 = outGetBarCode.body.code3,
-                        PayDeadline = dueDate.ToString("yyyy/MM/dd HH:mm")
-                    };
-
-                }
-                else
-                {
-                    errCode = "ERR940";
-                    errMsg = "超商條碼產生失敗，請洽系統管理員";
-                }
-                #endregion
-
-                trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                carRepo.AddTraceLog(apiId, funName, trace, flag);
-                #endregion
-
             }
             catch (Exception ex)
             {
@@ -299,6 +291,9 @@ namespace WebAPI.Controllers
                 errCode = "ERR918";
                 trace.BaseMsg = ex.Message;
             }
+
+            trace.traceAdd("TraceFinal", new { errCode, errMsg });
+            carRepo.AddTraceLog(222, funName, trace, flag);
 
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)

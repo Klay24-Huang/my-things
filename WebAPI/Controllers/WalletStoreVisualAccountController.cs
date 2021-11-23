@@ -57,8 +57,6 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreVisualAccountController";
-            int apiId = 221;
-
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
@@ -82,7 +80,6 @@ namespace WebAPI.Controllers
                 #region 防呆
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
-                flag = true;
                 if (flag)
                 {
                     //寫入API Log
@@ -114,15 +111,12 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region TB
-
                 #region Token判斷
                 if (flag && isGuest == false)
                 {
                     flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
-
                 }
                 #endregion
-
                 #region 儲值金額限制檢核
                 if (flag)
                 {
@@ -130,7 +124,6 @@ namespace WebAPI.Controllers
                     flag = walletInfo.flag;
                 }
                 #endregion
-
                 #region 產虛擬帳號
                 if (flag)
                 {
@@ -139,7 +132,6 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("產虛擬帳號");
                 }
                 #endregion
-
                 if (flag)
                 {
                     apiOutput = new OAPI_WalletStoreVisualAccount()
@@ -150,8 +142,8 @@ namespace WebAPI.Controllers
                         VirtualAccount = SplitOnLength(virtualAccount, 4, " ")
                     };
                 }
-                trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
-                carRepo.AddTraceLog(apiId, funName, trace, flag);
+              
+             
                 #endregion
             }
             catch (Exception ex)
@@ -160,6 +152,9 @@ namespace WebAPI.Controllers
                 errCode = "ERR918";
                 trace.BaseMsg = ex.Message;
             }
+
+            trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
+            carRepo.AddTraceLog(221, funName, trace, flag);
 
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)

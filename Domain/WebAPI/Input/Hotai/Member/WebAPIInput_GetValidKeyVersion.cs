@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.WebAPI.output.Hotai.Member
+namespace Domain.WebAPI.Input.Hotai.Member
 {
     /// <summary>
-    /// 驗證會員資訊，取得 OTP 編號
+    /// 取得後台金鑰有效版本號
     /// </summary>
-    public class WebAPIOutput_OtpValidation
+    public class WebAPIInput_GetValidKeyVersion
     {
         /// <summary>
-        /// OTP 編號(GUID)
+        /// 平台代號
         /// </summary>
-        public string otpId { get; set; } 
+        public string appid { get; set; }
+
     }
 }

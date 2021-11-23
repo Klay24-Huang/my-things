@@ -72,10 +72,8 @@ namespace WebAPI.Controllers
                 }
                 if (apiInput.SeqNo <= 0)
                 {
-                    #region Adam哥上線記得打開
-                    //flag = false;
-                    //errCode = "ERR900";
-                    #endregion
+                    flag = false;
+                    errCode = "ERR900";
                 }
             }
 

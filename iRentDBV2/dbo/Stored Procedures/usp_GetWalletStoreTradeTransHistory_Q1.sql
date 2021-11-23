@@ -1,11 +1,3 @@
-﻿/****** Object:  StoredProcedure [dbo].[usp_GetWalletStoreTradeTransHistory_Q1]    Script Date: 2021/9/28 上午 10:28:39 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-
 /***********************************************************************************************
 * Serve    : sqyhi03az.database.windows.net
 * Database : IRENT_V2
@@ -15,128 +7,112 @@ GO
 * 作    者 : eason
 * 撰寫日期 : 20210817
 * 修改日期 : 20210903 UPD BY AMBER REASON: 調整F_INFNO改為抓取TaishinNO(台新交易IR編)欄位
-20210910 UPD BY YANKEY REASON: 調整Key值欄位、TradeNote輸出文字
+			 20210910 UPD BY YANKEY REASON: 調整Key值欄位、TradeNote輸出文字
+			 20211117 UPD BY YEH REASON:整理程式碼、增加Token檢核機制
+			 20211118 UPD BY YEH REASON:增加和泰PAY
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetWalletStoreTradeTransHistory_Q1]
 (   
-	@MSG			VARCHAR(10) OUTPUT,
-	@IDNO			VARCHAR(20)       , --身分證號
-    @LogID			BIGINT,
-	@SD             DATETIME,
-	@ED             DATETIME
+	@MSG		VARCHAR(10)		OUTPUT	,
+	@IDNO		VARCHAR(20)				,	-- 帳號
+    @Token		VARCHAR(1024)			,	-- Token
+	@SD			DATETIME				,	-- 查詢起日
+	@ED			DATETIME				,	-- 查詢迄日
+	@LogID		BIGINT
 )
 AS
 BEGIN
     SET NOCOUNT ON
 
-	DECLARE @Error INT = 0
-    DECLARE	@ErrorCode VARCHAR(6) = '0000'	
-    DECLARE	@ErrorMsg  		   NVARCHAR(100) = 'SUCCESS'	
-    DECLARE	@SQLExceptionCode  VARCHAR(10) = ''		
-    DECLARE	@SQLExceptionMsg   NVARCHAR(1000) = ''	
-	DECLARE @IsSystem TINYINT = 1
-	DECLARE @ErrorType TINYINT = 4
-	DECLARE @FunName VARCHAR(50) = 'usp_GetWalletStoreTradeTransHistory_Q1'
-
-	drop table if exists #Tmp_TradeMain
+	DECLARE @Error INT = 0;
+    DECLARE	@ErrorCode VARCHAR(6) = '0000';
+    DECLARE	@ErrorMsg NVARCHAR(100) = 'SUCCESS';
+    DECLARE	@SQLExceptionCode VARCHAR(10) = '';
+    DECLARE	@SQLExceptionMsg NVARCHAR(1000) = '';
+	DECLARE @IsSystem TINYINT = 1;
+	DECLARE @ErrorType TINYINT = 4;
+	DECLARE @FunName VARCHAR(50) = 'usp_GetWalletStoreTradeTransHistory_Q1';
+	DECLARE @hasData TINYINT = 0;
+	DECLARE @NowTime DATETIME = DATEADD(HOUR,8,GETDATE());
 
 	BEGIN TRY
-	    set @LogID = isnull(@LogID,'')
-	    set @IDNO = isnull(@IDNO,'')
+	    SET @IDNO = ISNULL(@IDNO,'');
+		SET @Token = ISNULL(@Token,'');
+		SET @LogID = ISNULL(@LogID,0);
 
-		IF @LogID = ''
+		IF @IDNO = '' OR @Token ='' OR @LogID = 0 OR @SD is null OR @ED is null
 		BEGIN
-			SET @Error=1
-			set @ErrorMsg = 'LogID必填'
-			SET @ErrorCode = 'ERR254'
+			SET @Error=1;
+			SET @ErrorMsg = 'LogID必填';
+			SET @ErrorCode = 'ERR900';
 		END
-		ELSE IF @IDNO = ''
-		BEGIN
-			SET @Error=1
-			set @ErrorMsg = 'IDNO必填'
-			SET @ErrorCode = 'ERR256'
-		END
-		ELSE if @SD is null or @ED is null
-		begin
-		    set @Error = 1
-			set @ErrorMsg = 'SD, ED 必填'
-			set @ErrorCode = 'ERR257' --參數遺漏
-		end
-
-		if @Error = 0
-		begin
-		set @SD = DATEADD(second, DATEPART(SECOND, @SD)*-1,@SD)--去秒數
-	    set @ED = DATEADD(second, DATEPART(SECOND, @ED)*-1,@ED)--去秒數
-
-			 declare @days int = datediff(day,@SD,@ED)
-			 if @days > 90
-			 begin
-			    set @Error = 1
-				set @ErrorMsg = '最多查詢90天'
-				set @ErrorCode = 'ERR914'
-			 end
-		end
 
 		IF @Error = 0
 		BEGIN
-		   select distinct 
-		   tm.SEQNO --key保留
-		   --tm.ORGID, tm.IDNO, tm.SEQNO, tm.TaishinNO --key保留
-		   ,tm.TradeType, tm.TradeKey 
-		   ,tm.TradeDate
-		   ,CardNo = isnull(
-				(
-					select top 1  --卡號末4碼
-						SUBSTRING(b.CardNumber, len(b.CardNumber)-3,len(b.CardNumber)) 
-				   from TB_MemberCardBinding b with(nolock)
-				   where b.IDNO = tm.IDNO and b.IsValid = 1
-			   ),'')
-           ,c.Code0, c.CodeName, c.Negative
-		   ,tm.TradeAMT--, td.PayType		
-		   into #Tmp_TradeMain		--寫入暫存
-		   from TB_WalletTradeMain tm with(nolock)
-		   --left join TB_WalletTradeDetail td with(nolock) on td.ORGID = tm.ORGID and td.IDNO = tm.IDNO and td.SEQNO = tm.SEQNO and td.TaishinNO = tm.TaishinNO
-		   join TB_WalletCodeTable c with(nolock) on c.CodeGroup = 'TradeType' and c.Code0 = tm.TradeType
-		   where tm.ShowFLG = 1 and tm.IDNO = @IDNO 
-		   and tm.TradeDate >= @SD and tm.TradeDate <= @ED
+			SET @SD = DATEADD(second, DATEPART(SECOND, @SD)*-1,@SD);	--去秒數
+			SET @ED = DATEADD(second, DATEPART(SECOND, @ED)*-1,@ED);	--去秒數
 
-		   declare @TmpCount int = 0
-		   select @TmpCount = COUNT(1) from #Tmp_TradeMain
-		   if @TmpCount > 0
-		   begin
-		      select distinct
-				t.SEQNO --key保留
-			   --t.ORGID, t.IDNO, t.SEQNO, t.TaishinNO --key保留
-			   ,t.TradeType, t.TradeKey 
-			   ,t.TradeDate
-			   ,t.CardNo  
-			   ,t.Code0, t.CodeName, t.Negative
-			   ,TradeAMT = (case 
-			       when t.Negative = 1 then -1 * t.TradeAMT --Negative:1表負項，0表正項
-			       else t.TradeAMT end)
-			   ,TradeNote = (case 
-			      when t.Code0 = 'Store_Credit' then '信用卡*' + CAST(t.CardNo as nvarchar) --卡號
-			      when t.Code0 = 'Store_Account' then '虛擬帳號轉帳'
-				  when t.Code0 = 'Store_Shop' then '超商繳款'
-				  when t.Code0 = 'Store_Return' then '合約退款'
-				  when t.Code0 = 'Store_Trans' then  ('轉入 '+
-				    (select dbo.FN_BlockName((select top 1 me.MEMCNAME from TB_MemberData me with(nolock)  where me.MEMIDNO = t.TradeKey),'O')) --姓名
-				  )				  
-				  when t.Code0 = 'Withdraw' then '餘額提領'
-				  when t.Code0 = 'Pay_Car' then 'H'+ CAST(t.TradeKey as nvarchar)--單號
-				  when t.Code0 = 'Pay_Motor' then 'H'+ CAST(t.TradeKey as nvarchar)--單號
-				  when t.Code0 = 'Pay_Monthly' then(
-					   select top 100 mr.ProjNM from SYN_MonthlyRent mr with(nolock)  where MonthlyRentId = CAST(t.TradeKey as bigint))
-				  when t.Code0 = 'Cancel' then '付款取消'
-				  when t.Code0 = 'Give_Trans' then ('轉出 ' +
-				    (select dbo.FN_BlockName((select top 1 me.MEMCNAME from TB_MemberData me with(nolock) where me.MEMIDNO = t.TradeKey),'O')) --姓名			     
-				  )
-				  else '其他' end     
-			   )
-			   from #Tmp_TradeMain t
-			   order by t.SEQNO desc
-		   end
+			DECLARE @days int = datediff(day,@SD,@ED);
+			IF @days > 90
+			BEGIN
+				SET @Error = 1;
+				SET @ErrorMsg = '最多查詢90天';
+				SET @ErrorCode = 'ERR914';
+			END
+		END
+
+		IF @Error=0
+		BEGIN
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
+			IF @hasData=0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR101';
+			END
+			ELSE
+			BEGIN
+				SET @hasData=0;
+				SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO;
+				IF @hasData=0
+				BEGIN
+					SET @Error=1;
+					SET @ErrorCode='ERR101';
+				END
+			END
+		END
+
+		IF @Error = 0
+		BEGIN
+			SELECT tm.SEQNO
+				,tm.TradeType
+				,tm.TradeKey 
+				,tm.TradeDate
+				,c.Code0
+				,c.CodeName
+				,c.Negative
+				,TradeAMT = (CASE WHEN c.Negative = 1 THEN -1 * tm.TradeAMT ELSE tm.TradeAMT END)	--Negative:1表負項，0表正項
+				,TradeNote = (CASE WHEN c.Code0 = 'Store_Credit' THEN '信用卡 ' + tm.TradeKey --卡號
+								WHEN c.Code0 = 'Store_Account' THEN '虛擬帳號轉帳'
+								WHEN c.Code0 = 'Store_Shop' THEN '超商繳款'
+								WHEN c.Code0 = 'Store_Return' THEN '合約退款'
+								WHEN c.Code0 = 'Store_Trans' THEN '轉入 ' + (SELECT dbo.FN_BlockName((SELECT me.MEMCNAME FROM TB_MemberData me WITH(NOLOCK) WHERE me.MEMIDNO=tm.TradeKey),'O')) 	--姓名
+								WHEN c.Code0 = 'Withdraw' THEN '餘額提領'
+								WHEN c.Code0 = 'Pay_Car' THEN 'H'+ tm.TradeKey	--單號
+								WHEN c.Code0 = 'Pay_Motor' THEN 'H'+ tm.TradeKey	--單號
+								WHEN c.Code0 = 'Pay_Monthly' THEN (SELECT mr.ProjNM FROM SYN_MonthlyRent mr WITH(NOLOCK) WHERE MonthlyRentId = CAST(tm.TradeKey as bigint))
+								WHEN c.Code0 = 'Cancel' THEN '付款取消'
+								WHEN c.Code0 = 'Give_Trans' THEN '轉出 ' + (SELECT dbo.FN_BlockName((SELECT me.MEMCNAME FROM TB_MemberData me WITH(NOLOCK) WHERE me.MEMIDNO=tm.TradeKey),'O'))	--姓名
+								WHEN c.Code0 = 'Store_HotaiPay' THEN '和泰PAY ' + tm.TradeKey	-- 20211118 UPD BY YEH REASON:增加和泰PAY
+								ELSE '其他' END
+							)
+				,tm.ShowFLG
+			FROM TB_WalletTradeMain tm WITH(NOLOCK)
+			INNER JOIN TB_WalletCodeTable c WITH(NOLOCK) ON c.CodeGroup = 'TradeType' AND c.Code0 = tm.TradeType
+			WHERE tm.IDNO = @IDNO
+			AND tm.TradeDate >= @SD AND tm.TradeDate <= @ED
+			AND tm.ShowFLG = 1
+			ORDER BY tm.SEQNO DESC;
 		END
 
 		--寫入錯誤訊息
@@ -158,11 +134,6 @@ BEGIN
 	END CATCH
 
 	--輸出系統訊息
-	SELECT @ErrorCode[ErrorCode], @ErrorMsg[ErrorMsg], @SQLExceptionCode[SQLExceptionCode], @SQLExceptionMsg[SQLExceptionMsg], @Error[Error]
-
-	drop table if exists #Tmp_TradeMain
-
+	SELECT @ErrorCode [ErrorCode], @ErrorMsg [ErrorMsg], @SQLExceptionCode [SQLExceptionCode], @SQLExceptionMsg [SQLExceptionMsg], @Error [Error]
 END
 GO
-
-

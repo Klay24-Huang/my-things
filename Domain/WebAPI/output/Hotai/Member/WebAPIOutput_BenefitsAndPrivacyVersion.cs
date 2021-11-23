@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 檢查會員權益及隱私條款版本
     /// </summary>
-    public class WebAPIOutput_BenefitsAndPrivacyVersion : WebAPIOutput_Base
+    public class WebAPIOutput_BenefitsAndPrivacyVersion
     {
         /// <summary>
         /// 會員權益版本號 (Null 或空白表示無新版資料)
