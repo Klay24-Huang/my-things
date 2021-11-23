@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 集團服務
     /// </summary>
-    public class WebAPIOutput_GroupApps:WebAPIOutput_Base
+    public class WebAPIOutput_GroupApps
     {
        public List<GroupApps> groupApps { get; set; }
     }

@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 namespace Domain.WebAPI.output.Hotai.Member
 {
     /// <summary>
-    /// 驗證會員資訊，取得 OTP 編號
+    /// 取得公鑰
     /// </summary>
-    public class WebAPIOutput_OtpValidation
+    public class WebAPIOutput_GetPublicKey
     {
         /// <summary>
-        /// OTP 編號(GUID)
+        /// 序號
         /// </summary>
-        public string otpId { get; set; } 
-    }
+        public int seq { get; set; }
+
+        /// <summary>
+        /// 公鑰
+        /// </summary>
+        public string key { get; set; }
+    }  
 }

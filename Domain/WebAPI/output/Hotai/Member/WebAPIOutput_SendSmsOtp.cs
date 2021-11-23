@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.WebAPI.output.Hotai.Member
 {
-    public class WebAPIOutput_SendSmsOtp : WebAPIOutput_Base
+    public class WebAPIOutput_SendSmsOtp
     {
         /// <summary>
         /// 驗證碼

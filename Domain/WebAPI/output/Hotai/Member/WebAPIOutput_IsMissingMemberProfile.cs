@@ -9,7 +9,7 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// <summary>
     /// 缺少個人資料
     /// </summary>
-    public class WebAPIOutput_IsMissingMemberProfile : WebAPIOutput_Base
+    public class WebAPIOutput_IsMissingMemberProfile
     {
         /// <summary>
         /// 是否缺少個資

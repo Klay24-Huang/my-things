@@ -270,6 +270,8 @@
 
 20211117 取得會員狀態(GetMemberStatus)新增和泰OneID綁定狀態
 
+20211118 查詢綁卡跟錢包(CreditAndWalletQuery)新增和泰PAY相關欄位
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -7130,18 +7132,20 @@
 
 * Data 回傳參數說明
 
-| 參數名稱    | 參數說明                                                     |  型態  | 範例     |
-| ----------- | ------------------------------------------------------------ | :----: | -------- |
-| PayMode     | 付費方式 (0:信用卡 1:和雲錢包)                               |  int   | 0        |
-| HasBind     | 是否有綁定(0:無,1有)                                         |  int   | 1        |
-| HasWallet   | 是否有錢包(0:無,1有)                                         |  int   | 0        |
-| TotalAmount | 錢包剩餘金額                                                 |  int   | 0        |
-| BindListObj | 信用卡列表                                                   |  list  |          |
-| MEMSENDCD   | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 |  int   | 5        |
-| UNIMNO      | 統編                                                         | string |          |
-| CARRIERID   | 手機條碼                                                     | string | /N37H2JD |
-| NPOBAN      | 愛心碼                                                       | string |          |
-| AutoStored  | 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
+| 參數名稱     | 參數說明                                                     |  型態  | 範例     |
+| ------------ | ------------------------------------------------------------ | :----: | -------- |
+| PayMode      | 付費方式 (0:信用卡 1:和雲錢包)                               |  int   | 0        |
+| HasBind      | 是否有綁定(0:無,1有)                                         |  int   | 1        |
+| HasWallet    | 是否有錢包(0:無,1有)                                         |  int   | 0        |
+| TotalAmount  | 錢包剩餘金額                                                 |  int   | 0        |
+| BindListObj  | 信用卡列表                                                   |  list  |          |
+| MEMSENDCD    | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 |  int   | 5        |
+| UNIMNO       | 統編                                                         | string |          |
+| CARRIERID    | 手機條碼                                                     | string | /N37H2JD |
+| NPOBAN       | 愛心碼                                                       | string |          |
+| AutoStored   | 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
+| HasHotaiPay  | 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
+| HotaiListObj | 和泰PAY卡清單                                                |  list  |          |
 
 * BindListObj 回傳參數說明
 
@@ -7152,6 +7156,18 @@
 | CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
 | AvailableAmount | 剩餘額度                         | string |                                                       |
 | CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
+
+* HotaiListObj 回傳參數說明
+
+| 參數名稱    | 參數說明                  |  型態  | 範例         |
+| ----------- | ------------------------- | :----: | ------------ |
+| MemberOneID | 和泰會員OneID             | string | (範例待補充) |
+| CardToken   | 信用卡Token               | string | (範例待補充) |
+| CardName    | 信用卡自訂名稱            | string | (範例待補充) |
+| CardType    | 發卡機構(VISA/MASTER/JCB) | string | (範例待補充) |
+| BankDesc    | 發卡銀行                  | string | (範例待補充) |
+| CardNumber  | 卡號(隱碼)                | string | (範例待補充) |
+| IsDefault   | 是否為預設卡(0:否/1:是)   |  int   | (範例待補充) |
 
 * Output範例
 
@@ -7180,7 +7196,9 @@
         "UNIMNO": "",
         "CARRIERID": "/N37H2JD",
         "NPOBAN": "",
-        "AutoStored": 0
+        "AutoStored": 0,
+        "HasHotaiPay": 0,
+        "HotaiListObj": []
     }
 }
 ```

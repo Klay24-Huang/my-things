@@ -61,7 +61,6 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoredByCreditController";
-            string TradeType = "Store_Credit"; ///交易類別
             int apiId = 220;
 
             Int16 Mode = 1;
@@ -241,6 +240,17 @@ namespace WebAPI.Controllers
                 #region 寫入錢包
                 if (flag)
                 {
+                    string TradeType = ""; ///交易類別
+                    switch (apiInput.StoreType)
+                    {
+                        case 0:
+                            TradeType = "Store_Credit";
+                            break;
+                        case 4:
+                            TradeType = "Store_HotaiPay";
+                            break;
+                    }
+
                     string formatString = "yyyyMMddHHmmss";
                     string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);
                     spInput_Wallet = new SPInput_WalletStore()

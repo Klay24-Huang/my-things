@@ -25,7 +25,7 @@ namespace WebCommon
         {
             (bool Succ, string errCode, string Message, TResponse Data) valueTuple =
                 (false, "000000", "", default(TResponse));
-           
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = WebRequestMethods.Http.Post;
             request.ContentType = "application/json";
@@ -83,7 +83,7 @@ namespace WebCommon
             }
             finally
             {
-             
+
                 //增加關閉Request的處理
                 request.Abort();
             }
@@ -115,21 +115,24 @@ namespace WebCommon
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                byte[] jsonBytes = Encoding.UTF8.GetBytes(content);//要發送的字串轉為byte[]
-                request.ContentLength = jsonBytes.Length;
-
-                using (var requestStream = request.GetRequestStream())
+                if (!string.IsNullOrWhiteSpace(content))
                 {
-                    requestStream.Write(jsonBytes, 0, jsonBytes.Length);
+                    byte[] jsonBytes = Encoding.UTF8.GetBytes(content);//要發送的字串轉為byte[]
+                    request.ContentLength = jsonBytes.Length;
+
+                    using (var requestStream = request.GetRequestStream())
+                    {
+                        requestStream.Write(jsonBytes, 0, jsonBytes.Length);
+                    }
                 }
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     using (var stream = response.GetResponseStream())
                     using (var reader = new StreamReader(stream))
                     {
-                        var result = reader.ReadToEnd();
+                        var result = reader?.ReadToEnd() ?? "";
 
-                        if (result.Length <= 0) throw new Exception($"errCode:ERR918");
+                        if (result == null) throw new Exception($"errCode:ERR918");
 
                         resultInfo.Succ = true;
                         resultInfo.ResponseData = result;

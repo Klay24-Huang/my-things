@@ -1,6 +1,5 @@
 ﻿using Domain.SP.Input.OtherService.Common;
 using Domain.WebAPI.Input.Hotai.Member;
-using Domain.WebAPI.Input.Hotai.Member.Param;
 using Domain.WebAPI.output.Hotai.Member;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,7 +29,7 @@ namespace OtherService
     {
         private string FrontEndURL = ConfigurationManager.AppSettings["HotaiMemberFrontEndURL"].ToString();
         private string SingleEntry = ConfigurationManager.AppSettings["HotaiMemberSingleEntry"].ToString();
-        private string BackEndURL = ConfigurationManager.AppSettings["HotaiMemberBackEndURL"].ToString();                               
+        private string BackEndURL = ConfigurationManager.AppSettings["HotaiMemberBackEndURL"].ToString();
         private string AppId = ConfigurationManager.AppSettings["HotaiAppId"].ToString();
         private string AppVersion = ConfigurationManager.AppSettings["HotaiAppVersion"].ToString();
         private string ApiVersion = ConfigurationManager.AppSettings["HotaiApiVersion"].ToString();
@@ -60,8 +59,12 @@ namespace OtherService
         private string CheckBenefitsAndPrivacyVersionURL = "api/member/check-benefits-privacy-version";    //檢查會員權益及隱私條款版本
         private string UpdateBenefitsAndPrivacyVersionURL = "api/member/update-benefits-privacy-version";  //同意新款會員權益及隱私條款
         private string GetPrivacyURL = "api/privacy";                                                      //取得會員權益及隱私條款
-        private string GroupAppsURL = "api/group-apps";                                                    //集團服務
-        private string GetMobilePhoneToOneIDURL = "api/subsystem/member/MobilePhoneToOneID";               //使用手機取得會員 OneID
+        private string GroupAppsURL = "api/group-apps/";                                                   //集團服務
+
+        private string GetMobilePhoneToOneIDURL = "api/subsystem/member/MobilePhoneToOneID";               //【後台】使用手機取得會員 OneID
+        private string GetTownshipsURL = "api/subsystem/townships";                                        //【後台】行政區列表
+        private string GetPublicKeyURL = "api/subsystem/PublicKEY";                                        //【後台】取得公鑰    
+        private string GetValidKeyVersionURL = "api/subsystem/valid-key-version";                          //【後台】取得後台金鑰有效版本號    
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
@@ -69,31 +72,19 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSendSmsOtp(WebAPIInput_SendSmsOtp input, ref WebAPIOutput_SendSmsOtp output)
+        public bool DoSendSmsOtp(WebAPIInput_SendSmsOtp input, ref WebAPIOutput_SendSmsOtp output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = SendSmsOtpURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_SendSmsOtp>(input, SendSmsOtpURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_SendSmsOtp>(result.Data.ToString());
             }
             return flag;
-
         }
 
         /// <summary>
@@ -101,32 +92,19 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSmsOtpValidation(WebAPIInput_SmsOtpValidation input, ref WebAPIOutput_OtpValidation output)
+        public bool DoSmsOtpValidation(WebAPIInput_SmsOtpValidation input, ref WebAPIOutput_OtpValidation output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = SmsOtpValidationURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_SmsOtpValidation>(input, SmsOtpValidationURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-
-            output = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
             }
             return flag;
-
         }
 
         /// <summary>
@@ -134,31 +112,19 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoRefreshToken(WebAPIInput_RefreshToken input, ref WebAPIOutput_Token output)
+        public bool DoRefreshToken(WebAPIInput_RefreshToken input, ref WebAPIOutput_Token output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = RefreshTokenURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_RefreshToken>(input, RefreshTokenURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_Token>(result.Data.ToString());
             }
             return flag;
-
         }
 
         /// <summary>
@@ -167,28 +133,17 @@ namespace OtherService
         /// <param name="token"></param>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSendEmailOtp(string token, WebAPIInput_SendEmailOtp input, ref WebAPIOutput_SendSmsOtp output)
+        public bool DoSendEmailOtp(string token, WebAPIInput_SendEmailOtp input, ref WebAPIOutput_SendSmsOtp output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = SendEmailOtpURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_SendEmailOtp>(input, SendEmailOtpURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_SendSmsOtp>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_SendSmsOtp>(result.Data.ToString());
             }
             return flag;
 
@@ -200,28 +155,17 @@ namespace OtherService
         /// <param name="token"></param>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoEmailOtpValidatation(string token, WebAPIInput_EmailOtpValidatation input, ref WebAPIOutput_OtpValidation output)
+        public bool DoEmailOtpValidatation(string token, WebAPIInput_EmailOtpValidatation input, ref WebAPIOutput_OtpValidation output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = EmailOtpValidatationURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_EmailOtpValidatation>(input, EmailOtpValidatationURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
             }
             return flag;
 
@@ -231,31 +175,18 @@ namespace OtherService
         /// 檢查 Token
         /// </summary>
         /// <param name="token"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoCheckToken(string token, ref WebAPIOutput_Base output)
+        public bool DoCheckToken(string token, ref string errCode)
         {
             bool flag = false;
-            string action = "GET";
-            string apiUrl = CheckTokenURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = token,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody("", apiUrl, action),
-            };
+            var result = HotaiMemeberApiPost<object, object>(null, CheckTokenURL, ref errCode, MethodBase.GetCurrentMethod().Name, token, "GET");
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
             return flag;
-
         }
 
         /// <summary>
@@ -263,28 +194,17 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoGetEmail(WebAPIInput_GetEmail input, ref WebAPIOutput_GetEmail output)
+        public bool DoGetEmail(WebAPIInput_GetEmail input, ref WebAPIOutput_GetEmail output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = GetEmailURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_GetEmail>(input, GetEmailURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_GetEmail>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_GetEmail>(result.Data.ToString());
             }
             return flag;
 
@@ -295,31 +215,19 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoOtpValidatation(WebAPIInput_OtpValidatation input, ref WebAPIOutput_OtpValidation output)
+        public bool DoOtpValidatation(WebAPIInput_OtpValidatation input, ref WebAPIOutput_OtpValidation output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = OtpValidatationURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_OtpValidatation>(input, OtpValidatationURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_OtpValidation>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
             }
             return flag;
-
         }
 
         /// <summary>
@@ -327,27 +235,14 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSignOut(string token, WebAPIInput_SignOut input, ref WebAPIOutput_Base output)
+        public bool DoSignOut(string token, WebAPIInput_SignOut input, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = SignOutURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_SignOut>(input, SignOutURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
@@ -360,29 +255,19 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSignin(WebAPIInput_Signin input, ref WebAPIOutput_Signin output)
+        public bool DoSignin(WebAPIInput_Signin input, ref WebAPIOutput_Signin output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = SigninURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_Signin>(input, SigninURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Signin>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_Signin>(result.Data.ToString());
             }
+
             return flag;
         }
 
@@ -391,28 +276,17 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns> 
-        public bool DoCheckSignup(WebAPIInput_CheckSignup input, ref WebAPIOutput_CheckSignup output)
+        public bool DoCheckSignup(WebAPIInput_CheckSignup input, ref WebAPIOutput_CheckSignup output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = CheckSignupURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_CheckSignup>(input, CheckSignupURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_CheckSignup>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_CheckSignup>(result.Data.ToString());
             }
 
             return flag;
@@ -423,29 +297,19 @@ namespace OtherService
         /// </summary>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSignup(WebAPIInput_Signup input, ref WebAPIOutput_Token output)
+        public bool DoSignup(WebAPIInput_Signup input, ref WebAPIOutput_Token output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = SignupURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_Signup>(input, SignupURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Token>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_Token>(result.Data.ToString());
             }
+
             return flag;
         }
 
@@ -454,61 +318,38 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoSignupProfile(string token, WebAPIInput_SignupProfile input, ref WebAPIOutput_Base output)
+        public bool DoSignupProfile(string token, WebAPIInput_SignupProfile input, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = SignupProfileURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_SignupProfile>(input, SignupProfileURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
+
             return flag;
         }
+
 
         /// <summary>
         /// 重設密碼
         /// </summary>
         /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoResetPassword(WebAPIInput_ResetPassword input, ref WebAPIOutput_Base output)
+        public bool DoResetPassword(WebAPIInput_ResetPassword input, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = ResetPasswordURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_ResetPassword>(input, ResetPasswordURL, ref errCode, MethodBase.GetCurrentMethod().Name);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
+
             return flag;
         }
 
@@ -517,28 +358,19 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoIsMissingMemberProfile(string token, ref WebAPIOutput_IsMissingMemberProfile output)
+        public bool DoIsMissingMemberProfile(string token, ref WebAPIOutput_IsMissingMemberProfile output, ref string errCode)
         {
             bool flag = false;
-            string action = "GET";
-            string apiUrl = IsMissingMemberProfileURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = token,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody("", apiUrl, action),
-            };
+            var result = HotaiMemeberApiPost<object, object>(null, IsMissingMemberProfileURL, ref errCode, MethodBase.GetCurrentMethod().Name, token, "GET");
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_IsMissingMemberProfile>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_IsMissingMemberProfile>(result.Data.ToString());
             }
+
             return flag;
         }
 
@@ -547,28 +379,19 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoGetMemberProfile(string token, ref WebAPIOutput_GetMemberProfile output)
+        public bool DoGetMemberProfile(string token, ref WebAPIOutput_GetMemberProfile output, ref string errCode)
         {
             bool flag = false;
-            string action = "GET";
-            string apiUrl = GetMemberProfileURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = token,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody("", apiUrl, action),
-            };
+            var result = HotaiMemeberApiPost<object, object>(null, GetMemberProfileURL, ref errCode, MethodBase.GetCurrentMethod().Name, token, "GET");
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_GetMemberProfile>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_GetMemberProfile>(result.Data.ToString());
             }
+
             return flag;
         }
 
@@ -577,31 +400,20 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoUpdateMemberProfile(string token, WebAPIInput_UpdateMemberProfile input, ref WebAPIOutput_Base output)
+        public bool DoUpdateMemberProfile(string token, WebAPIInput_UpdateMemberProfile input, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = UpdateMemberProfileURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_UpdateMemberProfile>(input, UpdateMemberProfileURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
+
             return flag;
+
         }
 
         /// <summary>
@@ -609,30 +421,18 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoConfirmPassword(string token, WebAPIInput_ConfirmPassword input, ref WebAPIOutput_Base output)
+        public bool DoConfirmPassword(string token, WebAPIInput_ConfirmPassword input, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = ConfirmPasswordURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_ConfirmPassword>(input, ConfirmPasswordURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
+
             return flag;
         }
 
@@ -641,30 +441,18 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoUpdateAccount(string token, WebAPIInput_UpdateAccount input, ref WebAPIOutput_Base output)
+        public bool DoUpdateAccount(string token, WebAPIInput_UpdateAccount input, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = UpdateAccountURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_UpdateAccount>(input, UpdateAccountURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
+
             return flag;
         }
 
@@ -673,30 +461,18 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="input"></param>
-        /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoUpdatePassword(string token, WebAPIInput_UpdatePassword input, ref WebAPIOutput_Base output)
+        public bool DoUpdatePassword(string token, WebAPIInput_UpdatePassword input, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = UpdatePasswordURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_UpdatePassword>(input, UpdatePasswordURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_Base>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
             }
+
             return flag;
         }
 
@@ -705,29 +481,21 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoCheckBenefitsAndPrivacyVersion(string token, ref WebAPIOutput_BenefitsAndPrivacyVersion output)
+        public bool DoCheckBenefitsAndPrivacyVersion(string token, ref WebAPIOutput_BenefitsAndPrivacyVersion output, ref string errCode)
         {
             bool flag = false;
-            string action = "GET";
-            string apiUrl = CheckBenefitsAndPrivacyVersionURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = token,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody("", apiUrl, action),
-            };
+            var result = HotaiMemeberApiPost<object, object>(null, CheckBenefitsAndPrivacyVersionURL, ref errCode, MethodBase.GetCurrentMethod().Name, token, "GET");
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString());
             }
+
             return flag;
+
         }
 
         /// <summary>
@@ -736,28 +504,17 @@ namespace OtherService
         /// <param name="token"></param>
         /// <param name="input"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoUpdateBenefitsAndPrivacyVersion(string token, WebAPIInput_UpdateBenefitsAndPrivacyVersion input, ref WebAPIOutput_BenefitsAndPrivacyVersion output)
+        public bool DoUpdateBenefitsAndPrivacyVersion(string token, WebAPIInput_UpdateBenefitsAndPrivacyVersion input, ref WebAPIOutput_BenefitsAndPrivacyVersion output, ref string errCode)
         {
             bool flag = false;
-            string json = JsonConvert.SerializeObject(input);
-            string encryptString = EncryptAESHandle(json);
-            string apiUrl = UpdateBenefitsAndPrivacyVersionURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = json,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody(encryptString, apiUrl),
-            };
+            var result = HotaiMemeberApiPost<object, WebAPIInput_UpdateBenefitsAndPrivacyVersion>(input, UpdateBenefitsAndPrivacyVersionURL, ref errCode, MethodBase.GetCurrentMethod().Name, token);
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_BenefitsAndPrivacyVersion>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString());
             }
             return flag;
         }
@@ -767,195 +524,335 @@ namespace OtherService
         /// </summary>
         /// <param name="token"></param>
         /// <param name="output"></param>
+        /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoGetPrivacy(string token, ref WebAPIOutput_GetPrivacy output)
+        public bool DoGetPrivacy(string token, ref WebAPIOutput_GetPrivacy output, ref string errCode)
         {
             bool flag = false;
-            string action = "GET";
-            string apiUrl = GetPrivacyURL;
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = $"{FrontEndURL}{SingleEntry}",
-                ApiUrl = apiUrl,
-                DoDecrypt = true,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = token,
-                Request = CreateRequestHeader(token),
-                Body = CreateRequestBody("", apiUrl, action),
-            };
+            var result = HotaiMemeberApiPost<object, object>(null, GetPrivacyURL, ref errCode, MethodBase.GetCurrentMethod().Name, token, "GET");
 
-            output = DoHotaiMemeberApiSend<WebAPIOutput_GetPrivacy>(apiRequest).Result;
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_GetPrivacy>(result.Data.ToString());
+            }
+            return flag;
+
+        }
+
+        /// <summary>
+        /// 集團服務
+        /// </summary>
+        /// <param name="deviceOS">裝置作業系統</param>
+        /// <param name="output"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool DoGroupApps(WebAPIInput_GroupApps input, ref WebAPIOutput_GroupApps output, ref string errCode)
+        {
+            string device = "";
+            switch (input.deviceOS)
+            {
+                case 1:
+                    device = "ios";
+                    break;
+                case 2:
+                    device = "android";
+                    break;
+            }
+
+            bool flag = false;
+            string apiUrl = $"{GroupAppsURL}{device}";
+            var result = HotaiMemeberApiPost<object, WebAPIOutput_GroupApps>(null, apiUrl, ref errCode, MethodBase.GetCurrentMethod().Name, "GET", "GET");
+
+            if (result.Succ)
+            {
+                flag = true;
+                var resData = JsonConvert.DeserializeObject<List<GroupApps>>(result.Data.ToString());
+                output.groupApps = resData;
             }
             return flag;
         }
 
         /// <summary>
-        /// 使用手機取得會員
+        /// 【後台】使用手機取得OneID
         /// </summary>
         /// <param name="mobilePhone"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoGetMobilePhoneToOneID(string mobilePhone, ref WebAPIOutput_GetMobilePhoneToOneID output)
+        public bool DoGetMobilePhoneToOneID(string mobilePhone, ref WebAPIOutput_GetMobilePhoneToOneID output, ref string errCode)
         {
             bool flag = false;
-            string apiUrl = $"{GetMobilePhoneToOneIDURL}/{mobilePhone}";
-            string URL = BackEndURL + apiUrl;
+            string API = $"{GetMobilePhoneToOneIDURL}/{mobilePhone}";
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
-            request.Method = "GET";
-            request.Headers.Add("APP_ID", AppId);
-            request.Headers.Add("APPKEY", AppKey);
-            request.ContentType = "application/json";
+            var result = HotaiMemeberBackendApiPost<object, object>(null, API, ref errCode, MethodBase.GetCurrentMethod().Name, "", "GET", "GET");
 
-            ApiRequestParam apiRequest = new ApiRequestParam()
-            {
-                BaseUrl = BackEndURL,
-                ApiUrl = $"{GetMobilePhoneToOneIDURL}/{mobilePhone}",
-                DoDecrypt = false,
-                FunName = MethodBase.GetCurrentMethod().Name,
-                JsonString = mobilePhone,
-                Request = request,
-                Body = null,
-                SendRequest = false
-            };
-
-            output = DoHotaiMemeberApiSend<WebAPIOutput_GetMobilePhoneToOneID>(apiRequest).Result;
-
-            if (output.RtnCode == "1000")
+            if (result.Succ)
             {
                 flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_GetMobilePhoneToOneID>(result.Data.ToString());
             }
-
             return flag;
         }
 
         /// <summary>
-        /// 會員POST API
+        /// 【後台】行政區列表
         /// </summary>
-        /// <typeparam name="String"></typeparam>
-        /// <typeparam name="TResponse"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="requestBody"></param>
-        /// <param name="apiUrl"></param>
-        /// <param name="funName"></param>
-        /// <returns></returns>               
-        private async Task<TResponse> DoHotaiMemeberApiSend<TResponse>(ApiRequestParam apiRequest) where TResponse : WebAPIOutput_Base
+        /// <param name="output"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool DoGetTownships(ref WebAPIOutput_Townships output, ref string errCode)
         {
-            DateTime MKTime = DateTime.Now;
-            DateTime RTime = MKTime;
-            string URL = apiRequest.BaseUrl + apiRequest.ApiUrl;
-            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
-            var postBody = JsonConvert.SerializeObject(apiRequest.Body);
-            var output = Activator.CreateInstance<TResponse>();
+            bool flag = false;
+            string API = $"{GetTownshipsURL}";
+
+            var result = HotaiMemeberBackendApiPost<object, object>(null, API, ref errCode, "", "GET", "GET");
+
+            if (result.Succ)
+            {
+                flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_Townships>(result.Data.ToString());
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 【後台】取得公鑰
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool DoGetPublicKey(WebAPIInput_GetPublicKey input, ref WebAPIOutput_GetPublicKey output, ref string errCode)
+        {
+            bool flag = false;
+            string type = "O";
+            switch (input.type)
+            {
+                case 0:
+                    type = "O";
+                    break;
+                case 1:
+                    type = "N";
+                    break;
+            }
+
+            string API = $"{GetPublicKeyURL}/{type}";
+
+            var result = HotaiMemeberBackendApiPost<object, object>(null, API, ref errCode, MethodBase.GetCurrentMethod().Name, "", "GET", "GET");
+
+            if (result.Succ)
+            {
+                flag = true;
+                output = JsonConvert.DeserializeObject<WebAPIOutput_GetPublicKey>(result.Data.ToString());
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 【後台】取得後台金鑰有效版本號
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool DoGetValidKeyVersion(WebAPIInput_GetValidKeyVersion input, ref WebAPIOutput_GetValidKeyVersion output, ref string errCode)
+        {
+            bool flag = false;
+            string API = $"{GetValidKeyVersionURL}";
+
+            var result = HotaiMemeberBackendApiPost<object, WebAPIInput_GetValidKeyVersion>(input, API, ref errCode, MethodBase.GetCurrentMethod().Name);
+
+            if (result.Succ)
+            {
+                flag = true;
+                var data = JsonConvert.DeserializeObject<List<Data>>(result.Data.ToString());
+                output.Data = data;
+            }
+            return flag;
+        }
+
+        private (bool Succ, string Message, TResponse Data)
+            HotaiMemeberApiPost<TResponse, TRequest>(TRequest Body, string API, ref string errCode, string funName, string access_token = "", string Action = "POST", string Method = "POST")
+        {
+            (bool Succ, string Message, TResponse Data) valueTuple =
+                (false, "", default(TResponse));
+
+            string BaseUrl = FrontEndURL;
+            string api = SingleEntry;
+            var requestUrl = $"{BaseUrl}{api}";
+            string error = "";
+
             try
             {
-                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                var header = SetRequestHeader(access_token);
 
-                if (apiRequest.SendRequest)
+                var body = Body == null ? "" : JsonConvert.SerializeObject(Body);
+
+                var resinfo = SetRequestBody(body, API, Action);
+
+                string content = JsonConvert.SerializeObject(resinfo);
+
+                logger.Info($"Post Body:{content}");
+
+                var result = ApiPost.DoApiPostJson(requestUrl, content, Method, header);
+
+                valueTuple.Succ = result.ProtocolStatusCode == 200 ? true : false;
+
+                var a = result.ResponseData == "" ? "" : DecryptAESHandle(result.ResponseData);
+                if (valueTuple.Succ)
                 {
-                    byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
-                    using (Stream reqStream = apiRequest.Request.GetRequestStream())
+                    valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(a);
+                }
+                else if (result.ProtocolStatusCode == 400 || result.ProtocolStatusCode == 500)
+                {
+                    var output = JsonConvert.DeserializeObject<ResponseErrorInfo>(a);
+                    if (output != null)
                     {
-                        reqStream.Write(byteArray, 0, byteArray.Length);
+                        error = output.Errors.First().Key.ToString();
+                        errCode = string.IsNullOrWhiteSpace(error) ? "ERR913" : ErrorCodeMapping(error);
+                        valueTuple.Message = string.Join(",", (((JArray)output.Errors.First().Value).Select(x => (string)x).ToList()));
                     }
                 }
-
-                #region 發出Request
-                using (WebResponse response = apiRequest.Request.GetResponse())
+                else
                 {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                    {
-                        string responseStr = "";
-                        responseStr = reader.ReadToEnd();
-                        RTime = DateTime.Now;
-                        if (!string.IsNullOrWhiteSpace(responseStr))
-                        {
-                            var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
-                            output = JsonConvert.DeserializeObject<TResponse>(json);
-                        }
-                        output.RtnCode = "1000";
-                    }
+                    errCode = "ERR913";
+                    valueTuple.Message = result.Message;
                 }
-                #endregion
+            }
+            catch (Exception ex)
+            {
+                errCode = "ERR918";
+                valueTuple.Message = ex.Message;
+            }
 
-            }
-            catch (WebException ex)
-            {
-                WebResponse webResponse = (WebResponse)ex.Response;
-                var info = new ErrorInfo();
-                if (webResponse != null)
-                {
-                    using (StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
-                    {
-                        string responseStr = reader.ReadToEnd();
-                        if (!string.IsNullOrWhiteSpace(responseStr))
-                        {
-                            var json = apiRequest.DoDecrypt ? DecryptAESHandle(responseStr) : responseStr;
-                            output = JsonConvert.DeserializeObject<TResponse>(json);
-                            info.ErrorCode = output.errors.First().Key.ToString();
-                            info.ErrorMsg = string.Join(",", (((JArray)output.errors.First().Value).Select(x => (string)x).ToList()));
-                        }
-                    }
 
-                    output.RtnCode = info.ErrorCode;
-                    output.RtnMessage = info.ErrorMsg;
-                }
-                webResponse.Close();
-            }
-            catch (Exception e)
+            #region 寫入WebAPILog
+            SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
             {
-                output.RtnCode = "9999";
-                output.RtnMessage = e.Message;
-            }
-            finally
-            {
-                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
-                {
-                    MKTime = MKTime,
-                    UPDTime = RTime,
-                    WebAPIInput = JsonConvert.SerializeObject(apiRequest.JsonString),
-                    WebAPIName = apiRequest.FunName,
-                    WebAPIOutput = JsonConvert.SerializeObject(output),
-                    WebAPIURL = URL
-                };
+                MKTime = DateTime.Now,
+                UPDTime = DateTime.Now,
+                WebAPIInput = JsonConvert.SerializeObject(Body),
+                WebAPIName = funName,
+                WebAPIOutput = JsonConvert.SerializeObject(valueTuple.Data),
+                WebAPIURL = requestUrl
+            };
+            var flag = true;
 
-                bool flag = true;
-                string errCode = "";
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
-            }
-            return output;
-        }
-        
-        private HttpWebRequest CreateRequestHeader(string token = "", string action = "POST", string authType = "Bearer")
-        {
-            string URL = $"{FrontEndURL}{SingleEntry}";
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
-            if (!string.IsNullOrWhiteSpace(token))
-            {
-                request.Headers.Add("Authorization", $"{authType} {token}");
-            }
-            request.Headers.Add("APP_ID",AppId);
-            request.Headers.Add("APP_VERSION", AppVersion);
-            request.Headers.Add("API_VERSION", ApiVersion);
-            request.Method = action;
-            request.ContentType = "application/json";
-            return request;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref error, ref lstError);
+            #endregion
+
+
+            return valueTuple;
         }
 
-        private RequestBody CreateRequestBody(string body, string apiUrl, string action = "POST")
+
+        private (bool Succ, string Message, TResponse Data)
+           HotaiMemeberBackendApiPost<TResponse, TRequest>(TRequest Body, string API, ref string errCode, string funName, string access_token = "", string Action = "POST", string Method = "POST")
         {
-            RequestBody requestBody = new RequestBody()
+            (bool Succ, string Message, TResponse Data) valueTuple =
+                (false, "", default(TResponse));
+
+            var requestUrl = $"{BackEndURL}{API}";
+            string error = "";
+            try
             {
-                Body = body,
+                var header = SetBackendRequest(access_token);
+
+                string content = "";
+
+                if (Method == "POST")
+                {
+                    content = JsonConvert.SerializeObject(Body);
+                }
+
+                logger.Info($"Post Body:{content}");
+
+                var result = ApiPost.DoApiPostJson(requestUrl, content, Method, header);
+
+                valueTuple.Succ = result.ProtocolStatusCode == 200 ? true : false;
+
+                if (valueTuple.Succ)
+                {
+                    valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(result.ResponseData);
+                }
+                else if (result.ProtocolStatusCode == 400 || result.ProtocolStatusCode == 500)
+                {
+                    var output = JsonConvert.DeserializeObject<ResponseErrorInfo>(result.ResponseData);
+                    if (output != null)
+                    {
+                        error = output.Errors.First().Key.ToString();
+                        errCode = string.IsNullOrWhiteSpace(error) ? "ERR913" : ErrorCodeMapping(error);
+                        valueTuple.Message = string.Join(",", (((JArray)output.Errors.First().Value).Select(x => (string)x).ToList()));
+                    }
+                }
+                else
+                {
+                    errCode = "ERR913";
+                    valueTuple.Message = result.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                errCode = "ERR918";
+                valueTuple.Message = ex.Message;
+            }
+
+
+            #region 寫入WebAPILog
+            SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+            {
+                MKTime = DateTime.Now,
+                UPDTime = DateTime.Now,
+                WebAPIInput = JsonConvert.SerializeObject(Body),
+                WebAPIName = funName,
+                WebAPIOutput = JsonConvert.SerializeObject(valueTuple.Data),
+                WebAPIURL = requestUrl
+            };
+            var flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref error, ref lstError);
+            #endregion
+
+            return valueTuple;
+        }
+
+        private WebHeaderCollection SetRequestHeader(string access_token = "", string authType = "Bearer")
+        {
+            var header = new WebHeaderCollection();
+            if (!string.IsNullOrWhiteSpace(access_token))
+            {
+                header.Add("Authorization", $"{authType} {access_token}");
+            }
+            header.Add("APP_ID", AppId);
+            header.Add("APP_VERSION", AppVersion);
+            header.Add("API_VERSION", ApiVersion);
+
+            return header;
+        }
+
+        private WebHeaderCollection SetBackendRequest(string access_token = "", string authType = "Bearer")
+        {
+            var header = new WebHeaderCollection();
+            if (!string.IsNullOrWhiteSpace(access_token))
+            {
+                header.Add("Authorization", $"{authType} {access_token}");
+            }
+            header.Add("APP_ID", AppId);
+            header.Add("APPKEY", AppKey);
+
+            return header;
+        }
+
+        private HotaiMemberRequestBody SetRequestBody(string body, string apiUrl, string action = "POST")
+        {
+            return new HotaiMemberRequestBody()
+            {
+                Body = string.IsNullOrEmpty(body) ? "" : EncryptAESHandle(body),
                 Method = action,
                 Route = apiUrl
             };
 
-            return requestBody;
         }
 
         private string EncryptAESHandle(string source)
@@ -970,6 +867,64 @@ namespace OtherService
             string encrypt = "";
             encrypt = AESEncrypt.DecryptAES128(encryptData, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
             return encrypt;
+        }
+
+        /// <summary>
+        /// 回傳錯誤代碼Mapping
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private string ErrorCodeMapping(string key)
+        {
+            Dictionary<string, string> dics = new Dictionary<string, string>()
+            {
+                { "9101","ERR942"},
+                { "9102","ERR943"},
+                { "9103","ERR944"},
+                { "9104","ERR945"},
+                { "9105","ERR946"},
+                { "9106","ERR947"},
+                { "9107","ERR948"},
+                { "9108","ERR949"},
+                { "9109","ERR950"},
+                { "9110","ERR951"},
+                { "9111","ERR952"},
+                { "9201","ERR953"},
+                { "9202","ERR954"},
+                { "9203","ERR955"},
+                { "9204","ERR956"},
+                { "9205","ERR957"},
+                { "9301","ERR958"},
+                { "9302","ERR959"},
+                { "9303","ERR960"},
+                { "9304","ERR961"},
+                { "9305","ERR962"},
+                { "9501","ERR963"},
+                { "9502","ERR964"},
+                { "9503","ERR965"},
+                { "9601","ERR966"},
+                { "9602","ERR967"},
+                { "AccessToken",    "ERR968"},
+                { "Account",        "ERR969"},
+                { "Birthday",       "ERR970"},
+                { "ConfirmPassword","ERR971"},
+                { "Email",          "ERR972"},
+                { "Id",             "ERR973"},
+                { "MobilePhone",    "ERR974"},
+                { "Name",           "ERR975"},
+                { "NewPassword",    "ERR976"},
+                { "OldPassword",    "ERR977"},
+                { "OtpCode",        "ERR978"},
+                { "OtpId",          "ERR979"},
+                { "Password",       "ERR980"},
+                { "RefreshToken",   "ERR981"},
+                { "Sex",            "ERR982"},
+                { "Type",           "ERR983"},
+                { "UseType",        "ERR984"},
+                { "Value",          "ERR985"}
+            };
+
+            return dics.ContainsKey(key) ? dics.Single(x => x.Key == key).Value : "ERR913";
         }
 
     }
