@@ -33,6 +33,9 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
+        //20211123 ADD BY ADAM
+        public string ActStations = ConfigurationManager.AppSettings["ActStation"].ToString();
+        public string ActStartDate = ConfigurationManager.AppSettings["ActStartDate"].ToString();
 
         private CommonFunc baseVerify { get; set; }
         [HttpPost]
@@ -398,6 +401,7 @@ namespace WebAPI.Controllers
                                 StationID = lstData[0].StationID,
                                 StationName = lstData[0].StationName,
                                 IsRent = lstData[0].IsRent,     //20201027 ADD BY ADAM REASON.抓第一筆判斷是否可租
+                                //IsRent = lstData[0].IsRent == "N" ? lstData[0].IsRent : ActStations.IndexOf(lstData[0].StationID) > 0 ? "A":"Y",
                                 IsFavStation = lstData[0].IsFavStation,
                                 IsShowCard = lstData[0].IsShowCard,
                                 ProjectObj = new List<ProjectObj>(),
@@ -475,6 +479,7 @@ namespace WebAPI.Controllers
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = "",
                                         IsRent = lstData[i].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
+                                        //IsRent = lstData[i].IsRent == "N" ? lstData[i].IsRent : ActStations.IndexOf(lstData[i].StationID) > 0 ? "A" : "Y",
                                         IsFavStation = lstData[i].IsFavStation,
                                         IsShowCard = lstData[i].IsShowCard
                                     };
@@ -565,7 +570,11 @@ namespace WebAPI.Controllers
                                 if (ProjIsRents == null || ProjIsRents.Count() == 0)
                                     x.IsRent = "N";
                                 else
-                                    x.IsRent = "Y";
+                                {
+                                    //x.IsRent = "Y";
+                                    //20211123 aADD BY ADAM REASON.增加魔鬼剋星活動判斷
+                                    x.IsRent = (ActStations.IndexOf(x.StationID) > 0 && int.Parse(DateTime.Now.ToString("yyyyMMdd")) > int.Parse(ActStartDate)) ? "A" : "Y";
+                                }
                             });
                         }
                         else
@@ -574,7 +583,11 @@ namespace WebAPI.Controllers
                             {
                                 var IsRentList = x.ProjectObj.Where(y => y.IsRent == "Y").ToList();
                                 if (IsRentList != null && IsRentList.Count() > 0)
-                                    x.IsRent = "Y";
+                                {
+                                    //x.IsRent = "Y";
+                                    //20211123 aADD BY ADAM REASON.增加魔鬼剋星活動判斷
+                                    x.IsRent = (ActStations.IndexOf(x.StationID) > 0 && int.Parse(DateTime.Now.ToString("yyyyMMdd")) > int.Parse(ActStartDate)) ? "A" : "Y";
+                                }
                                 else
                                     x.IsRent = "N";
                             });
