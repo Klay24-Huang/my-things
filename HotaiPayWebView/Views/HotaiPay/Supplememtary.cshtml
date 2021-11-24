@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewBag.Title = "Supplememtary";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰集團會員登入</title>
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/sweetalert.css">
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+
+<style>
+</style>
+<body>
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員登入</h6></header>
+
+    <div class="container" style="max-width: 414px;padding-bottom: 16px;">
+
+        <div class="mt-3">
+            <p class="text-gray">請補填完成資料，以利後續流程，謝謝！</p>
+        </div>
+
+        <label>姓名</label>
+        <input type="text" class="form-control input-light" placeholder="吳志賢" required>
+
+        <div class="credit-card-box mt-4">
+            <div class="gender-choose mr-5"><input class="mr-1" type="radio">先生</div>
+            <div class="gender-choose"><input class="mr-1" type="radio">女士</div>
+        </div>
+
+        <label class="mt-4">身分證字號</label>
+        <input type="text" class="form-control input-light" placeholder="A123456789" required>
+
+        <label class="mt-4">生日</label>
+        <input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" required>
+
+        <label class="mt-4">Email</label>
+        <input type="text" class="form-control input-light" placeholder="orange@goonsdesign.com" required>
+
+
+        <!-- 提示文字＋圖-->
+        <div class="form-check form-check-inline mt-4 d-flex align-items-start">
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
+            <label class="form-check-label" for="inlineCheckbox1">
+                <p class="text-gray">我已閱讀並同意和泰集團會員權益及隱私條款、APP使用條款</p>
+            </label>
+        </div>
+
+
+
+        <button type="submit" class="btn btn-disable-gray my-3 sweet-1" id="redbtn" onclick="_gaq.push">完成註冊</button>
+
+        <div>
+            <p class="text-gray">身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。</p>
+        </div>
+
+    </div>
+
+
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+
+    <!-- 自己寫的js -->
+    <script src="js/main.js"></script>
+
+    <script src="js/sweetalert.js"></script>
+
+
+    <script>$(":checkbox").click(function(){
+    $("#redbtn").toggleClass("checked-active")
+})
+
+document.querySelector('.sweet-1').onclick = function(){
+
+        swal({
+          title: "",
+          text: "資料補填完成！身分證字號、生日與會員服務與權益相關，請確實填寫，完成填寫後不可自行更改。",
+          imageUrl: 'images/alert-popup.svg',
+          showCancelButton: true,
+          cancelButtonText: "取消",
+          cancelButtonClass: "btn-outline-gray-small",
+          confirmButtonClass: 'btn-blue-small',
+          confirmButtonText: '完成填寫'
+        });
+};</script>
+</body>
+</html>
