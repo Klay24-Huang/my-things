@@ -47,6 +47,16 @@
     <Compile Include="Common\CodeData.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
+    <Compile Include="Flow\Hotai\Class1.cs" />
+    <Compile Include="Flow\Hotai\IFN_HotaiPaymenyBase.cs" />
+    <Compile Include="Flow\Hotai\IFN_QueryDefaultCard.cs" />
+    <Compile Include="Flow\Hotai\IFN_QueryCardList.cs" />
+    <Compile Include="Flow\Hotai\OFN_HotaiCreditCard.cs" />
+    <Compile Include="SP\Input\Hotai\SPInput_HotaiGetDefaultCard.cs" />
+    <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
+    <Compile Include="TB\Hotai\CreditCardInfo.cs" />
+    <Compile Include="TB\Hotai\HotaiCardInfo.cs" />
+    <Compile Include="Flow\Hotai\OFN_HotaiCreditCardList.cs" />
     <Compile Include="MemberData\InvoiceData.cs" />
     <Compile Include="MemberData\UnBindLog.cs" />
     <Compile Include="MemberData\RegisterData.cs" />
@@ -576,6 +586,7 @@
     <Compile Include="TB\GetPolygonRawData.cs" />
     <Compile Include="TB\Holiday.cs" />
     <Compile Include="TB\Hotai\HotaiToken.cs" />
+    <Compile Include="Flow\Hotai\IFN_HotaiQueryCardForOne.cs" />
     <Compile Include="TB\iRentManagerStation.cs" />
     <Compile Include="TB\iRentStationData.cs" />
     <Compile Include="TB\LoveCodeListData.cs" />
@@ -774,7 +785,7 @@
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Signin.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Token.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Townships.cs" />
-    <Compile Include="WebAPI\output\Hotai\Payment\HotaiCardInfo.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotaiCardInfoOriginal.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\HotaiResCreditCardPay.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\HotaiResFastBind.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\HotaiResAddCard.cs" />

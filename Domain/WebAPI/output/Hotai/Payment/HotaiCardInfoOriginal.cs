@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.WebAPI.output.Hotai.Payment
 {
-    public class HotaiCardInfo
+    public class HotaiCardInfoOriginal
     {
         /// <summary>
         /// 信用卡流水號ID(信用卡 TokenID)

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Domain.TB.Hotai;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebAPI.Models.Param.Bill.Output
+namespace Domain.Flow.Hotai
 {
     public class OFN_HotaiCreditCardList
     {

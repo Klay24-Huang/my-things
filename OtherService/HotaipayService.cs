@@ -1,23 +1,21 @@
-﻿using Domain.SP.Input.Hotai;
+﻿using Domain.Flow.Hotai;
+using Domain.SP.Input.Hotai;
 using Domain.SP.Output;
 using Domain.SP.Output.Hotai;
 using Domain.TB.Hotai;
 using Domain.WebAPI.Input.Hotai.Member;
+using Domain.WebAPI.Input.Hotai.Payment;
 using Domain.WebAPI.output.Hotai.Member;
+using Domain.WebAPI.output.Hotai.Payment;
 using NLog;
-using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web;
-using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Param.Bill;
-using WebAPI.Models.Param.Bill.Input;
-using WebAPI.Models.Param.Bill.Output;
 using WebCommon;
 
-namespace WebAPI.Service
+namespace OtherService
 {
     public class HotaipayService
     {
@@ -31,23 +29,28 @@ namespace WebAPI.Service
         /// <param name="cardList"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoQueryCardList(string IDNO, ref OFN_HotaiCreditCardList cardList, ref string errCode)
+        public bool DoQueryCardList(IFN_QueryCardList input, ref OFN_HotaiCreditCardList cardList, ref string errCode)
         {
+            HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
             bool flag = true;
-            string HotaiToken = "";
-            //todo DoQueryCardList
-
+            HotaiToken hotaiToken = new HotaiToken();
             //1.取得會員Token
-            //flag = GetToken();
+            flag = DoQueryToken(input.IDNO,input.LogID,input.PRGName,ref hotaiToken, ref errCode);
             //2.向中信取得卡清單
+            WebAPIOutput_GetCreditCards cardOptput = new WebAPIOutput_GetCreditCards();
+
             if (flag)
             {
-                //flag = GetList();
+                var objGetCard = new WebAPIInput_GetCreditCards
+                {
+                    AccessToken = hotaiToken.AccessToken
+                };
+                flag = PaymentAPI.GetHotaiCardList(objGetCard,ref cardOptput);
             }
             //3.資料庫取得預設卡
             if(flag)
             {
-                //flag = GetDafaultCard(); 
+                sp_GetDefaultCard(input.IDNO, input.LogID, ref flag, ref errCode);
             }
             //4.比對預設卡與卡清單
             if(flag)
@@ -66,12 +69,20 @@ namespace WebAPI.Service
         /// <param name="card"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoQueryDefaultCard(string IDNO, ref HotaiCardInfo card, ref string errCode)
+        public bool DoQueryDefaultCard(IFN_QueryDefaultCard input, ref HotaiCardInfo card, ref string errCode)
         {
             bool flag = true;
             OFN_HotaiCreditCardList hotaiCards = new OFN_HotaiCreditCardList();
-            
-            flag = DoQueryCardList(IDNO, ref hotaiCards, ref errCode);
+
+            var objGetCards = new IFN_QueryCardList
+            {
+                IDNO = input.IDNO,
+                LogID=input.LogID,
+                PRGName=input.PRGName,
+                insUser = input.insUser
+            };
+
+            flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
             if(flag)
             {
                 card = hotaiCards.CreditCards.Find(p => p.IsDefault == 1);
@@ -93,8 +104,15 @@ namespace WebAPI.Service
             bool flag = true;
             OFN_HotaiCreditCardList hotaiCards = new OFN_HotaiCreditCardList();
 
+            var objGetCards = new IFN_QueryCardList
+            {
+                IDNO = input.IDNO,
+                LogID = input.LogID,
+                PRGName = input.PRGName,
+                insUser = input.insUser
+            };
 
-            flag = DoQueryCardList(input.IDNO, ref hotaiCards, ref errCode);
+            flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
             if (flag)
             {
                 card = hotaiCards.CreditCards.Find(p => p.CardToken == input.CardToken);
@@ -177,8 +195,8 @@ namespace WebAPI.Service
             SPOutput_QueryToken spOut = new SPOutput_QueryToken();
             SQLHelper<SPInput_QueryToken, SPOutput_QueryToken> sqlHelp = new SQLHelper<SPInput_QueryToken, SPOutput_QueryToken>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-            CommonFunc baseVerify = new CommonFunc();
-            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            //CommonFunc baseVerify = new CommonFunc();
+            //baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return spOut;
         }
         /// <summary>
@@ -216,6 +234,46 @@ namespace WebAPI.Service
             return flag;
         }
 
+
+        /// <summary>
+        /// 查詢和泰Pay預設卡
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="flag"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public SPOutput_HotaiGetDefaultCard sp_GetDefaultCard(string IDNO, long LogID, ref bool flag, ref string errCode)
+        {
+            SPInput_HotaiGetDefaultCard spInput = new SPInput_HotaiGetDefaultCard()
+            {
+                IDNO = IDNO,
+                LogID = LogID
+            };
+            string spName = "usp_HotaiGetDefaultCard_Q01";
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            SPOutput_HotaiGetDefaultCard spOutput = new SPOutput_HotaiGetDefaultCard();
+            SQLHelper<SPInput_HotaiGetDefaultCard, SPOutput_HotaiGetDefaultCard> sqlHelp = new SQLHelper<SPInput_HotaiGetDefaultCard, SPOutput_HotaiGetDefaultCard>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+            //CommonFunc baseVerify = new CommonFunc();
+            //baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return spOutput;
+        }
 
     }
 }

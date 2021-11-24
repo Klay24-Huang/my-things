@@ -29,11 +29,11 @@ namespace OtherService
 		public bool GetHotaiCardList(WebAPIInput_GetCreditCards input, ref WebAPIOutput_GetCreditCards output)
 		{
 			logger.Info("GetHotaiCardList init");
-			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<List<HotaiCardInfo>>, object>(null, "GET", "/creditcard/card", input.AccessToken);
+			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<List<HotaiCardInfoOriginal>>, object>(null, "GET", "/creditcard/card", input.AccessToken);
 
-			List<HotaiCardInfo> hotaiCards = apiResult.Succ ?
+			List<HotaiCardInfoOriginal> hotaiCards = apiResult.Succ ?
 				apiResult.Data.Data?.Where(t => t.IsAvailable && !t.IsOverwrite).ToList() :
-				new List<HotaiCardInfo>();
+				new List<HotaiCardInfoOriginal>();
 
 			output.HotaiCards = hotaiCards;
 			output.CardCount = hotaiCards.Count;
