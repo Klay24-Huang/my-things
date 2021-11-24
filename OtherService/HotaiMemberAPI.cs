@@ -27,15 +27,15 @@ namespace OtherService
     /// </summary>
     public class HotaiMemberAPI
     {
-        private string FrontEndURL = ConfigurationManager.AppSettings["HotaiMemberFrontEndURL"].ToString();
-        private string SingleEntry = ConfigurationManager.AppSettings["HotaiMemberSingleEntry"].ToString();
-        private string BackEndURL = ConfigurationManager.AppSettings["HotaiMemberBackEndURL"].ToString();
-        private string AppId = ConfigurationManager.AppSettings["HotaiAppId"].ToString();
-        private string AppVersion = ConfigurationManager.AppSettings["HotaiAppVersion"].ToString();
-        private string ApiVersion = ConfigurationManager.AppSettings["HotaiApiVersion"].ToString();
-        private string AppKey = ConfigurationManager.AppSettings["HotaiAppKey"].ToString();
-        private string Key = ConfigurationManager.AppSettings["HotaiKey"].ToString();
-        private string IV = ConfigurationManager.AppSettings["HotaiIV"].ToString();
+        private string FrontEndURL = "https://mfe-api-test.hotaimember.com.tw/";
+        private string SingleEntry = "api/app/service";
+        private string BackEndURL = "https://mbe-api-test.hotaimember.com.tw/";
+        private string AppId = "IRAPP";
+        private string AppVersion = "V1.0.0";
+        private string ApiVersion = "V3";
+        private string AppKey = "IbuzwcL+5+sgyxlQnvPNQeYK1M9Ojn2LvLp68TTYYERrdfeeozz/kd1YVKec8271nY+nE9bM0pxEF0tSOvMsXhk9/t4nKQxCUt0nWC110HzPlnQbVh0xDaAQUigy36/T7WWC8FWoa0iytIdMfEm7aXr4jRua8DeEtBVHrugcbZoB8Cz54mOO5yCjHmvT2Q1zvyUoxv6XJUmEoRgpP/GVIneXqsxCJBfyyT3Al2B2eakbLlS5Sd01EhyprYasUaVzFonWV04brybHyxf5cpMO59xwXDfLLGd/OivwwO8mYU8PLlZae4JVI1yUzW7HHw7qsiB7X82cWMG5X6uJCSihqg==";
+        private string Key = "LPT06Y4N99LEKBRP8T0Y8TTBTC9MYRVT";
+        private string IV = "KMZ7FYD1EPISHKY0";
         private string CheckSignupURL = "api/signup/check";                                                //註冊檢查  
         private string SendSmsOtpURL = "api/otp/sms";                                                      //發送簡訊OTP
         private string SmsOtpValidationURL = "api/otp/sms-validatation";                                   //簡訊 OTP 驗證
