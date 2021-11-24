@@ -18,7 +18,6 @@ using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
-using WebAPI.Models.Enum;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
@@ -187,7 +186,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            //取車判斷
+            #region 取車
             if (flag)
             {
                 string CheckTokenName = "usp_BeforeBookingStart";
@@ -247,26 +246,28 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     #region 執行sp合約
-                    //20211012 ADD BY ADAM REASON.增加手機定位點
-                    string BookingStartName = "usp_BookingStart";
-                    Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
+                    if (flag)
                     {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        OrderNo = tmpOrder,
-                        Token = Access_Token,
-                        NowMileage = Convert.ToSingle(mil),
-                        StopTime = "",
-                        Insurance = 0
                         //20211012 ADD BY ADAM REASON.增加手機定位點
-                        //PhoneLat = apiInput.PhoneLat,
-                        //PhoneLon = apiInput.PhoneLon
-                    };
-                    SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
-                    SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
-                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
-                    #endregion
+                        string BookingStartName = "usp_BookingStart";
+                        Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            OrderNo = tmpOrder,
+                            Token = Access_Token,
+                            NowMileage = Convert.ToSingle(mil),
+                            StopTime = "",
+                            Insurance = 0
+                            //20211012 ADD BY ADAM REASON.增加手機定位點
+                            //PhoneLat = apiInput.PhoneLat,
+                            //PhoneLon = apiInput.PhoneLon
+                        };
+                        SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
+                        SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
+                        flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
+                    }
                     if (flag)
                     {
                         string BookingControlName = "usp_BookingControl";
@@ -282,6 +283,7 @@ namespace WebAPI.Controllers
                         flag = SQLBookingControlHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingControlOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPBookingControlOutput, ref lstError, ref errCode);
                     }
+                    #endregion
                     //20210325 ADD BY ADAM REASON.車機指令優化
                     #region 開啟電源 
                     if (flag)
@@ -294,7 +296,6 @@ namespace WebAPI.Controllers
                             method = CommandType,
                             requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                             _params = new Params()
-
                         };
                         method = CommandType;
                         requestId = input.requestId;
@@ -306,21 +307,6 @@ namespace WebAPI.Controllers
                     }
                     #endregion
 
-                    if (flag)
-                    {
-                        string SPInsMotorBattLogName = new ObjType().GetSPName(ObjType.SPType.InsMotorBattLog);
-                        SPInput_InsMotorBattLog SPInsMotorBattLogInput = new SPInput_InsMotorBattLog()
-                        {
-                            OrderNo = tmpOrder,
-                            EventCD = "1",  //取車電量
-                            LogID = LogID
-                        };
-                        SPOutput_Base SPInsMotorBattLogOutput = new SPOutput_Base();
-                        SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base> SQLInsMotorBattLogHelp = new SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base>(connetStr);
-                        flag = SQLInsMotorBattLogHelp.ExecuteSPNonQuery(SPInsMotorBattLogName, SPInsMotorBattLogInput, ref SPInsMotorBattLogOutput, ref lstError);
-                        baseVerify.checkSQLResult(ref flag, ref SPInsMotorBattLogOutput, ref lstError, ref errCode);
-                    }
-                    
                     #region 設定租約
                     if (flag)
                     {
@@ -378,6 +364,7 @@ namespace WebAPI.Controllers
                     #endregion
                 }
             }
+            #endregion
             #region 寫取車照片到azure
             if (flag)
             {

@@ -348,8 +348,8 @@ namespace WebAPI.Controllers
                     //執行sp合約
                     if (flag)
                     {
-                            //20211012 ADD BY ADAM REASON.增加手機定位點
-                            string BookingStartName = "usp_BookingStart";
+                        //20211012 ADD BY ADAM REASON.增加手機定位點
+                        string BookingStartName = "usp_BookingStart";
                         Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                         {
                             IDNO = IDNO,
@@ -359,9 +359,9 @@ namespace WebAPI.Controllers
                             NowMileage = Convert.ToSingle(mil),
                             StopTime = (string.IsNullOrWhiteSpace(apiInput.ED)) ? "" : apiInput.ED,
                             Insurance = apiInput.Insurance
-                                //20211012 ADD BY ADAM REASON.增加手機定位點
-                                //PhoneLat = apiInput.PhoneLat,
-                                //PhoneLon = apiInput.PhoneLon
+                            //20211012 ADD BY ADAM REASON.增加手機定位點
+                            //PhoneLat = apiInput.PhoneLat,
+                            //PhoneLon = apiInput.PhoneLon
                         };
                         SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
                         SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
@@ -370,7 +370,7 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-                            string BookingControlName = "usp_BookingControl";
+                        string BookingControlName = "usp_BookingControl";
                         SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                         {
                             IDNO = IDNO,
@@ -554,7 +554,7 @@ namespace WebAPI.Controllers
                         //執行sp合約
                         if (flag)
                         {
-                                string BookingStartName = "usp_BookingStart";
+                            string BookingStartName = "usp_BookingStart";
                             Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                             {
                                 IDNO = IDNO,
@@ -572,7 +572,7 @@ namespace WebAPI.Controllers
                         }
                         if (flag)
                         {
-                                string BookingControlName = "usp_BookingControl";
+                            string BookingControlName = "usp_BookingControl";
                             SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                             {
                                 IDNO = IDNO,
@@ -728,12 +728,6 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                 }
-            }
-            //送短租, 先pendding
-            if (flag)
-            {
-                //預約的資料，似乎走排程比較好
-                //由另外的JOB來呼叫執行，在BookingStart存檔那邊去處理狀態
             }
             #region 寫取車照片到azure
             if (flag)
