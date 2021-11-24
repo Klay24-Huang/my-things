@@ -38,6 +38,7 @@ namespace OtherService
             flag = DoQueryToken(input.IDNO, input.LogID, input.PRGName, ref hotaiToken, ref errCode);
             //2.向中信取得卡清單
             WebAPIOutput_GetCreditCards cardOptput = new WebAPIOutput_GetCreditCards();
+
             if (flag)
             {
                 var objGetCard = new WebAPIInput_GetCreditCards
@@ -159,10 +160,10 @@ namespace OtherService
         /// <param name="output"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoQueryToken(string IDNO, long LogID, string PRGName, ref HotaiToken output, ref string errCode)
+        public bool DoQueryToken(string IDNO, string PRGName, ref HotaiToken output, ref string errCode)
         {
             bool flag = true;
-            SPOutput_QueryToken SPOut = sp_QueryToken(IDNO, LogID, ref flag, ref errCode);
+            SPOutput_QueryToken SPOut = sp_QueryToken(IDNO, ref flag, ref errCode);
             if (flag && !string.IsNullOrWhiteSpace(SPOut.AccessToken))
             {
                 WebAPIInput_RefreshToken inputToken = new WebAPIInput_RefreshToken()
@@ -180,7 +181,6 @@ namespace OtherService
                     SPInput_SetToken inputSetToken = new SPInput_SetToken()
                     {
                         IDNO = IDNO,
-                        LogID = LogID,
                         PRGName = PRGName,
                         AccessToken = outputToken.access_token,
                         RefreshToken = outputToken.refresh_token
@@ -210,21 +210,35 @@ namespace OtherService
         /// <param name="flag"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public SPOutput_QueryToken sp_QueryToken(string IDNO, long LogID, ref bool flag, ref string errCode)
+        public SPOutput_QueryToken sp_QueryToken(string IDNO, ref bool flag, ref string errCode)
         {
             SPInput_QueryToken spInput = new SPInput_QueryToken()
             {
                 IDNO = IDNO,
-                LogID = LogID
+
             };
             string spName = "usp_HotaiToken_Q01";
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            SPOutput_QueryToken spOut = new SPOutput_QueryToken();
+            SPOutput_QueryToken spOutput = new SPOutput_QueryToken();
             SQLHelper<SPInput_QueryToken, SPOutput_QueryToken> sqlHelp = new SQLHelper<SPInput_QueryToken, SPOutput_QueryToken>(connetStr);
-            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-            //CommonFunc baseVerify = new CommonFunc();
-            //baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-            return spOut;
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+            return spOutput;
         }
         /// <summary>
         /// 更新和泰Token
@@ -261,7 +275,6 @@ namespace OtherService
             return flag;
         }
 
-
         /// <summary>
         /// 查詢和泰Pay預設卡
         /// </summary>
@@ -281,8 +294,7 @@ namespace OtherService
             SPOutput_HotaiGetDefaultCard spOutput = new SPOutput_HotaiGetDefaultCard();
             SQLHelper<SPInput_HotaiGetDefaultCard, SPOutput_HotaiGetDefaultCard> sqlHelp = new SQLHelper<SPInput_HotaiGetDefaultCard, SPOutput_HotaiGetDefaultCard>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
-            //CommonFunc baseVerify = new CommonFunc();
-            //baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
             if (flag)
             {
                 if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
@@ -300,6 +312,73 @@ namespace OtherService
             }
 
             return spOutput;
+        }
+        /// <summary>
+        /// 綁定和泰Pay預設卡
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_SetDefaultCard(SPInput_SetDefaultCard spInput, ref string errCode)
+        {
+            bool flag = true;
+            string spName = "usp_SetHotaiDefaultCard_U01";
+
+            var lstError = new List<ErrorInfo>();
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_SetDefaultCard, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_SetDefaultCard, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 解綁和泰會員
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_MemberUnBind(SPInput_MemberUnBind spInput, ref string errCode)
+        {
+            bool flag = true;
+            string spName = "usp_HotaiMemberUnBind_U01";
+
+            var lstError = new List<ErrorInfo>();
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_MemberUnBind, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_MemberUnBind, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+            return flag;
         }
 
         /// <summary>
