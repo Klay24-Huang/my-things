@@ -4,7 +4,6 @@ using Domain.SP.Input.Booking;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Input.Common;
 using Domain.SP.Input.Wallet;
-using Domain.SP.Input.Common;
 using Domain.SP.Output;
 using Domain.SP.Output.Bill;
 using Domain.SP.Output.Booking;
@@ -103,6 +102,8 @@ namespace WebAPI.Controllers
             bool CreditFlag = true;     // 信用卡綁卡
             bool WalletFlag = false;    // 綁定錢包
             int WalletNotice = 0;       // 錢包餘額不足通知 (0:不顯示 1:顯示)
+
+            var trace = new TraceCom();
             #endregion
             #region 防呆
             trace.traceAdd("apiIn", value);
