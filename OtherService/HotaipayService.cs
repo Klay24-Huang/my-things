@@ -26,40 +26,67 @@ namespace OtherService
         /// 取得和泰卡片清單
         /// </summary>
         /// <param name="IDNO"></param>
-        /// <param name="cardList"></param>
+        /// <param name="output"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoQueryCardList(IFN_QueryCardList input, ref OFN_HotaiCreditCardList cardList, ref string errCode)
+        public bool DoQueryCardList(IFN_QueryCardList input, ref OFN_HotaiCreditCardList output, ref string errCode)
         {
             HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
             bool flag = true;
             HotaiToken hotaiToken = new HotaiToken();
             //1.取得會員Token
-            flag = DoQueryToken(input.IDNO,input.LogID,input.PRGName,ref hotaiToken, ref errCode);
+            flag = DoQueryToken(input.IDNO, input.LogID, input.PRGName, ref hotaiToken, ref errCode);
             //2.向中信取得卡清單
             WebAPIOutput_GetCreditCards cardOptput = new WebAPIOutput_GetCreditCards();
-
             if (flag)
             {
                 var objGetCard = new WebAPIInput_GetCreditCards
                 {
                     AccessToken = hotaiToken.AccessToken
                 };
-                flag = PaymentAPI.GetHotaiCardList(objGetCard,ref cardOptput);
+                flag = PaymentAPI.GetHotaiCardList(objGetCard, ref cardOptput);
             }
             //3.資料庫取得預設卡
-            if(flag)
+            var dbDefaultCard = new SPOutput_HotaiGetDefaultCard();
+            if (flag)
             {
-                sp_GetDefaultCard(input.IDNO, input.LogID, ref flag, ref errCode);
+                dbDefaultCard = sp_GetDefaultCard(input.IDNO, input.LogID, ref flag, ref errCode);
             }
             //4.比對預設卡與卡清單
-            if(flag)
+            if (flag)
             {
-                //SetDefault
+                var creditCards = new List<HotaiCardInfo>();
+                if (cardOptput.CardCount == 1 && dbDefaultCard.HotaiCardID == 0)
+                {
+                    //寫入預設卡片
 
+                    creditCards = cardOptput.HotaiCards.Select(p => setHotaiCardInfo(p,p.Id.ToString())).ToList();
+                }
+                else
+                {
+                    cardOptput.HotaiCards.ForEach(
+                    p => creditCards.Add(setHotaiCardInfo(p, dbDefaultCard.CardToken)));
+                }
+
+                var hasDefault = creditCards.FindIndex(p => p.IsDefault == 1) == -1 ? false : true;
+                if (!hasDefault && dbDefaultCard.HotaiCardID != 0)
+                {
+                    flag = sp_HotaiDefaultCardUnbind(
+                            new SPInput_HotaiDefaultCardUnbind {
+                                IDNO = input.IDNO,
+                                HotaiCardID = dbDefaultCard.HotaiCardID,
+                                LogID = input.LogID,
+                                U_FuncName = input.PRGName,
+                                U_USERID = "Sys" }, ref errCode);
+                }
+
+                output.CreditCards = creditCards;
             }
+
             //5.整理後回傳
 
+            if (output.CreditCards.Count() == 0)
+                flag = false;
             return flag;
         }
         /// <summary>
@@ -77,17 +104,17 @@ namespace OtherService
             var objGetCards = new IFN_QueryCardList
             {
                 IDNO = input.IDNO,
-                LogID=input.LogID,
-                PRGName=input.PRGName,
+                LogID = input.LogID,
+                PRGName = input.PRGName,
                 insUser = input.insUser
             };
 
             flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
-            if(flag)
+            if (flag)
             {
                 card = hotaiCards.CreditCards.Find(p => p.IsDefault == 1);
 
-                flag = (card == null || card == default) ? false : true;
+                flag = (card == null) ? false : true;
             }
 
             return flag;
@@ -145,7 +172,7 @@ namespace OtherService
                 };
 
                 WebAPIOutput_Token outputToken = new WebAPIOutput_Token();
-                flag = hotaiMemberAPI.DoRefreshToken(inputToken, ref outputToken,ref errCode);
+                flag = hotaiMemberAPI.DoRefreshToken(inputToken, ref outputToken, ref errCode);
 
                 #region 更新和泰會員綁定記錄
                 if (flag)
@@ -273,6 +300,55 @@ namespace OtherService
             }
 
             return spOutput;
+        }
+
+        /// <summary>
+        /// 和泰預設卡片失效
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_HotaiDefaultCardUnbind(SPInput_HotaiDefaultCardUnbind spInput, ref string errCode)
+        {
+            string spName = "usp_HotaiDefaultCardUnbind_U01";
+
+            var lstError = new List<ErrorInfo>();
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_HotaiDefaultCardUnbind, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_HotaiDefaultCardUnbind, SPOutput_Base>(connetStr);
+            bool flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return flag;
+        }
+
+        private HotaiCardInfo setHotaiCardInfo(HotaiCardInfoOriginal input,string defaultCardToken)
+        {
+            return new HotaiCardInfo
+            {
+                CardToken = input.Id.ToString(),
+                CardName = input.AliasName,
+                CardType = input.CardType,
+                BankDesc = input.BankDesc,
+                CardNumber = input.CardNoMask,
+                IsDefault = input.Id.ToString().Equals(defaultCardToken) ? 1 : 0,
+                MemberOneID = input.MemberOneID
+
+            };
         }
 
     }

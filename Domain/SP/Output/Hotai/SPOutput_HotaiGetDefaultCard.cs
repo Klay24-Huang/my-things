@@ -9,7 +9,7 @@ namespace Domain.SP.Output.Hotai
 {
     public class SPOutput_HotaiGetDefaultCard : SPOutput_Base
     {
-        public string HotaiCardID { get; set; }
+        public int HotaiCardID { get; set; }
         public string CardToken { get; set; }
        
     }
