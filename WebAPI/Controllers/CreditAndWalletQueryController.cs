@@ -190,8 +190,9 @@ namespace WebAPI.Controllers
                 };
 
                 var HotaiFlag = HotaipayService.DoQueryCardList(objQueryCards, ref HotaiCards, ref errCode);
-                flag = HotaiFlag;
-                if (flag)
+                //flag = HotaiFlag;
+                //if (flag)
+                if (HotaiFlag)
                 {
                     if (HotaiCards.CreditCards != null && HotaiCards.CreditCards.Count > 0)
                     {

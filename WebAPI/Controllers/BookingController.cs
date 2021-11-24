@@ -237,7 +237,7 @@ namespace WebAPI.Controllers
                 SPOut_CreditAndWalletQuery spOut2 = new SPOut_CreditAndWalletQuery();
                 SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut2, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, spOut2.Error, spOut2.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
                     WalletFlag = spOut2.WalletStatus == "2" ? true : false;
