@@ -6,6 +6,8 @@
 * 程式功能 : 開戶及儲值錢包
 * 作    者 : AMBER
 * 撰寫日期 : 20210914
+* 修改日期 : 20211111 UPD BY PO YU REASON:(排程儲值用)將超商條碼與虛擬帳號繳款狀態改為已處理
+             20211117 UPD BY AMBER REASON:新增TradeKey參數(信用卡儲值放卡號後5碼)
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_WalletStore_U01]
@@ -24,6 +26,7 @@ CREATE PROCEDURE [dbo].[usp_WalletStore_U01]
     @LastTransId			VARCHAR(50)			  , --最近一次台新訂單編號
 	@TaishinNO              VARCHAR(30)	          , --IR編or台新訂單編號
 	@TradeType              VARCHAR(20)           , --交易類別名稱
+	@TradeKey               VARCHAR(50)           , 
 	@PRGName                VARCHAR(50)           , --程式名稱
 	@Mode                   TINYINT               , --交易類別代號(0:消費;1:儲值;2:轉贈給他人;3:受他人轉贈;4:退款;5:欠費繳交)
 	@InputSource            TINYINT               , --輸入來源(1:APP;2:Web)
@@ -80,7 +83,7 @@ BEGIN TRY
   　  SET @ErrorCode='ERR900'
 	END
   END
-		 
+  		 
   --0.再次檢核token
   IF @Error=0　And @InputSource = 1
   BEGIN
@@ -102,8 +105,9 @@ BEGIN TRY
 	END
   END
 
-  IF @Error=0
-   BEGIN
+  BEGIN TRAN
+    IF @Error=0
+    BEGIN 
 		--1.檢核是否有開通錢包
 		SELECT @hasData=COUNT(1) FROM TB_UserWallet WITH(NOLOCK) WHERE IDNO=@IDNO;
 	
@@ -132,18 +136,28 @@ BEGIN TRY
 		INSERT INTO TB_WalletHistory(IDNO,WalletMemberID,WalletAccountID,Mode,Amount,TransDate,TransId,StoreTransId,OrderNo)
 		VALUES(@IDNO,@WalletMemberID,@WalletAccountID,1,@StoreAmount,@LastTransDate,@LastTransId,@LastStoreTransId,Convert(bigint,@OrderNo));
 
-		INSERT INTO TB_WalletTradeMain(ORGID,IDNO,TaishinNO,ORDNO,TradeType,TradeDate,TradeAMT,F_CONTNO,ShowFLG,UPDTime,UPDUser,UPDPRGID,MKTime,MKUser,MKPRGID)
-		VALUES (@ORGID,@IDNO,@TaishinNO,@OrderNo,@TradeType,@LastTransDate,@StoreAmount,@WalletMemberID,@ShowFLG,@NowTime,@PRGID,@PRGID,@NowTime,@PRGID,@PRGID);
+		--20211117 UPD BY AMBER REASON :新增TradeKey參數(信用卡儲值放卡號後5碼)
+		INSERT INTO TB_WalletTradeMain(ORGID,IDNO,TaishinNO,ORDNO,TradeType,TradeKey,TradeDate,TradeAMT,F_CONTNO,ShowFLG,UPDTime,UPDUser,UPDPRGID,MKTime,MKUser,MKPRGID)
+		VALUES (@ORGID,@IDNO,@TaishinNO,@OrderNo,@TradeType,@TradeKey,@LastTransDate,@StoreAmount,@WalletMemberID,@ShowFLG,@NowTime,@PRGID,@PRGID,@NowTime,@PRGID,@PRGID);
 
+		--20211111 UPD BY PO YU REASON：(排程儲值用)將超商條碼與虛擬帳號繳款狀態改為已處理
+		IF @TradeType='Store_Account'
+		BEGIN
+			UPDATE TB_TaiShinWalletVirtualAccountCallBackLog SET Status='Y' WHERE TRNACTNO=@TaishinNO
+		END
+		ELSE IF @TradeType='Store_Shop'
+		BEGIN
+			UPDATE TB_TaishinWalletPayBarcodeCallBackLog SET Status='Y' WHERE paymentId=@TaishinNO
+		END
+    END
 
-   END
-
---寫入錯誤訊息
+    --寫入錯誤訊息
 	IF @Error=1
 	BEGIN
 		INSERT INTO TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
 			VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 	END
+  COMMIT TRAN
 END TRY
 BEGIN CATCH
 	SET @Error=-1;

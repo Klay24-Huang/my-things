@@ -6,7 +6,7 @@
 * 程式功能 : 訂單結案存檔
 * 作    者 : YEH
 * 撰寫日期 : 20211029
-* 修改日期 : 
+* 修改日期 : 20211122 UPD BY YEH REASON:付款方式存檔、增加錢包付款
 
 * Example  : 
 ***********************************************************************************************/
@@ -17,6 +17,8 @@ CREATE PROCEDURE [dbo].[usp_CreditAuth_U01]
 	@Token				VARCHAR(1024)			,	-- Token
 	@OrderNo			BIGINT					,	-- 訂單編號
 	@transaction_no		NVARCHAR(100)			,	-- 金流交易序號
+	@PayMode			INT						,	-- 付費方式(0:信用卡;1:和雲錢包;2:line pay;3:街口支付;4:和泰PAY)
+	@APIName			VARCHAR(50)				,	-- API名稱
 	@LogID				BIGINT					,
 	@TradeClose			TY_TradeClose	READONLY
 AS
@@ -58,6 +60,7 @@ BEGIN
 	DECLARE @DiffAmount INT;	-- 尾款
 	DECLARE @final_price INT;	-- 總計
 	DECLARE @NoPreAuth INT;		-- 預授權不處理專案 (0:要處理 1:不處理)
+	DECLARE @APIID INT;
 
 	/*初始設定*/
 	SET @Error=0;
@@ -80,11 +83,13 @@ BEGIN
 	SET @IDNO=ISNULL (@IDNO,'');
 	SET @OrderNo=ISNULL (@OrderNo,0);
 	SET @Token=ISNULL (@Token,'');
+	SET @PayMode=ISNULL(@PayMode,0);
 	SET @ParkingSpace='';
 	SET @Reward=0;
 	SET @DiffAmount=0;
 	SET @final_price=0;
 	SET @NoPreAuth=0;
+	SET @APIID=0;
 
 	BEGIN TRY
 		IF @Token='' OR @IDNO='' OR @OrderNo=0
@@ -118,6 +123,8 @@ BEGIN
 		BEGIN
 			BEGIN TRAN
 
+			SELECT @APIID=APIID FROM TB_APIList WITH(NOLOCK) WHERE APIName=@APIName;
+
 			SELECT @booking_status=booking_status,
 				@cancel_status=cancel_status,
 				@car_mgt_status=car_mgt_status,
@@ -130,7 +137,7 @@ BEGIN
 			SELECT @final_price=final_price FROM TB_OrderDetail WITH(NOLOCK) WHERE order_number=@OrderNo;
 
 			-- 專案代碼是否不處理預授權
-			SELECT @NoPreAuth=ISNULL(1,0) FROM TB_Code WITH(NOLOCK) WHERE CodeGroup='PreAuth' AND MapCode=@ProjID AND UseFlag=1;
+			SELECT @NoPreAuth=1 FROM TB_Code WITH(NOLOCK) WHERE CodeGroup='PreAuth' AND MapCode=@ProjID AND UseFlag=1;
 
 			SELECT @hasData=COUNT(1) FROM TB_ParkingSpaceTmp WITH(NOLOCK) WHERE OrderNo=@OrderNo;
 			IF @hasData>0
@@ -144,13 +151,13 @@ BEGIN
 			--寫入歷程
 			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
 			VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
-					
+
 			--更新訂單主檔
 			UPDATE TB_OrderMain
 			SET booking_status=5,
 				car_mgt_status=16
 			WHERE order_number=@OrderNo;
-					
+
 			--更新訂單明細
 			UPDATE TB_OrderDetail
 			SET transaction_no=@transaction_no,
@@ -158,6 +165,22 @@ BEGIN
 				already_return_car=1,
 				already_payment=1
 			WHERE order_number=@OrderNo;
+
+			-- 20211122 UPD BY YEH REASON:付款方式存檔
+			IF NOT EXISTS(SELECT * FROM TB_OrderExtinfo WITH(NOLOCK) WHERE order_number=@OrderNo)
+			BEGIN
+				INSERT INTO TB_OrderExtinfo (order_number,CheckoutMode,MKTime,MKUser,MKPRGID,UPDTime,UPDUser,UPDPRGID)
+				VALUES(@OrderNo,@PayMode,@NowTime,@IDNO,@APIID,@NowTime,@IDNO,@APIID);
+			END
+			ELSE
+			BEGIN
+				UPDATE TB_OrderExtinfo
+				SET CheckoutMode=@PayMode,
+					UPDTime=@NowTime,
+					UPDUser=@IDNO,
+					UPDPRGID=@APIID
+				WHERE order_number=@OrderNo;
+			END
 			
 			--20201010 ADD BY ADAM REASON.還車改為只針對個人訂單狀態去個別處理
 			--更新個人訂單控制
@@ -352,15 +375,18 @@ BEGIN
 			--準備傳送合約
 			IF NOT EXISTS(SELECT IRENTORDNO FROM TB_ReturnCarControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo)
 			BEGIN
-				IF (@NoPreAuth = 1 OR @final_price = 0 OR @DiffAmount <= 0)
+				IF (@NoPreAuth = 1 OR @final_price = 0 OR @DiffAmount <= 0 OR @PayMode = 1)
 				BEGIN
-					DROP TABLE IF EXISTS #TradeClose;
+					DECLARE @TradeCloseAmount INT = 0;	-- 關帳檔總金額
+					DECLARE @WalletAmount INT = 0;		-- 錢包扣款總金額
 
-					-- 用訂單編號將關帳金額加總起來
-					SELECT OrderNo,SUM(CloseAmout) AS TotalAmout
-					INTO #TradeClose
-					FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1 GROUP BY OrderNo;
+					SELECT @TradeCloseAmount=SUM(CloseAmout) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1 GROUP BY OrderNo;
 
+					IF @PayMode = 1	-- 付款方式=錢包才去撈錢包交易總額
+					BEGIN
+						SELECT @WalletAmount=SUM(Amount) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0 GROUP BY OrderNo;
+					END
+					
 					INSERT INTO TB_ReturnCarControl
 					(
 						PROCD, ORDNO, CNTRNO, IRENTORDNO, CUSTID, CUSTNM, BIRTH, 
@@ -382,12 +408,11 @@ BEGIN
 						RENTAMT=CASE WHEN (pure_price- CASE WHEN TransDiscount>0 THEN TransDiscount ELSE 0 END) > 0 THEN (pure_price- CASE WHEN TransDiscount>0 THEN TransDiscount ELSE 0 END) ELSE 0 END,	--20201229 租金要扣掉轉乘優惠
 						mileage_price, A.ProjID, C.REMARK,
 						A.bill_option, A.unified_business_no, '', A.invoiceAddress, B.gift_point, B.gift_motor_point,
-						CARDNO='', PAYAMT=ISNULL(D.TotalAmout,0), AUTHCODE='', isRetry=1, RetryTimes=0, B.Etag,
+						CARDNO='', PAYAMT=(@TradeCloseAmount + @WalletAmount), AUTHCODE='', isRetry=1, RetryTimes=0, B.Etag,
 						C.CARRIERID, C.NPOBAN, B.Insurance_price, ISNULL(B.parkingFee,0) AS PARKINGAMT2, @NowTime, @NowTime	--20210506;UPD BY YEH REASON.PARKINGAMT2改抓OrderDetail的parkingFee
 					FROM TB_OrderMain A WITH(NOLOCK)
 					INNER JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 					INNER JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
-					LEFT JOIN #TradeClose D ON D.OrderNo=A.order_number
 					WHERE A.order_number=@OrderNo;
 
 					-- 20210707;ADD BY YEH REASON:計算徽章成就
@@ -395,8 +420,6 @@ BEGIN
 
 					-- 20210707 ADD BY YEH REASON:計算會員積分
 					EXEC usp_CalOrderScore @OrderNo,'B',0,0,@FunName,@LogID,'','','','';
-
-					DROP TABLE IF EXISTS #TradeClose;
 				END
 				ELSE
 				BEGIN
@@ -404,8 +427,7 @@ BEGIN
 					IF NOT EXISTS (SELECT order_number FROM TB_OrderAuth WITH(NOLOCK) WHERE order_number=@OrderNo AND AuthType=7)
 					BEGIN
 						INSERT INTO TB_OrderAuth (A_PRGID, A_USERID, A_SYSDT, U_PRGID, U_USERID, U_SYSDT, order_number, IDNO , final_price, AuthFlg, AuthMessage, CardType, AuthType, AutoClose)
-						SELECT @FunName, @IDNO, @NowTime, @FunName, @IDNO, @NowTime, order_number, IDNO, @DiffAmount, 0, '', 1, 7, 1
-						FROM VW_GetOrderData WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo;
+						VALUES (@FunName, @IDNO, @NowTime, @FunName, @IDNO, @NowTime, @OrderNo, @IDNO, @DiffAmount, 0, '', 1, 7, 1);
 					END
 				END
 			END
@@ -441,4 +463,3 @@ BEGIN
 	SELECT @ErrorCode ErrorCode, @ErrorMsg ErrorMsg, @SQLExceptionCode SQLExceptionCode, @SQLExceptionMsg SQLExceptionMsg, @Error Error
 END
 GO
-
