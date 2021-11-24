@@ -1,19 +1,27 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Bill;
 using Domain.SP.Input.Car;
+using Domain.SP.Input.OtherService.Common;
 using Domain.SP.Input.Rent;
+using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Bill;
 using Domain.SP.Output.OrderList;
+using Domain.SP.Output.Wallet;
 using Domain.TB;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
+using Domain.WebAPI.Input.Taishin.Wallet;
+using Domain.WebAPI.output;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Domain.WebAPI.output.Taishin;
+using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 using OtherService;
+using OtherService.Common;
 using Prometheus; //20210707唐加prometheus
 using Reposotory.Implement;
 using StackExchange.Redis;
@@ -21,28 +29,18 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Service;
 using WebAPI.Utils;
 using WebCommon;
-using Domain.SP.Input.Wallet;
-using Domain.SP.Output.Wallet;
-using System.Linq;
-using Domain.WebAPI.Input.Taishin.Wallet;
-using Domain.WebAPI.output.Taishin.Wallet;
-using WebAPI.Service;
-using Domain.SP.Input.OtherService.Common;
-using OtherService.Common;
-using Newtonsoft.Json.Linq;
-using Domain.WebAPI.output;
 
 namespace WebAPI.Controllers
 {
@@ -220,7 +218,6 @@ namespace WebAPI.Controllers
                     flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
                     #endregion
 
-                    #region 這邊要再加上查訂單狀態
                     SPInput_DonePayRent PayInput = new SPInput_DonePayRent()
                     {
                         IDNO = IDNO,
@@ -232,23 +229,10 @@ namespace WebAPI.Controllers
                     };
 
                     trace.traceAdd("PayInput", PayInput);
-                    //訂單
+
                     if (apiInput.PayType == 0)
                     {
-                        //#region 還車時間檢查 
-                        //if (flag)
-                        //{
-                        //    var ckTime = CkFinalStopTime(IDNO, tmpOrder, LogID, Access_Token);
-                        //    if (!ckTime)
-                        //    {
-                        //        flag = false;
-                        //        errCode = "ERR245";
-                        //        ProcessedJobCount7.Inc();//唐加prometheus
-                        //    }
-                        //    trace.traceAdd("ckTime", ckTime);
-                        //}
-
-                        //#endregion
+                        #region 租金
                         #region 取出訂單資訊
                         if (flag)
                         {
@@ -259,7 +243,7 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 Token = Access_Token
                             };
-                            
+
                             OrderDataLists = commonService.GetOrderStatusByOrderNo(spInput, ref flag, ref errCode);
 
                             trace.traceAdd("OrderDataLists", OrderDataLists);
@@ -357,7 +341,6 @@ namespace WebAPI.Controllers
                         //        Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                         //        TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
                         //        TransNo = string.Format("{0}_{1}", IDNO, DateTime.Now.ToString("yyyyMMddhhmmss"))
-
                         //    };
                         //    WebAPIOutput_GetCreditCardList wsOutput = new WebAPIOutput_GetCreditCardList();
                         //    flag = WebAPI.DoGetCreditCardList(wsInput, ref errCode, ref wsOutput);
@@ -371,7 +354,6 @@ namespace WebAPI.Controllers
                         //            CardToken = wsOutput.ResponseParams.ResultData[0].CardToken;
                         //            hasFind = true;
                         //        }
-
                         //        #region 直接授權
                         //        if (hasFind)//有找到，可以做扣款
                         //        {
@@ -383,7 +365,6 @@ namespace WebAPI.Controllers
                         //                Token = Access_Token,
                         //                transaction_no = ""
                         //            };
-
                         //            Thread.Sleep(1000);
                         //            if (Amount > 0)
                         //            {
@@ -418,14 +399,11 @@ namespace WebAPI.Controllers
                         //                        TradeAmount = Amount.ToString() + "00",
                         //                        TradeType = "1",
                         //                        UseRedeem = "N"
-
                         //                    },
                         //                    Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                         //                    TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-
                         //                };
                         //                WSAuthInput.RequestParams.Item.Add(item);
-
                         //                WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                         //                flag = WebAPI.DoCreditCardAuth(WSAuthInput, ref errCode, ref WSAuthOutput);
                         //                if (WSAuthOutput.RtnCode != "1000" && WSAuthOutput.ResponseParams.ResultCode != "0000")
@@ -463,7 +441,6 @@ namespace WebAPI.Controllers
                         //                flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
                         //                baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
                         //            }
-
                         //        }
                         //        else
                         //        {
@@ -471,33 +448,20 @@ namespace WebAPI.Controllers
                         //            errCode = "ERR195";
                         //        }
                         //        #endregion
-
                         //    }
                         //    else
                         //    {
                         //        errCode = "ERR730";
                         //    }
                         //}
-                        #endregion
 
-                        //扣款
-                        if (flag)
-                        {
-                            //台新錢包扣款
-                            if (apiInput.CheckoutMode == 1)
-                            {
-                                string TradeType = (OrderDataLists[0].ProjType == 4) ? "Pay_Motor" : "Pay_Car";
-                                var orderPayForWallet = PayWalletFlow(tmpOrder, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
-                                flag = orderPayForWallet.flag;
-                                trace.traceAdd("PayWalletFlow", new { flag, PayInput, errCode });
-                            }
-                        }
                         //Mark By Jerry 改為排程取款
                         //if (flag && Amount > 0)       //有錢才刷
                         //{
                         //    WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                         //    flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
                         //}
+                        #endregion
 
                         #region Adam哥上線記得打開
                         //#region 車機指令
@@ -532,6 +496,20 @@ namespace WebAPI.Controllers
                             TradeCloseLists = commonService.DoPreAmount(PreAmount, Amount);
 
                             trace.traceAdd("DoPreAmount", new { flag, errCode });
+                        }
+                        #endregion
+
+                        #region 錢包扣款
+                        if (flag)
+                        {
+                            //台新錢包扣款
+                            if (apiInput.CheckoutMode == 1 && PreAmount.DiffAmount > 0)
+                            {
+                                string TradeType = (OrderDataLists[0].ProjType == 4) ? "Pay_Motor" : "Pay_Car";
+                                var orderPayForWallet = PayWalletFlow(tmpOrder, PreAmount.DiffAmount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
+                                flag = orderPayForWallet.flag;
+                                trace.traceAdd("PayWalletFlow", new { flag, errCode });
+                            }
                         }
                         #endregion
 
@@ -592,6 +570,8 @@ namespace WebAPI.Controllers
                                     Access_Token,
                                     tmpOrder,
                                     "",
+                                    apiInput.CheckoutMode,
+                                    funName,
                                     LogID
                                 },
                                 objparms
@@ -716,7 +696,6 @@ namespace WebAPI.Controllers
                                 Token = Access_Token,
                                 LogID = LogID,
                                 PayMode = apiInput.CheckoutMode
-
                             };
                             apiInput.OrderNo = NPR330Save_ID.ToString();    //20201222 ADD BY ADAM REASON.欠費補上id
                             PayInput.OrderNo = NPR330Save_ID;
@@ -797,9 +776,7 @@ namespace WebAPI.Controllers
                                             CardNo = WSAuthOutput.ResponseParams == null
                                                         ? "XXXX-XXXX-XXXX-XXXX"
                                                         : WSAuthOutput.ResponseParams.ResultData.CardNumber;
-
                                         }
-
                                     }
 
                                     if (RTNCODE == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
@@ -856,7 +833,7 @@ namespace WebAPI.Controllers
                                                 PAYMEMO = "",
                                                 PORDNO = sp_result[i].IRENTORDNO,
                                                 PAYTCD = payCD
-                                            }); 
+                                            });
                                         }
 
                                         flag = webAPI.NPR340Save(wsInput, ref wsOutput);
@@ -886,7 +863,6 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
-                    
                 }
                 #endregion
 
@@ -1027,11 +1003,9 @@ namespace WebAPI.Controllers
                                     TradeAmount = Amount.ToString() + "00",
                                     TradeType = "1",
                                     UseRedeem = "N"
-
                                 },
                                 Random = baseVerify.getRand(0, 9999999).PadLeft(16, '0'),
                                 TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
-
                             };
                             WSAuthInput.RequestParams.Item.Add(item);
 
@@ -1272,8 +1246,22 @@ namespace WebAPI.Controllers
                     break;
             }
         }
-        
+        #endregion
 
+        #region 台新錢包
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="OrderNo">訂單編號</param>
+        /// <param name="Amount">交易金額'</param>
+        /// <param name="IDNO">帳號</param>
+        /// <param name="TradeType"></param>
+        /// <param name="breakAutoStore"></param>
+        /// <param name="funName"></param>
+        /// <param name="LogID"></param>
+        /// <param name="Access_Token"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
         private (bool flag, SPInput_WalletPay paymentInfo) PayWalletFlow(long OrderNo, int Amount, string IDNO, string TradeType, bool breakAutoStore, string funName, long LogID, string Access_Token, ref string errCode)
         {
             (bool flag, SPInput_WalletPay paymentInfo) result = (false, new SPInput_WalletPay());
@@ -1335,9 +1323,8 @@ namespace WebAPI.Controllers
             }
             //扣款
             return DoWalletPay(PayAmount, IDNO, OrderNo, TradeType, funName, LogID, Access_Token, ref errCode);
-
-
         }
+
         /// <summary>
         /// 錢包扣款
         /// </summary>
@@ -1387,7 +1374,14 @@ namespace WebAPI.Controllers
             return result;
         }
 
-
+        #region 取得錢包狀態
+        /// <summary>
+        /// 取得錢包狀態
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="LogID"></param>
+        /// <param name="Access_Token"></param>
+        /// <returns></returns>
         private (bool flag, PayModeObj WalletInfo) GetWalletInfo(string IDNO, long LogID, string Access_Token)
         {
             var lstError = new List<ErrorInfo>();
@@ -1403,7 +1397,6 @@ namespace WebAPI.Controllers
                 Token = Access_Token,
                 IDNO = IDNO
             };
-
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetPayInfo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetPayInfo, SPOutput_Base>(connetStr);
             List<SPOutput_GetPayInfo> PayMode = new List<SPOutput_GetPayInfo>();
@@ -1430,10 +1423,10 @@ namespace WebAPI.Controllers
                 re.flag = true;
                 re.WalletInfo = WalletInfo;
             }
-            //usp_WalletPay_I01
-            return re;
 
+            return re;
         }
+        #endregion
 
         private string GetWalletAccountId(string IDNO, int cnt)
         {
@@ -1451,7 +1444,6 @@ namespace WebAPI.Controllers
                 default:
                     return 0;
             }
-
         }
 
         /// <summary>
@@ -1482,7 +1474,6 @@ namespace WebAPI.Controllers
                 BarCode = "",
                 StoreTransDate = NowTime.ToString("yyyyMMddHHmmss")
             };
-
         }
 
         /// <summary>
@@ -1523,23 +1514,22 @@ namespace WebAPI.Controllers
 
         }
 
-        ////信用卡錢包儲值
+        /// <summary>
+        /// 信用卡錢包儲值
+        /// </summary>
+        /// <param name="storeMoney"></param>
+        /// <param name="accessToken"></param>
+        /// <param name="funName"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
         public bool WalletStoreByCredit(int storeMoney, string accessToken, string funName, ref string errCode)
         {
-
-            IAPI_WalletStoreBase Input =
-                new IAPI_WalletStoreBase { StoreMoney = storeMoney };
-
-
+            IAPI_WalletStoreBase Input = new IAPI_WalletStoreBase { StoreMoney = storeMoney };
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
-
             bool flag = false;
-
             string url = $@"{AzureAPIBaseURL}api/WalletStoredByCredit";
-
-
             var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoreBase>(Input, url, accessToken);
 
             try

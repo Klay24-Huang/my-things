@@ -105,6 +105,7 @@
     <Compile Include="AESEncrypt.cs" />
     <Compile Include="ApiPost.cs" />
     <Compile Include="AzureStorageHandle.cs" />
+    <Compile Include="DataConvertHelper.cs" />
     <Compile Include="ErrorInfo.cs" />
     <Compile Include="PostJsonResultInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

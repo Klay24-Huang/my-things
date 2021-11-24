@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Hotai
 {
-    public class SPInput_QueryToken
+    public class SPInput_MemberUnBind
     {
         public string IDNO { get; set; }
+        public string PRGName { get; set; }
     }
 }

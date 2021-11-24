@@ -8,6 +8,10 @@ namespace Domain.WebAPI.output.Hotai.Payment
 {
     public class WebAPIOutput_GetCreditCards
     {
-        public int MyProperty { get; set; }
+        public List<HotaiCardInfoOriginal> HotaiCards { get; set; }
+        public int CardCount { get; set; }
+
     }
+
+
 }
