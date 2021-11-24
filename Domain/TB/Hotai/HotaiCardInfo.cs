@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebAPI.Models.Param.Bill
+namespace Domain.TB.Hotai
 {
     public class HotaiCardInfo: CreditCardInfo
     {

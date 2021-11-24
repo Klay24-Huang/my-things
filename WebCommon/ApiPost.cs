@@ -105,8 +105,8 @@ namespace WebCommon
             var resultInfo = new PostJsonResultInfo();
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-
-            request.Headers = Header;
+            if(Header != null)
+                request.Headers = Header;
             request.Method = Method;
             request.ContentType = "application/json";
             request.KeepAlive = false;
@@ -133,6 +133,97 @@ namespace WebCommon
                         var result = reader?.ReadToEnd() ?? "";
 
                         if (result == null) throw new Exception($"errCode:ERR918");
+
+                        resultInfo.Succ = true;
+                        resultInfo.ResponseData = result;
+                        resultInfo.ProtocolStatusCode = (int)response.StatusCode;
+                    }
+                }
+            }
+            catch (WebException webex)
+            {
+                resultInfo.Succ = false;
+                resultInfo.ErrCode = "ERR917";
+                resultInfo.Message = webex.Message;
+
+                var response = webex.Response as HttpWebResponse;
+
+                if (response != null)
+                {
+                    resultInfo.ProtocolStatusCode = (int)response.StatusCode;
+                    using (StreamReader reader = new StreamReader(webex.Response.GetResponseStream()))
+                    {
+                        string responseContent = reader.ReadToEnd();
+                        resultInfo.ResponseData = responseContent;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultInfo.Succ = false;
+                if (ex.Message.Contains("errCode:"))
+                {
+                    string errCode = ex.Message.Split(':')[1]; //Api呼叫失敗
+                    resultInfo.ErrCode = errCode;
+                }
+                else
+                {
+                    resultInfo.ErrCode = "ERR913";//發生錯誤,請洽系統管理員
+                    resultInfo.Message = ex.Message;
+                }
+            }
+            finally
+            {
+
+                //增加關閉Request的處理
+                request.Abort();
+            }
+
+            return resultInfo;
+
+        }
+
+
+        /// <summary>
+        /// Post Json for a API Result
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <param name="url"></param>
+        /// <param name="content"></param>
+        /// <param name="Method"></param>
+        /// <param name="Header"></param>
+        /// <returns></returns>
+        public static PostJsonResultInfo DoApiPostForm(string url, string content, string Method, WebHeaderCollection Header)
+        {
+            var resultInfo = new PostJsonResultInfo();
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            if (Header != null)
+                request.Headers = Header;
+            request.Method = Method;
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.KeepAlive = false;
+            request.Timeout = 30000;
+
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                byte[] jsonBytes = Encoding.UTF8.GetBytes(content);//要發送的字串轉為byte[]
+                request.ContentLength = jsonBytes.Length;
+
+                using (var requestStream = request.GetRequestStream())
+                {
+                    requestStream.Write(jsonBytes, 0, jsonBytes.Length);
+                }
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    using (var stream = response.GetResponseStream())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        var result = reader.ReadToEnd();
+
+                        if (result.Length <= 0) throw new Exception($"errCode:ERR918");
 
                         resultInfo.Succ = true;
                         resultInfo.ResponseData = result;

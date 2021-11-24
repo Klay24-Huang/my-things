@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebAPI.Models.Param.Bill.Input
+namespace Domain.Flow.Hotai
 {
-    public class IFN_HotaiQueryCardForOne
+    public class IFN_HotaiQueryCardForOne: IFN_HotaiPaymenyBase
     {
         /// <summary>
         /// 會員帳號(身分證)

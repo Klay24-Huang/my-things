@@ -20,8 +20,8 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 using WebAPI.Utils;
-using WebAPI.Service;
-using WebAPI.Models.Param.Bill.Output;
+using Domain.Flow.Hotai;
+using Domain.TB.Hotai;
 
 namespace WebAPI.Controllers
 {
@@ -181,7 +181,15 @@ namespace WebAPI.Controllers
             #region 和泰PAY
             if (flag)
             {
-                var HotaiFlag = HotaipayService.DoQueryCardList(IDNO, ref HotaiCards, ref errCode);
+                var objQueryCards = new IFN_QueryCardList
+                {
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    PRGName = funName,
+                    insUser = IDNO
+                };
+
+                var HotaiFlag = HotaipayService.DoQueryCardList(objQueryCards, ref HotaiCards, ref errCode);
                 flag = HotaiFlag;
                 if (flag)
                 {
@@ -194,7 +202,7 @@ namespace WebAPI.Controllers
                     else
                     {
                         apiOutput.HasHotaiPay = 0;
-                        apiOutput.HotaiListObj = new List<Models.Param.Bill.HotaiCardInfo>();
+                        apiOutput.HotaiListObj = new List<HotaiCardInfo>();
                     }
                 }
             }
