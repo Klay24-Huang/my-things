@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.Output.Hotai
 {
-    public class SPOutput_QueryToken : SPOutput_Base
+    public class SPOutput_QueryToken :SPOutput_Base
     {
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
