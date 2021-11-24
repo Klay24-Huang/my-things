@@ -232,6 +232,7 @@
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
+    <Compile Include="Controllers\BE_MemberUnbindController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\WalletWithdrowInvoiceController.cs" />
     <Compile Include="Controllers\BE_HandleCarMachineController.cs" />
@@ -495,11 +496,6 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
-    <Compile Include="Models\Param\Bill\CreditCardInfo.cs" />
-    <Compile Include="Models\Param\Bill\HotaiCardInfo.cs" />
-    <Compile Include="Models\Param\Bill\Input\IFN_HotaiQueryCardForOne.cs" />
-    <Compile Include="Models\Param\Bill\Output\OFN_HotaiCreditCard.cs" />
-    <Compile Include="Models\Param\Bill\Output\OFN_HotaiCreditCardList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletWithdrowInvoice.cs" />
@@ -845,7 +841,6 @@
     <Compile Include="Models\PolygonModel.cs" />
     <Compile Include="Service\CommonService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\HotaipayService.cs" />
     <Compile Include="Service\WalletService.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Utils\objUti.cs" />

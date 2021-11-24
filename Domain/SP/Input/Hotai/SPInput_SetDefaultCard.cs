@@ -1,39 +1,44 @@
-﻿using System;
+﻿using Domain.SP.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebAPI.Models.Param.Bill
+namespace Domain.SP.Input.Hotai
 {
     /// <summary>
-    /// 通用信用卡資訊
+    /// 綁定和泰Pay預設卡
     /// </summary>
-    public class CreditCardInfo
+    public class SPInput_SetDefaultCard
     {
+        public string IDNO { get; set; }
+
+        public string OneID { get; set; }
+
         /// <summary>
-        /// 信用卡Token
+        /// 信用卡密鑰
         /// </summary>
         public string CardToken { get; set; }
+
         /// <summary>
-        /// 信用卡自訂名稱
+        /// 隱碼卡號
         /// </summary>
-        public string CardName { get; set; }
+        public string CardNo { get; set; }
+
         /// <summary>
-        /// 發卡機構(VISA/MASTER/JCB)
+        /// 發卡機構
         /// </summary>
         public string CardType { get; set; }
+
         /// <summary>
         /// 發卡銀行
         /// </summary>
         public string BankDesc { get; set; }
+        
         /// <summary>
-        /// 卡號(隱碼)
+        /// 程式名稱
         /// </summary>
-        public string CardNumber { get; set; }
-        /// <summary>
-        /// 是否為預設卡(0:否/1:是)
-        /// </summary>
-        public int IsDefault { get; set; }
-
+        public string PRGName { get; set; }
     }
 }

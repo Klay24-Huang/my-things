@@ -7879,8 +7879,6 @@
 
 | 參數名稱   | 參數說明              |  型態  | 範例             |
 | ---------- | --------------------- | :----: | ---------------- |
-| TranResult | 轉贈結果 (1成功0失敗) |  int   | 1                |
-| SystemTime | 系統回傳時間          | string | 2021/03/31 23:19 |
 
 * Output範例
 
@@ -7892,8 +7890,6 @@
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
 	"Data": {
-	    "TranResult":1,
-	    "SystemTime":"2021/03/31 23:19"
 	}
 }
 {
@@ -7903,8 +7899,6 @@
     "NeedUpgrade": 0,
     "ErrorMessage": "轉贈金額超過錢包金額",
     "Data": {
-        "TranResult": 0,
-        "SystemTime": "2021/03/31 23:19"
     }
 }
 ```

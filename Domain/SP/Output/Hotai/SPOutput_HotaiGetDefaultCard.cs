@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Domain.SP.Output.Hotai
 {
-    public class SPOutput_QueryToken :SPOutput_Base
+    public class SPOutput_HotaiGetDefaultCard : SPOutput_Base
     {
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
-        public string OneID { get; set; }
+        public string HotaiCardID { get; set; }
+        public string CardToken { get; set; }
+       
     }
 }

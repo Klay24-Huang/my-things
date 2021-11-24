@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using WebAPI.Models.Param.Bill;
+﻿using Domain.TB.Hotai;
+using System.Collections.Generic;
 using WebAPI.Models.Param.Output.PartOfParam;
 
 namespace WebAPI.Models.Param.Output
