@@ -16,7 +16,7 @@
 - [CheckAppVersion 檢查APP版本](#CheckAppVersion)
 
 會員相關
-
+- [GiftTransferCheck 會員轉贈對象查詢](#GiftTransferCheck)
 - [GetMemberStatus 取得會員狀態](#GetMemberStatus)
 - [GetMemberScore 取得會員積分](#GetMemberScore)
 - [SetMemberScoreDetail 修改會員積分明細](#SetMemberScoreDetail)
@@ -1278,6 +1278,63 @@
                 "FLAG": 0
             }
         ]
+    }
+}
+```
+
+
+## GiftTransferCheck 會員轉贈對象查詢
+
+### [/api/GiftTransferCheck/]
+
+- 20211020發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output 回傳參數說明
+
+| 參數名稱     | 參數說明                       |  型態  | 範例    |
+| ------------ | ------------------------------ | :----: | ------- |
+| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
+| ErrorCode    | 錯誤碼                         | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
+| ErrorMessage | 錯誤訊息                       | string | Success |
+| Data         | 資料物件                       | object |         |
+
+* Data參數說明
+
+| 參數名稱 | 參數說明                               |  型態   | 範例      |
+| -------- | -------------------------------------  | :-----: | ----------|
+| Name     | 轉贈對象名稱							| string  | 吳X耆 	  |
+| PhoneNo  | 電話號碼					            | string  | 0912345678|
+| Amount   | 金額(無用)				                | int  	  | 0         |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "Name": "吳*耆",
+        "PhoneNo": "0912345678",
+        "Amount": 0
     }
 }
 ```
@@ -3135,6 +3192,8 @@
 | ERR730   | 查詢綁定卡號失敗                                           | 查詢綁定卡號失敗                                           |
 | ERR905   | 11/10 02:00~06:00系統維護暫停服務                          | 定維時使用                                                 |
 | ERR602   | 因取授權失敗未完成預約，請檢查卡片餘額或是重新綁卡         | 因取授權失敗未完成預約                                     |
+| ERR292   | 請先設定支付方式，才可以預約機車哦！                       | 請先設定支付方式，才可以預約機車哦！                       |
+| ERR294   | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約。 | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約   |
 
 ------
 

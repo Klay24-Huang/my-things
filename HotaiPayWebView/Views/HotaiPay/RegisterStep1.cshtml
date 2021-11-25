@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "RegisterStep1";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰集團會員註冊</title>
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+
+<style>
+</style>
+<body>
+
+
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員註冊</h6></header>
+
+
+    <div class="container" style="max-width: 414px;position:relative">
+        <div class="msform mt-4">
+            <!-- progressbar -->
+            <ul id="progressbar">
+                <li class="active"></li>
+                <li></li>
+                <li></li>
+            </ul>
+
+        </div>
+
+        <div class="mt-4">
+            <form class="form-inline d-flex flex-row justify-content-between align-items-start">
+                <div class="form-group">
+                    <input type="text" class="form-control input-light" placeholder="0912345678">
+                </div>
+                <button type="submit" class="btn btn-blue-small mb-2">發送驗證碼</button>
+            </form>
+
+            <input type="text" class="form-control input-light" placeholder="輸入驗證碼" required>
+        </div>
+    </div>
+
+    <div class="footer text-center">
+
+        <button type="submit" class="btn btn-disable-gray mb-2">
+            下一步
+        </button>
+        <!-- 驗證碼輸入後class改為btn-blue -->
+    </div>
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+
+    <!-- 自己寫的js -->
+    <script src="js/main.js"></script>
+
+    <!-- 自己寫的js -->
+
+</body>
+</html>
