@@ -7,12 +7,11 @@ using Domain.WebAPI.Input.Hotai.Member;
 using Domain.WebAPI.Input.Hotai.Payment;
 using Domain.WebAPI.output.Hotai.Member;
 using Domain.WebAPI.output.Hotai.Payment;
+using Newtonsoft.Json;
 using NLog;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Web;
 using WebCommon;
 
 namespace OtherService
@@ -31,13 +30,16 @@ namespace OtherService
         /// <returns></returns>
         public bool DoQueryCardList(IFN_QueryCardList input, ref OFN_HotaiCreditCardList output, ref string errCode)
         {
+            logger.Info($"DoQueryCardList | start | INPUT : {JsonConvert.SerializeObject(input)}");
             HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
             bool flag = true;
             HotaiToken hotaiToken = new HotaiToken();
             //1.取得會員Token
-            flag = DoQueryToken(input.IDNO, input.LogID, input.PRGName, ref hotaiToken, ref errCode);
+            flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
+            logger.Info($"DoQueryCardList |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
+
             //2.向中信取得卡清單
-            WebAPIOutput_GetCreditCards cardOptput = new WebAPIOutput_GetCreditCards();
+            WebAPIOutput_GetCreditCards cardsOptput = new WebAPIOutput_GetCreditCards();
 
             if (flag)
             {
@@ -45,49 +47,68 @@ namespace OtherService
                 {
                     AccessToken = hotaiToken.AccessToken
                 };
-                flag = PaymentAPI.GetHotaiCardList(objGetCard, ref cardOptput);
+                flag = PaymentAPI.GetHotaiCardList(objGetCard, ref cardsOptput);
+
+                logger.Info($"DoQueryCardList | GetCTBCCards | Result:{ flag } ; errCode:{errCode} | cardOptput : {JsonConvert.SerializeObject(cardsOptput)}");
             }
             //3.資料庫取得預設卡
             var dbDefaultCard = new SPOutput_HotaiGetDefaultCard();
             if (flag)
             {
                 dbDefaultCard = sp_GetDefaultCard(input.IDNO, input.LogID, ref flag, ref errCode);
+                logger.Info($"DoQueryCardList | GetDefaultCard | Result:{ flag } ; errCode:{errCode} | dbDefaultCard : {JsonConvert.SerializeObject(dbDefaultCard)}");
             }
             //4.比對預設卡與卡清單
             if (flag)
             {
                 var creditCards = new List<HotaiCardInfo>();
-                if (cardOptput.CardCount == 1 && dbDefaultCard.HotaiCardID == 0)
+                if (cardsOptput.CardCount == 1 && dbDefaultCard.HotaiCardID == 0)
                 {
-                    //寫入預設卡片
+                    var originalCard = cardsOptput.HotaiCards.FirstOrDefault();
 
-                    creditCards = cardOptput.HotaiCards.Select(p => setHotaiCardInfo(p,p.Id.ToString())).ToList();
+                    SPInput_SetDefaultCard sp_setCardInput =
+                        new SPInput_SetDefaultCard {
+                            IDNO = input.IDNO,
+                            OneID = originalCard.MemberOneID,
+                            CardNo = originalCard.CardNoMask,
+                            CardToken = originalCard.Id.ToString(),
+                            CardType = originalCard.CardType,
+                            BankDesc = originalCard.BankDesc,
+                            PRGName = input.PRGName
+                        };
+
+                    //寫入預設卡片
+                    flag = sp_SetDefaultCard(sp_setCardInput, ref errCode);
+                    logger.Info($"DoQueryCardList | SetDefaultCard | Result:{ flag } ; errCode:{errCode} | sp_setCardInput:{JsonConvert.SerializeObject(sp_setCardInput)}");
+                    creditCards.Add(setHotaiCardInfo(originalCard, originalCard.Id.ToString()));
                 }
                 else
                 {
-                    cardOptput.HotaiCards.ForEach(
+                    cardsOptput.HotaiCards.ForEach(
                     p => creditCards.Add(setHotaiCardInfo(p, dbDefaultCard.CardToken)));
-                }
 
+                }
                 var hasDefault = creditCards.FindIndex(p => p.IsDefault == 1) == -1 ? false : true;
-                if (!hasDefault && dbDefaultCard.HotaiCardID != 0)
+                if (!hasDefault)
                 {
                     flag = sp_HotaiDefaultCardUnbind(
-                            new SPInput_HotaiDefaultCardUnbind {
+                            new SPInput_HotaiDefaultCardUnbind
+                            {
                                 IDNO = input.IDNO,
                                 HotaiCardID = dbDefaultCard.HotaiCardID,
                                 LogID = input.LogID,
                                 U_FuncName = input.PRGName,
-                                U_USERID = "Sys" }, ref errCode);
+                                U_USERID = "Sys"
+                            }, ref errCode);
                 }
 
                 output.CreditCards = creditCards;
             }
-
             //5.整理後回傳
-
             if (output.CreditCards.Count() == 0)
                 flag = false;
+
+            logger.Info($"DoQueryCardList | Final | Result:{ flag } ; errCode:{errCode} | Output:{JsonConvert.SerializeObject(output)}");
             return flag;
         }
         /// <summary>

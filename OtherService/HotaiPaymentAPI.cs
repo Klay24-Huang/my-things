@@ -19,12 +19,13 @@ namespace OtherService
     public class HotaiPaymentAPI
     {
 		protected static Logger logger = LogManager.GetCurrentClassLogger();
-		private string PaymentUrl = ConfigurationManager.AppSettings["HotaiPaymentURL"].ToString();                                
-		private string EntryURL = ConfigurationManager.AppSettings["HotaiPaymentSingleEntry"].ToString();                                
-		private string _bindCardURL = ConfigurationManager.AppSettings["CTBCBindCard"].ToString();
-		private string _fastBind = ConfigurationManager.AppSettings["CTBCFastBind"].ToString();
-		private byte[] Key = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
-		private byte[] IV = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
+		private static ConfigManager configManager = new ConfigManager("HotaiPaySetting.json");
+		private string PaymentUrl = configManager.GetKey("HotaiPaymentURL");//ConfigurationManager.AppSettings["HotaiPaymentURL"].ToString();                                
+		private string EntryURL = configManager.GetKey("HotaiPaymentSingleEntry");//ConfigurationManager.AppSettings["HotaiPaymentSingleEntry"].ToString();                                
+		private string _bindCardURL = configManager.GetKey("CTBCBindCard"); //ConfigurationManager.AppSettings["CTBCBindCard"].ToString();
+		private string _fastBind = configManager.GetKey("CTBCFastBind");//ConfigurationManager.AppSettings["CTBCFastBind"].ToString();
+		private byte[] Key = Convert.FromBase64String(configManager.GetKey("HotaiPaymentKey"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
+		private byte[] IV = Convert.FromBase64String(configManager.GetKey("HotaiPaymentIV"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
 
 		public bool GetHotaiCardList(WebAPIInput_GetCreditCards input, ref WebAPIOutput_GetCreditCards output)
 		{
