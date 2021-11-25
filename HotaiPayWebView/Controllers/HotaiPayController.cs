@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using NLog;
 
 namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
-        
+
+        private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         #region 登入頁面
         public ActionResult Login()
         {
