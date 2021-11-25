@@ -46,6 +46,7 @@ namespace WebAPI.Controllers
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
 
         CommonFunc baseVerify { get; set; }
 
@@ -529,35 +530,36 @@ namespace WebAPI.Controllers
             //預約成功
             if (flag && spOut.haveCar == 1)
             {
-                #region Adam哥上線記得打開
-                //#region 機車先送report now
-                ////車機指令改善 機車先送report now
-                //if (ProjType == 4)
-                //{
-                //    FETCatAPI FetAPI = new FETCatAPI();
-                //    string requestId = "";
-                //    string CommandType = "";
-                //    OtherService.Enum.MachineCommandType.CommandType CmdType;
-                //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                //    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                //    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                //    {
-                //        command = true,
-                //        method = CommandType,
-                //        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                //        _params = new Params()
-                //    };
-                //    requestId = input.requestId;
-                //    string method = CommandType;
-                //    //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
-                //    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                //    //20210326 ADD BY ADAM REASON.先不等report回覆
-                //    //if (flag)
-                //    //{
-                //    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                //    //}
-                //}
-                //#endregion
+                #region 機車先送report now
+                //車機指令改善 機車先送report now
+                if (ProjType == 4)
+                {
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
+                    {
+                        FETCatAPI FetAPI = new FETCatAPI();
+                        string requestId = "";
+                        string CommandType = "";
+                        OtherService.Enum.MachineCommandType.CommandType CmdType;
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+                        };
+                        requestId = input.requestId;
+                        string method = CommandType;
+                        //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
+                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                        //20210326 ADD BY ADAM REASON.先不等report回覆
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
+                    }
+                }
                 #endregion
 
                 #region 寫入訂單對應訂閱制月租

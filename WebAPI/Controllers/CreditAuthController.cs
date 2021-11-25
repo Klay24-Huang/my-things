@@ -89,6 +89,8 @@ namespace WebAPI.Controllers
         private string RedisConnet = ConfigurationManager.ConnectionStrings["RedisConnectionString"].ConnectionString;
         private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();
         private static Lazy<ConnectionMultiplexer> lazyConnection;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         public CreditAuthController()
         {
             if (lazyConnection == null)
@@ -297,33 +299,36 @@ namespace WebAPI.Controllers
                             trace.traceAdd("ckTime", ckTime);
                         }
                         #endregion
-                        #region Adam哥上線記得打開
-                        //#region 檢查車機狀態
-                        //if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要檢核 20201212 ADD BY ADAM
-                        //{
-                        //    flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                        //    trace.traceAdd("CarDevCk", flag);
-                        //}
-                        //#endregion
-                        //#region 檢查iButton
-                        //if (flag && OrderDataLists[0].ProjType != 4 && iButton == 1)
-                        //{
-                        //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
-                        //    {
-                        //        OrderNo = tmpOrder,
-                        //        Token = Access_Token,
-                        //        IDNO = IDNO,
-                        //        LogID = LogID
-                        //    };
-                        //    string SPName = "usp_CheckCarIButton";
-                        //    SPOutput_Base SPOutputBase = new SPOutput_Base();
-                        //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
-                        //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
-                        //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                        #region 車機
+                        if (isDebug == "0") // isDebug = 1，不送車機指令
+                        {
+                            #region 檢查車機狀態
+                            if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要檢核 20201212 ADD BY ADAM
+                            {
+                                flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                                trace.traceAdd("CarDevCk", flag);
+                            }
+                            #endregion
+                            #region 檢查iButton
+                            if (flag && OrderDataLists[0].ProjType != 4 && iButton == 1)
+                            {
+                                SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                                {
+                                    OrderNo = tmpOrder,
+                                    Token = Access_Token,
+                                    IDNO = IDNO,
+                                    LogID = LogID
+                                };
+                                string SPName = "usp_CheckCarIButton";
+                                SPOutput_Base SPOutputBase = new SPOutput_Base();
+                                SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
 
-                        //    trace.traceAdd("iBtnSp", new { spInput, SPOutputBase });
-                        //}
-                        //#endregion
+                                trace.traceAdd("iBtnSp", new { spInput, SPOutputBase });
+                            }
+                            #endregion
+                        }
                         #endregion
                         #region 台新信用卡-Mark
                         //if (flag)
@@ -463,22 +468,23 @@ namespace WebAPI.Controllers
                         //}
                         #endregion
 
-                        #region Adam哥上線記得打開
-                        //#region 車機指令
-                        ////20210102 ADD BY ADAM REASON.車機處理挪到外層呼叫，不放在台新金流內了，偶爾會遇到沒做完就跳出的情況
-                        //if (flag)
-                        //{
-                        //    bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                        #region 車機指令
+                        //20210102 ADD BY ADAM REASON.車機處理挪到外層呼叫，不放在台新金流內了，偶爾會遇到沒做完就跳出的情況
+                        if (flag)
+                        {
+                            if (isDebug == "0") // isDebug = 1，不送車機指令
+                            {
+                                bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
 
-                        //    trace.traceAdd("DoCloseRent", new { errCode, dis = "不管車機執行是否成功，都把errCode=000000" });
+                                trace.traceAdd("DoCloseRent", new { errCode, dis = "不管車機執行是否成功，都把errCode=000000" });
 
-                        //    if (CarFlag == false)
-                        //    {
-                        //        //寫入車機錯誤
-                        //    }
-                        //    errCode = "000000";     //不管車機執行是否成功，都把errCode清掉
-                        //}
-                        //#endregion
+                                if (CarFlag == false)
+                                {
+                                    //寫入車機錯誤
+                                }
+                                errCode = "000000";     //不管車機執行是否成功，都把errCode清掉
+                            }
+                        }
                         #endregion
 
                         #region 取得預授權金額

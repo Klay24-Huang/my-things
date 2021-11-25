@@ -322,17 +322,15 @@ namespace WebAPI.Controllers
                         //回傳錯誤代碼，但仍可延長用車
                         errCode = "ERR604";
 
-                        #region Adam哥上線記得打開
-                        ////發送MAIL通知據點人員
-                        //if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
-                        //{
-                        //    SendMail send = new SendMail();
-                        //    string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
-                        //    string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
-                        //    string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
-                        //    send.DoSendMail(Title, Body, Receiver);
-                        //}
-                        #endregion
+                        //發送MAIL通知據點人員
+                        if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
+                        {
+                            SendMail send = new SendMail();
+                            string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
+                            string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
+                            string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
+                            send.DoSendMail(Title, Body, Receiver);
+                        }
                     }
                     #endregion
                 }
