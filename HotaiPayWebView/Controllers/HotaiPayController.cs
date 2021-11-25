@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebCommon;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -32,7 +33,8 @@ namespace HotaiPayWebView.Controllers
 
             WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
 
-            
+            HashAlgorithmHelper helper = new HashAlgorithmHelper();
+            apiInput.password = helper.ComputeSha256Hash(apiInput.password);
             flag = hotaiAPI.DoSignin(apiInput, ref apioutput, ref errCode);
 
             if (flag)
