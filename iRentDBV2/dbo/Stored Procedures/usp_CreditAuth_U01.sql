@@ -7,6 +7,7 @@
 * 作    者 : YEH
 * 撰寫日期 : 20211029
 * 修改日期 : 20211122 UPD BY YEH REASON:付款方式存檔、增加錢包付款
+			 20211125 UPD BY YEH REASON:增加信用卡類別判斷
 
 * Example  : 
 ***********************************************************************************************/
@@ -426,8 +427,20 @@ BEGIN
 					-- 預授權上線後，TB_OrderAuth會有多筆資料，因此用AuthType=7判斷是否寫入
 					IF NOT EXISTS (SELECT order_number FROM TB_OrderAuth WITH(NOLOCK) WHERE order_number=@OrderNo AND AuthType=7)
 					BEGIN
+						-- 20211125 UPD BY YEH REASON:增加信用卡類別判斷
+						DECLARE @CardType INT = 1;	-- 信用卡類別(預設台新信用卡)
+
+						IF @PayMode = 0	-- 台新信用卡
+						BEGIN
+							SET @CardType = 1;
+						END
+						ELSE IF @PayMode = 4	-- 和泰PAY
+						BEGIN
+							SET @CardType = 0;
+						END
+
 						INSERT INTO TB_OrderAuth (A_PRGID, A_USERID, A_SYSDT, U_PRGID, U_USERID, U_SYSDT, order_number, IDNO , final_price, AuthFlg, AuthMessage, CardType, AuthType, AutoClose)
-						VALUES (@FunName, @IDNO, @NowTime, @FunName, @IDNO, @NowTime, @OrderNo, @IDNO, @DiffAmount, 0, '', 1, 7, 1);
+						VALUES (@FunName, @IDNO, @NowTime, @FunName, @IDNO, @NowTime, @OrderNo, @IDNO, @DiffAmount, 0, '', @CardType, 7, 1);
 					END
 				END
 			END
