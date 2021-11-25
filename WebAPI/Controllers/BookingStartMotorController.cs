@@ -32,6 +32,8 @@ namespace WebAPI.Controllers
     public class BookingStartMotorController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoBookingStartMotor(Dictionary<string, object> value)
         {
@@ -213,35 +215,39 @@ namespace WebAPI.Controllers
                 //開始對車機做動作
                 if (flag)
                 {
-                    #region 取最新狀況, 先送getlast之後從tb捉最近一筆
                     FETCatAPI FetAPI = new FETCatAPI();
                     string requestId = "";
                     string CommandType = "";
                     OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    {
-                        command = true,
-                        method = CommandType,
-                        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        _params = new Params()
-                    };
-                    requestId = input.requestId;
-                    string method = CommandType;
-                    //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
-                    //flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                    //if (flag)
-                    //{
-                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    //}
+                    string method = "";
 
-                    if (flag)
+                    #region ReportNow
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
-                        info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
-                        if (info != null)
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
                         {
-                            mil = info.Millage;
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+                        };
+                        requestId = input.requestId;
+                        method = CommandType;
+                        //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
+                        //flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
+                        if (flag)
+                        {
+                            info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
+                            if (info != null)
+                            {
+                                mil = info.Millage;
+                            }
                         }
                     }
                     #endregion
@@ -285,66 +291,68 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     //20210325 ADD BY ADAM REASON.車機指令優化
-                    #region 開啟電源 
-                    if (flag)
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
-                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
-                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
-                        input = new WSInput_Base<Params>()
-                        {
-                            command = true,
-                            method = CommandType,
-                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                            _params = new Params()
-                        };
-                        method = CommandType;
-                        requestId = input.requestId;
-                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        #region 開啟電源
                         if (flag)
                         {
-                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        }
-                    }
-                    #endregion
-
-                    #region 設定租約
-                    if (flag)
-                    {
-                        //租約再下租約應該沒關係
-                        //if (info.extDeviceStatus1 == 0)
-                        {
-                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent);
-                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent;
-                            WSInput_Base<BLECode> RentInput = new WSInput_Base<BLECode>()
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
+                            WSInput_Base<Params> PowerOnInput = new WSInput_Base<Params>()
                             {
                                 command = true,
                                 method = CommandType,
                                 requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                _params = new BLECode()
+                                _params = new Params()
                             };
-                            RentInput._params.BLE_Code = IDNO.Substring(0, 9);
-                            requestId = RentInput.requestId;
                             method = CommandType;
-                            flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, RentInput, LogID);
+                            requestId = PowerOnInput.requestId;
+                            flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, PowerOnInput, LogID);
                             if (flag)
                             {
                                 flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                             }
-
-                            if (flag)
+                        }
+                        #endregion
+                        #region 設定租約
+                        if (flag)
+                        {
+                            //租約再下租約應該沒關係
+                            //if (info.extDeviceStatus1 == 0)
                             {
-                                Thread.Sleep(1000);
-                                //查ble
-                                BLEInfo ble = new CarCMDRepository(connetStr).GetBLEInfo(CID);
-                                if (ble != null)
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent;
+                                WSInput_Base<BLECode> RentInput = new WSInput_Base<BLECode>()
                                 {
-                                    outputApi.BLEDEVICEID = ble.BLE_Device;
-                                    outputApi.BLEDEVICEPWD = ble.BLE_PWD;
+                                    command = true,
+                                    method = CommandType,
+                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    _params = new BLECode()
+                                };
+                                RentInput._params.BLE_Code = IDNO.Substring(0, 9);
+                                requestId = RentInput.requestId;
+                                method = CommandType;
+                                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, RentInput, LogID);
+                                if (flag)
+                                {
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                }
+
+                                if (flag)
+                                {
+                                    Thread.Sleep(1000);
+                                    //查ble
+                                    BLEInfo ble = new CarCMDRepository(connetStr).GetBLEInfo(CID);
+                                    if (ble != null)
+                                    {
+                                        outputApi.BLEDEVICEID = ble.BLE_Device;
+                                        outputApi.BLEDEVICEPWD = ble.BLE_PWD;
+                                    }
                                 }
                             }
                         }
+                        #endregion
                     }
-                    #endregion
 
                     #region 20210514 開啟電源後須紀錄電量 20210521 改為設定完租約再記錄電量
                     if (flag)
