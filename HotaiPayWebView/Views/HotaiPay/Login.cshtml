@@ -1,10 +1,18 @@
 ﻿
 @{
     ViewBag.Title = "Login";
+    string msg = "";
+    if (!string.IsNullOrEmpty(ViewBag.MSG))
+    {
+        msg = ViewBag.MSG;
+    }
 }
 
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="@Url.Content("~/Scripts/jquery-3.4.1.min.js")" type="text/javascript"></script>
+    <script src="~/Scripts/HotaiPayJS/ActionJS/Login.js" type="text/javascript"></script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +21,6 @@
 
     <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
     <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
-
-
 </head>
 
 <body>
@@ -38,65 +44,25 @@
             <div class="input-box mb-2">
                 <input id="demo_input" class="input-light" type="password" v-model="form.UserPwd" placeholder="密碼">
                 <label><img src="~/images/eye-slash-regular.svg" alt="" id="eyes"></label>
+
+            </div>
+            <div class="text-left">
+                <p id="pwdHint" style="color:red;">@msg.ToString()</p>
             </div>
             <div class="text-right">
                 <a class="text-gray text-underline" href="">忘記密碼</a>
             </div>
 
 
-            <button type="button" class="btn btn-blue my-3">登入</button>
+            <button type="button" class="btn btn-blue my-3" v-on:click="DoLogin()">登入</button>
             <a class="text-gray text-underline" href="">立即註冊</a>
         </div>
 
 
 
     </div>
-    @section scripts {
-        <script>
-        var VuePage = new Vue({
-            el: '#VuePage'
-            , data: function () {
-                var data = {
-                    form: {}
-                };
-                return data;
-            }
-            , methods: {
-                // 執行登入按鈕
-                DoLogin: function () {
-                    var self = this;
-
-                    // 組合表單資料
-                    var postData = {};
-                    postData['Phone'] = self.form.Phone;
-                    postData['UserPwd'] = self.form.UserPwd;
-
-                    // 使用 jQuery Ajax 傳送至後端
-                    $.ajax({
-                        url:'@Url.Content("~/HotaiPay/DoLogin")',
-                        method:'POST',
-                        dataType:'json',
-                        data: { inModel: postData },
-                        success: function (datas) {
-                            if (datas.ErrMsg) {
-                                alert(datas.ErrMsg);
-                                return;
-                            }
-                            alert(datas.ResultMsg);
-                        },
-                        error: function (err) {
-                            $('#ErrorMsg').html(err.responseText);
-                            $('#ErrorAlert').modal('toggle');
-                        },
-                    });
-                }
-            }
-        })
-        </script>
-    }
-
     <script>
-    //獲取元素（兩種方式都可以）
+        //獲取元素（兩種方式都可以）
         var input = document.getElementById("demo_input")
         var imgs = document.getElementById('eyes');
         //下面是一個判斷每次點選的效果
@@ -104,14 +70,14 @@
         imgs.onclick = function () {
             if (flag == 0) {
                 input.type = 'text';
-                eyes.src = '~/images/eye-regular.svg';//睜眼圖
+                eyes.src = 'images/eye-regular.svg';//睜眼圖
                 flag = 1;
             } else {
                 input.type = 'password';
-                eyes.src = '~/images/eye-slash-regular.svg';//閉眼圖
+                eyes.src = 'images/eye-slash-regular.svg';//閉眼圖
                 flag = 0;
             }
-        }</script>
-
+        }
+        </script>
 </body>
 </html>

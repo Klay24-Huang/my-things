@@ -163,6 +163,7 @@
     <Content Include="images\graphic\popup\.DS_Store" />
     <Content Include="images\icon\.DS_Store" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
     <Content Include="Scripts\HotaiPayJS\bootstrap.js" />
     <Content Include="Scripts\HotaiPayJS\main.js" />
     <Content Include="Scripts\HotaiPayJS\sweetalert.js" />

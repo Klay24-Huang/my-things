@@ -12,7 +12,7 @@ namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
-        
+        HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
         #region 登入頁面
         public ActionResult Login()
         {
@@ -21,7 +21,6 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult DoLogin(string phone,string pwd)
         {
-            HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
             bool flag = false;
             string errCode = "";
 
@@ -75,9 +74,12 @@ namespace HotaiPayWebView.Controllers
                 }
                     
             }
-            else
-                return View("Login");
-
+            else {
+                if (errCode=="ERR980")
+                {
+                    ViewBag.MSG = "密碼錯誤";
+                }
+            }
             return View();
         }
         #endregion
