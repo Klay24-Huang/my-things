@@ -17,9 +17,7 @@ namespace WebAPI.Models.Param.Input
         /// <para>4:5:啟動閃燈尋車功能</para>
         /// <para>3:6:開啟坐墊</para>
         /// <para>4:7:開啟/關閉電池蓋</para>
-
         /// </summary>
-
         public int CmdType { set; get; }
         public string OrderNo { set; get; }
     }
