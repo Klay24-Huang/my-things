@@ -9,24 +9,25 @@ using System.Web;
 using System.Web.Mvc;
 using WebCommon;
 using NLog;
+
 namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
-
         private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
+        HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
         #region 登入頁面
         public ActionResult Login()
         {
             ViewBag.phone = Request.QueryString["phone"];
-            TempData["phone"]= Request.QueryString["phone"];
+            TempData["phone"] = Request.QueryString["phone"];
             return View();
         }
 
         [HttpPost]
-        public ActionResult Login(string phone,string pwd)
+        public ActionResult Login(string phone, string pwd)
         {
+
             bool flag = false;
             string errCode = "";
 
@@ -38,7 +39,8 @@ namespace HotaiPayWebView.Controllers
 
             WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
 
-            
+            HashAlgorithmHelper helper = new HashAlgorithmHelper();
+            apiInput.password = helper.ComputeSha256Hash(apiInput.password);
             flag = hotaiAPI.DoSignin(apiInput, ref apioutput, ref errCode);
 
             if (flag)
@@ -76,18 +78,19 @@ namespace HotaiPayWebView.Controllers
                                 RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                             }
                         }
-                    }   
+                    }
                 }
-                    
+
             }
-            else {
-                if (errCode=="ERR980"|| errCode == "ERR953")
+            else
+            {
+                if (errCode == "ERR980" || errCode == "ERR953")
                 {
                     this.TempData["MSG"] = "密碼錯誤";
                 }
             }
             RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
-            return RedirectToRoute(new {controller= "HotaiPay",action= "BindCardFailed" });
+            return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
         }
         #endregion
 
@@ -116,7 +119,8 @@ namespace HotaiPayWebView.Controllers
         {
             string errCode = "";
             bool flag = false;
-            WebAPIInput_CheckSignup checkSignUp = new WebAPIInput_CheckSignup {
+            WebAPIInput_CheckSignup checkSignUp = new WebAPIInput_CheckSignup
+            {
                 account = phone
             };
             WebAPIOutput_CheckSignup checkSignUpOutput = new WebAPIOutput_CheckSignup();
@@ -150,7 +154,7 @@ namespace HotaiPayWebView.Controllers
             }
         }
         [HttpPost]
-        public ActionResult CheckOtpCode(string phone,string otpCode)
+        public ActionResult CheckOtpCode(string phone, string otpCode)
         {
             bool flag = false;
             WebAPIInput_SmsOtpValidation checkSMSOpt = new WebAPIInput_SmsOtpValidation
@@ -253,7 +257,7 @@ namespace HotaiPayWebView.Controllers
             WebAPIOutput_GetPrivacy getPrivacy = new WebAPIOutput_GetPrivacy();
             string errCode = "";
 
-            flag=hotaiAPI.DoGetPrivacy("",ref getPrivacy,ref errCode);
+            flag = hotaiAPI.DoGetPrivacy("", ref getPrivacy, ref errCode);
 
             return View();
         }
