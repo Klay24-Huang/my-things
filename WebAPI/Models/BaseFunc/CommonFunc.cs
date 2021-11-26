@@ -25,7 +25,7 @@ namespace WebAPI.Models.BaseFunc
     /// </summary>
     public class CommonFunc
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         #region 要驗證的類型
         /// <summary>
