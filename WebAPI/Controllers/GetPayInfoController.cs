@@ -3,6 +3,7 @@ using Domain.Flow.Hotai;
 using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Wallet;
+using Domain.TB.Hotai;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -103,8 +104,8 @@ namespace WebAPI.Controllers
             }
 
             //取得和泰支付卡片
-            
-
+            OAPI_GetPayInfo HotaiOut = SetHotai(IDNO,LogID,funName, apiOutput);
+            apiOutput = HotaiOut;
 
             #endregion
 
@@ -129,7 +130,7 @@ namespace WebAPI.Controllers
                 return input;
 
             OtherService.HotaipayService hotaiPayment = new OtherService.HotaipayService();
-            var HotaiDefaultCard = new OFN_HotaiCreditCard();
+            var HotaiDefaultCard = new HotaiCardInfo();
             var getCardFlag = hotaiPayment.DoQueryDefaultCard(new IFN_QueryDefaultCard { IDNO = idNo, LogID = logID, PRGName = funName }, ref HotaiDefaultCard, ref errCode);
 
             if (getCardFlag)
@@ -140,7 +141,7 @@ namespace WebAPI.Controllers
                 dbHotaiPay.PayInfo = HotaiDefaultCard.CardNumber;
                 input.PayModeList.Add(dbHotaiPay);
 
-                var dbCreditPay = input.PayModeList.Find(p => p.PayMode == 1);
+                var dbCreditPay = input.PayModeList.Find(p => p.PayMode == 0);
                 if (dbCreditPay != null)
                 {
                     input.PayModeList.Remove(dbCreditPay);

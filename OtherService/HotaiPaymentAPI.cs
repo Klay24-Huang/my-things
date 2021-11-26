@@ -19,7 +19,7 @@ namespace OtherService
     public class HotaiPaymentAPI
     {
 		protected static Logger logger = LogManager.GetCurrentClassLogger();
-		private static ConfigManager configManager = new ConfigManager("HotaiPaySetting.json");
+		private static ConfigManager configManager = new ConfigManager("hotaipayment");
 		private string PaymentUrl = configManager.GetKey("HotaiPaymentURL");//ConfigurationManager.AppSettings["HotaiPaymentURL"].ToString();                                
 		private string EntryURL = configManager.GetKey("HotaiPaymentSingleEntry");//ConfigurationManager.AppSettings["HotaiPaymentSingleEntry"].ToString();                                
 		private string _bindCardURL = configManager.GetKey("CTBCBindCard"); //ConfigurationManager.AppSettings["CTBCBindCard"].ToString();
