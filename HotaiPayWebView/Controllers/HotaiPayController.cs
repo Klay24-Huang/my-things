@@ -8,12 +8,14 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebCommon;
-
+using NLog;
 namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
-        HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
+
+        private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         #region 登入頁面
         public ActionResult Login()
         {
@@ -25,7 +27,6 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult Login(string phone,string pwd)
         {
-           
             bool flag = false;
             string errCode = "";
 
@@ -37,8 +38,7 @@ namespace HotaiPayWebView.Controllers
 
             WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
 
-            HashAlgorithmHelper helper = new HashAlgorithmHelper();
-            apiInput.password = helper.ComputeSha256Hash(apiInput.password);
+            
             flag = hotaiAPI.DoSignin(apiInput, ref apioutput, ref errCode);
 
             if (flag)
