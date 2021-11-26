@@ -108,6 +108,7 @@
     <Compile Include="ConfigManager.cs" />
     <Compile Include="DataConvertHelper.cs" />
     <Compile Include="ErrorInfo.cs" />
+    <Compile Include="ExtensionConfigSection.cs" />
     <Compile Include="HashAlgorithmHelper.cs" />
     <Compile Include="PostJsonResultInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

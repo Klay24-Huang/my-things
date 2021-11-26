@@ -32,29 +32,28 @@ namespace OtherService
         public bool DoQueryCardList(IFN_QueryCardList input, ref OFN_HotaiCreditCardList output, ref string errCode)
         {
             logger.Info($"DoQueryCardList | start | INPUT : {JsonConvert.SerializeObject(input)}");
-            HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
             bool flag = true;
-            HotaiToken hotaiToken = new HotaiToken();
+            HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
+            output.CreditCards = new List<HotaiCardInfo>();
+            if (isDebug == "1")
+            {
+                logger.Info($"DoQueryCardList |Get AccessToken | 進入測試模式");
+
+                var creditCards = GetTestCards();
+
+                output.CreditCards = creditCards;
+
+                return true;
+            }
+
             //1.取得會員Token
-            //if(isDebug== "1")
-            //{
-            //    logger.Info($"DoQueryCardList |Get AccessToken | 進入測試模式");
-            //    HotaiMemberAPI memberAPI = new HotaiMemberAPI();
+            HotaiToken hotaiToken = new HotaiToken();
+            flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
+            logger.Info($"DoQueryCardList |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
 
-            //    //var Loginflag = memberAPI.DoSignin(new WebAPIInput_Signin { account = WebCommon.});
-            //}
-            //else
-            //{
-                flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
-                logger.Info($"DoQueryCardList |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
-            //}
-
-
-            
 
             //2.向中信取得卡清單
             WebAPIOutput_GetCreditCards cardsOptput = new WebAPIOutput_GetCreditCards();
-
             if (flag)
             {
                 var objGetCard = new WebAPIInput_GetCreditCards
@@ -119,7 +118,7 @@ namespace OtherService
                 output.CreditCards = creditCards;
             }
             //5.整理後回傳
-            if (output.CreditCards.Count() == 0)
+            if (output.CreditCards?.Count() == 0)
                 flag = false;
 
             logger.Info($"DoQueryCardList | Final | Result:{ flag } ; errCode:{errCode} | Output:{JsonConvert.SerializeObject(output)}");
@@ -132,7 +131,7 @@ namespace OtherService
         /// <param name="card"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoQueryDefaultCard(IFN_QueryDefaultCard input, ref OFN_HotaiCreditCard card, ref string errCode)
+        public bool DoQueryDefaultCard(IFN_QueryDefaultCard input, ref HotaiCardInfo card, ref string errCode)
         {
             bool flag = true;
             OFN_HotaiCreditCardList hotaiCards = new OFN_HotaiCreditCardList();
@@ -148,9 +147,10 @@ namespace OtherService
             flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
             if (flag)
             {
-                card = (OFN_HotaiCreditCard)hotaiCards.CreditCards.Find(p => p.IsDefault == 1);
+                card = hotaiCards.CreditCards.Find(p => p.IsDefault == 1);
+                
 
-                flag = (card == null) ? false : true;
+                 flag = (card == null) ? false : true;
 
             }
 
@@ -163,7 +163,7 @@ namespace OtherService
         /// <param name="card"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoQueryCard(IFN_HotaiQueryCardForOne input, ref OFN_HotaiCreditCard card, ref string errCode)
+        public bool DoQueryCard(IFN_HotaiQueryCardForOne input, ref HotaiCardInfo card, ref string errCode)
         {
             bool flag = true;
             OFN_HotaiCreditCardList hotaiCards = new OFN_HotaiCreditCardList();
@@ -179,7 +179,7 @@ namespace OtherService
             flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
             if (flag)
             {
-                card = (OFN_HotaiCreditCard)hotaiCards.CreditCards.Find(p => p.CardToken == input.CardToken);
+                card = hotaiCards.CreditCards.Find(p => p.CardToken == input.CardToken);
 
                 flag = (card == null || card == default) ? false : true;
             }
@@ -464,6 +464,27 @@ namespace OtherService
                 MemberOneID = input.MemberOneID
 
             };
+        }
+
+        /// <summary>
+        /// 測試卡清單
+        /// </summary>
+        /// <returns></returns>
+        private List<HotaiCardInfo> GetTestCards()
+        {
+            var creditCards = new List<HotaiCardInfo>();
+
+            creditCards.Add(new HotaiCardInfo
+            {
+                CardToken = "1385",
+                CardName = "",
+                CardType = "Visa",
+                BankDesc = "國外卡",
+                CardNumber = "****-****-****-5278",
+                IsDefault = 1,
+                MemberOneID = "0064fb4f-8250-4690-954b-2ba94862606b"
+            });
+            return creditCards;
         }
 
     }
