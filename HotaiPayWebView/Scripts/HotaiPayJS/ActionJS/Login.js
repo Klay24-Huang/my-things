@@ -25,7 +25,7 @@
         }
         , methods: {
             // 執行登入按鈕
-            DoLogin: function () {
+            Login: function () {
                 var self = this;
                 var regex = new RegExp(/^(?=.*\d)(?=.*[a-zA-Z]).{6,12}$/);
 
@@ -36,7 +36,7 @@
                 if (self.form.UserPwd.match(regex) != null) {
                     // 使用 jQuery Ajax 傳送至後端
                     $.ajax({
-                        url: 'DoLogin',
+                        url: 'Login',
                         method: 'POST',
                         dataType: 'json',
                         data: {

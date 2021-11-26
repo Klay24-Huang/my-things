@@ -96,7 +96,7 @@ namespace WebAPI.Controllers
                         IDNO = IDNO,
                         Token = Access_Token,
                         SD = apiInput.SD,
-                        ED = apiInput.ED,
+                        ED = apiInput.ED == null ? apiInput.ED: apiInput.ED.AddDays(1),        //20211125 ADD BY ADAM REASON.app不會送時間進來
                         LogID = LogID,
                     };
                     var sp_out = wsp.sp_GetWalletStoreTradeTransHistory(spIn, ref errCode);

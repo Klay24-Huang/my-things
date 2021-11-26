@@ -2,10 +2,7 @@
 @{
     ViewBag.Title = "Login";
     string msg = "";
-    if (!string.IsNullOrEmpty(ViewBag.MSG))
-    {
-        msg = ViewBag.MSG;
-    }
+    
 }
 
 <html lang="en">
@@ -38,7 +35,6 @@
 
             <div class="input-box mb-2">
                 <input class="input-light" type="text" v-model="form.Phone" placeholder="手機號碼">
-
             </div>
 
             <div class="input-box mb-2">
@@ -47,15 +43,15 @@
 
             </div>
             <div class="text-left">
-                <p id="pwdHint" style="color:red;">@msg.ToString()</p>
+                <p id="pwdHint" style="color:red;">@msg</p>
             </div>
             <div class="text-right">
                 <a class="text-gray text-underline" href="https://www.hotaimember.com.tw/login/ForgotPassword">忘記密碼</a>
             </div>
 
 
-            <button type="button" class="btn btn-blue my-3" v-on:click="DoLogin()">登入</button>
-            <a class="text-gray text-underline" href="">立即註冊</a>
+            <button type="button" class="btn btn-blue my-3" v-on:click="Login()">登入</button>
+            <a class="text-gray text-underline" href="/HotaiPay/RegisterMembershipTerm">立即註冊</a>
         </div>
 
 
