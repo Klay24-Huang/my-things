@@ -381,7 +381,7 @@ namespace WebAPI.Controllers
                                             PAYTYPE = "1",
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "租金",
-                                            PORDNO = obj.REMARK
+                                            PORDNO = ReturnControlList[z].REMARK
                                         };
                                     }
                                 }
