@@ -349,7 +349,7 @@ namespace WebAPI.Controllers
                                     if (obj.eTag > 0 && z == ReturnControlList.Count -1)
                                     {
                                         //input.tbPaymentDetail = new PaymentDetail[2];
-                                        input.tbPaymentDetail[0] = new PaymentDetail()
+                                        input.tbPaymentDetail[z] = new PaymentDetail()
                                         {
                                             //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                             PAYAMT = (ReturnControlList[z].CloseAmout- obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
