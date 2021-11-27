@@ -341,7 +341,7 @@ namespace WebAPI.Controllers
 
                             if (obj.PAYAMT > 0)
                             {
-                                input.tbPaymentDetail = new PaymentDetail[obj.eTag > 0 ? ReturnControlList.Count: ReturnControlList.Count-1];
+                                input.tbPaymentDetail = new PaymentDetail[obj.eTag > 0 ? ReturnControlList.Count+1: ReturnControlList.Count];
 
                                 for (int z = 0; z < ReturnControlList.Count; z++)
                                 {
@@ -377,7 +377,7 @@ namespace WebAPI.Controllers
                                         input.tbPaymentDetail[z] = new PaymentDetail()
                                         {
                                             //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                            PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYAMT = ReturnControlList[z].CloseAmout.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                             PAYTYPE = "1",
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "租金",
