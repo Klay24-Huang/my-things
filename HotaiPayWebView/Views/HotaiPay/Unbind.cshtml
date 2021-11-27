@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewBag.Title = "Unbind";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰集團會員</title>
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/sweetalert.css">
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+
+<style>
+</style>
+<body>
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員</h6></header>
+
+    <div class="container text-center" style="max-width: 414px;">
+        <div class="web-img mt-8">
+
+            <img class="object-fit mb-8" alt="iRent汽機車共享" src="~/images/hotai-logo.svg">
+        </div>
+
+        <div class="image-box">
+            <img src="~/images/success-face-icon.svg" alt="">
+        </div>
+
+        <div class="text-box mb-8">
+            <h6 class="text-gray">您已是和泰集團會員囉！</h6>
+        </div>
+        <div class="d-flex column">
+            <button type="button" class="btn btn-outline-gray my-3" style="width: 70%;margin: auto;">修改和泰會員資料</button>
+            <a class="text-gray text-center text-underline sweet-1">我要解綁</a>
+        </div>
+
+
+    </div>
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+
+    <!-- 自己寫的js -->
+    <script src="js/main.js"></script>
+
+    <script src="js/sweetalert.js"></script>
+
+
+    <script>document.querySelector('.sweet-1').onclick = function(){
+
+        swal({
+          title: "",
+          text: "確定解綁和泰集團會員嗎？",
+          imageUrl: 'images/alert-popup.svg',
+          showCancelButton: true,
+          cancelButtonText: "取消",
+          cancelButtonClass: "btn-outline-gray-small",
+          confirmButtonClass: 'btn-blue-small',
+          confirmButtonText: '確認'
+        });
+};</script>
+</body>
+</html>
+

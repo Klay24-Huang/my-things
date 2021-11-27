@@ -46,6 +46,8 @@ namespace WebAPI.Controllers
     public class BE_ContactSettingController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         /// <summary>
         /// 【後台】強取強還
         /// </summary>
@@ -376,13 +378,16 @@ namespace WebAPI.Controllers
                                         {
                                             if (clearFlag)
                                             {
-                                                #region Adam哥上線記得打開
-                                                //bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
-                                                //if (CarFlag == false)
-                                                //{
-                                                //    //寫入車機錯誤
-                                                //}
-                                                //errCode = "000000";
+                                                #region 車機指令
+                                                if (isDebug == "0") // isDebug = 1，不送車機指令
+                                                {
+                                                    bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
+                                                    if (CarFlag == false)
+                                                    {
+                                                        //寫入車機錯誤
+                                                    }
+                                                    errCode = "000000";
+                                                }
                                                 #endregion
                                             }
 

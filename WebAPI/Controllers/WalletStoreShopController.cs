@@ -269,7 +269,7 @@ namespace WebAPI.Controllers
                         apiOutput = new OAPI_WalletStoreShop()
                         {
                             StoreMoney = apiInput.StoreMoney,
-                            Barcode64 = base64String.Replace(" ",""),   //要濾空白，不然APP會無法處理
+                            Barcode64 = base64String.Replace(" ",""),       //20211125 ADD BY ADAM REASON.要濾空白app才有辦法顯示
                             ShopBarCode1 = outBarCode.body.code1,
                             ShopBarCode2 = outBarCode.body.code2,
                             ShopBarCode3 = outBarCode.body.code3,
