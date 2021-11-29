@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebCommon;
 using NLog;
 using WebCommon;
 
@@ -16,18 +17,20 @@ namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
-
         private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
+        HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
         #region 登入頁面
         public ActionResult Login()
         {
+            ViewBag.phone = Request.QueryString["phone"];
+            TempData["phone"] = Request.QueryString["phone"];
             return View();
         }
+
         [HttpPost]
-        public ActionResult DoLogin(string phone,string pwd)
+        public ActionResult Login(string phone, string pwd)
         {
-            HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
+
             bool flag = false;
             string errCode = "";
 
@@ -74,21 +77,26 @@ namespace HotaiPayWebView.Controllers
                             }
                             else
                             {
-                                return View("BindCardFailed");
+                                RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                             }
                         }
-                    }   
+                    }
                 }
-                    
+
             }
             else
-                return View("Login");
-
-            return View();
+            {
+                if (errCode == "ERR980" || errCode == "ERR953")
+                {
+                    this.TempData["MSG"] = "密碼錯誤";
+                }
+            }
+            RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+            return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
         }
         #endregion
 
-        #region 會員條款
+        #region 更新會員條款
         public ActionResult MembershipTerms()
         {
             return View();
@@ -105,7 +113,72 @@ namespace HotaiPayWebView.Controllers
         #region 註冊驗證步驟一:手機驗證
         public ActionResult RegisterStep1()
         {
+
             return View();
+        }
+        [HttpPost]
+        public ActionResult GetOtpCode(string phone)
+        {
+            string errCode = "";
+            bool flag = false;
+            WebAPIInput_CheckSignup checkSignUp = new WebAPIInput_CheckSignup
+            {
+                account = phone
+            };
+            WebAPIOutput_CheckSignup checkSignUpOutput = new WebAPIOutput_CheckSignup();
+            flag = hotaiAPI.DoCheckSignup(checkSignUp, ref checkSignUpOutput, ref errCode);
+
+            if (checkSignUpOutput.isSignup)
+            {
+                ViewBag.Alert = "此帳號已被註冊";
+                return View();
+            }
+            else
+            {
+                WebAPIInput_SendSmsOtp getSMSOTP = new WebAPIInput_SendSmsOtp
+                {
+                    mobilePhone = phone,
+                    otpId = "",
+                    useType = 1
+                };
+                WebAPIOutput_SendSmsOtp getSMSOTPoutput = new WebAPIOutput_SendSmsOtp();
+
+                flag = hotaiAPI.DoSendSmsOtp(getSMSOTP, ref getSMSOTPoutput, ref errCode);
+                if (flag)
+                {
+                    return View();
+                }
+                else
+                {
+                    ViewBag.Alert = "驗證碼傳送失敗，請再試一次";
+                    return View();
+                }
+            }
+        }
+        [HttpPost]
+        public ActionResult CheckOtpCode(string phone, string otpCode)
+        {
+            bool flag = false;
+            WebAPIInput_SmsOtpValidation checkSMSOpt = new WebAPIInput_SmsOtpValidation
+            {
+                mobilePhone = phone,
+                otpCode = otpCode,
+                useType = 1
+            };
+            WebAPIOutput_OtpValidation checkSMSOptOutput = new WebAPIOutput_OtpValidation();
+            string errCode = "";
+            flag = hotaiAPI.DoSmsOtpValidation(checkSMSOpt, ref checkSMSOptOutput, ref errCode);
+
+            if (flag)
+            {
+                return View("RegisterStep2");
+            }
+            else
+            {
+
+            }
+            return View();
+
         }
         #endregion
 
@@ -126,7 +199,7 @@ namespace HotaiPayWebView.Controllers
         #region 綁卡失敗
         public ActionResult BindCardFailed()
         {
-            return View();
+            return View("BindCardFailed");
         }
         #endregion
 
@@ -212,11 +285,18 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
-        #region 註冊成功會員條款同意頁面
+        #region 立即註冊會員條款同意頁面
         public ActionResult RegisterMembershipTerm()
         {
+            bool flag = false;
+            WebAPIOutput_GetPrivacy getPrivacy = new WebAPIOutput_GetPrivacy();
+            string errCode = "";
+
+            flag = hotaiAPI.DoGetPrivacy("", ref getPrivacy, ref errCode);
+
             return View();
         }
+
         #endregion
 
         #region 註冊成功

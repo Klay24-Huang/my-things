@@ -75,15 +75,15 @@ namespace Domain.WebAPI.output.Hotai.Payment
         /// <summary>
         /// 建立時間(YYYY-MM-DDThh:mm:ss.sssZ)
         /// </summary>
-        public DateTime createdAt { get; set; }
+        public string createdAt { get; set; }
         /// <summary>
         /// 更新時間(更新時間YYYY-MM-DDThh:mm:ss.sssZ)
         /// </summary>
-        public DateTime updatedAt { get; set; }
+        public string updatedAt { get; set; }
         /// <summary>
         /// 刪除時間(YYYY-MM-DDThh:mm:ss.sssZ)
         /// </summary>
-        public DateTime deletedAt { get; set; }
+        public string deletedAt { get; set; }
         /// <summary>
         /// Bin資訊
         /// </summary>

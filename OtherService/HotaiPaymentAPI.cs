@@ -19,12 +19,13 @@ namespace OtherService
     public class HotaiPaymentAPI
     {
 		protected static Logger logger = LogManager.GetCurrentClassLogger();
-		private string PaymentUrl = ConfigurationManager.AppSettings["HotaiPaymentURL"].ToString();                                
-		private string EntryURL = ConfigurationManager.AppSettings["HotaiPaymentSingleEntry"].ToString();                                
-		private string _bindCardURL = ConfigurationManager.AppSettings["CTBCBindCard"].ToString();
-		private string _fastBind = ConfigurationManager.AppSettings["CTBCFastBind"].ToString();
-		private byte[] Key = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
-		private byte[] IV = Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
+		private static ConfigManager configManager = new ConfigManager("hotaipayment");
+		private string PaymentUrl = configManager.GetKey("HotaiPaymentURL");//ConfigurationManager.AppSettings["HotaiPaymentURL"].ToString();                                
+		private string EntryURL = configManager.GetKey("HotaiPaymentSingleEntry");//ConfigurationManager.AppSettings["HotaiPaymentSingleEntry"].ToString();                                
+		private string _bindCardURL = configManager.GetKey("CTBCBindCard"); //ConfigurationManager.AppSettings["CTBCBindCard"].ToString();
+		private string _fastBind = configManager.GetKey("CTBCFastBind");//ConfigurationManager.AppSettings["CTBCFastBind"].ToString();
+		private byte[] Key = Convert.FromBase64String(configManager.GetKey("HotaiPaymentKey"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
+		private byte[] IV = Convert.FromBase64String(configManager.GetKey("HotaiPaymentIV"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
 
 		public bool GetHotaiCardList(WebAPIInput_GetCreditCards input, ref WebAPIOutput_GetCreditCards output)
 		{
@@ -60,7 +61,7 @@ namespace OtherService
 			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResAddCard>, Body_AddCard>(Body, "POST", "/creditcard/add", input.AccessToken);
 
 
-			logger.Info($"AddCard body {JsonConvert.SerializeObject(apiResult)}");
+			logger.Info($"AddCard apiResult {JsonConvert.SerializeObject(apiResult)}");
 			if (apiResult.Succ)
 			{
 				output.Succ = apiResult.Succ;
@@ -68,6 +69,7 @@ namespace OtherService
 				output.PostData = apiResult.Data?.Data;
 			}
 
+			logger.Info($"AddCard output {JsonConvert.SerializeObject(output)}");
 			return apiResult.Succ;
 		}
 		/// <summary>
@@ -88,12 +90,15 @@ namespace OtherService
 			logger.Info($"FastAddCard requset body {JsonConvert.SerializeObject(Body)}");
 
 			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResFastBind>, Body_CardFbinding>(Body, "POST", "/creditcard/fbinding", input.AccessToken);
+			logger.Info($"FastAddCard apiResult {JsonConvert.SerializeObject(apiResult)}");
+			
 			if (apiResult.Succ)
 			{
 				output.Succ = apiResult.Succ;
 				output.GotoUrl = _fastBind;
 				output.PostData = apiResult.Data?.Data;
 			}
+			logger.Info($"FastAddCard output {JsonConvert.SerializeObject(output)}");
 			return apiResult.Succ;
 
 		}
@@ -136,10 +141,18 @@ namespace OtherService
 			//if (!string.IsNullOrWhiteSpace(reqjsonpwd))
 			//	CTBCResult = ApiPost.DoApiPostForm(_bindCardURL, reqjsonpwd, "POSTk", null);
 			
-
 			return apiResult.Succ;
 		}
-
+		/// <summary>
+		/// Hotai金流
+		/// </summary>
+		/// <typeparam name="TResponse"></typeparam>
+		/// <typeparam name="TRequest"></typeparam>
+		/// <param name="Body"></param>
+		/// <param name="Method"></param>
+		/// <param name="API"></param>
+		/// <param name="access_token"></param>
+		/// <returns></returns>
 		private (bool Succ, string ErrCode, string Message, TResponse Data)
 			HotaiPaymentApiPost<TResponse, TRequest>(TRequest Body, string Method, string API, string access_token)
 		{

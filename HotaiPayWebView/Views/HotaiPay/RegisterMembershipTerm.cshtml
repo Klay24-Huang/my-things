@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "RegisterMembershipTrem";
+    ViewBag.Title = "RegisterMembershipTerm";
 }
 
 <!DOCTYPE html>
@@ -64,7 +64,7 @@
             <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
             <label class="form-check-label" for="inlineCheckbox1">我已詳讀和泰會員條款說明</label>
         </div>
-        <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn">同意</button>
+        <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn" onclick="goRegister1()">同意</button>
 
 
 
@@ -79,9 +79,14 @@
     <script src="js/main.js"></script>
 
     <!-- 自己寫的js -->
-    <script>$(":checkbox").click(function(){
+    <script>
+        function goRegister1() {
+            window.location.href = "/HotaiPay/RegisterStep1";
+        }
+        $(":checkbox").click(function () {
       $("#redbtn").toggleClass("checked-active")
-  })</script>
+        })
+    </script>
 </body>
 </html>
 
