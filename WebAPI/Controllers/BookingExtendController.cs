@@ -201,7 +201,7 @@ namespace WebAPI.Controllers
                 try
                 {
                     CommonService commonService = new CommonService();
-                    #region 判斷延長用車是否要加收
+                    #region 計算預授權金
                     SPOutput_OrderForPreAuth orderInfo = commonService.GetOrderForPreAuth(tmpOrder);
                     //預授權不處理專案(長租客服月結E077)
                     string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
@@ -223,53 +223,82 @@ namespace WebAPI.Controllers
                             InsurancePerHours = orderInfo.InsurancePerHours
                         };
 
-                        //用車+延長時數(未超過24小時不取授權)
-                        double oriHour = StopTime.Subtract(orderInfo.SD).TotalHours;
-                        if (oriHour > 24)
+                        //原預計用車時數
+                        double oriHour = orderInfo.ED.Subtract(orderInfo.SD).TotalHours;
+                        //延長用車總時數
+                        double extendHour = StopTime.Subtract(orderInfo.ED).TotalHours;
+                        //扣除預授權金額註記
+                        bool deduct = false;
+                        //首次延長
+                        if (orderInfo.ExtendTimes == 0)
                         {
-                            //首次延長
-                            if (orderInfo.ExtendTimes == 0)
+                            //原預計用車>=10小時
+                            if (oriHour >= 10)
+                            {
+                                //原預計用車+延長用車時間>24小時
+                                if (oriHour + extendHour > 24)
+                                {
+                                    canAuth = true;
+                                    if (extendHour > 6)
+                                    {
+                                        //新的預估租金與原預授權的差額進行預授權
+                                        deduct = true;
+                                        estimateData.ED = StopTime;
+                                    }
+                                    else
+                                    {
+                                        //收6小時
+                                        estimateData.SD = orderInfo.ED;
+                                        estimateData.ED = orderInfo.ED.AddHours(6);
+                                    }
+                                }
+                            }
+                            else
                             {
                                 canAuth = true;
-                                //時間 =< 6小時，則取6小時預估總金額授權【租金+里程費+安心服務】
-                                if (StopTime.Subtract(orderInfo.ED).TotalHours <= 6)
+                                if (extendHour > 6)
                                 {
+                                    //新的預估租金與原預授權的差額進行預授權
+                                    deduct = true;
+                                    estimateData.ED = StopTime;
+                                }
+                                else
+                                {
+                                    //收6小時
                                     estimateData.SD = orderInfo.ED;
                                     estimateData.ED = orderInfo.ED.AddHours(6);
                                 }
-                                //時間 > 6小時，預估授權金與原預授權的差額進行預授權
-                                else
-                                {
-                                    estimateData.ED = StopTime;
-                                }
-                                int authAmt = commonService.EstimatePreAuthAmt(estimateData);
-                                preAuthAmt = authAmt - orderInfo.PreAuthAmt;
                             }
-                            else if (orderInfo.ExtendTimes > 0)
+                        }
+                        else
+                        {
+                            //延長用車總時數 超過6小時則取超出時數的預估總金額【租金+里程+安心】
+                            if (extendHour > 6)
                             {
-                                //計算【首次延長開始-預計延長還車】時數
-                                double extendHour = StopTime.Subtract(orderInfo.ExtendStartTime).TotalHours;
-                                canAuth = extendHour > 6 ? true : false;
-                                if (canAuth)
-                                {
-                                    estimateData.ED = StopTime;
-                                    int authAmt = commonService.EstimatePreAuthAmt(estimateData);
-                                    preAuthAmt = orderInfo.PreAuthAmt > 0 ? authAmt - orderInfo.PreAuthAmt : 0;
-                                }
+                                canAuth = true;
+                                //新的預估租金與原預授權的差額進行預授權
+                                deduct = true;
+                                estimateData.ED = StopTime;
                             }
                         }
 
-                        trace.traceAdd("EstimatePreAuthAmt", new {   canAuth, oriHour, orderInfo.ExtendTimes, preAuthAmt });
-                        trace.FlowList.Add("計算預授權金額");
+                        if (canAuth)
+                        {
+                            int authAmt = commonService.EstimatePreAuthAmt(estimateData);
+                            preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? authAmt - orderInfo.PreAuthAmt : authAmt) : authAmt;
+                        }
+
+                        trace.traceAdd("EstimatePreAuthAmt", new { canAuth, oriHour, extendHour, preAuthAmt, estimateData });
+                        trace.FlowList.Add("計算預授權金");
                     }
                     #endregion
-                    #region 立即授權
+                    #region 後續流程
                     if (canAuth && preAuthAmt > 0)
                     {
                         bool authFlag = false;
                         string error = "";
 
-                        #region 立即授權
+                        #region 刷卡授權
                         CreditAuthComm creditAuthComm = new CreditAuthComm();
                         var AuthInput = new IFN_CreditAuthRequest
                         {
@@ -286,7 +315,7 @@ namespace WebAPI.Controllers
                         authFlag = creditAuthComm.DoAuthV4(AuthInput, ref error, ref AuthOutput);
 
                         trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, error });
-                        trace.FlowList.Add("立即授權");
+                        trace.FlowList.Add("刷卡授權");
 
                         #endregion
                         #region 授權結果
