@@ -1,5 +1,7 @@
 ﻿using Domain.WebAPI.Input.Hotai.Member;
 using Domain.WebAPI.output.Hotai.Member;
+using Domain.WebAPI.Input.Hotai.Payment;
+using Domain.WebAPI.output.Hotai.Payment;
 using HotaiPayWebView.Repository;
 using OtherService;
 using System;
@@ -8,6 +10,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using NLog;
+using WebCommon;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -33,10 +36,10 @@ namespace HotaiPayWebView.Controllers
                 account = phone,
                 password = pwd
             };
-
             WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
 
-            
+            HashAlgorithmHelper helper = new HashAlgorithmHelper();
+            apiInput.password = helper.ComputeSha256Hash(apiInput.password);
             flag = hotaiAPI.DoSignin(apiInput, ref apioutput, ref errCode);
 
             if (flag)
@@ -149,8 +152,41 @@ namespace HotaiPayWebView.Controllers
         #endregion
 
         #region 無信用卡列表頁面 
-        public ActionResult NoCreditCard()
+        public ActionResult NoCreditCard(string HCToken)
         {
+            HotaiMemberAPI hotaiMemAPI = new HotaiMemberAPI();
+            HotaiPaymentAPI hotaiPayAPI = new HotaiPaymentAPI();
+            bool flag = false;
+            string errCode = "";
+            WebAPIInput_GetCreditCards apiInput = new WebAPIInput_GetCreditCards();//TODO不用指定值?
+            WebAPIOutput_GetCreditCards apioutput = new WebAPIOutput_GetCreditCards();
+
+            flag = string.IsNullOrWhiteSpace(HCToken);
+            //token檢核
+            flag = hotaiMemAPI.DoCheckToken(HCToken, ref errCode);
+            if (!flag)
+            {
+                //TODO Token失效 導URL至登入畫面 請使用者重登
+                return View("Login");
+            }
+            WebAPIInput_GetCreditCards CardsListinput = new WebAPIInput_GetCreditCards();
+            WebAPIOutput_GetCreditCards CardsListoutput = new WebAPIOutput_GetCreditCards();
+            flag = hotaiPayAPI.GetHotaiCardList(CardsListinput, ref CardsListoutput);
+            if (!flag)
+            {
+                //TODO 取得綁卡清單
+                //TODO 待確認是callAPI 失敗還是API回傳失敗
+            }
+            else
+            {
+                //TODO
+                if (CardsListoutput.CardCount > 0)
+                {
+                    return View("CreditCardChoose");
+                    //call Java Script 調整畫面上資料
+
+                }//else 停留在目前畫面(no-creditcard 新增綁卡)
+            }
             return View();
         }
         #endregion
