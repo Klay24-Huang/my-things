@@ -950,7 +950,7 @@ namespace OtherService
             {
                 int Index = Input.RequestParams.MerchantTradeNo.IndexOf("D_");
                 tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                //  tmpOrder = Convert.ToInt64(tmp);
+                tmpOrder = Convert.ToInt64(tmp);    //修正訂金的訂單編號為0的狀態
                 creditType = 6;
             }
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
