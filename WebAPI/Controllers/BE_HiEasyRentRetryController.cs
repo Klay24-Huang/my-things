@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
                                 ODCUSTNM = obj.ODCUSTNM,
                                 ODDATE = obj.ODDATE,
                                 ORDAMT = obj.ORDAMT.ToString(),
-                                ORDNO = string.Format("H{0}", obj.OrderNo.ToString().PadLeft(7, '0')),
+                                ORDNO = string.Format("H{0}", obj.OrderNo.ToString().PadLeft(8, '0')),
                                 OUTBRNH = obj.OUTBRNH,
                                 PAYAMT = obj.PAYAMT.ToString(),
                                 PROCD = obj.PROCD,
@@ -225,7 +225,7 @@ namespace WebAPI.Controllers
                                 INVADDR = obj.INVADDR,
                                 INVKIND = obj.INVKIND.ToString(),
                                 INVTITLE = obj.INVTITLE,
-                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(7, '0')),
+                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(8, '0')),
                                 LOSSAMT2 = obj.LOSSAMT2.ToString(),
                                 NOCAMT = obj.NOCAMT.ToString(),
                                 NPOBAN = obj.NPOBAN,
@@ -308,7 +308,7 @@ namespace WebAPI.Controllers
                                 INVADDR = obj.INVADDR,
                                 INVKIND = obj.INVKIND.ToString(),
                                 INVTITLE = obj.INVTITLE,
-                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(7, '0')),
+                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(8, '0')),
                                 LOSSAMT2 = obj.LOSSAMT2.ToString(),
                                 NOCAMT = obj.NOCAMT.ToString(),
                                 NPOBAN = obj.NPOBAN,
@@ -341,37 +341,49 @@ namespace WebAPI.Controllers
 
                             if (obj.PAYAMT > 0)
                             {
-                                if (obj.eTag > 0)
+                                input.tbPaymentDetail = new PaymentDetail[obj.eTag > 0 ? ReturnControlList.Count+1: ReturnControlList.Count];
+
+                                for (int z = 0; z < ReturnControlList.Count; z++)
                                 {
-                                    input.tbPaymentDetail = new PaymentDetail[2];
-                                    input.tbPaymentDetail[0] = new PaymentDetail()
+                                    //最後一筆處理ETAG
+                                    if (obj.eTag > 0 && z == ReturnControlList.Count -1)
                                     {
-                                        PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                        PAYTYPE = "1",
-                                        PAYMENTTYPE = "1",
-                                        PAYMEMO = "租金",
-                                        PORDNO = obj.REMARK
-                                    };
-                                    input.tbPaymentDetail[1] = new PaymentDetail()
+                                        //input.tbPaymentDetail = new PaymentDetail[2];
+                                        input.tbPaymentDetail[z] = new PaymentDetail()
+                                        {
+                                            //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYAMT = (ReturnControlList[z].CloseAmout- obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYTYPE = "1",
+                                            PAYMENTTYPE = "1",
+                                            PAYMEMO = "租金",
+                                            //PORDNO = obj.REMARK
+                                            PORDNO = ReturnControlList[z].REMARK
+                                        };
+                                        //input.tbPaymentDetail[1] = new PaymentDetail()
+                                        input.tbPaymentDetail[z+1] = new PaymentDetail()
+                                        {
+                                            PAYAMT = (obj.eTag).ToString(),
+                                            PAYTYPE = "2",
+                                            PAYMENTTYPE = "1",
+                                            PAYMEMO = "eTag",
+                                            //PORDNO = obj.REMARK
+                                            PORDNO = ReturnControlList[z].REMARK
+                                        };
+                                    }
+                                    else
                                     {
-                                        PAYAMT = (obj.eTag).ToString(),
-                                        PAYTYPE = "2",
-                                        PAYMENTTYPE = "1",
-                                        PAYMEMO = "eTag",
-                                        PORDNO = obj.REMARK
-                                    };
-                                }
-                                else
-                                {
-                                    input.tbPaymentDetail = new PaymentDetail[1];
-                                    input.tbPaymentDetail[0] = new PaymentDetail()
-                                    {
-                                        PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                        PAYTYPE = "1",
-                                        PAYMENTTYPE = "1",
-                                        PAYMEMO = "租金",
-                                        PORDNO = obj.REMARK
-                                    };
+                                        //input.tbPaymentDetail = new PaymentDetail[1];
+                                        //input.tbPaymentDetail[0] = new PaymentDetail()
+                                        input.tbPaymentDetail[z] = new PaymentDetail()
+                                        {
+                                            //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYAMT = ReturnControlList[z].CloseAmout.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYTYPE = "1",
+                                            PAYMENTTYPE = "1",
+                                            PAYMEMO = "租金",
+                                            PORDNO = ReturnControlList[z].REMARK
+                                        };
+                                    }
                                 }
                             }
                             else
