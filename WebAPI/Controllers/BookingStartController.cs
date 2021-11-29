@@ -196,7 +196,7 @@ namespace WebAPI.Controllers
                 {
                     try
                     {
-                        #region 路邊調整還車時間加收錢
+                        #region 計算預授權金
                         int preAuthAmt = 0;
                         CommonService commonService = new CommonService();
                         SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
@@ -224,13 +224,14 @@ namespace WebAPI.Controllers
                                 };
                                 int estimateAmt = commonService.EstimatePreAuthAmt(estimateData);
                                 preAuthAmt = estimateAmt - orderData.PreAuthAmt;
-                            }
-                            trace.traceAdd("GetEsimateAuthAmt", new { orderData.ED, StopTime, apiInput.Insurance, preAuthAmt });
-                            trace.FlowList.Add("路邊調整還車時間加收錢");
+
+                                trace.traceAdd("GetEsimateAuthAmt", new {apiInput.Insurance, apiInput.ED, preAuthAmt, estimateData});
+                                trace.FlowList.Add("計算預授權金");
+                            }                      
                         }
 
                         #endregion
-                        #region 立即授權
+                        #region 後續流程
                         if (preAuthAmt > 0)
                         {
                             CreditAuthComm creditAuthComm = new CreditAuthComm();
@@ -248,7 +249,7 @@ namespace WebAPI.Controllers
                             };
                             flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                             trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, errCode });
-                            trace.FlowList.Add("立即授權");
+                            trace.FlowList.Add("刷卡授權");
                             if (!flag)
                             {
                                 errCode = "ERR603";
@@ -278,7 +279,7 @@ namespace WebAPI.Controllers
                                 trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
                                 trace.FlowList.Add("寫入預授權");
                                 #endregion
-                                #region 授權成功新增推播訊息
+                                #region 新增推播訊息
                                 string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0);
                                 SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
                                 {
@@ -295,7 +296,7 @@ namespace WebAPI.Controllers
                                 };
                                 commonService.sp_InsPersonNotification(input_Notification, ref error);
                                 trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
-                                trace.FlowList.Add("授權成功新增推播訊息");
+                                trace.FlowList.Add("新增推播訊息");
                                 #endregion
                             }
                             #endregion
