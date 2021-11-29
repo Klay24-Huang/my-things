@@ -375,7 +375,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 預授權機制
-            if (flag && spOut.haveCar == 1 && (ProjType == 0 || ProjType == 3))
+            if (flag && spOut.haveCar == 1 &&(ProjType == 0 || ProjType == 3))
             {
                 try
                 {
@@ -383,40 +383,51 @@ namespace WebAPI.Controllers
                     string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
                     if (!notHandle.Contains(apiInput.ProjID))
                     {
-                        #region 計算預授權金額
+                        #region 計算預授權金
                         int preAuthAmt = 0;
                         bool canAuth = false;
-                        bool authflag = false;
-                        if (ProjType == 0)
+                        bool authflag = false;           
+                        SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);                        
+                        EstimateData estimateData = new EstimateData()
                         {
-                            preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, EDate, LogID, lstHoliday, billCommon);
+                            ProjID = orderData.ProjID,
+                            SD = orderData.SD,
+                            ED = orderData.ED,
+                            CarNo = orderData.CarNo,
+                            CarTypeGroupCode = orderData.CarTypeGroupCode,
+                            WeekdayPrice = orderData.PRICE,
+                            HoildayPrice = orderData.PRICE_H,
+                            Insurance = apiInput.Insurance,
+                            InsurancePerHours = orderData.InsurancePerHours,
+                            ProjType = orderData.ProjType
+                        };
+
+                        if (ProjType == 0)
+                        {                         
                             //同站取車前6小時後預約立即授權
                             DateTime checkDate = SDate.AddHours(-6);
                             canAuth = DateTime.Compare(DateTime.Now, checkDate) >= 0 ? true : false;
                         }
                         else if (ProjType == 3)
                         {
-                            int triaHour = 6;  //路邊預收6小時授權金
-                            int dayMaxHour = 10;
-                            DateTime trialDate = SDate.AddHours(triaHour);
-                            InsurancePurePrice = (apiInput.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(SDate, trialDate, InsurancePerHours * dayMaxHour, InsurancePerHours * dayMaxHour, lstHoliday)) : 0;
-                            price = billCommon.CarRentCompute(SDate, trialDate, priceBase.PRICE, priceBase.PRICE_H, dayMaxHour, lstHoliday);
-                            preAuthAmt = GetEsimateAuthAmt(price, InsurancePurePrice, apiInput.ProjID, CarType, SDate, trialDate, LogID, lstHoliday, billCommon);
                             canAuth = true;
+                            int triaHour = 6;  //路邊預收6小時授權金
+                            estimateData.ED = SDate.AddHours(triaHour); 
                         }
+                   
+                        var estimateAmt = commonService.EstimatePreAuthAmt(estimateData);
 
                         //需扣掉春節訂金
-                        SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);
-                        preAuthAmt = orderData.PreAuthAmt == 0 ? preAuthAmt : preAuthAmt - orderData.PreAuthAmt;
+                        preAuthAmt = orderData.PreAuthAmt == 0 ? estimateAmt : estimateAmt - orderData.PreAuthAmt;
 
-                        trace.traceAdd("GetEsimateAuthAmt", new { canAuth, preAuthAmt, apiInput.Insurance, InsurancePurePrice, price });
-                        trace.FlowList.Add("計算預授權金額");
+                        trace.traceAdd("GetEsimateAuthAmt", new { canAuth, estimateData, apiInput.Insurance, preAuthAmt });
+                        trace.FlowList.Add("計算預授權金");
 
                         #endregion
-                        #region 符合立即授權OR寫入預授權供排程呼叫
+                        #region 後續流程
                         if (preAuthAmt > 0)
                         {
-                            #region 立即授權
+                            #region 刷卡授權
                             if (canAuth)
                             {
                                 var AuthInput = new IFN_CreditAuthRequest
@@ -434,7 +445,7 @@ namespace WebAPI.Controllers
                                 authflag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
 
                                 trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, errCode });
-                                trace.FlowList.Add("立即授權");
+                                trace.FlowList.Add("刷卡授權");
                             }
                             #endregion
                             #region 寫入預授權
@@ -497,7 +508,7 @@ namespace WebAPI.Controllers
                                 };
                                 flag = commonService.sp_BookingCancel(input_BookingCancel, ref errCode);
 
-                                trace.traceAdd("sp_InsPersonNotification", new { input_BookingCancel, errCode });
+                                trace.traceAdd("sp_BookingCancel", new { input_BookingCancel, errCode });
                                 trace.FlowList.Add("授權失敗取消訂單");
 
                                 if (flag)
@@ -631,27 +642,8 @@ namespace WebAPI.Controllers
             return re;
         }
         #endregion
-
+    
         #region 計算預授權金額
-        /// <summary>
-        /// 計算預授權金額
-        /// </summary>
-        /// <param name="price">租金</param>
-        /// <param name="InsurancePurePrice">安心服務費用</param>
-        /// <param name="ProjID">專案代號</param>
-        /// <param name="CarType">車型</param>
-        /// <param name="SDate">起日</param>
-        /// <param name="EDate">訖日</param>
-        /// <param name="LogID"></param>
-        /// <param name="lstHoliday">假日清單</param>
-        /// <param name="billCommon">計費公用程式</param>
-        /// <returns></returns>
-        private int GetEsimateAuthAmt(int price, int InsurancePurePrice, string ProjID, string CarType, DateTime SDate, DateTime EDate, long LogID, List<Holiday> lstHoliday, BillCommon billCommon)
-        {
-            float MilUnit = billCommon.GetMilageBase(ProjID, CarType, SDate, EDate, LogID);
-            int MilagePrice = Convert.ToInt32(billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday));
-            return price + InsurancePurePrice + MilagePrice; //(租金+安心服務+里程費)
-        }
         #endregion
     }
 }
