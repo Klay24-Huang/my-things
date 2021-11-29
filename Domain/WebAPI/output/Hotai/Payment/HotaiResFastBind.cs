@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
+
 
 namespace Domain.WebAPI.output.Hotai.Payment
 {
     public class HotaiResFastBind
     {
         public string sessionId { get; set; }
-        public string encryptData { get; set; }
+        [JsonProperty(PropertyName = "encryptData")]
+        public string EncryptData { get; set; }
     }
 }

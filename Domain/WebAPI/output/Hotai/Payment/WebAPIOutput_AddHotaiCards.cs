@@ -6,7 +6,9 @@ namespace Domain.WebAPI.output.Hotai.Payment
 {
     public class WebAPIOutput_AddHotaiCards
     {
-        public HotaiResAddCard PostData { get; set; }
+        public HotaiResAddCard ResponseData { get; set; }
+
+        public HotaiResReqJsonPwd PostData { get; set; }
 
         public string GotoUrl { get; set; }
 

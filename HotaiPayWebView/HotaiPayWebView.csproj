@@ -129,9 +129,12 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HotaiPayController.cs" />
+    <Compile Include="Controllers\umekoTestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper\HtmlOutputExtensions.cs" />
+    <Compile Include="Models\UmekoTestViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\LoginRepository.cs" />
   </ItemGroup>
@@ -173,6 +176,7 @@
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
     <Content Include="Scripts\HotaiPayJS\bootstrap.js" />
     <Content Include="Scripts\HotaiPayJS\main.js" />
+    <Content Include="Scripts\HotaiPayJS\PostAndGoto.js" />
     <Content Include="Scripts\HotaiPayJS\sweetalert.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -217,10 +221,11 @@
     <Content Include="Views\HotaiPay\RegisterSuccess.cshtml" />
     <Content Include="Views\HotaiPay\RegisterFail.cshtml" />
     <Content Include="Views\HotaiPay\RegisterSuccessBindFail.cshtml" />
+    <Content Include="Views\umekoTest\Index.cshtml" />
+    <Content Include="Views\umekoTest\GetList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

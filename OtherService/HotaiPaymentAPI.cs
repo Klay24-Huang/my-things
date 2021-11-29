@@ -51,6 +51,7 @@ namespace OtherService
 		/// <returns></returns>
 		public bool AddCard(WebAPIInput_AddCard input, ref WebAPIOutput_AddHotaiCards output)
 		{
+			output.PostData = new HotaiResReqJsonPwd();
 			logger.Info("AddCard init");
 			var Body = new Body_AddCard
 			{
@@ -66,7 +67,8 @@ namespace OtherService
 			{
 				output.Succ = apiResult.Succ;
 				output.GotoUrl = _bindCardURL;
-				output.PostData = apiResult.Data?.Data;
+				output.ResponseData = apiResult.Data?.Data;
+				output.PostData.reqjsonpwd = apiResult.Data?.Data?.reqjsonpwd;
 			}
 
 			logger.Info($"AddCard output {JsonConvert.SerializeObject(output)}");
@@ -129,7 +131,7 @@ namespace OtherService
 				ProdCode = input.ProdCode
 			};
 
-			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResCreditCardPay>, Body_CreditCardPay>(Body, "POST", "/creditcard/pay/json", input.AccessToken);
+			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResReqJsonPwd>, Body_CreditCardPay>(Body, "POST", "/creditcard/pay/json", input.AccessToken);
 			var reqjsonpwd = "";
 
 			if (apiResult.Succ)
@@ -214,7 +216,7 @@ namespace OtherService
 
 		private WebHeaderCollection SetRequestHeader(string access_token)
 		{
-			string AppId = ConfigurationManager.AppSettings["HotaiAppId"].ToString();
+			string AppId = configManager.GetKey("HotaiAppId");
 
 		    var header = new WebHeaderCollection();
 			header.Add("appid", AppId);
