@@ -226,12 +226,13 @@ namespace WebAPI.Controllers
                                     InsurancePerHours = orderData.InsurancePerHours,
                                     ProjType = orderData.ProjType
                                 };
-                                int estimateAmt = commonService.EstimatePreAuthAmt(estimateData);
-                                preAuthAmt = estimateAmt - orderData.PreAuthAmt;
+                                EstimateDetail estimateDetail;
+                                commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
+                                preAuthAmt = estimateDetail.estimateAmt - orderData.PreAuthAmt;
 
-                                trace.traceAdd("GetEsimateAuthAmt", new {apiInput.Insurance, apiInput.ED, preAuthAmt, estimateData});
+                                trace.traceAdd("GetEsimateAuthAmt", new {  estimateData, estimateDetail, preAuthAmt });
                                 trace.FlowList.Add("計算預授權金");
-                            }                      
+                            }
                         }
 
                         #endregion

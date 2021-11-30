@@ -229,6 +229,7 @@ namespace WebAPI.Controllers
                         double extendHour = StopTime.Subtract(orderInfo.ED).TotalHours;
                         //扣除預授權金額註記
                         bool deduct = false;
+                        var estimateDetail = new EstimateDetail();
                         //首次延長
                         if (orderInfo.ExtendTimes == 0)
                         {
@@ -284,11 +285,12 @@ namespace WebAPI.Controllers
 
                         if (canAuth)
                         {
-                            int authAmt = commonService.EstimatePreAuthAmt(estimateData);
-                            preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? authAmt - orderInfo.PreAuthAmt : authAmt) : authAmt;
+                            EstimateDetail outData;
+                            commonService.EstimatePreAuthAmt(estimateData, out outData);
+                            preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? outData.estimateAmt - orderInfo.PreAuthAmt : outData.estimateAmt) : outData.estimateAmt;
+                            estimateDetail = outData;
                         }
-
-                        trace.traceAdd("EstimatePreAuthAmt", new { canAuth, oriHour, extendHour, preAuthAmt, estimateData });
+                        trace.traceAdd("EstimatePreAuthAmt", new { canAuth, oriHour, extendHour, estimateData, estimateDetail, preAuthAmt });
                         trace.FlowList.Add("計算預授權金");
                     }
                     #endregion
