@@ -41,7 +41,6 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
-        private float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
 
         CommonFunc baseVerify { get; set; }
 
@@ -334,7 +333,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 預授權機制
-            if (flag && spOut.haveCar == 1 &&(ProjType == 0 || ProjType == 3))
+            if (flag && spOut.haveCar == 1 && (ProjType == 0 || ProjType == 3))
             {
                 try
                 {
@@ -345,8 +344,8 @@ namespace WebAPI.Controllers
                         #region 計算預授權金
                         int preAuthAmt = 0;
                         bool canAuth = false;
-                        bool authflag = false;           
-                        SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);                        
+                        bool authflag = false;
+                        SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);
                         EstimateData estimateData = new EstimateData()
                         {
                             ProjID = orderData.ProjID,
@@ -362,7 +361,7 @@ namespace WebAPI.Controllers
                         };
 
                         if (ProjType == 0)
-                        {                         
+                        {
                             //同站取車前6小時後預約立即授權
                             DateTime checkDate = SDate.AddHours(-6);
                             canAuth = DateTime.Compare(DateTime.Now, checkDate) >= 0 ? true : false;
@@ -371,15 +370,15 @@ namespace WebAPI.Controllers
                         {
                             canAuth = true;
                             int triaHour = 6;  //路邊預收6小時授權金
-                            estimateData.ED = SDate.AddHours(triaHour); 
+                            estimateData.ED = SDate.AddHours(triaHour);
                         }
-                   
-                        var estimateAmt = commonService.EstimatePreAuthAmt(estimateData);
+                        EstimateDetail estimateDetail;
+                        commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
 
                         //需扣掉春節訂金
-                        preAuthAmt = orderData.PreAuthAmt == 0 ? estimateAmt : estimateAmt - orderData.PreAuthAmt;
+                        preAuthAmt = orderData.PreAuthAmt == 0 ? estimateDetail.estimateAmt : estimateDetail.estimateAmt - orderData.PreAuthAmt;
 
-                        trace.traceAdd("GetEsimateAuthAmt", new { canAuth, estimateData, apiInput.Insurance, preAuthAmt });
+                        trace.traceAdd("GetEsimateAuthAmt", new { canAuth, estimateData, estimateDetail, preAuthAmt });
                         trace.FlowList.Add("計算預授權金");
 
                         #endregion
