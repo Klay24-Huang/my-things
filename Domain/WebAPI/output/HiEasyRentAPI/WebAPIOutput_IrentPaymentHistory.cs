@@ -8,7 +8,7 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
 {
     public class WebAPIOutput_IrentPaymentHistory
     {
-        public bool Result { set; get; }
+        public bool Result { set; get; }//
         public string RtnCode { set; get; }
         public string Message { set; get; }
         public WebAPIOutput_NPR390QueryData3[] Data { set; get; }
