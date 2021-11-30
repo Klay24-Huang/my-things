@@ -451,6 +451,101 @@ namespace OtherService
             return flag;
         }
 
+        /// <summary>
+        /// 和泰手動綁卡
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool DoAddCard(IFN_HotaiAddCard input,ref OFN_HotaiAddCard output, ref string errCode)
+        {
+            logger.Info($"DoAddCard | start | INPUT : {JsonConvert.SerializeObject(input)}");
+            bool flag = true;
+            HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
+            output.postData = new HotaiResReqJsonPwd();
+            
+            //1.取得會員Token
+            HotaiToken hotaiToken = new HotaiToken();
+            flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
+            logger.Info($"DoAddCard |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
+
+
+            //2.向和泰取得新增卡片請求密文
+            WebAPIOutput_AddHotaiCards apiOutput = new WebAPIOutput_AddHotaiCards();
+            if (flag)
+            {
+                var apiInput = new WebAPIInput_AddCard
+                {
+                    AccessToken = hotaiToken.AccessToken,
+                    RedirectURL = input.RedirectURL
+                    
+                };
+                flag = PaymentAPI.AddCard(apiInput, ref apiOutput);
+
+                logger.Info($"DoAddCard | GetAddCardPWD | Result:{ flag } ; errCode:{errCode} | apiOutput : {JsonConvert.SerializeObject(apiOutput)}");
+            }
+           
+
+            if(flag)
+            {
+                output.postData = apiOutput?.PostData;
+                output.gotoUrl = apiOutput.GotoUrl;
+            }
+            output.succ = flag;
+
+            return flag;
+        }
+
+
+        /// <summary>
+        /// 和泰中信卡快速綁定
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool DoFastAddCard(IFN_HotaiFastAddCard input, ref OFN_HotaiFastAddCard output, ref string errCode)
+        {
+            logger.Info($"DoFastAddCard | start | INPUT : {JsonConvert.SerializeObject(input)}");
+            bool flag = true;
+            HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
+            output.postData = new HotaiResFastBind();
+
+            //1.取得會員Token
+            HotaiToken hotaiToken = new HotaiToken();
+            flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
+            logger.Info($"DoAddCard |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
+
+
+            //2.向和泰取得新增卡片請求密文
+            WebAPIOutput_FastAddHotaiCard apiOutput = new WebAPIOutput_FastAddHotaiCard();
+            if (flag)
+            {
+                var apiInput = new WebAPIInput_FastAddCard
+                {
+                    AccessToken = hotaiToken.AccessToken,
+                    RedirectURL = input.RedirectURL,
+                    IDNO = input.CTBCIDNO,
+                    Birthday = input.Birthday
+                    
+                };
+
+                flag = PaymentAPI.FastAddCard(apiInput, ref apiOutput);
+
+                logger.Info($"DoFastAddCard | GetFastAddCardPWD | Result:{ flag } ; errCode:{errCode} | apiOutput : {JsonConvert.SerializeObject(apiOutput)}");
+            }
+
+            if (flag)
+            {
+                output.postData = apiOutput?.PostData;
+                output.gotoUrl = apiOutput.GotoUrl;
+            }
+            output.succ = flag;
+
+            return flag;
+        }
+
         private HotaiCardInfo setHotaiCardInfo(HotaiCardInfoOriginal input,string defaultCardToken)
         {
             return new HotaiCardInfo

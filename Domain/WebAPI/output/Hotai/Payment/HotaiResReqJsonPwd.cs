@@ -5,7 +5,7 @@ using System.Text;
 namespace Domain.WebAPI.output.Hotai.Payment
 {
     
-    public class HotaiResCreditCardPay
+    public class HotaiResReqJsonPwd
     {
         public string reqjsonpwd { get; set; }
     }
