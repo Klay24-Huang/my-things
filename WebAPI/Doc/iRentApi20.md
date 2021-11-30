@@ -7219,15 +7219,15 @@
 
 * HotaiListObj 回傳參數說明
 
-| 參數名稱    | 參數說明                  |  型態  | 範例         |
-| ----------- | ------------------------- | :----: | ------------ |
-| MemberOneID | 和泰會員OneID             | string | (範例待補充) |
-| CardToken   | 信用卡Token               | string | (範例待補充) |
-| CardName    | 信用卡自訂名稱            | string | (範例待補充) |
-| CardType    | 發卡機構(VISA/MASTER/JCB) | string | (範例待補充) |
-| BankDesc    | 發卡銀行                  | string | (範例待補充) |
-| CardNumber  | 卡號(隱碼)                | string | (範例待補充) |
-| IsDefault   | 是否為預設卡(0:否/1:是)   |  int   | (範例待補充) |
+| 參數名稱    | 參數說明                  |  型態  | 範例                                 |
+| ----------- | ------------------------- | :----: | ------------------------------------ |
+| MemberOneID | 和泰會員OneID             | string | 0064fb4f-8250-4690-954b-2ba94862606b |
+| CardToken   | 信用卡Token               | string | 1385                                 |
+| CardName    | 信用卡自訂名稱            | string |                                      |
+| CardType    | 發卡機構(VISA/MASTER/JCB) | string | Visa                                 |
+| BankDesc    | 發卡銀行                  | string | 國外卡                               |
+| CardNumber  | 卡號(隱碼)                | string | ****-****-****-5278                  |
+| IsDefault   | 是否為預設卡(0:否/1:是)   |  int   | 1                                    |
 
 * Output範例
 
@@ -7257,8 +7257,18 @@
         "CARRIERID": "/N37H2JD",
         "NPOBAN": "",
         "AutoStored": 0,
-        "HasHotaiPay": 0,
-        "HotaiListObj": []
+        "HasHotaiPay": 1,
+        "HotaiListObj": [
+            {
+                "MemberOneID": "0064fb4f-8250-4690-954b-2ba94862606b",
+                "CardToken": "1385",
+                "CardName": "",
+                "CardType": "Visa",
+                "BankDesc": "國外卡",
+                "CardNumber": "****-****-****-5278",
+                "IsDefault": 1
+            }
+        ]
     }
 }
 ```
