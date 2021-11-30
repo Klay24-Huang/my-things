@@ -71,6 +71,8 @@ namespace HotaiPayWebView.Controllers
                             }
                             else
                             {
+
+                                //RedirectToAction("Action", "View");
                                 return View("BindCardFailed");
                             }
                         }

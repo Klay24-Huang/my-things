@@ -3,8 +3,11 @@ using Domain.SP.Input.Hotai;
 using Domain.SP.Output;
 using Domain.SP.Output.Hotai;
 using Domain.TB.Hotai;
+using Domain.WebAPI.Input.CTBCPOS;
 using Domain.WebAPI.Input.Hotai.Member;
 using Domain.WebAPI.Input.Hotai.Payment;
+using Domain.WebAPI.output;
+using Domain.WebAPI.output.CTBCPOS;
 using Domain.WebAPI.output.Hotai.Member;
 using Domain.WebAPI.output.Hotai.Payment;
 using Newtonsoft.Json;
@@ -21,6 +24,9 @@ namespace OtherService
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"]?.ToString()??"";
+        private static ConfigManager configManager = new ConfigManager("hotaipayment");
+        private string merID = configManager.GetKey("CTBCMerID");
+        private string terMinnalID = configManager.GetKey("CTBCTerminalID");
         HotaiMemberAPI hotaiMemberAPI = new HotaiMemberAPI();
         /// <summary>
         /// 取得和泰卡片清單
@@ -168,6 +174,8 @@ namespace OtherService
             bool flag = true;
             OFN_HotaiCreditCardList hotaiCards = new OFN_HotaiCreditCardList();
 
+            //flag = int.TryParse(input.CardToken, out var findCardToken);
+
             var objGetCards = new IFN_QueryCardList
             {
                 IDNO = input.IDNO,
@@ -175,8 +183,10 @@ namespace OtherService
                 PRGName = input.PRGName,
                 insUser = input.insUser
             };
-
-            flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
+            if(flag)
+            {
+                flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
+            }
             if (flag)
             {
                 card = hotaiCards.CreditCards.Find(p => p.CardToken == input.CardToken);
@@ -545,6 +555,71 @@ namespace OtherService
 
             return flag;
         }
+        
+        /// <summary>
+        /// 請求授權
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool DoReqPaymentAuth(IFN_HotaiPaymentAuth input, ref string errCode)
+        {
+            logger.Info($"DoReqPaymentAuth | start | INPUT : {JsonConvert.SerializeObject(input)}");
+            var flag = true;
+           
+            //1.取得會員Token
+            HotaiToken hotaiToken = new HotaiToken();
+            flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
+            logger.Info($"DoReqPaymentAuth |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
+
+            HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
+            if (flag)
+            {
+                //寫入SPInput_InsTradeForClose
+                //new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);
+
+
+                var apiInput = new WebAPIInput_CreditCardPay()
+                {
+                    AccessToken = hotaiToken.AccessToken,
+                    CardToken = input.CardToken,
+                    MerID = merID,
+                    TerMinnalID = terMinnalID,
+                    Lidm = input.Transaction_no,
+                    PurchAmt = input.Amount,
+                    TxType = "0",
+                    AutoCap = "1",
+                    RedirectUrl = "",
+                    //OrderDesc = "",
+                    //Pid = "",
+                    //Birthday = "",
+                    //Customize = "",
+                    //MerchantName = "",
+                    //NumberOfPay = 0,
+                    //PromoCode = "",
+                    //ProdCode = ""
+                };
+                var apiOutput = new WebAPIOutput_CreditCardPay();
+
+                flag = PaymentAPI.CreaditCardPay(apiInput,ref apiOutput);
+
+                if(flag)
+                {
+                   
+                    var decryptInput = new WebAPIInput_DecryptCTBCHtml()
+                    {
+                        AccessToken = hotaiToken.AccessToken,
+                        PageText = apiOutput.PageText
+
+                    };
+                    var decryptOut = new WebAPIOutput_DecryptCTBCHtml();
+                    flag = PaymentAPI.DecryptCTBCHtml(decryptInput,ref decryptOut);
+
+                    var s = decryptOut.FullString;
+                }
+            }
+            return flag;
+        }
 
         private HotaiCardInfo setHotaiCardInfo(HotaiCardInfoOriginal input,string defaultCardToken)
         {
@@ -571,7 +646,7 @@ namespace OtherService
 
             creditCards.Add(new HotaiCardInfo
             {
-                CardToken = "1385",
+                CardToken = 1385.ToString(),
                 CardName = "",
                 CardType = "Visa",
                 BankDesc = "國外卡",
@@ -582,5 +657,16 @@ namespace OtherService
             return creditCards;
         }
 
+
+        public bool DoQueryCTBCTransaction(WebQPIInput_InquiryByLidm input, out WebAPIOutput_InquiryByLidm output,ref string errCode)
+        {
+            output = new WebAPIOutput_InquiryByLidm();
+
+            CTBCPosAPI posAPI = new CTBCPosAPI();
+
+            var flag = posAPI.QueryCTBCTransaction(input,out output);
+
+            return flag;
+        }
     }
 }

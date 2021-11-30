@@ -11,7 +11,9 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using WebCommon;
 
 namespace OtherService
@@ -26,11 +28,13 @@ namespace OtherService
 		private string _fastBind = configManager.GetKey("CTBCFastBind");//ConfigurationManager.AppSettings["CTBCFastBind"].ToString();
 		private byte[] Key = Convert.FromBase64String(configManager.GetKey("HotaiPaymentKey"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
 		private byte[] IV = Convert.FromBase64String(configManager.GetKey("HotaiPaymentIV"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
+		
 
 		public bool GetHotaiCardList(WebAPIInput_GetCreditCards input, ref WebAPIOutput_GetCreditCards output)
 		{
-			logger.Info("GetHotaiCardList init");
+			
 			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<List<HotaiCardInfoOriginal>>, object>(null, "GET", "/creditcard/card", input.AccessToken);
+			logger.Info($"GetHotaiCardList apiResult {JsonConvert.SerializeObject(apiResult)}");
 
 			List<HotaiCardInfoOriginal> hotaiCards = apiResult.Succ ?
 				apiResult.Data.Data?.Where(t => t.IsAvailable && !t.IsOverwrite).ToList() :
@@ -40,6 +44,7 @@ namespace OtherService
 			output.CardCount = hotaiCards.Count;
 
 			logger.Info($"hotaiCards:{JsonConvert.SerializeObject(hotaiCards)}");
+			
 			return output.CardCount > 0 ? true : false;
 		}
 
@@ -51,8 +56,8 @@ namespace OtherService
 		/// <returns></returns>
 		public bool AddCard(WebAPIInput_AddCard input, ref WebAPIOutput_AddHotaiCards output)
 		{
+			//自訂物件 務必先初始化
 			output.PostData = new HotaiResReqJsonPwd();
-			logger.Info("AddCard init");
 			var Body = new Body_AddCard
 			{
 				RedirectURL = input.RedirectURL
@@ -60,7 +65,6 @@ namespace OtherService
 
 			logger.Info($"AddCard requset body {JsonConvert.SerializeObject(Body)}");
 			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResAddCard>, Body_AddCard>(Body, "POST", "/creditcard/add", input.AccessToken);
-
 
 			logger.Info($"AddCard apiResult {JsonConvert.SerializeObject(apiResult)}");
 			if (apiResult.Succ)
@@ -109,42 +113,97 @@ namespace OtherService
 		/// 信用卡授權請求
 		/// </summary>
 		/// <returns></returns>
-		public bool CreaditCardPay(WebAPIInput_CreditCardPay input)
+		public bool CreaditCardPay(WebAPIInput_CreditCardPay input, ref WebAPIOutput_CreditCardPay output)
 		{
 			var Body = new Body_CreditCardPay
 			{
-				TokenID = input.TokenID,
-				MerID = input.MerID,
-				TerMinnalID = input.TerMinnalID,
+				TokenID = int.Parse(input.CardToken),
+				//MerID = input.MerID,
+				//TerMinnalID = input.TerMinnalID,
 				Lidm = input.Lidm,
 				PurchAmt = input.PurchAmt,
 				TxType = input.TxType,
 				AutoCap = input.AutoCap,
 				RedirectUrl = input.RedirectUrl,
-				OrderDesc = input.OrderDesc,
-				Pid = input.Pid,
-				Birthday = input.Birthday,
-				Customize = input.Customize,
-				MerchantName = input.MerchantName,
-				NumberOfPay = input.NumberOfPay,
-				PromoCode = input.PromoCode,
+                OrderDesc = input.OrderDesc,
+                Pid = input.Pid,
+                Birthday = input.Birthday,
+                Customize = input.Customize,
+                MerchantName = input.MerchantName,
+                NumberOfPay = input.NumberOfPay,
+                PromoCode = input.PromoCode,
 				ProdCode = input.ProdCode
 			};
+			
+			var jsonSetting = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+			logger.Info($"Body_CreditCardPay requset body {JsonConvert.SerializeObject(Body, Formatting.Indented, jsonSetting)}");
 
 			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResReqJsonPwd>, Body_CreditCardPay>(Body, "POST", "/creditcard/pay/json", input.AccessToken);
-			var reqjsonpwd = "";
 
+			var reqjsonpwd = "";
+			logger.Info($"Body_CreditCardPay apiResult {JsonConvert.SerializeObject(apiResult)}");
 			if (apiResult.Succ)
 			{
 				reqjsonpwd = apiResult.Data?.Data?.reqjsonpwd ?? "";
 			}
+			if(string.IsNullOrWhiteSpace(reqjsonpwd))
+            {
+				apiResult.Succ = false;
+			}
 
-			//var CTBCResult = new PostJsonResultInfo();
-			//if (!string.IsNullOrWhiteSpace(reqjsonpwd))
-			//	CTBCResult = ApiPost.DoApiPostForm(_bindCardURL, reqjsonpwd, "POSTk", null);
-			
+			if(apiResult.Succ)
+            {
+				var CTBCResult = new PostJsonResultInfo();
+
+				logger.Info($"Body_CreditCardPay 中信取授權 前 {JsonConvert.SerializeObject(apiResult.Data.Data)}");
+
+				CTBCResult = ApiPost.DoApiPostForm<HotaiResReqJsonPwd>(_bindCardURL, apiResult.Data.Data, "POST", null);
+
+				logger.Info($"Body_CreditCardPay CTBCResult {JsonConvert.SerializeObject(CTBCResult)}");
+
+				output.ProtocolStatusCode = CTBCResult.ProtocolStatusCode;
+				if(output.ProtocolStatusCode == 200)
+				{ 
+					output.PageText = CTBCResult.ResponseData;
+					output.PageTitle = GetCTBCPageTitle(CTBCResult.ResponseData);
+				}
+				else
+                {
+					apiResult.Succ = false;
+				}
+			}
+
 			return apiResult.Succ;
 		}
+
+
+		public bool DecryptCTBCHtml(WebAPIInput_DecryptCTBCHtml input, ref WebAPIOutput_DecryptCTBCHtml output)
+        {
+
+			var Body = new Body_CreditCardDecrypt
+			{
+				Data = Uri.EscapeUriString(input.PageText)
+				//WebUtility.UrlEncode()
+
+				//HttpUtility.UrlPathEncode(input.PageText)
+			};
+
+			logger.Info($"Body_DecryptCTBCHtml requset body {JsonConvert.SerializeObject(Body)}");
+			
+			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<String>, Body_CreditCardDecrypt>(Body, "POST", "/creditcard/decrypt/html", input.AccessToken);
+			
+			logger.Info($"Body_DecryptCTBCHtml apiResult {JsonConvert.SerializeObject(apiResult)}");
+
+			if(apiResult.Succ)
+            {
+				output.FullString = apiResult.Data.Data;
+
+			}
+
+			return true;
+
+		}
+
 		/// <summary>
 		/// Hotai金流
 		/// </summary>
@@ -167,7 +226,9 @@ namespace OtherService
 
 			var header = SetRequestHeader(access_token);
 
-			var body = Body == null ? "" : JsonConvert.SerializeObject(Body);
+
+			var jsonSetting = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+			var body = Body == null ? "" : JsonConvert.SerializeObject(Body, Formatting.Indented,jsonSetting);
 
 			logger.Info($@"Request Info--requestUrl:{requestUrl}
 									   --method:{Method}
@@ -189,12 +250,18 @@ namespace OtherService
 			logger.Info($"response Info -- {JsonConvert.SerializeObject(result)}");
 			if (result.Succ)
 			{
-				var a = HotaiReponseDncrypt(result.ResponseData);
+				var reponseDncrypt = HotaiReponseDncrypt(result.ResponseData);
 
-				valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(a);
+				valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(reponseDncrypt);
 			}
 			else
 			{
+				if(result.ProtocolStatusCode == 400 || result.ProtocolStatusCode == 500)
+                {
+					var reponseDncrypt = HotaiReponseDncrypt(result.ResponseData);
+
+					valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(reponseDncrypt);
+				}
 				if (result.ProtocolStatusCode == 401)
 					valueTuple.Data = JsonConvert.DeserializeObject<TResponse>(result.ResponseData);
 			}
@@ -225,7 +292,7 @@ namespace OtherService
 			return header;
 
 		}
-
+		
 		private string HotaiBodyEncrypt(string Body)
         {
 			return string.IsNullOrWhiteSpace(Body) ? "" : AESEncrypt.AES128Encrypt(Body,Key, IV,Encoding.UTF8);
@@ -237,7 +304,21 @@ namespace OtherService
 			return string.IsNullOrWhiteSpace(encryptData) ? "" : AESEncrypt.AES128Decrypt(encryptData, Key, IV, Encoding.UTF8);
 		}
 
+		private string GetCTBCPageTitle(string input)
+        {
+			string MatchPattern = @"<title>(?'title'.*)</title>";
+			
+			var match = Regex.Match(input, MatchPattern);
+			
+			string title = "";
+			if (match.Success)
+			{
+				title = match.Groups["title"].Value;
+			}
 
+			return title;
+
+		}
 
 	}
 }

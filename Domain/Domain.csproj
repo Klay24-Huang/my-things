@@ -51,6 +51,7 @@
     <Compile Include="Flow\Hotai\Class1.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiAddCard.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiFastAddCard.cs" />
+    <Compile Include="Flow\Hotai\IFN_HotaiPaymentAuth.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiPaymenyBase.cs" />
     <Compile Include="Flow\Hotai\IFN_QueryDefaultCard.cs" />
     <Compile Include="Flow\Hotai\IFN_QueryCardList.cs" />
@@ -665,6 +666,7 @@
     <Compile Include="WebAPI\Input\Hotai\Payment\HotaiPCRequestBody.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_AddCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CardFbinding.cs" />
+    <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CreditCardDecrypt.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CreditCardPay.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_AddCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_CreditCardPay.cs" />
