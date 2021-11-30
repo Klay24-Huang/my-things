@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using WebCommon;
 using NLog;
 using WebCommon;
+using Domain.Flow.Hotai;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -228,11 +229,8 @@ namespace HotaiPayWebView.Controllers
         public ActionResult NoCreditCard(string HCToken)
         {
             HotaiMemberAPI hotaiMemAPI = new HotaiMemberAPI();
-            HotaiPaymentAPI hotaiPayAPI = new HotaiPaymentAPI();
             bool flag = false;
             string errCode = "";
-            WebAPIInput_GetCreditCards apiInput = new WebAPIInput_GetCreditCards();//TODO不用指定值?
-            WebAPIOutput_GetCreditCards apioutput = new WebAPIOutput_GetCreditCards();
 
             flag = string.IsNullOrWhiteSpace(HCToken);
             //token檢核
@@ -244,10 +242,15 @@ namespace HotaiPayWebView.Controllers
             }
             WebAPIInput_GetCreditCards CardsListinput = new WebAPIInput_GetCreditCards();
             WebAPIOutput_GetCreditCards CardsListoutput = new WebAPIOutput_GetCreditCards();
-            flag = hotaiPayAPI.GetHotaiCardList(CardsListinput, ref CardsListoutput);
+            //flag = hotaiPayAPI.GetHotaiCardList(CardsListinput, ref CardsListoutput);
             if (!flag)
             {
+                HotaipayService Hp = new HotaipayService();
+                IFN_QueryCardList input = new IFN_QueryCardList();
+                OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList()
+                //input.IDNO = "";
                 //TODO 取得綁卡清單
+                flag = Hp.DoQueryCardList(input, ref output, ref errCode);
                 //TODO 待確認是callAPI 失敗還是API回傳失敗
             }
             else
