@@ -165,7 +165,7 @@ namespace WebAPI.Service
                     {
                         var re_db = objUti.GetFirstRow<SPOutput_Base>(ds1.Tables[0]);
                         if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
-                            errCode = re_db.ErrorMsg;
+                            errCode = re_db.ErrorCode;
                     }
                 }
 
