@@ -1,6 +1,5 @@
 ﻿using Domain.WebAPI.Input.Hotai.Member;
 using Domain.WebAPI.output.Hotai.Member;
-using HotaiPayWebView.Repository;
 using OtherService;
 using System;
 using System.Collections.Generic;
@@ -9,19 +8,47 @@ using System.Web;
 using System.Web.Mvc;
 using WebCommon;
 using NLog;
+using Reposotory.Implement;
+using System.Configuration;
+using Domain.TB;
 
 namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
+        private static string _accessToken = "";
+        private static string _refreshToken = "";
+
         private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
+        private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
+        private static readonly Dictionary<string,string> errorDic = commonRepository.GetErrorList("").ToLookup(x => x.ErrCode, y => y.ErrMsg).ToDictionary(x => x.Key, y => y.First());
+        static HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
+        private static HashAlgorithmHelper helper = new HashAlgorithmHelper();
         #region 登入頁面
         public ActionResult Login()
         {
             ViewBag.phone = Request.QueryString["phone"];
             TempData["phone"] = Request.QueryString["phone"];
             return View();
+        }
+
+        public void RefreshToken(ref string accessToken,ref string refreshToken)
+        {
+            bool flag = false;
+            WebAPIInput_RefreshToken tokenInput = new WebAPIInput_RefreshToken
+            {
+                access_token = _accessToken,
+                refresh_token = _refreshToken
+            };
+            WebAPIOutput_Token tokenOutput = new WebAPIOutput_Token();
+            string errCode = "";
+            flag = hotaiAPI.DoRefreshToken(tokenInput, ref tokenOutput, ref errCode);
+
+            if (flag)
+            {
+                _accessToken = tokenOutput.access_token;
+                _refreshToken = tokenOutput.refresh_token;
+            }
         }
 
         [HttpPost]
@@ -39,7 +66,7 @@ namespace HotaiPayWebView.Controllers
 
             WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
 
-            HashAlgorithmHelper helper = new HashAlgorithmHelper();
+            
             apiInput.password = helper.ComputeSha256Hash(apiInput.password);
             flag = hotaiAPI.DoSignin(apiInput, ref apioutput, ref errCode);
 
@@ -58,9 +85,9 @@ namespace HotaiPayWebView.Controllers
                         if (!string.IsNullOrEmpty(checkVer.memberBenefitsVersion) || !string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
                         {
                             if (string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
-                                TempData["trems"] += checkVer.memberBenefits;
+                                TempData["terms"] += checkVer.memberBenefits;
                             if (string.IsNullOrEmpty(checkVer.privacyPolicyVersion))
-                                TempData["trems"] += checkVer.privacyPolicy;
+                                TempData["terms"] += checkVer.privacyPolicy;
                             return View("MembershipTerms");
                         }
                         else
@@ -89,7 +116,6 @@ namespace HotaiPayWebView.Controllers
                     this.TempData["MSG"] = "密碼錯誤";
                 }
             }
-            RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
             return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
         }
         #endregion
@@ -108,15 +134,20 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
+        [Route("~/HotaiPay/RegisterStep1")]
         #region 註冊驗證步驟一:手機驗證
         public ActionResult RegisterStep1()
         {
-
+            ViewBag.Phone = TempData["Phone"];
+            ViewBag.OtpCode= TempData["OtpCode"];
+            ViewBag.Alert= TempData["Alert"];
             return View();
         }
+
         [HttpPost]
-        public ActionResult GetOtpCode(string phone)
+        public RedirectResult GetOtpCode(string phone)
         {
+            TempData["Phone"] = phone;
             string errCode = "";
             bool flag = false;
             WebAPIInput_CheckSignup checkSignUp = new WebAPIInput_CheckSignup
@@ -128,8 +159,8 @@ namespace HotaiPayWebView.Controllers
 
             if (checkSignUpOutput.isSignup)
             {
-                ViewBag.Alert = "此帳號已被註冊";
-                return View();
+                TempData["Alert"] = "此帳號已被註冊";
+                return Redirect("RegisterStep1");
             }
             else
             {
@@ -144,18 +175,22 @@ namespace HotaiPayWebView.Controllers
                 flag = hotaiAPI.DoSendSmsOtp(getSMSOTP, ref getSMSOTPoutput, ref errCode);
                 if (flag)
                 {
-                    return View();
+
+                    return Redirect("RegisterStep1");
                 }
                 else
                 {
-                    ViewBag.Alert = "驗證碼傳送失敗，請再試一次";
-                    return View();
+                    TempData["Alert"] = errorDic[errCode];
+
+                    return Redirect("RegisterStep1");
                 }
             }
         }
         [HttpPost]
         public ActionResult CheckOtpCode(string phone, string otpCode)
         {
+           
+
             bool flag = false;
             WebAPIInput_SmsOtpValidation checkSMSOpt = new WebAPIInput_SmsOtpValidation
             {
@@ -169,27 +204,77 @@ namespace HotaiPayWebView.Controllers
 
             if (flag)
             {
-                return View("RegisterStep2");
+                Session["Phone"] = phone;
+                Session["OtpCode"] = otpCode;
+                Session["OtpID"] = checkSMSOptOutput.otpId;
+                return RedirectToAction("RegisterStep2", "~/HotaiPay/RegisterStep2");
             }
             else
             {
-
+                return RedirectToAction("RegisterStep1", "~/HotaiPay/RegisterStep1");
             }
-            return View();
-
+            
         }
         #endregion
 
         #region 註冊驗證步驟二:密碼設定
+        [Route("~/Home/RegisterStep2")]
         public ActionResult RegisterStep2()
         {
+            var phone = Session["Phone"].ToString();
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult DoSignUp(string pwd,string comfirmPwd)
+        {
+            var phone = TempData["Phone"].ToString();
+            var otpID = TempData["OtpID"].ToString();
+            bool flag = false;
+            WebAPIInput_Signup signUp = new WebAPIInput_Signup
+            {
+                account = phone,
+                password = helper.ComputeSha256Hash(pwd),
+                confirmPassword = helper.ComputeSha256Hash(comfirmPwd),
+                otpId = otpID
+            };
+
+            WebAPIOutput_Token getToken = new WebAPIOutput_Token();
+            string errCode = "";
+
+            flag = hotaiAPI.DoSignup(signUp,ref getToken,ref errCode);
+            
+            if (flag)
+            {
+                _accessToken = getToken.access_token;
+                _refreshToken = getToken.refresh_token;
+            }
+            return RedirectToAction("RegisterStep3", "~/HotaiPay/RegisterStep3");
         }
         #endregion
 
         #region 註冊驗證步驟三:會員資料填寫
         public ActionResult RegisterStep3()
         {
+            var phone= TempData["Phone"].ToString();
+
+            return View();
+        }
+        public ActionResult SetSignUpProfile(WebAPIInput_SignupProfile memberProfileInput)
+        {
+            bool flag = false;
+            string errCode = "";
+
+            flag = hotaiAPI.DoSignupProfile(_accessToken, memberProfileInput, ref errCode);
+
+            if (flag)
+            {
+
+            }
+            else
+            {
+
+            }
             return View();
         }
         #endregion
@@ -197,7 +282,7 @@ namespace HotaiPayWebView.Controllers
         #region 綁卡失敗
         public ActionResult BindCardFailed()
         {
-            return View("BindCardFailed");
+            return View();
         }
         #endregion
 
