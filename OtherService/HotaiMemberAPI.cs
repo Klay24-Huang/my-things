@@ -27,15 +27,17 @@ namespace OtherService
     /// </summary>
     public class HotaiMemberAPI
     {
-        private string FrontEndURL = "https://mfe-api-test.hotaimember.com.tw/";
-        private string SingleEntry = "api/app/service";
-        private string BackEndURL = "https://mbe-api-test.hotaimember.com.tw/";
-        private string AppId = "IRAPP";
-        private string AppVersion = "V1.0.0";
-        private string ApiVersion = "V3";
-        private string AppKey = "IbuzwcL+5+sgyxlQnvPNQeYK1M9Ojn2LvLp68TTYYERrdfeeozz/kd1YVKec8271nY+nE9bM0pxEF0tSOvMsXhk9/t4nKQxCUt0nWC110HzPlnQbVh0xDaAQUigy36/T7WWC8FWoa0iytIdMfEm7aXr4jRua8DeEtBVHrugcbZoB8Cz54mOO5yCjHmvT2Q1zvyUoxv6XJUmEoRgpP/GVIneXqsxCJBfyyT3Al2B2eakbLlS5Sd01EhyprYasUaVzFonWV04brybHyxf5cpMO59xwXDfLLGd/OivwwO8mYU8PLlZae4JVI1yUzW7HHw7qsiB7X82cWMG5X6uJCSihqg==";
-        private string Key = "LPT06Y4N99LEKBRP8T0Y8TTBTC9MYRVT";
-        private string IV = "KMZ7FYD1EPISHKY0";
+        private static ConfigManager configManager = new ConfigManager("hotaipayment");
+        private string FrontEndURL = configManager.GetKey("HotaiMemberFrontEndURL");
+        private string SingleEntry = configManager.GetKey("HotaiMemberSingleEntry");
+        private string BackEndURL = configManager.GetKey("HotaiMemberBackEndURL");
+        private string AppId = configManager.GetKey("HotaiAppId");
+        private string AppVersion = configManager.GetKey("HotaiAppVersion");
+        private string ApiVersion = configManager.GetKey("HotaiApiVersion");
+        private string AppKey = configManager.GetKey("HotaiAppKey");
+        private string Key = configManager.GetKey("HotaiKey");
+        private string IV = configManager.GetKey("HotaiIV");
+
         private string CheckSignupURL = "api/signup/check";                                                //註冊檢查  
         private string SendSmsOtpURL = "api/otp/sms";                                                      //發送簡訊OTP
         private string SmsOtpValidationURL = "api/otp/sms-validatation";                                   //簡訊 OTP 驗證
@@ -114,11 +116,11 @@ namespace OtherService
         /// <param name="output"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoRefreshToken(WebAPIInput_RefreshToken input, ref WebAPIOutput_Token output, ref string errCode)
+        public bool DoRefreshToken(WebAPIInput_RefreshToken input, ref WebAPIOutput_Token output, ref string errCode, ref int HttpStatusCode)
         {
             bool flag = false;
             var result = HotaiMemeberApiPost<object, WebAPIInput_RefreshToken>(input, RefreshTokenURL, ref errCode, MethodBase.GetCurrentMethod().Name);
-
+            HttpStatusCode = result.HttpStatusCode;
             if (result.Succ)
             {
                 flag = true;
@@ -177,11 +179,11 @@ namespace OtherService
         /// <param name="token"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoCheckToken(string token, ref string errCode)
+        public bool DoCheckToken(string token, ref string errCode, ref int HttpStatusCode)
         {
             bool flag = false;
             var result = HotaiMemeberApiPost<object, object>(null, CheckTokenURL, ref errCode, MethodBase.GetCurrentMethod().Name, token, "GET");
-
+            HttpStatusCode = result.HttpStatusCode;
             if (result.Succ)
             {
                 flag = true;
@@ -671,11 +673,11 @@ namespace OtherService
             return flag;
         }
 
-        private (bool Succ, string Message, TResponse Data)
+        private (bool Succ, string Message, int HttpStatusCode, TResponse Data)
             HotaiMemeberApiPost<TResponse, TRequest>(TRequest Body, string API, ref string errCode, string funName, string access_token = "", string Action = "POST", string Method = "POST")
         {
-            (bool Succ, string Message, TResponse Data) valueTuple =
-                (false, "", default(TResponse));
+            (bool Succ, string Message, int HttpStatusCode, TResponse Data) valueTuple =
+                (false, "", 0, default(TResponse));
 
             string BaseUrl = FrontEndURL;
             string api = SingleEntry;
@@ -718,6 +720,7 @@ namespace OtherService
                     errCode = "ERR913";
                     valueTuple.Message = result.Message;
                 }
+                valueTuple.HttpStatusCode = result.ProtocolStatusCode;
             }
             catch (Exception ex)
             {
@@ -733,7 +736,7 @@ namespace OtherService
                 UPDTime = DateTime.Now,
                 WebAPIInput = JsonConvert.SerializeObject(Body),
                 WebAPIName = funName,
-                WebAPIOutput = JsonConvert.SerializeObject(valueTuple.Data),
+                WebAPIOutput = JsonConvert.SerializeObject(valueTuple),
                 WebAPIURL = requestUrl
             };
             var flag = true;
@@ -806,7 +809,7 @@ namespace OtherService
                 UPDTime = DateTime.Now,
                 WebAPIInput = JsonConvert.SerializeObject(Body),
                 WebAPIName = funName,
-                WebAPIOutput = JsonConvert.SerializeObject(valueTuple.Data),
+                WebAPIOutput = JsonConvert.SerializeObject(valueTuple),
                 WebAPIURL = requestUrl
             };
             var flag = true;
