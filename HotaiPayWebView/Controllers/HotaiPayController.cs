@@ -312,6 +312,7 @@ namespace HotaiPayWebView.Controllers
         #region 無信用卡列表頁面 
         public ActionResult NoCreditCard(string HCToken)
         {
+            //   /HotaiPay/NoCreditCard
             HotaiMemberAPI hotaiMemAPI = new HotaiMemberAPI();
             bool flag = false;
             string errCode = "";
@@ -319,33 +320,27 @@ namespace HotaiPayWebView.Controllers
             flag = string.IsNullOrWhiteSpace(HCToken);
             //token檢核
             flag = hotaiMemAPI.DoCheckToken(HCToken, ref errCode);
-            if (!flag)
+            /*if (!flag)
             {
                 //TODO Token失效 導URL至登入畫面 請使用者重登
                 return View("Login");
-            }
-            WebAPIInput_GetCreditCards CardsListinput = new WebAPIInput_GetCreditCards();
-            WebAPIOutput_GetCreditCards CardsListoutput = new WebAPIOutput_GetCreditCards();
-            //flag = hotaiPayAPI.GetHotaiCardList(CardsListinput, ref CardsListoutput);
-            if (!flag)
+            }*/
+            HotaiPaymentAPI HPAPI = new HotaiPaymentAPI();
+            HotaipayService HPServices = new HotaipayService();
+            //取得卡片清單
+            IFN_QueryCardList input = new IFN_QueryCardList();
+            OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
+            //設定查詢的IDNO
+            input.IDNO = "F128697972";//測試用資料 上線需更改
+            flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
+            if (flag)
             {
-                HotaipayService Hp = new HotaipayService();
-                IFN_QueryCardList input = new IFN_QueryCardList();
-                OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
-                //input.IDNO = "";
-                //TODO 取得綁卡清單
-                flag = Hp.DoQueryCardList(input, ref output, ref errCode);
-                //TODO 待確認是callAPI 失敗還是API回傳失敗
+                if (output.CreditCards.Count > 0) { //TODO 跳轉卡片清單畫面
+                return View("CreditCardChoose");
+                //call Java Script 調整畫面上資料?
+                }
             }
-            else
-            {
-                //TODO
-                if (CardsListoutput.CardCount > 0)
-                {
-                    return View("CreditCardChoose");
-                    //call Java Script 調整畫面上資料
-
-                }//else 停留在目前畫面(no-creditcard 新增綁卡)
+            else{ //TODO API回傳失敗
             }
             return View();
         }
