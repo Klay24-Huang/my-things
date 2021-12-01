@@ -45,7 +45,6 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
-        private float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
         private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
 
         CommonFunc baseVerify { get; set; }
@@ -211,7 +210,6 @@ namespace WebAPI.Controllers
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
-
             #region 取得安心服務每小時價格
             if (flag)
             {
@@ -373,7 +371,25 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
             #endregion
-
+            #region 寫入訂單對應訂閱制月租
+            if (flag)
+            {
+                if (spOut != null && spOut.haveCar == 1
+                    && spOut.OrderNum > 0 && apiInput.MonId > 0
+                    && !string.IsNullOrWhiteSpace(IDNO) && LogID > 0)
+                {
+                    var sp_in = new SPInput_SetSubsBookingMonth()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        OrderNo = spOut.OrderNum,
+                        MonthlyRentId = apiInput.MonId
+                    };
+                    monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
+                    //不擋booking
+                }
+            }
+            #endregion
             #region 預授權機制
             if (flag && spOut.haveCar == 1 && (ProjType == 0 || ProjType == 3))
             {
@@ -432,7 +448,7 @@ namespace WebAPI.Controllers
                             {
                                 var AuthInput = new IFN_CreditAuthRequest
                                 {
-                                    CheckoutMode = 0,
+                                    CheckoutMode = 4,
                                     OrderNo = spOut.OrderNum,
                                     IDNO = IDNO,
                                     Amount = preAuthAmt,
@@ -449,20 +465,20 @@ namespace WebAPI.Controllers
                             }
                             #endregion
                             #region 寫入預授權
-                            string merchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no;
-                            string bankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo;
+
+
                             SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
                             {
                                 IDNO = IDNO,
                                 LogID = LogID,
                                 Token = Access_Token,
                                 AuthType = 1,
-                                CardType = 1,
+                                CardType = AuthOutput == null ? -1 : AuthOutput.CardType,
                                 final_price = preAuthAmt,
                                 OrderNo = spOut.OrderNum,
                                 PRGName = funName,
-                                MerchantTradNo = merchantTradNo,
-                                BankTradeNo = bankTradeNo,
+                                MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                                BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
                                 Status = canAuth ? 2 : 0
                             };
                             commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
@@ -532,6 +548,7 @@ namespace WebAPI.Controllers
                 var carRepo = new CarRentRepo();
                 carRepo.AddTraceLog(34, funName, trace, flag);
             }
+
             #endregion
 
             //預約成功
@@ -569,19 +586,7 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
-                #region 寫入訂單對應訂閱制月租
-                if (spOut.OrderNum > 0 && apiInput.MonId > 0)
-                {
-                    var sp_in = new SPInput_SetSubsBookingMonth()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        OrderNo = spOut.OrderNum,
-                        MonthlyRentId = apiInput.MonId
-                    };
-                    monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
-                }
-                #endregion
+
 
                 outputApi = new OAPI_Booking()
                 {
@@ -643,7 +648,5 @@ namespace WebAPI.Controllers
         }
         #endregion
     
-        #region 計算預授權金額
-        #endregion
     }
 }

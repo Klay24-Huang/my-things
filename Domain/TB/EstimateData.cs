@@ -52,7 +52,36 @@ namespace Domain.TB
         /// <summary>
         /// 結束時間
         /// </summary>
-        public DateTime ED { get; set; }     
+        public DateTime ED { get; set; }
+    }
+
+    public class EstimateDetail
+    {
+        /// <summary>
+        /// 預估租金
+        /// </summary>
+        public int Rent { get; set; }
+
+        /// <summary>
+        /// 每公里n元
+        /// </summary>
+        public float MilUnit { get; set; }
+
+        /// <summary>
+        /// 里程費
+        /// </summary>
+        public int MilagePrice { get; set; }
+
+        /// <summary>
+        /// 安心服務金額
+        /// </summary>
+        public int InsurancePurePrice { get; set; }
+
+        /// <summary>
+        /// 試算金額
+        /// </summary>
+        public int estimateAmt { get; set; }
+
     }
 
     public class EstimateDetail

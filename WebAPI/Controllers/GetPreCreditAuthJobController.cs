@@ -239,7 +239,7 @@ namespace WebAPI.Controllers
                 WeekdayPrice = orderInfo.WeekdayPrice,
                 HoildayPrice = orderInfo.HoildayPrice
             };
-            EstimateDetail outData ;
+            EstimateDetail outData;
             commonService.EstimatePreAuthAmt(estimateData, out outData);
             return outData.estimateAmt;
 

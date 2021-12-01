@@ -30,6 +30,7 @@ namespace WebAPI.Controllers
     public class BookingExtendController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
         [HttpPost]
         public Dictionary<string, object> DoBookingExtend(Dictionary<string, object> value)
         {
@@ -304,7 +305,7 @@ namespace WebAPI.Controllers
                         CreditAuthComm creditAuthComm = new CreditAuthComm();
                         var AuthInput = new IFN_CreditAuthRequest
                         {
-                            CheckoutMode = 0,
+                            CheckoutMode = 4,
                             OrderNo = tmpOrder,
                             IDNO = IDNO,
                             Amount = preAuthAmt,
@@ -323,8 +324,8 @@ namespace WebAPI.Controllers
                         #region 授權結果
                         if (authFlag)
                         {
-                            string merchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no;
-                            string bankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo;
+
+
                             #region 寫入預授權
                             SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
                             {
@@ -332,12 +333,12 @@ namespace WebAPI.Controllers
                                 LogID = LogID,
                                 Token = Access_Token,
                                 AuthType = 4,
-                                CardType = 1,
+                                CardType = AuthOutput == null ? -1 : AuthOutput.CardType,
                                 final_price = preAuthAmt,
                                 OrderNo = tmpOrder,
                                 PRGName = funName,
-                                MerchantTradNo = merchantTradNo,
-                                BankTradeNo = bankTradeNo,
+                                MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                                BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
                                 Status = 2
                             };
                             commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
@@ -371,15 +372,17 @@ namespace WebAPI.Controllers
                             //回傳錯誤代碼，但仍可延長用車
                             errCode = "ERR604";
 
-                        //發送MAIL通知據點人員
-                        if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
-                        {
-                            SendMail send = new SendMail();
-                            string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
-                            string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
-                            string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
-                            send.DoSendMail(Title, Body, Receiver);
-                        }
+                            #region Adam哥上線記得打開
+                            ////發送MAIL通知據點人員
+                            //if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
+                            //{
+                            //    SendMail send = new SendMail();
+                            //    string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
+                            //    string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
+                            //    string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
+                            //    send.DoSendMail(Title, Body, Receiver);
+                            //}
+                            #endregion
                         }
                         #endregion
                     }

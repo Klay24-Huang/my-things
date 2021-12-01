@@ -230,7 +230,7 @@ namespace WebAPI.Controllers
                                 commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
                                 preAuthAmt = estimateDetail.estimateAmt - orderData.PreAuthAmt;
 
-                                trace.traceAdd("GetEsimateAuthAmt", new {  estimateData, estimateDetail, preAuthAmt });
+                                trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt });
                                 trace.FlowList.Add("計算預授權金");
                             }
                         }
@@ -242,7 +242,7 @@ namespace WebAPI.Controllers
                             CreditAuthComm creditAuthComm = new CreditAuthComm();
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                CheckoutMode = 0,
+                                CheckoutMode = 4,
                                 OrderNo = tmpOrder,
                                 IDNO = IDNO,
                                 Amount = preAuthAmt,
@@ -264,20 +264,20 @@ namespace WebAPI.Controllers
                             if (flag)
                             {
                                 #region 寫入預授權
-                                string merchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no;
-                                string bankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo;
+
+
                                 SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
                                 {
                                     IDNO = IDNO,
                                     LogID = LogID,
                                     Token = Access_Token,
                                     AuthType = 3,
-                                    CardType = 1,
+                                    CardType = AuthOutput == null ? -1 : AuthOutput.CardType,
                                     final_price = preAuthAmt,
                                     OrderNo = tmpOrder,
                                     PRGName = funName,
-                                    MerchantTradNo = merchantTradNo,
-                                    BankTradeNo = bankTradeNo,
+                                    MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                                    BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
                                     Status = 2
                                 };
                                 commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
@@ -319,6 +319,7 @@ namespace WebAPI.Controllers
                     carRepo.AddTraceLog(50, funName, trace, flag);
                 }
                 #endregion
+
             }
 
             //開始對車機做動作

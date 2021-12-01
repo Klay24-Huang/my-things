@@ -136,7 +136,8 @@
     <Compile Include="Helper\HtmlOutputExtensions.cs" />
     <Compile Include="Models\UmekoTestViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\LoginRepository.cs" />
+    <Compile Include="Services\BaseService.cs" />
+    <Compile Include="Services\LoginService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -175,6 +176,8 @@
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep1.js" />
+    <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep2.js" />
+    <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep3.js" />
     <Content Include="Scripts\HotaiPayJS\bootstrap.js" />
     <Content Include="Scripts\HotaiPayJS\main.js" />
     <Content Include="Scripts\HotaiPayJS\PostAndGoto.js" />
@@ -249,6 +252,10 @@
     <ProjectReference Include="..\OtherService\OtherService.csproj">
       <Project>{c7b92ef2-f283-4135-8309-fd1a30b4ed38}</Project>
       <Name>OtherService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Reposotory.Implement\Reposotory.Implement.csproj">
+      <Project>{ec8cf1d8-b569-4b3f-9c8e-4ab95622961c}</Project>
+      <Name>Reposotory.Implement</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebAPI\WebAPI.csproj">
       <Project>{9769c278-31f4-47ed-8011-1f27e10847a6}</Project>

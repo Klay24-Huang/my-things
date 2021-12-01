@@ -41,12 +41,12 @@
             <div class="mt-4">
                 <form class="form-inline d-flex flex-row justify-content-between align-items-start">
                     <div class="form-group">
-                        <input type="text" class="form-control input-light" placeholder="0912345678" v-model="form.Phone">
+                        <input type="text" class="form-control input-light" placeholder="0912345678" v-model="form.Phone" value="@ViewBag.Phone">
                     </div>
-                    <button type="submit" class="btn btn-blue-small mb-2" v-on:click="GetOtpCode()">發送驗證碼</button>
+                    <button type="button" class="btn btn-blue-small mb-2" v-on:click="GetOtpCode()">發送驗證碼</button>
                 </form>
 
-                <input type="text" class="form-control input-light" v-model="form.OtpCode" placeholder="輸入驗證碼" required>
+                <input type="text" class="form-control input-light" v-model="form.OtpCode" placeholder="輸入驗證碼" value="@ViewBag.OtpCode" required>
                 <p id="otpCodehint" style="color:red;">@ViewBag.Alert</p>
             </div>
 
