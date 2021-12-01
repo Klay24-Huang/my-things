@@ -1,4 +1,13 @@
 ﻿window.onload = function () {
+    const optCode = document.getElementById('optCode');
+    const nextStep = document.getElementById('nextStep');
+
+    optCode.addEventListener('input', updateValue);
+
+    function updateValue(e) {
+        nextStep.disabled = true;
+        nextStep.className = 'btn-blue';
+    }
     var VuePage = new Vue({
         el: '#VuePage'
         , data: function () {
