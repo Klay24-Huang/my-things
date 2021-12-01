@@ -1,5 +1,6 @@
-﻿window.onload = function () {
+﻿
 
+window.onload = function () {
     //取得觸發iCon
     var imgs = document.getElementById('align-self-center');
     var row = document.getElementById('w-100');
@@ -11,7 +12,7 @@
     var flag = 0;
 
     var VuePage = new Vue({
-        el: '#VuePage'
+        el: '#bindNewCard'
         , data: function () {
             var data = {
                 form: {}
@@ -46,12 +47,18 @@
                             $('#ErrorAlert').modal('toggle');
                         },
                     });
-                } /*else {
-                    var hints = document.getElementById('pwdHint');
-                    hints.textContent = '密碼格式錯誤:需至少有各一個大小寫英文、密碼長度介於6~12碼之間';
-                }*/
+                } else {
+                    alert("Failed to get AccessToken");
+                }
             }
         }
     })
+}
 
+//點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
+function goAddNewCard() {
+
+    document.location.href ="/HotaiPay/BindNewCard";
+    var Today = new Date();
+    alert("今天日期是 " + Today.getFullYear() + " 年 " + (Today.getMonth() + 1) + " 月 " + Today.getDate() + " 日");
 }
