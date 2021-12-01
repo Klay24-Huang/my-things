@@ -199,43 +199,57 @@ namespace OtherService
         public bool DoQueryToken(string IDNO, string PRGName, ref HotaiToken output, ref string errCode)
         {
             bool flag = true;
+            int HttpStatusCode = 0;
+            WebAPIOutput_Token outputToken = new WebAPIOutput_Token();
+            //查詢Db Token
             SPOutput_QueryToken SPOut = sp_QueryToken(IDNO, ref flag, ref errCode);
-            if (flag && !string.IsNullOrWhiteSpace(SPOut.AccessToken))
+            if (flag)
             {
-                WebAPIInput_RefreshToken inputToken = new WebAPIInput_RefreshToken()
-                {
-                    access_token = SPOut.AccessToken,
-                    refresh_token = SPOut.RefreshToken
-                };
-
-                WebAPIOutput_Token outputToken = new WebAPIOutput_Token();
-                flag = hotaiMemberAPI.DoRefreshToken(inputToken, ref outputToken, ref errCode);
-
-                #region 更新和泰會員綁定記錄
-                if (flag)
-                {
-                    SPInput_SetToken inputSetToken = new SPInput_SetToken()
-                    {
-                        IDNO = IDNO,
-                        PRGName = PRGName,
-                        AccessToken = outputToken.access_token,
-                        RefreshToken = outputToken.refresh_token
-                    };
-                    flag = sp_SetToken(inputSetToken, ref errCode);
-                }
-                #endregion
+                //檢查Token
+                flag = hotaiMemberAPI.DoCheckToken(SPOut.AccessToken, ref errCode, ref HttpStatusCode);
+                logger.Info($"DoQueryToken | DoCheckToken | Result:{ flag } ; errCode:{errCode} ; HttpStatusCode:{HttpStatusCode} ; | AccessToken :{$"{SPOut.AccessToken}"}");
 
                 if (flag)
                 {
-                    output.AccessToken = outputToken.access_token;
-                    output.RefreshToken = outputToken.refresh_token;
                     output.OneID = SPOut.OneID;
+                    output.AccessToken = SPOut.AccessToken;
+                    output.RefreshToken = SPOut.RefreshToken;
                 }
-            }
+                else if (HttpStatusCode == 401) //Token 過期
+                {
+                    WebAPIInput_RefreshToken sp_refreshTokenInput = new WebAPIInput_RefreshToken()
+                    {
+                        access_token = SPOut.AccessToken,
+                        refresh_token = SPOut.RefreshToken
+                    };
+                    flag = hotaiMemberAPI.DoRefreshToken(sp_refreshTokenInput, ref outputToken, ref errCode, ref HttpStatusCode);
+                    logger.Info($"DoQueryToken | DoRefreshToken | Result:{ flag } ; errCode:{errCode} ; HttpStatusCode:{HttpStatusCode} ; | sp_refreshTokenInput:{JsonConvert.SerializeObject(sp_refreshTokenInput)}");
 
-            if (!flag)
-            {
-                errCode = "ERR941";
+                    //更新Db Token
+                    if (flag)
+                    {
+                        SPInput_SetToken sp_setTokenInput = new SPInput_SetToken()
+                        {
+                            IDNO = IDNO,
+                            PRGName = PRGName,
+                            AccessToken = outputToken.access_token,
+                            RefreshToken = outputToken.refresh_token
+                        };
+                        flag = sp_SetToken(sp_setTokenInput, ref errCode);
+
+                        if (flag)
+                        {
+                            output.OneID = SPOut.OneID;
+                            output.AccessToken = outputToken.access_token;
+                            output.RefreshToken = outputToken.refresh_token;
+                        }
+                    }
+                }
+
+                if (!flag)
+                {
+                    errCode = "ERR941";
+                }
             }
             return flag;
         }
