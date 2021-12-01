@@ -324,12 +324,7 @@ namespace HotaiPayWebView.Controllers
             //token檢核
             int a = 404;
             flag = hotaiMemAPI.DoCheckToken(HCToken, ref errCode, ref a);
-            if (!flag)
-            {
 
-            }
-            int a = 200;
-            flag = hotaiMemAPI.DoCheckToken(HCToken, ref errCode,ref a);
             /*if (!flag)
 
             {
