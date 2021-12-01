@@ -61,67 +61,78 @@ namespace HotaiPayWebView.Controllers
 
             //HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
 
-            bool flag = false;
-            string errCode = "";
+            //bool flag = false;
+            //string errCode = "";
 
-            WebAPIInput_Signin apiInput = new WebAPIInput_Signin
-            {
-                account = phone,
-                password = pwd
-            };
-            WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
+            //WebAPIInput_Signin apiInput = new WebAPIInput_Signin
+            //{
+            //    account = phone,
+            //    password = pwd
+            //};
+            //WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
 
             
-            apiInput.password = helper.ComputeSha256Hash(apiInput.password);
-            flag = hotaiAPI.DoSignin(apiInput, ref apioutput, ref errCode);
+            //apiInput.password = helper.ComputeSha256Hash(apiInput.password);
+            //flag = hotaiAPI.DoSignin(apiInput, ref apioutput, ref errCode);
 
-            if (flag)
-            {
-                TempData["token"] = apioutput.access_token;
-                if (apioutput.memberState == "1" || apioutput.memberState == "2")
-                    return View("Supplememtary");
-                else
-                {
-                    WebAPIOutput_BenefitsAndPrivacyVersion checkVer = new WebAPIOutput_BenefitsAndPrivacyVersion();
-                    flag = hotaiAPI.DoCheckBenefitsAndPrivacyVersion(apioutput.access_token, ref checkVer, ref errCode);
+            //if (flag)
+            //{
+            //    TempData["token"] = apioutput.access_token;
+            //    if (apioutput.memberState == "1" || apioutput.memberState == "2")
+            //        return View("Supplememtary");
+            //    else
+            //    {
+            //        WebAPIOutput_BenefitsAndPrivacyVersion checkVer = new WebAPIOutput_BenefitsAndPrivacyVersion();
+            //        flag = hotaiAPI.DoCheckBenefitsAndPrivacyVersion(apioutput.access_token, ref checkVer, ref errCode);
 
-                    if (flag)
-                    {
-                        if (!string.IsNullOrEmpty(checkVer.memberBenefitsVersion) || !string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
-                        {
-                            if (string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
-                                TempData["terms"] += checkVer.memberBenefits;
-                            if (string.IsNullOrEmpty(checkVer.privacyPolicyVersion))
-                                TempData["terms"] += checkVer.privacyPolicy;
-                            return View("MembershipTerms");
-                        }
-                        else
-                        {
-                            WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
-                            flag = hotaiAPI.DoGetMobilePhoneToOneID(phone, ref getOneID, ref errCode);
-                            if (flag)
-                            {
-                                TempData["oneID"] = getOneID.memberSeq;
+            //        if (flag)
+            //        {
+            //            if (!string.IsNullOrEmpty(checkVer.memberBenefitsVersion) || !string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
+            //            {
+            //                if (string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
+            //                    TempData["terms"] += checkVer.memberBenefits;
+            //                if (string.IsNullOrEmpty(checkVer.privacyPolicyVersion))
+            //                    TempData["terms"] += checkVer.privacyPolicy;
+            //                return View("MembershipTerms");
+            //            }
+            //            else
+            //            {
+            //                WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
+            //                flag = hotaiAPI.DoGetMobilePhoneToOneID(phone, ref getOneID, ref errCode);
+            //                if (flag)
+            //                {
+            //                    TempData["oneID"] = getOneID.memberSeq;
 
-                                //以下取得信用卡列表流程
-                            }
-                            else
-                            {
-                                RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
-                            }
-                        }
-                    }
-                }
+            //                    //以下取得信用卡列表流程
+            //                }
+            //                else
+            //                {
+            //                    RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+            //                }
+            //            }
+            //        }
+            //    }
 
-            }
-            else
-            {
-                if (errCode == "ERR980" || errCode == "ERR953")
-                {
-                    this.TempData["MSG"] = "密碼錯誤";
-                }
-            }
-            return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+            //}
+            //else
+            //{
+            //    if (errCode == "ERR980" || errCode == "ERR953")
+            //    {
+            //        this.TempData["MSG"] = "密碼錯誤";
+            //    }
+            //}
+
+
+            //return RedirectToAction("BindCardFailed","HotaiPay");
+            //return Redirect("BindCardFailed");
+
+            //return View("BindCardFailed");
+
+            //return Redirect("BindCardFailed"); 
+            return RedirectToAction("CreditStart");
+
+            //return RedirectToAction("BindCardFailed", "HotaiPay");
+
         }
         #endregion
 
