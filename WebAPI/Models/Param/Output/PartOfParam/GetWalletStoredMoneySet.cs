@@ -9,7 +9,7 @@ namespace WebAPI.Models.Param.Output.PartOfParam
     public class GetWalletStoredMoneySet
     {
         /// <summary>
-        /// 儲值方式(1:信用卡 2:虛擬帳號 3:超商繳費)
+        /// 儲值方式(0:信用卡 2:虛擬帳號 3:超商繳費 4:和泰Pay)
         /// </summary>
         public int StoreType { get; set; }
 
