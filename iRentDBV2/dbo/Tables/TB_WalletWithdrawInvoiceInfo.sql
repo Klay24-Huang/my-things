@@ -1,4 +1,4 @@
-/****** Object:  Table [dbo].[TB_WalletWithdrawInvoiceInfo]    Script Date: 2021/10/15 §U§» 03:44:02 ******/
+/****** Object:  Table [dbo].[TB_WalletWithdrawInvoiceInfo]    Script Date: 2021/11/29 ‰∏ãÂçà 03:16:53 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -28,6 +28,7 @@ CREATE TABLE [dbo].[TB_WalletWithdrawInvoiceInfo](
 	[MKTime] [datetime] NOT NULL,
 	[MKUser] [varchar](10) NOT NULL,
 	[MKPRGID] [varchar](10) NOT NULL,
+	[DocURL] [varchar](255) NULL,
  CONSTRAINT [PK_TB_WalletWithdrawInvoiceInfo] PRIMARY KEY CLUSTERED 
 (
 	[SEQNO] ASC
@@ -43,12 +44,4 @@ GO
 
 ALTER TABLE [dbo].[TB_WalletWithdrawInvoiceInfo] ADD  CONSTRAINT [DF_TB_WalletWithdrawInvoiceInfo_FEEAMT]  DEFAULT ((0)) FOR [FEEAMT]
 GO
-
-ALTER TABLE [dbo].[TB_WalletWithdrawInvoiceInfo]  WITH CHECK ADD  CONSTRAINT [FK_TB_WalletWithdrawInvoiceInfo_TB_WalletTradeMain] FOREIGN KEY([SEQNO])
-REFERENCES [dbo].[TB_WalletTradeMain] ([SEQNO])
-GO
-
-ALTER TABLE [dbo].[TB_WalletWithdrawInvoiceInfo] CHECK CONSTRAINT [FK_TB_WalletWithdrawInvoiceInfo_TB_WalletTradeMain]
-GO
-
 

@@ -1,0 +1,53 @@
+﻿@model HotaiPayWebView.Models.UmekoTestViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>GetList</title>
+</head>
+<body>
+    <div>
+       
+            @if (Model.oFN_HotaiCreditCardList?.CreditCards?.Count > 0)
+            {
+                <table class="table table-bordered table-hover dataTable" role="grid" aria-describedby="example2_info">
+                    <thead>
+                        <tr role="row">
+                            <th scope="col">卡片名稱</th>
+                            <th scope="col">卡號</th>
+                            <th scope="col">銀行</th>
+                            <th scope="col">卡片TOKEN</th>
+                            <th scope="col">卡片類型</th>
+                            <th scope="col">OneID</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rec in Model.oFN_HotaiCreditCardList.CreditCards)
+                        {
+                            <tr>
+                                <td>@rec.CardName</td>
+                                <td>@rec.CardNumber</td>
+                                <td>@rec.BankDesc</td>
+                                <td>@rec.CardToken</td>
+                                <td>@rec.CardType</td>
+                                <td>@rec.IsDefault</td>
+                                <td>@rec.MemberOneID</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            }
+
+
+        
+    </div>
+</body>
+</html>

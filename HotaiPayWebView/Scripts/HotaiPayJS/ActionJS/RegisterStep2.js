@@ -1,20 +1,13 @@
 ﻿window.onload = function () {
-    //獲取元素（兩種方式都可以）
-    var input = document.getElementById("demo_input")
-    var imgs = document.getElementById('eyes');
-    //下面是一個判斷每次點選的效果
-    var flag = 0;
-    imgs.onclick = function () {
-        if (flag == 0) {
-            input.type = 'text';
-            eyes.src = '~\images\eye-regular.svg';//睜眼圖
-            flag = 1;
-        } else {
-            input.type = 'password';
-            eyes.src = '~\images/eye-slash-regular.svg';//閉眼圖
-            flag = 0;
-        }
+    const input = document.getElementById('confirmPwd');
+    const nextStep = document.getElementById('nextStep');
+
+    input.addEventListener('input', updateValue);
+
+    function updateValue(e) {
+        nextStep.disabled = false;
     }
+
     var VuePage = new Vue({
         el: '#VuePage'
         , data: function () {
@@ -24,24 +17,24 @@
             return data;
         }
         , methods: {
-            // 執行登入按鈕
-            Login: function () {
+            // 獲取驗證碼按鈕
+            DoSignUp: function () {
                 var self = this;
                 var regex = new RegExp(/^(?=.*\d)(?=.*[a-zA-Z]).{6,12}$/);
-                console.log('哈')
                 // 組合表單資料
                 var postData = {};
-                postData['phone'] = self.form.Phone;
-                postData['pwd'] = self.form.UserPwd;
+                postData['pwd'] = self.form.Pwd;
+                postData['pwdConfirm'] = self.form.PwdConfirm;
+
                 if (self.form.UserPwd.match(regex) != null) {
                     // 使用 jQuery Ajax 傳送至後端
                     $.ajax({
-                        url: 'Login',
+                        url: 'DoSignUp',
                         method: 'POST',
                         dataType: 'json',
                         data: {
-                            phone: postData['phone'],
-                            pwd: postData['pwd']
+                            pwd: postData['pwd'],
+                            pwdConfirm: postData['pwdConfirm']
                         },
                         success: function (datas) {
                             if (datas.ErrMsg) {

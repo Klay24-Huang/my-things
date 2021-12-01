@@ -1,7 +1,9 @@
 ﻿using Domain.Common;
+using Domain.Flow.Hotai;
 using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Wallet;
+using Domain.TB.Hotai;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -72,7 +74,7 @@ namespace WebAPI.Controllers
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
 
-            if(flag)
+            if (flag)
             {
                 string SPName = "usp_GetPayInfo_Q1";
                 SPInput_GetPayInfo spCheckTokenInput = new SPInput_GetPayInfo()
@@ -101,6 +103,10 @@ namespace WebAPI.Controllers
                 }
             }
 
+            //取得和泰支付卡片
+            OAPI_GetPayInfo HotaiOut = SetHotai(IDNO,LogID,funName, apiOutput);
+            apiOutput = HotaiOut;
+
             #endregion
 
             #region 寫入錯誤Log
@@ -115,6 +121,45 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        
+        private OAPI_GetPayInfo SetHotai(string idNo,long logID, string funName, OAPI_GetPayInfo input)
+        {
+            string errCode = "000000";
+
+            var dbHotaiPay = input.PayModeList.Find(p => p.PayMode == 4);
+            if (dbHotaiPay == null)
+                return input;
+
+            OtherService.HotaipayService hotaiPayment = new OtherService.HotaipayService();
+            var HotaiDefaultCard = new HotaiCardInfo();
+            var getCardFlag = hotaiPayment.DoQueryDefaultCard(new IFN_QueryDefaultCard { IDNO = idNo, LogID = logID, PRGName = funName }, ref HotaiDefaultCard, ref errCode);
+
+            if (getCardFlag)
+            {
+                //移除資料庫讀出的和泰
+                input.PayModeList.Remove(dbHotaiPay);
+                dbHotaiPay.HasBind = 1;
+                dbHotaiPay.PayInfo = HotaiDefaultCard.CardNumber;
+                input.PayModeList.Add(dbHotaiPay);
+
+                var dbCreditPay = input.PayModeList.Find(p => p.PayMode == 0);
+                if (dbCreditPay != null)
+                {
+                    input.PayModeList.Remove(dbCreditPay);
+                }
+                input.PayModeBindCount = input.PayModeList.Count(p => p.HasBind == 1);
+                input.DefPayMode = input.DefPayMode == 0 ? 4 : input.DefPayMode;
+            }
+            else
+            {
+                //取得和泰預設卡失敗
+                //移除資料庫讀出的和泰
+                input.PayModeList.Remove(dbHotaiPay);
+                input.DefPayMode = input.DefPayMode == 4 ? 0 : input.DefPayMode;
+            }
+            return input;
+
+        }
+
+
     }
 }

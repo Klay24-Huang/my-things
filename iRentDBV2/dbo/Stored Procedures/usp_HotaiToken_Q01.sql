@@ -43,6 +43,17 @@ BEGIN
 		IF @Error = 0
 		BEGIN
 			   SELECT @AccessToken=AccessToken,@RefreshToken=RefreshToken,@OneID=OneID FROM TB_MemberHotai WITH(NOLOCK) WHERE IDNO=@IDNO;
+		       
+			   IF @@ROWCOUNT =0
+			   BEGIN
+			      SET @Error=1
+			      SET @ErrorCode = 'ERR953'
+			   END			   
+			   ELSE IF @AccessToken='' OR @RefreshToken=''
+			   BEGIN
+			      SET @Error=1
+			      SET @ErrorCode = 'ERR941'
+			   END
 		END
 
 		--寫入錯誤訊息

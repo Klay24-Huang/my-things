@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,10 +49,15 @@
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="Flow\Hotai\Class1.cs" />
+    <Compile Include="Flow\Hotai\IFN_HotaiAddCard.cs" />
+    <Compile Include="Flow\Hotai\IFN_HotaiFastAddCard.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiPaymenyBase.cs" />
     <Compile Include="Flow\Hotai\IFN_QueryDefaultCard.cs" />
     <Compile Include="Flow\Hotai\IFN_QueryCardList.cs" />
+    <Compile Include="Flow\Hotai\OFN_HotaiAddCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCard.cs" />
+    <Compile Include="Flow\Hotai\OFN_HotaiFastAddCard.cs" />
+    <Compile Include="SP\Input\Hotai\SPInput_HotaiDefaultCardUnbind.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_SetDefaultCard.cs" />
@@ -788,7 +794,7 @@
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Token.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_Townships.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\HotaiCardInfoOriginal.cs" />
-    <Compile Include="WebAPI\output\Hotai\Payment\HotaiResCreditCardPay.cs" />
+    <Compile Include="WebAPI\output\Hotai\Payment\HotaiResReqJsonPwd.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\HotaiResFastBind.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\HotaiResAddCard.cs" />
     <Compile Include="WebAPI\output\Hotai\Payment\HotaiTXNInfoForAdd.cs" />
