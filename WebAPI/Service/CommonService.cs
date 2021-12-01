@@ -94,7 +94,7 @@ namespace WebAPI.Service
         /// <param name="input">試算資料</param>
         /// <param name="dayMaxHour">單日時數上限</param>
         /// <returns></returns>
-        public int EstimatePreAuthAmt(EstimateData input, int dayMaxHour = 10)
+        public void EstimatePreAuthAmt(EstimateData input, out EstimateDetail outData, int dayMaxHour = 10)
         {
             BillCommon billCommon = new BillCommon();
             List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(input.SD.ToString("yyyyMMdd"), input.ED.ToString("yyyyMMdd"));
@@ -105,8 +105,13 @@ namespace WebAPI.Service
             //計算里程費
             float MilUnit = billCommon.GetMilageBase(input.ProjID, input.CarTypeGroupCode, input.SD, input.ED, 0);
             int MilagePrice = Convert.ToInt32(billCommon.CarMilageCompute(input.SD, input.ED, MilUnit, Mildef, 20, lstHoliday));
-            //預授權金額
-            return Rent + InsurancePurePrice + MilagePrice; //(租金+安心服務+里程費)
+
+            outData = new EstimateDetail();
+            outData.InsurancePurePrice = InsurancePurePrice;
+            outData.Rent = Rent;
+            outData.MilUnit = MilUnit;
+            outData.MilagePrice = MilagePrice;
+            outData.estimateAmt = Rent + InsurancePurePrice + MilagePrice; //(租金+安心服務+里程費)
         }
         #endregion
 
