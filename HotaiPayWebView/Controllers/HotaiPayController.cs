@@ -24,6 +24,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult DoLogin(string phone,string pwd)
         {
+
             HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
             bool flag = false;
             string errCode = "";

@@ -28,7 +28,7 @@
             DoLogin: function () {
                 var self = this;
                 var regex = new RegExp(/^(?=.*\d)(?=.*[a-zA-Z]).{6,12}$/);
-
+                console.log('哈')
                 // 組合表單資料
                 var postData = {};
                 postData['phone'] = self.form.Phone;
