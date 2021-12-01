@@ -140,9 +140,9 @@ namespace HotaiPayWebView.Controllers
         #region 註冊驗證步驟一:手機驗證
         public ActionResult RegisterStep1()
         {
-            ViewBag.Phone = TempData["Phone"];
-            ViewBag.OtpCode= TempData["OtpCode"];
-            ViewBag.Alert= TempData["Alert"];
+            ViewBag.Phone = Session["Phone"];
+            ViewBag.OtpCode= Session["OtpCode"];
+            ViewBag.Alert= Session["Alert"];
             return View();
         }
 
@@ -161,7 +161,7 @@ namespace HotaiPayWebView.Controllers
 
             if (checkSignUpOutput.isSignup)
             {
-                TempData["Alert"] = "此帳號已被註冊";
+                Session["Alert"] = "此帳號已被註冊";
                 return Redirect("RegisterStep1");
             }
             else
@@ -177,14 +177,13 @@ namespace HotaiPayWebView.Controllers
                 flag = hotaiAPI.DoSendSmsOtp(getSMSOTP, ref getSMSOTPoutput, ref errCode);
                 if (flag)
                 {
-
                     return Redirect("RegisterStep1");
                 }
                 else
                 {
-                    TempData["Alert"] = errorDic[errCode];
+                    Session["Alert"] = errorDic[errCode];
 
-                    return Redirect("RegisterStep1");
+                    return Redirect("RegisterStep2");
                 }
             }
         }
@@ -209,11 +208,11 @@ namespace HotaiPayWebView.Controllers
                 Session["Phone"] = phone;
                 Session["OtpCode"] = otpCode;
                 Session["OtpID"] = checkSMSOptOutput.otpId;
-                return RedirectToAction("RegisterStep2", "~/HotaiPay/RegisterStep2");
+                return RedirectToAction("RegisterStep2", "HotaiPay");
             }
             else
             {
-                return RedirectToAction("RegisterStep1", "~/HotaiPay/RegisterStep1");
+                return RedirectToAction("RegisterStep1", "HotaiPay");
             }
             
         }
@@ -251,7 +250,7 @@ namespace HotaiPayWebView.Controllers
                 _accessToken = getToken.access_token;
                 _refreshToken = getToken.refresh_token;
             }
-            return RedirectToAction("RegisterStep3", "~/HotaiPay/RegisterStep3");
+            return View() ;
         }
         #endregion
 
@@ -312,6 +311,7 @@ namespace HotaiPayWebView.Controllers
         #region 無信用卡列表頁面 
         public ActionResult NoCreditCard(string HCToken)
         {
+
             HotaiMemberAPI hotaiMemAPI = new HotaiMemberAPI();
             bool flag = false;
             string errCode = "";
