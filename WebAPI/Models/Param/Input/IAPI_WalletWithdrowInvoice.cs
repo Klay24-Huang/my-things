@@ -9,9 +9,9 @@ namespace WebAPI.Models.Param.Input
     public class IAPI_WalletWithdrowInvoice : IAPI_Base
     {
         /// <summary>
-        /// 對應錢包主檔索引(外部索引直)
+        /// 對應TaishinNo
         /// </summary>
-        public int SEQNO { set; get; }
+        public string NORDNO { set; get; }
         /// <summary>
         /// 發票號碼
         /// </summary>

@@ -57,13 +57,13 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "WalletStoreVisualAccountController";
-            string PRGID = "221"; //APIId
+            int apiId = 221;
 
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
             IAPI_WalletStoreBase apiInput = null;
-            var apiOutput = new OAPI_WalletStoreVisualAccount();
+            OAPI_WalletStoreVisualAccount apiOutput = null;
 
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -113,6 +113,8 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
+                #region TB
+
                 #region Token判斷
                 if (flag && isGuest == false)
                 {
@@ -124,17 +126,19 @@ namespace WebAPI.Controllers
                 #region 儲值金額限制檢核
                 if (flag)
                 {
-                    flag = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref flag, ref errCode);
+                    var walletInfo = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref errCode);
+                    flag = walletInfo.flag;
                 }
                 #endregion
 
-                #region TB
+                #region 產虛擬帳號
                 if (flag)
                 {
                     flag = CreateWalletStoreVisualAccount(apiInput, ref virtualAccount, ref payDeadLine, IDNO, LogID, Access_Token, ref flag, ref errCode);
                     trace.traceAdd("CreateVisualAccount", new { apiInput, virtualAccount, payDeadLine, errCode });
                     trace.FlowList.Add("產虛擬帳號");
                 }
+                #endregion
 
                 if (flag)
                 {
@@ -143,21 +147,17 @@ namespace WebAPI.Controllers
                         StoreMoney = apiInput.StoreMoney,
                         PayDeadline = string.Format("{0:yyyy/MM/dd 23:59}", payDeadLine),
                         BankCode = "812",
-                        VirtualAccount = SplitOnLength(virtualAccount,4," ")
+                        VirtualAccount = SplitOnLength(virtualAccount, 4, " ")
                     };
                 }
-                #endregion
-
-                apiOutput.StroeResult = flag ? 1 : 0;
-
                 trace.traceAdd("TraceFinal", new { apiOutput, errCode, errMsg });
-                carRepo.AddTraceLog(Convert.ToInt32(PRGID), funName, trace, flag);
+                carRepo.AddTraceLog(apiId, funName, trace, flag);
+                #endregion
             }
             catch (Exception ex)
             {
                 flag = false;
                 errCode = "ERR918";
-                apiOutput.StroeResult = 0;
                 trace.BaseMsg = ex.Message;
             }
 

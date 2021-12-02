@@ -115,5 +115,9 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 預估總金額
         /// </summary>
         public int Bill { set; get; }
+        /// <summary>
+        /// 訂單取消原因
+        /// </summary>
+        public int cancel_status { get; set; }
     }
 }
