@@ -51,7 +51,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -253,7 +252,7 @@ namespace WebAPI.Controllers
                             };
                             try
                             {
-                                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);                               
+                                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                             }
                             catch (Exception ex)
                             {
@@ -261,7 +260,7 @@ namespace WebAPI.Controllers
                                 trace.BaseMsg = ex.Message;
                             }
 
-                            trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, errCode });
+                            trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
                             trace.FlowList.Add("刷卡授權");
                             if (!flag)
                             {
@@ -767,24 +766,27 @@ namespace WebAPI.Controllers
             #region 寫取車照片到azure
             if (flag)
             {
-                OtherRepository otherRepository = new OtherRepository(connetStr);
-                List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
-                int PICLen = lstCarPIC.Count;
-                for (int i = 0; i < PICLen; i++)
+                if (isDebug == "0") // isDebug = 1，不寫azure
                 {
-                    try
+                    OtherRepository otherRepository = new OtherRepository(connetStr);
+                    List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
+                    int PICLen = lstCarPIC.Count;
+                    for (int i = 0; i < PICLen; i++)
                     {
-                        string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
-
-                        flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
-                        if (flag)
+                        try
                         {
-                            bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                            string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
+                            if (flag)
+                            {
+                                bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        flag = true; //先bypass，之後補傳再刪
+                        catch (Exception ex)
+                        {
+                            flag = true; //先bypass，之後補傳再刪
+                        }
                     }
                 }
             }

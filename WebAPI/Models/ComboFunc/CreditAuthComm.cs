@@ -347,20 +347,20 @@ namespace WebAPI.Models.ComboFunc
                     errCode = "ERR197";
                 }
                 //修正錯誤偵測
-                if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams.ResultCode != "1000")
+                if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams?.ResultCode != "1000")
                 {
                     flag = false;
                     errCode = "ERR197";
                 }
 
-
-                AuthOutput.AuthCode = WSAuthOutput.ResponseParams.ResultCode;
-                AuthOutput.AuthMessage = WSAuthOutput.ResponseParams.ResultMessage;
-
+                AuthOutput.AuthCode = 
+                    (WSAuthOutput.RtnCode == "1000")? WSAuthOutput.ResponseParams.ResultCode: WSAuthOutput.RtnCode;
+                AuthOutput.AuthMessage =
+                    (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultMessage : WSAuthOutput.RtnMessage;;
                 AuthOutput.CardType = CardType;
                 AuthOutput.CheckoutMode = CheckoutMode;
                 AuthOutput.Transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
-                AuthOutput.BankTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
+                AuthOutput.BankTradeNo = WSAuthOutput?.ResponseParams?.ResultData?.ServiceTradeNo??"";
                 AuthOutput.CardNo = WSAuthOutput?.ResponseParams?.ResultData?.CardNumber?? FindCardResult.cardNumber;
             }
             

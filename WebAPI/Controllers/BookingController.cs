@@ -470,7 +470,7 @@ namespace WebAPI.Controllers
                                 trace.BaseMsg = ex.Message;                          
                             }
 
-                            trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, errCode });
+                            trace.traceAdd("DoAuthV4", new { authflag, AuthInput, AuthOutput, errCode });
                             trace.FlowList.Add("刷卡授權");
                         }
                         #endregion
