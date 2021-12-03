@@ -37,17 +37,18 @@ using WebAPI.Models.BillFunc;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 取車
+    /// 汽車取車
     /// </summary>
     public class BookingStartController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoBookingStart(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -170,7 +171,7 @@ namespace WebAPI.Controllers
             //取車判斷
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.BeforeBookingStart);
+                string CheckTokenName = "usp_BeforeBookingStart";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
@@ -237,7 +238,7 @@ namespace WebAPI.Controllers
                             CreditAuthComm creditAuthComm = new CreditAuthComm();
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                CheckoutMode = 0,
+                                CheckoutMode = 4,
                                 OrderNo = tmpOrder,
                                 IDNO = IDNO,
                                 Amount = preAuthAmt,
@@ -249,7 +250,7 @@ namespace WebAPI.Controllers
                             };
                             try
                             {
-                                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);                               
+                                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                             }
                             catch (Exception ex)
                             {
@@ -257,7 +258,7 @@ namespace WebAPI.Controllers
                                 trace.BaseMsg = ex.Message;
                             }
 
-                            trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, errCode });
+                            trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
                             trace.FlowList.Add("刷卡授權");
                             if (!flag)
                             {
@@ -328,43 +329,46 @@ namespace WebAPI.Controllers
                 if (IsCens == 1)
                 {
                     #region 興聯
-                    #region Adam哥上線記得打開
-                    //CensWebAPI webAPI = new CensWebAPI();
-                    ////取最新狀況
-                    //WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
-                    //flag = webAPI.GetInfo(CID, ref wsOutInfo);
-                    //if (false == flag)
-                    //{
-                    //    errCode = wsOutInfo.ErrorCode;
-                    //    mil = 0;
-                    //}
-                    //else
-                    //{
-                    //    if (wsOutInfo.data.CID == CID)
-                    //    {
-                    //        if (wsOutInfo.data.Milage > 0)
-                    //        {
-                    //            mil = wsOutInfo.data.Milage;
-                    //        }
-                    //        else
-                    //        {
-                    //            //判斷是否為0，若是0則抓取前一天內里程大於0的值
-                    //            //DbAssister da = new DbAssister();
-                    //            mil = 0;
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        flag = false;
-                    //        errCode = "ERR468";
-                    //    }
-                    //}
+                    CensWebAPI webAPI = new CensWebAPI();
+                    #region 取最新狀況
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
+                    {
+                        WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
+                        flag = webAPI.GetInfo(CID, ref wsOutInfo);
+                        if (false == flag)
+                        {
+                            errCode = wsOutInfo.ErrorCode;
+                            mil = 0;
+                        }
+                        else
+                        {
+                            if (wsOutInfo.data.CID == CID)
+                            {
+                                if (wsOutInfo.data.Milage > 0)
+                                {
+                                    mil = wsOutInfo.data.Milage;
+                                }
+                                else
+                                {
+                                    //判斷是否為0，若是0則抓取前一天內里程大於0的值
+                                    //DbAssister da = new DbAssister();
+                                    mil = 0;
+                                }
+                            }
+                            else
+                            {
+                                flag = false;
+                                errCode = "ERR468";
+                            }
+                        }
+                    }
                     #endregion
 
-                    //執行sp合約
+                    #region 執行sp合約
                     if (flag)
                     {
-                        string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
+                        //20211012 ADD BY ADAM REASON.增加手機定位點
+                        string BookingStartName = "usp_BookingStart";
                         Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                         {
                             IDNO = IDNO,
@@ -374,6 +378,9 @@ namespace WebAPI.Controllers
                             NowMileage = Convert.ToSingle(mil),
                             StopTime = (string.IsNullOrWhiteSpace(apiInput.ED)) ? "" : apiInput.ED,
                             Insurance = apiInput.Insurance
+                            //20211012 ADD BY ADAM REASON.增加手機定位點
+                            //PhoneLat = apiInput.PhoneLat,
+                            //PhoneLon = apiInput.PhoneLon
                         };
                         SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
                         SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
@@ -382,7 +389,7 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-                        string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
+                        string BookingControlName = "usp_BookingControl";
                         SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                         {
                             IDNO = IDNO,
@@ -395,178 +402,187 @@ namespace WebAPI.Controllers
                         flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingStartOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                     }
-
-                    #region Adam哥上線記得打開
-                    //if (flag && webAPI.IsSupportCombineCmd(CID))
-                    //{
-                    //    WSInput_CombineCmdGetCar wsInput = new WSInput_CombineCmdGetCar()
-                    //    {
-                    //        CID = CID,
-                    //        data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
-                    //    };
-                    //    //要將卡號寫入車機
-                    //    int count = 0;
-                    //    int CardLen = lstCardList.Count;
-                    //    if (CardLen > 0)
-                    //    {
-                    //        WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CardLen];
-                    //        //寫入顧客卡
-                    //        var CardNo = string.Empty;
-                    //        for (int i = 0; i < CardLen; i++)
-                    //        {
-                    //            CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
-                    //            CardData[i].CardNo = lstCardList[i].CardNO;
-                    //            CardNo += lstCardList[i].CardNO;
-                    //            count++;
-                    //        }
-
-                    //        if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
-                    //        {
-                    //            wsInput.data = CardData;
-                    //        }
-                    //    }
-                    //    WSOutput_Base wsOut = new WSOutput_Base();
-                    //    Thread.Sleep(1000);
-                    //    flag = webAPI.CombineCmdGetCar(wsInput, ref wsOut);
-                    //    if (false == flag || wsOut.Result == 1)
-                    //    {
-                    //        errCode = wsOut.ErrorCode;
-                    //        errMsg = wsOut.ErrMsg;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    //設定租約狀態
-                    //    if (flag)
-                    //    {
-                    //        WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
-                    //        {
-                    //            CID = CID,
-                    //            OrderStatus = 1
-                    //        };
-                    //        WSOutput_Base wsOut = new WSOutput_Base();
-                    //        Thread.Sleep(1000);
-                    //        flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
-                    //        if (false == flag || wsOut.Result == 1)
-                    //        {
-                    //            errCode = wsOut.ErrorCode;
-                    //            errMsg = wsOut.ErrMsg;
-                    //        }
-                    //    }
-                    //    //解防盜
-                    //    if (flag)
-                    //    {
-                    //        WSInput_SendLock wsLockInput = new WSInput_SendLock()
-                    //        {
-                    //            CID = CID,
-                    //            CMD = 4
-                    //        };
-                    //        WSOutput_Base wsOut = new WSOutput_Base();
-                    //        Thread.Sleep(1500);
-                    //        flag = webAPI.SendLock(wsLockInput, ref wsOut);
-                    //        if (false == flag || wsOut.Result == 1)
-                    //        {
-                    //            errCode = wsOut.ErrorCode;
-                    //            errMsg = wsOut.ErrMsg;
-                    //        }
-                    //    }
-                    //    //寫入顧客卡 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡
-                    //    if (flag)
-                    //    {
-                    //        //要將卡號寫入車機
-                    //        int count = 0;
-                    //        int CardLen = lstCardList.Count;
-                    //        if (CardLen > 0)
-                    //        {
-                    //            SendCarNoData[] CardData = new SendCarNoData[CardLen];
-                    //            //寫入顧客卡
-                    //            WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
-                    //            {
-                    //                CID = CID,
-                    //                mode = 1
-                    //            };
-                    //            var CardNo = string.Empty;
-                    //            for (int i = 0; i < CardLen; i++)
-                    //            {
-                    //                CardData[i] = new SendCarNoData();
-                    //                CardData[i].CardNo = lstCardList[i].CardNO;
-                    //                CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
-                    //                CardNo += lstCardList[i].CardNO;
-                    //                count++;
-                    //            }
-
-                    //            if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
-                    //            {
-                    //                wsInput.data = new SendCarNoData[CardLen];
-                    //                wsInput.data = CardData;
-                    //                WSOutput_Base wsOut = new WSOutput_Base();
-                    //                Thread.Sleep(500);
-                    //                flag = webAPI.SendCardNo(wsInput, ref wsOut);
-                    //                if (false == flag)
-                    //                {
-                    //                    errCode = wsOut.ErrorCode;
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //    //開啟NFC電源 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡就不用開啟電源了
-                    //    //if (flag)
-                    //    //{
-                    //    //    Thread.Sleep(1000);
-                    //    //    WSOutput_Base wsOut = new WSOutput_Base();
-                    //    //    flag = webAPI.NFCPower(CID, 1, LogID, ref wsOut);
-                    //    //    if (false == flag || wsOut.Result == 1)
-                    //    //    {
-                    //    //        errCode = wsOut.ErrorCode;
-                    //    //        errMsg = wsOut.ErrMsg;
-                    //    //    }
-                    //    //}
-                    //}
                     #endregion
 
+                    #region 車機指令(設定租約、解防盜、寫入顧客卡)
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
+                    {
+                        if (flag && webAPI.IsSupportCombineCmd(CID))
+                        {
+                            WSInput_CombineCmdGetCar wsInput = new WSInput_CombineCmdGetCar()
+                            {
+                                CID = CID,
+                                data = new WSInput_CombineCmdGetCar.SendCarNoData[] { }
+                            };
+                            //要將卡號寫入車機
+                            int count = 0;
+                            int CardLen = lstCardList.Count;
+                            if (CardLen > 0)
+                            {
+                                WSInput_CombineCmdGetCar.SendCarNoData[] CardData = new WSInput_CombineCmdGetCar.SendCarNoData[CardLen];
+                                //寫入顧客卡
+                                var CardNo = string.Empty;
+                                for (int i = 0; i < CardLen; i++)
+                                {
+                                    CardData[i] = new WSInput_CombineCmdGetCar.SendCarNoData();
+                                    CardData[i].CardNo = lstCardList[i].CardNO;
+                                    CardNo += lstCardList[i].CardNO;
+                                    count++;
+                                }
+
+                                if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
+                                {
+                                    wsInput.data = CardData;
+                                }
+                            }
+                            WSOutput_Base wsOut = new WSOutput_Base();
+                            Thread.Sleep(1000);
+                            flag = webAPI.CombineCmdGetCar(wsInput, ref wsOut);
+                            if (false == flag || wsOut.Result == 1)
+                            {
+                                errCode = wsOut.ErrorCode;
+                                errMsg = wsOut.ErrMsg;
+                            }
+                        }
+                        else
+                        {
+                            //設定租約狀態
+                            if (flag)
+                            {
+                                WSInput_SetOrderStatus wsOrderInput = new WSInput_SetOrderStatus()
+                                {
+                                    CID = CID,
+                                    OrderStatus = 1
+                                };
+                                WSOutput_Base wsOut = new WSOutput_Base();
+                                Thread.Sleep(1000);
+                                flag = webAPI.SetOrderStatus(wsOrderInput, ref wsOut);
+                                if (false == flag || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                    errMsg = wsOut.ErrMsg;
+                                }
+                            }
+                            //解防盜
+                            if (flag)
+                            {
+                                WSInput_SendLock wsLockInput = new WSInput_SendLock()
+                                {
+                                    CID = CID,
+                                    CMD = 4
+                                };
+                                WSOutput_Base wsOut = new WSOutput_Base();
+                                Thread.Sleep(1500);
+                                flag = webAPI.SendLock(wsLockInput, ref wsOut);
+                                if (false == flag || wsOut.Result == 1)
+                                {
+                                    errCode = wsOut.ErrorCode;
+                                    errMsg = wsOut.ErrMsg;
+                                }
+                            }
+                            //寫入顧客卡 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡
+                            if (flag)
+                            {
+                                //要將卡號寫入車機
+                                int count = 0;
+                                int CardLen = lstCardList.Count;
+                                if (CardLen > 0)
+                                {
+                                    SendCarNoData[] CardData = new SendCarNoData[CardLen];
+                                    //寫入顧客卡
+                                    WSInput_SendCardNo wsInput = new WSInput_SendCardNo()
+                                    {
+                                        CID = CID,
+                                        mode = 1
+                                    };
+                                    var CardNo = string.Empty;
+                                    for (int i = 0; i < CardLen; i++)
+                                    {
+                                        CardData[i] = new SendCarNoData();
+                                        CardData[i].CardNo = lstCardList[i].CardNO;
+                                        CardData[i].CardType = (lstCardList[i].CardType == "C") ? 1 : 0;
+                                        CardNo += lstCardList[i].CardNO;
+                                        count++;
+                                    }
+
+                                    if (!string.IsNullOrEmpty(CardNo))  // 有卡號才呼叫車機
+                                    {
+                                        wsInput.data = new SendCarNoData[CardLen];
+                                        wsInput.data = CardData;
+                                        WSOutput_Base wsOut = new WSOutput_Base();
+                                        Thread.Sleep(500);
+                                        flag = webAPI.SendCardNo(wsInput, ref wsOut);
+                                        if (false == flag)
+                                        {
+                                            errCode = wsOut.ErrorCode;
+                                        }
+                                    }
+                                }
+                            }
+                            //開啟NFC電源 20210316 ADD BY ADAM REASON.開啟租約就可以直接寫入顧客卡就不用開啟電源了
+                            //if (flag)
+                            //{
+                            //    Thread.Sleep(1000);
+                            //    WSOutput_Base wsOut = new WSOutput_Base();
+                            //    flag = webAPI.NFCPower(CID, 1, LogID, ref wsOut);
+                            //    if (false == flag || wsOut.Result == 1)
+                            //    {
+                            //        errCode = wsOut.ErrorCode;
+                            //        errMsg = wsOut.ErrMsg;
+                            //    }
+                            //}
+                        }
+                    }
+                    #endregion
                     #endregion
                 }
                 else
                 {
                     #region 遠傳
                     //取最新狀況, 先送getlast之後從tb捉最近一筆
-                    #region Adam哥上線記得打開
-                    //FETCatAPI FetAPI = new FETCatAPI();
-                    //string requestId = "";
-                    //string CommandType = "";
-                    //OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    //CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    //CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    //WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    //{
-                    //    command = true,
-                    //    method = CommandType,
-                    //    requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                    //    _params = new Params()
-                    //};
-                    //requestId = input.requestId;
-                    //string method = CommandType;
-                    //flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                    //if (flag)
-                    //{
-                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    //}
-                    //if (flag)
-                    //{
-                    //    info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
-                    //    if (info != null)
-                    //    {
-                    //        mil = info.Millage;
-                    //    }
-                    //}
+                    FETCatAPI FetAPI = new FETCatAPI();
+                    string requestId = "";
+                    string CommandType = "";
+                    OtherService.Enum.MachineCommandType.CommandType CmdType;
+                    string method = "";
+
+                    #region ReportNow
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
+                    {
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+                        };
+                        requestId = input.requestId;
+                        method = CommandType;
+                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                        if (flag)
+                        {
+                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        }
+                        if (flag)
+                        {
+                            info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
+                            if (info != null)
+                            {
+                                mil = info.Millage;
+                            }
+                        }
+                    }
                     #endregion
 
                     if (flag)
                     {
+                        #region 執行sp合約
                         //執行sp合約
                         if (flag)
                         {
-                            string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
+                            string BookingStartName = "usp_BookingStart";
                             Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                             {
                                 IDNO = IDNO,
@@ -584,7 +600,7 @@ namespace WebAPI.Controllers
                         }
                         if (flag)
                         {
-                            string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
+                            string BookingControlName = "usp_BookingControl";
                             SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                             {
                                 IDNO = IDNO,
@@ -597,181 +613,180 @@ namespace WebAPI.Controllers
                             flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingStartOutput, ref lstError);
                             baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
                         }
+                        #endregion
 
-                        #region Adam哥上線記得打開
-                        //if (flag && FetAPI.IsSupportCombineCmd(CID))
-                        //{
-                        //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
-                        //    CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
-                        //    WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
-                        //    {
-                        //        command = true,
-                        //        method = CommandType,
-                        //        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        //        _params = new ClientCardNoObj()
-                        //        {
-                        //            ClientCardNo = new string[] { }
-                        //        }
-                        //    };
-                        //    //寫入顧客卡
-                        //    if (lstCardList != null)
-                        //    {
-                        //        int CardLen = lstCardList.Count;
-                        //        if (CardLen > 0)
-                        //        {
-                        //            var CardNo = string.Empty;
-                        //            string[] CardStr = new string[CardLen];
-                        //            for (int i = 0; i < CardLen; i++)
-                        //            {
-                        //                CardStr[i] = lstCardList[i].CardNO;
-                        //                CardNo += lstCardList[i].CardNO;
-                        //            }
-                        //            if (CardStr.Length > 0 && !string.IsNullOrEmpty(CardNo))
-                        //            {
-                        //                SetCardInput._params.ClientCardNo = CardStr;
-                        //            }
-                        //        }
-                        //    }
-                        //    //組合指令顧客卡必輸入，若沒有則帶隨機值
-                        //    if (SetCardInput._params.ClientCardNo.Length == 0)
-                        //    {
-                        //        SetCardInput._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
-                        //    }
-                        //    requestId = SetCardInput.requestId;
-                        //    method = CommandType;
-                        //    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                        //    if (flag)
-                        //    {
-                        //        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    if (flag)
-                        //    {
-                        //        //寫入顧客卡
-                        //        if (lstCardList != null)
-                        //        {
-                        //            int CardLen = lstCardList.Count;
-                        //            if (CardLen > 0)
-                        //            {
-                        //                var CardNo = string.Empty;
-                        //                string[] CardStr = new string[CardLen];
-                        //                for (int i = 0; i < CardLen; i++)
-                        //                {
-                        //                    CardStr[i] = lstCardList[i].CardNO;
-                        //                    CardNo += lstCardList[i].CardNO;
-                        //                }
-                        //                if (CardStr.Length > 0 && !string.IsNullOrEmpty(CardNo))    // 有卡號才呼叫車機
-                        //                {
-                        //                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
-                        //                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
-                        //                    WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
-                        //                    {
-                        //                        command = true,
-                        //                        method = CommandType,
-                        //                        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        //                        _params = new ClientCardNoObj()
-                        //                        {
-                        //                            ClientCardNo = CardStr
-                        //                        }
-                        //                    };
-                        //                    requestId = SetCardInput.requestId;
-                        //                    method = CommandType;
-                        //                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
-                        //                    if (flag)
-                        //                    {
-                        //                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        //                    }
-                        //                }
-                        //            }
-                        //        }
-                        //    }
-                        //    //設定租約狀態
-                        //    if (flag)
-                        //    {
-                        //        if (info.extDeviceStatus1 == 0) //無租約才要送設約租
-                        //        {
-                        //            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent);
-                        //            CmdType = OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent;
-                        //            WSInput_Base<Params> SetRentInput = new WSInput_Base<Params>()
-                        //            {
-                        //                command = true,
-                        //                method = CommandType,
-                        //                requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        //                _params = new Params()
-                        //            };
+                        #region 車機指令(設定租約、解防盜、寫入顧客卡)
+                        if (isDebug == "0") // isDebug = 1，不送車機指令
+                        {
+                            if (flag && FetAPI.IsSupportCombineCmd(CID))
+                            {
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo;
+                                WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
+                                {
+                                    command = true,
+                                    method = CommandType,
+                                    requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    _params = new ClientCardNoObj()
+                                    {
+                                        ClientCardNo = new string[] { }
+                                    }
+                                };
+                                //寫入顧客卡
+                                if (lstCardList != null)
+                                {
+                                    int CardLen = lstCardList.Count;
+                                    if (CardLen > 0)
+                                    {
+                                        var CardNo = string.Empty;
+                                        string[] CardStr = new string[CardLen];
+                                        for (int i = 0; i < CardLen; i++)
+                                        {
+                                            CardStr[i] = lstCardList[i].CardNO;
+                                            CardNo += lstCardList[i].CardNO;
+                                        }
+                                        if (CardStr.Length > 0 && !string.IsNullOrEmpty(CardNo))
+                                        {
+                                            SetCardInput._params.ClientCardNo = CardStr;
+                                        }
+                                    }
+                                }
+                                //組合指令顧客卡必輸入，若沒有則帶隨機值
+                                if (SetCardInput._params.ClientCardNo.Length == 0)
+                                {
+                                    SetCardInput._params.ClientCardNo = new string[] { (new Random()).Next(10000000, 99999999).ToString().PadLeft(10, 'X') };
+                                }
+                                requestId = SetCardInput.requestId;
+                                method = CommandType;
+                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                                if (flag)
+                                {
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                }
+                            }
+                            else
+                            {
+                                if (flag)
+                                {
+                                    //寫入顧客卡
+                                    if (lstCardList != null)
+                                    {
+                                        int CardLen = lstCardList.Count;
+                                        if (CardLen > 0)
+                                        {
+                                            var CardNo = string.Empty;
+                                            string[] CardStr = new string[CardLen];
+                                            for (int i = 0; i < CardLen; i++)
+                                            {
+                                                CardStr[i] = lstCardList[i].CardNO;
+                                                CardNo += lstCardList[i].CardNO;
+                                            }
+                                            if (CardStr.Length > 0 && !string.IsNullOrEmpty(CardNo))    // 有卡號才呼叫車機
+                                            {
+                                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo);
+                                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetClientCardNo;
+                                                WSInput_Base<ClientCardNoObj> SetCardInput = new WSInput_Base<ClientCardNoObj>()
+                                                {
+                                                    command = true,
+                                                    method = CommandType,
+                                                    requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                                    _params = new ClientCardNoObj()
+                                                    {
+                                                        ClientCardNo = CardStr
+                                                    }
+                                                };
+                                                requestId = SetCardInput.requestId;
+                                                method = CommandType;
+                                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetCardInput, LogID);
+                                                if (flag)
+                                                {
+                                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                //設定租約狀態
+                                if (flag)
+                                {
+                                    if (info.extDeviceStatus1 == 0) //無租約才要送設約租
+                                    {
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetVehicleRent;
+                                        WSInput_Base<Params> SetRentInput = new WSInput_Base<Params>()
+                                        {
+                                            command = true,
+                                            method = CommandType,
+                                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                            _params = new Params()
+                                        };
 
-                        //            requestId = SetRentInput.requestId;
-                        //            method = CommandType;
-                        //            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
-                        //            if (flag)
-                        //            {
-                        //                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        //            }
-                        //        }
-                        //    }
-                        //    //解防盜
-                        //    if (flag)
-                        //    {
-                        //        if (info.SecurityStatus == 1) //有開防盜才要解
-                        //        {
-                        //            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.AlertOff);
-                        //            CmdType = OtherService.Enum.MachineCommandType.CommandType.AlertOff;
-                        //            WSInput_Base<Params> SetAlertOffInput = new WSInput_Base<Params>()
-                        //            {
-                        //                command = true,
-                        //                method = CommandType,
-                        //                requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        //                _params = new Params()
-                        //            };
+                                        requestId = SetRentInput.requestId;
+                                        method = CommandType;
+                                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetRentInput, LogID);
+                                        if (flag)
+                                        {
+                                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                        }
+                                    }
+                                }
+                                //解防盜
+                                if (flag)
+                                {
+                                    if (info.SecurityStatus == 1) //有開防盜才要解
+                                    {
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.AlertOff);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.AlertOff;
+                                        WSInput_Base<Params> SetAlertOffInput = new WSInput_Base<Params>()
+                                        {
+                                            command = true,
+                                            method = CommandType,
+                                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                            _params = new Params()
+                                        };
 
-                        //            requestId = SetAlertOffInput.requestId;
-                        //            method = CommandType;
-                        //            flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetAlertOffInput, LogID);
-                        //            if (flag)
-                        //            {
-                        //                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        //            }
-                        //        }
-                        //    }
-                        //}
+                                        requestId = SetAlertOffInput.requestId;
+                                        method = CommandType;
+                                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, SetAlertOffInput, LogID);
+                                        if (flag)
+                                        {
+                                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         #endregion
                     }
                     #endregion
                 }
             }
-            //送短租, 先pendding
-            if (flag)
-            {
-                //預約的資料，似乎走排程比較好
-                //由另外的JOB來呼叫執行，在BookingStart存檔那邊去處理狀態
-            }
             #region 寫取車照片到azure
             if (flag)
             {
-                #region Adam哥上線記得打開
-                //OtherRepository otherRepository = new OtherRepository(connetStr);
-                //List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
-                //int PICLen = lstCarPIC.Count;
-                //for (int i = 0; i < PICLen; i++)
-                //{
-                //    try
-                //    {
-                //        string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+                if (isDebug == "0") // isDebug = 1，不寫azure
+                {
+                    OtherRepository otherRepository = new OtherRepository(connetStr);
+                    List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
+                    int PICLen = lstCarPIC.Count;
+                    for (int i = 0; i < PICLen; i++)
+                    {
+                        try
+                        {
+                            string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
 
-                //        flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
-                //        if (flag)
-                //        {
-                //            bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
-                //        }
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        flag = true; //先bypass，之後補傳再刪
-                //    }
-                //}
-                #endregion
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
+                            if (flag)
+                            {
+                                bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            flag = true; //先bypass，之後補傳再刪
+                        }
+                    }
+                }
             }
             #endregion
             #endregion

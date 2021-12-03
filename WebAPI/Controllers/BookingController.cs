@@ -41,6 +41,7 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
 
         CommonFunc baseVerify { get; set; }
 
@@ -114,7 +115,7 @@ namespace WebAPI.Controllers
                 }
 
                 SDate = apiInput.SDate == "" ? DateTime.Now : Convert.ToDateTime(apiInput.SDate);
-                EDate = apiInput.SDate == "" ? DateTime.Now.AddHours(1) : Convert.ToDateTime(apiInput.EDate);
+                EDate = apiInput.EDate == "" ? DateTime.Now.AddHours(1) : Convert.ToDateTime(apiInput.EDate);
                 lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
             }
             //不開放訪客
@@ -391,7 +392,7 @@ namespace WebAPI.Controllers
                         {
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                CheckoutMode = 0,
+                                CheckoutMode = 4,
                                 OrderNo = spOut.OrderNum,
                                 IDNO = IDNO,
                                 Amount = preAuthAmt,
@@ -413,7 +414,7 @@ namespace WebAPI.Controllers
                                 trace.BaseMsg = ex.Message;                          
                             }
 
-                            trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, errCode });
+                            trace.traceAdd("DoAuthV4", new { authflag, AuthInput, AuthOutput, errCode });
                             trace.FlowList.Add("刷卡授權");
                         }
                         #endregion
@@ -500,38 +501,42 @@ namespace WebAPI.Controllers
             //預約成功
             if (flag && spOut.haveCar == 1)
             {
+                #region 機車先送report now
                 //車機指令改善 機車先送report now
-                #region Adam哥上線記得打開
-                //if (ProjType == 4)
-                //{
-                //    FETCatAPI FetAPI = new FETCatAPI();
-                //    string requestId = "";
-                //    string CommandType = "";
-                //    OtherService.Enum.MachineCommandType.CommandType CmdType;
-                //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                //    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                //    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                //    {
-                //        command = true,
-                //        method = CommandType,
-                //        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                //        _params = new Params()
-                //    };
-                //    requestId = input.requestId;
-                //    string method = CommandType;
-                //    //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
-                //    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                //    //20210326 ADD BY ADAM REASON.先不等report回覆
-                //    //if (flag)
-                //    //{
-                //    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                //    //}
-                //}
+                if (ProjType == 4)
+                {
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
+                    {
+                        FETCatAPI FetAPI = new FETCatAPI();
+                        string requestId = "";
+                        string CommandType = "";
+                        OtherService.Enum.MachineCommandType.CommandType CmdType;
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
+                        {
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+                        };
+                        requestId = input.requestId;
+                        string method = CommandType;
+                        //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
+                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                        //20210326 ADD BY ADAM REASON.先不等report回覆
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
+                    }
+                }
                 #endregion
+
+
 
                 outputApi = new OAPI_Booking()
                 {
-                    //OrderNo = "H" + spOut.OrderNum.ToString().PadLeft(7, '0'),
                     //20210427 ADD BY ADAM REASON.針對編碼調整
                     OrderNo = "H" + spOut.OrderNum.ToString().PadLeft(spOut.OrderNum.ToString().Length, '0'),
                     LastPickTime = LastPickCarTime.ToString("yyyyMMddHHmmss")
