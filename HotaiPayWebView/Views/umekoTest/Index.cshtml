@@ -22,17 +22,32 @@
 
         <input type="button" value="AddCard" class="btn btn-primary" onclick="AddCard()" />
         <input type="button" value="FastAddCard" name="submit" onclick="FastAddCard()" />
+        <input type="button" value="CrditAuth" name="submit" onclick="CrditAuth()" />
+        <input type="button" value="inquiry" name="submit" onclick="inquiry()" />
         @using (Html.BeginForm("FastAddCard", "umekoTest", FormMethod.Post, new { @id = "FastAddCardForm" }))
         {
-
+            <hr />
+            <p>快綁參數</p>
             <p><span>IDNO:</span> <span>A121563290</span></p>
             <p><span>Birthday:</span><span>19910804</span></p>
-            
+
             @Html.TextBoxFor(m => m.CTBCIDNO, new { @class = "form-control", placeholder = "中信客戶身分證" })
             @Html.TextBoxFor(m => m.Birthday, new { @class = "form-control", placeholder = "中信客戶生日(YYYYMMDD)" })
 
         }
 
+        @using (Html.BeginForm("CrditAuth", "umekoTest", FormMethod.Post, new { @id = "CrditAuthForm" }))
+        {
+            <hr />
+            <p>信用卡授權/查詢</p>
+            <p><span>卡片ID:</span> <span>1850</span></p>
+
+            @Html.TextBoxFor(m => m.OrderID, new { @class = "form-control", placeholder = "訂單編號" })
+            @Html.TextBoxFor(m => m.CardToken, new { @class = "form-control", placeholder = "卡片ID" })
+
+        }
+
+        <hr />
         <p>br換行</p>
         @Html.ToLineBreak(Model.hotaiCardInfo.BankDesc)
         <hr>
@@ -89,6 +104,42 @@
                     if (result.succ) {
                         GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);
                     }
+                },
+                error: function () {
+                    console.log("x");
+                }
+            })
+
+            return false;
+        }
+
+        function CrditAuth() {
+            alert("Payment Auth");
+            $.ajax({
+                type: "POST",
+                url:"@Url.Action("CrditAuth")",
+                data: $("#CrditAuthForm").serialize(),
+                success: function (result) {
+                    console.log(result);
+                    alert("Y");
+                },
+                error: function () {
+                    console.log("x");
+                }
+            })
+
+            return false;
+        }
+
+        function inquiry() {
+            alert("inquiry");
+            $.ajax({
+                type: "POST",
+                url:"@Url.Action("inquiry")",
+                data: $("#CrditAuthForm").serialize(),
+                success: function (result) {
+                    console.log(result);
+                    alert("Y");
                 },
                 error: function () {
                     console.log("x");
