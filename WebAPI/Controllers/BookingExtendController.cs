@@ -30,6 +30,8 @@ namespace WebAPI.Controllers
     public class BookingExtendController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoBookingExtend(Dictionary<string, object> value)
         {
@@ -54,7 +56,7 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SPOutput_GetBookingStartTime spOut = null;
             OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
-            var trace = new TraceCom();
+
             string Contentjson = "";
             bool isGuest = true;
 
@@ -65,7 +67,7 @@ namespace WebAPI.Controllers
             DateTime EndTime = new DateTime();      //預計還車時間
             #endregion
             #region 防呆
-            trace.traceAdd("apiIn", value);
+
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -198,82 +200,99 @@ namespace WebAPI.Controllers
             #region 預授權機制
             if (flag)
             {
-                try
+                CommonService commonService = new CommonService();
+                SPOutput_OrderForPreAuth orderInfo = commonService.GetOrderForPreAuth(tmpOrder);
+                //預授權不處理專案(長租客服月結E077)
+                string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
+                int preAuthAmt = 0;
+                bool canAuth = false;
+                if (orderInfo != null && (orderInfo.ProjType == 0 || orderInfo.ProjType == 3) && !notHandle.Contains(orderInfo.ProjID))
                 {
-                    CommonService commonService = new CommonService();
-                    #region 判斷延長用車是否要加收
-                    SPOutput_OrderForPreAuth orderInfo = commonService.GetOrderForPreAuth(tmpOrder);
-                    //預授權不處理專案(長租客服月結E077)
-                    string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
-                    int preAuthAmt = 0;
-                    bool canAuth = false;
-                    if (orderInfo != null && (orderInfo.ProjType == 0 || orderInfo.ProjType == 3) && !notHandle.Contains(orderInfo.ProjID))
-                    {
-                        EstimateData estimateData = new EstimateData()
-                        {
-                            ProjID = orderInfo.ProjID,
-                            ProjType = orderInfo.ProjType,
-                            SD = orderInfo.SD,
-                            ED = orderInfo.ED,
-                            CarNo = orderInfo.CarNo,
-                            CarTypeGroupCode = orderInfo.CarTypeGroupCode,
-                            WeekdayPrice = orderInfo.PRICE,
-                            HoildayPrice = orderInfo.PRICE_H,
-                            Insurance = orderInfo.Insurance,
-                            InsurancePerHours = orderInfo.InsurancePerHours
-                        };
+                    var trace = new TraceCom();
+                    trace.traceAdd("apiIn", value);
 
-                        //用車+延長時數(未超過24小時不取授權)
-                        double oriHour = StopTime.Subtract(orderInfo.SD).TotalHours;
-                        if (oriHour > 24)
+                    #region 計算預授權金
+                    EstimateData estimateData = new EstimateData()
+                    {
+                        ProjID = orderInfo.ProjID,
+                        ProjType = orderInfo.ProjType,
+                        SD = orderInfo.SD,
+                        ED = orderInfo.ED,
+                        CarNo = orderInfo.CarNo,
+                        CarTypeGroupCode = orderInfo.CarTypeGroupCode,
+                        WeekdayPrice = orderInfo.PRICE,
+                        HoildayPrice = orderInfo.PRICE_H,
+                        Insurance = orderInfo.Insurance,
+                        InsurancePerHours = orderInfo.InsurancePerHours
+                    };
+
+                    //原預計用車時數
+                    double oriHour = orderInfo.ED.Subtract(orderInfo.SD).TotalHours;
+                    //延長用車總時數
+                    double extendHour = StopTime.Subtract(orderInfo.ED).TotalHours;
+                    //扣除預授權金額註記
+                    bool deduct = false;
+                    var estimateDetail = new EstimateDetail();
+                    //首次延長
+                    if (orderInfo.ExtendTimes == 0)
+                    {
+                        canAuth = true;
+                        if (extendHour >= 6)
                         {
-                            //首次延長
-                            if (orderInfo.ExtendTimes == 0)
+                            //新的預估租金與原預授權的差額進行預授權
+                            deduct = true;
+                            estimateData.ED = StopTime;
+                        }
+                        else
+                        {
+                            if (orderInfo.ProjType == 0) //同站
                             {
-                                canAuth = true;
-                                //時間 =< 6小時，則取6小時預估總金額授權【租金+里程費+安心服務】
-                                if (StopTime.Subtract(orderInfo.ED).TotalHours <= 6)
-                                {
-                                    estimateData.SD = orderInfo.ED;
-                                    estimateData.ED = orderInfo.ED.AddHours(6);
-                                }
-                                //時間 > 6小時，預估授權金與原預授權的差額進行預授權
-                                else
-                                {
-                                    estimateData.ED = StopTime;
-                                }
-                                int authAmt = commonService.EstimatePreAuthAmt(estimateData);
-                                preAuthAmt = authAmt - orderInfo.PreAuthAmt;
+                                //收6小時
+                                estimateData.SD = orderInfo.ED;
+                                estimateData.ED = orderInfo.ED.AddHours(6);
                             }
-                            else if (orderInfo.ExtendTimes > 0)
+                            else if (orderInfo.ProjType == 3)//路邊
                             {
-                                //計算【首次延長開始-預計延長還車】時數
-                                double extendHour = StopTime.Subtract(orderInfo.ExtendStartTime).TotalHours;
-                                canAuth = extendHour > 6 ? true : false;
-                                if (canAuth)
-                                {
-                                    estimateData.ED = StopTime;
-                                    int authAmt = commonService.EstimatePreAuthAmt(estimateData);
-                                    preAuthAmt = orderInfo.PreAuthAmt > 0 ? authAmt - orderInfo.PreAuthAmt : 0;
-                                }
+                                //新的預估租金與原預授權的差額進行預授權
+                                deduct = true;
+                                estimateData.ED = orderInfo.ED.AddHours(6);
                             }
                         }
 
-                        trace.traceAdd("EstimatePreAuthAmt", new {   canAuth, oriHour, orderInfo.ExtendTimes, preAuthAmt });
-                        trace.FlowList.Add("計算預授權金額");
                     }
+                    else
+                    {
+                        //延長用車總時數 超過6小時則取超出時數的預估總金額【租金+里程+安心】
+                        if (extendHour > 6)
+                        {
+                            canAuth = true;
+                            //新的預估租金與原預授權的差額進行預授權
+                            deduct = true;
+                            estimateData.ED = StopTime;
+                        }
+                    }
+
+                    if (canAuth)
+                    {
+                        EstimateDetail outData;
+                        commonService.EstimatePreAuthAmt(estimateData, out outData);
+                        preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? outData.estimateAmt - orderInfo.PreAuthAmt : outData.estimateAmt) : outData.estimateAmt;
+                        estimateDetail = outData;
+                    }
+                    trace.traceAdd("EstimatePreAuthAmt", new { canAuth, oriHour, extendHour, estimateData, estimateDetail, preAuthAmt });
+                    trace.FlowList.Add("計算預授權金");
                     #endregion
-                    #region 立即授權
+                    #region 後續流程
                     if (canAuth && preAuthAmt > 0)
                     {
                         bool authFlag = false;
                         string error = "";
 
-                        #region 立即授權
+                        #region 刷卡授權
                         CreditAuthComm creditAuthComm = new CreditAuthComm();
                         var AuthInput = new IFN_CreditAuthRequest
                         {
-                            CheckoutMode = 0,
+                            CheckoutMode = 4,
                             OrderNo = tmpOrder,
                             IDNO = IDNO,
                             Amount = preAuthAmt,
@@ -283,17 +302,23 @@ namespace WebAPI.Controllers
                             insUser = funName,
                             AuthType = 4
                         };
-                        authFlag = creditAuthComm.DoAuthV4(AuthInput, ref error, ref AuthOutput);
-
-                        trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, error });
-                        trace.FlowList.Add("立即授權");
+                        try
+                        {
+                            authFlag = creditAuthComm.DoAuthV4(AuthInput, ref error, ref AuthOutput);
+                        }
+                        catch (Exception ex)
+                        {
+                            authFlag = false; //刷卡錯誤不擋延長用車
+                            trace.BaseMsg = ex.Message;
+                        }
+                        trace.traceAdd("DoAuthV4", new { authFlag, AuthInput, AuthOutput, error });
+                        trace.FlowList.Add("刷卡授權");
 
                         #endregion
                         #region 授權結果
                         if (authFlag)
                         {
-                            string merchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no;
-                            string bankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo;
+
                             #region 寫入預授權
                             SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
                             {
@@ -305,8 +330,8 @@ namespace WebAPI.Controllers
                                 final_price = preAuthAmt,
                                 OrderNo = tmpOrder,
                                 PRGName = funName,
-                                MerchantTradNo = merchantTradNo,
-                                BankTradeNo = bankTradeNo,
+                                MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                                BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
                                 Status = 2
                             };
                             commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
@@ -340,32 +365,37 @@ namespace WebAPI.Controllers
                             //回傳錯誤代碼，但仍可延長用車
                             errCode = "ERR604";
 
-                            #region Adam哥上線記得打開
-                            ////發送MAIL通知據點人員
-                            //if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
-                            //{
-                            //    SendMail send = new SendMail();
-                            //    string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
-                            //    string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
-                            //    string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
-                            //    send.DoSendMail(Title, Body, Receiver);
-                            //}
+                            #region 發送MAIL通知據點人員
+                            if (isDebug == "0") // isDebug == "1" 不發Mail
+                            {
+                                if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
+                                {
+                                    SendMail send = new SendMail();
+                                    string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
+                                    string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
+                                    string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
+
+                                    try
+                                    {
+                                        send.DoSendMail(Title, Body, Receiver);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                    }
+
+                                }
+                            }
                             #endregion
                         }
                         #endregion
                     }
                     #endregion
-                }
-                catch (Exception ex)
-                {
-                    trace.BaseMsg = ex.Message;
-                }
 
-                trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                trace.OrderNo = tmpOrder;
-                var carRepo = new CarRentRepo();
-                carRepo.AddTraceLog(51, funName, trace, flag);
-
+                    trace.traceAdd("TraceFinal", new { errCode, errMsg });
+                    trace.OrderNo = tmpOrder;
+                    var carRepo = new CarRentRepo();
+                    carRepo.AddTraceLog(51, funName, trace, flag);
+                }
             }
             #endregion
             #region 延長用車

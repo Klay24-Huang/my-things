@@ -1695,7 +1695,7 @@ namespace OtherService
                 {
                     orderInfo.creditType = type.Value;
                     orderInfo.OrderString = ori.Substring(0, Index);
-                    if (orderInfo.creditType == 0)
+                    if (orderInfo.creditType == 0 || orderInfo.creditType == 6) //租金or訂金
                     {
                         orderInfo.OrderNo = Convert.ToInt64(orderInfo.OrderString);
                     }
@@ -1717,7 +1717,8 @@ namespace OtherService
                 new CreditCardPayInfo{ PayType = 3,PayTypeStr = "補繳",PayTypeCode="G_"},
                 new CreditCardPayInfo{ PayType = 4,PayTypeStr = "訂閱",PayTypeCode="M_"},
                 new CreditCardPayInfo{ PayType = 5,PayTypeStr = "訂閱",PayTypeCode="MA_"},
-                new CreditCardPayInfo{ PayType = 6,PayTypeStr = "錢包",PayTypeCode="W_"},
+                new CreditCardPayInfo{ PayType = 6,PayTypeStr = "春節訂金",PayTypeCode="D_"},
+                new CreditCardPayInfo{ PayType = 7,PayTypeStr = "錢包",PayTypeCode="W_"},
             };
 
             return CreditCardPayInfoColl;
