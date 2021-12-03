@@ -278,7 +278,7 @@ namespace WebAPI.Controllers
                                     LogID = LogID,
                                     Token = Access_Token,
                                     AuthType = 3,
-                                    CardType = AuthOutput == null ? -1 : AuthOutput.CardType,
+                                    CardType = 1,
                                     final_price = preAuthAmt,
                                     OrderNo = tmpOrder,
                                     PRGName = funName,
@@ -322,7 +322,6 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
-
             }
 
             //開始對車機做動作

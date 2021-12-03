@@ -129,6 +129,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HotaiPayController.cs" />
+    <Compile Include="Controllers\HotaiPayCtbcController.cs" />
     <Compile Include="Controllers\umekoTestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -174,6 +175,7 @@
     <Content Include="images\graphic\popup\.DS_Store" />
     <Content Include="images\icon\.DS_Store" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\HotaiPayJS\ActionJS\BindNewCard.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep1.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep2.js" />
@@ -230,6 +232,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\HotaiPayCtbc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

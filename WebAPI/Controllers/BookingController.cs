@@ -104,6 +104,7 @@ namespace WebAPI.Controllers
             bool WalletFlag = false;    // 綁定錢包
             int WalletNotice = 0;       // 錢包餘額不足通知 (0:不顯示 1:顯示)
             int WalletAmout = 0;        // 錢包餘額
+
             #endregion
             #region 防呆
 
@@ -448,7 +449,7 @@ namespace WebAPI.Controllers
                         {
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                    CheckoutMode = 4,
+                                CheckoutMode = 4,
                                 OrderNo = spOut.OrderNum,
                                 IDNO = IDNO,
                                 Amount = preAuthAmt,
@@ -467,7 +468,7 @@ namespace WebAPI.Controllers
                             {
                                 authflag = false; //走取消訂單
                                 flag = false;
-                                trace.BaseMsg = ex.Message;                          
+                                trace.BaseMsg = ex.Message;
                             }
 
                             trace.traceAdd("DoAuthV4", new { authflag, AuthInput, AuthOutput, errCode });
@@ -475,20 +476,18 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                         #region 寫入預授權
-
-
                         SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
                         {
                             IDNO = IDNO,
                             LogID = LogID,
                             Token = Access_Token,
                             AuthType = 1,
-                                CardType = AuthOutput == null ? -1 : AuthOutput.CardType,
+                            CardType = 1,
                             final_price = preAuthAmt,
                             OrderNo = spOut.OrderNum,
                             PRGName = funName,
-                                MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
-                                BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
+                            MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                            BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
                             Status = canAuth ? 2 : 0
                         };
                         commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);

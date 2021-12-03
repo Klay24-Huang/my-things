@@ -25,8 +25,8 @@
 
 
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員註冊</h6></header>
-    <div id="VuePage">
 
+    <div id="VuePage">
         <div class="container" style="max-width: 414px;position:relative">
             <div class="msform mt-4">
                 <!-- progressbar -->
@@ -46,15 +46,14 @@
                     <button type="button" class="btn btn-blue-small mb-2" v-on:click="GetOtpCode()">發送驗證碼</button>
                 </form>
 
-                <input type="text" class="form-control input-light" v-model="form.OtpCode" placeholder="輸入驗證碼" value="@ViewBag.OtpCode" required>
-                <p id="otpCodehint" style="color:red;">@ViewBag.Alert</p>
+                <input type="text" id="optCode" class="form-control input-light" placeholder="輸入驗證碼" value="@ViewBag.OtpCode" v-model="form.OtpCode" required>
+                <p id="pwdHint" style="color:red;">@ViewBag.Alert</p>
             </div>
-
         </div>
 
         <div class="footer text-center">
 
-            <button type="submit" class="btn btn-disable-gray mb-2" v-on:click="CheckOtpCode()">
+            <button type="submit" class="btn btn-disable-gray mb-2" id="nextStep" v-on:click="CheckOtpCode()">
                 下一步
             </button>
             <!-- 驗證碼輸入後class改為btn-blue -->
@@ -67,7 +66,14 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+
+    <!-- 自己寫的js -->
+    <script src="js/main.js"></script>
+
+    <!-- 自己寫的js -->
 
 </body>
 </html>
+

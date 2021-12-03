@@ -272,7 +272,7 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                     if (canAuth)
+                    if (canAuth)
                     {
                         EstimateDetail outData;
                         commonService.EstimatePreAuthAmt(estimateData, out outData);

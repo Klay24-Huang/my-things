@@ -22,7 +22,8 @@ namespace HotaiPayWebView.Services
             };
             WebAPIOutput_Token tokenOutput = new WebAPIOutput_Token();
             string errCode = "";
-            flag = hotaiApi.DoRefreshToken(tokenInput, ref tokenOutput, ref errCode);
+            int a = 200;
+            flag = hotaiApi.DoRefreshToken(tokenInput, ref tokenOutput, ref errCode,ref a);
 
             if (flag)
             {

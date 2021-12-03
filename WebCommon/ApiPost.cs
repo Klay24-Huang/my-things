@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Web;
 
 namespace WebCommon
 {
@@ -194,7 +195,7 @@ namespace WebCommon
         /// <param name="Method"></param>
         /// <param name="Header"></param>
         /// <returns></returns>
-        public static PostJsonResultInfo DoApiPostForm(string url, string content, string Method, WebHeaderCollection Header)
+        public static PostJsonResultInfo DoApiPostForm<T>(string url, T content, string Method, WebHeaderCollection Header)
         {
             var resultInfo = new PostJsonResultInfo();
 
@@ -209,12 +210,14 @@ namespace WebCommon
             try
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                byte[] jsonBytes = Encoding.UTF8.GetBytes(content);//要發送的字串轉為byte[]
-                request.ContentLength = jsonBytes.Length;
+                string postData = ObjToFormData<T>(content);
+                byte[] postDataByte = Encoding.UTF8.GetBytes(postData);//要發送的字串轉為byte[]
+
+                request.ContentLength = postDataByte.Length;
 
                 using (var requestStream = request.GetRequestStream())
                 {
-                    requestStream.Write(jsonBytes, 0, jsonBytes.Length);
+                    requestStream.Write(postDataByte, 0, postDataByte.Length);
                 }
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
@@ -273,6 +276,26 @@ namespace WebCommon
 
             return resultInfo;
 
+        }
+
+
+
+        private static string ObjToFormData<T>(T input)
+        {
+            string s = "";
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var t in input.GetType().GetProperties())
+            {
+                string value = t.GetValue(input)?.ToString() ?? "";
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    if (sb.Length > 0)
+                        sb.Append("&");
+                    sb.Append(t.Name).Append("=").Append(value);
+                }
+            }
+            return sb.ToString(); ;
         }
     }
 }

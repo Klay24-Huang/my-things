@@ -274,6 +274,8 @@ html, body {
 
 }
 
+
+
 /* -------------------------------------------login css------------------------------------------------ */
 
 .notice-text {
@@ -645,16 +647,59 @@ body {
     margin-bottom: 80px;
 }
 
-.footer {
-  /* padding-right: 15px;
+ .footer {
+  padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
-  margin-left: auto; */
+  margin-left: auto;
     position: absolute;
     bottom: 0;
     width: 100%;
 padding: 0 24px 24px 24px;
+
+} 
+
+
+
+
+/* 置底btn css */
+
+.footer-btn-box {
+  z-index: 9999;
+  position:fixed;
+  bottom:0px;
+  width: 100%
 }
+.footer-btn-box .buttonBox {
+  width:80%;
+  margin:0 auto;
+  text-align:center;
+
+}
+
+
+.footer-btn-margin{
+  margin-bottom: 80px;
+}
+
+
+@media screen and (max-width: 768px){
+  .footer-btn-margin{
+    margin-bottom: 100px;
+  }
+  
+}
+
+
+@media screen and (max-width: 578px){
+  .footer-btn-margin{
+    margin-bottom: 24px;
+  }
+  
+}
+
+/* 置底btn css */
+
 
 
 /* -------footer閮剖��---------- */
@@ -769,6 +814,16 @@ padding: 0px 16px;
 
 
 
+.tab-btn{
+  width: 50%;
+  border-radius: 0;
+  color: #9FA4AC;
+}
+
+.tab-active{
+  border-bottom: 2px solid #424447;
+  color: #585B60;
+}
 
 
 
