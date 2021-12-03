@@ -209,163 +209,177 @@ namespace WebAPI.Controllers
                 {
                     var trace = new TraceCom();
                     trace.traceAdd("apiIn", value);
-                    try
-                    {
-                        #region 計算預授權金
-                        EstimateData estimateData = new EstimateData()
-                        {
-                            ProjID = orderInfo.ProjID,
-                            ProjType = orderInfo.ProjType,
-                            SD = orderInfo.SD,
-                            ED = orderInfo.ED,
-                            CarNo = orderInfo.CarNo,
-                            CarTypeGroupCode = orderInfo.CarTypeGroupCode,
-                            WeekdayPrice = orderInfo.PRICE,
-                            HoildayPrice = orderInfo.PRICE_H,
-                            Insurance = orderInfo.Insurance,
-                            InsurancePerHours = orderInfo.InsurancePerHours
-                        };
 
-                        //原預計用車時數
-                        double oriHour = orderInfo.ED.Subtract(orderInfo.SD).TotalHours;
-                        //延長用車總時數
-                        double extendHour = StopTime.Subtract(orderInfo.ED).TotalHours;
-                        //扣除預授權金額註記
-                        bool deduct = false;
-                        var estimateDetail = new EstimateDetail();
-                        //首次延長
-                        if (orderInfo.ExtendTimes == 0)
+                    #region 計算預授權金
+                    EstimateData estimateData = new EstimateData()
+                    {
+                        ProjID = orderInfo.ProjID,
+                        ProjType = orderInfo.ProjType,
+                        SD = orderInfo.SD,
+                        ED = orderInfo.ED,
+                        CarNo = orderInfo.CarNo,
+                        CarTypeGroupCode = orderInfo.CarTypeGroupCode,
+                        WeekdayPrice = orderInfo.PRICE,
+                        HoildayPrice = orderInfo.PRICE_H,
+                        Insurance = orderInfo.Insurance,
+                        InsurancePerHours = orderInfo.InsurancePerHours
+                    };
+
+                    //原預計用車時數
+                    double oriHour = orderInfo.ED.Subtract(orderInfo.SD).TotalHours;
+                    //延長用車總時數
+                    double extendHour = StopTime.Subtract(orderInfo.ED).TotalHours;
+                    //扣除預授權金額註記
+                    bool deduct = false;
+                    var estimateDetail = new EstimateDetail();
+                    //首次延長
+                    if (orderInfo.ExtendTimes == 0)
+                    {
+                        canAuth = true;
+                        if (extendHour >= 6)
                         {
-                            canAuth = true;
-                            if (extendHour >= 6)
-                            {
-                                //新的預估租金與原預授權的差額進行預授權
-                                deduct = true;
-                                estimateData.ED = StopTime;
-                            }
-                            else
-                            {
-                                if (orderInfo.ProjType == 0) //同站
-                                {
-                                    //收6小時
-                                    estimateData.SD = orderInfo.ED;
-                                    estimateData.ED = orderInfo.ED.AddHours(6);
-                                }
-                                else if (orderInfo.ProjType == 3)//路邊
-                                {
-                                    //新的預估租金與原預授權的差額進行預授權
-                                    deduct = true;
-                                    estimateData.ED = orderInfo.ED.AddHours(6);
-                                }
-                            }
+                            //新的預估租金與原預授權的差額進行預授權
+                            deduct = true;
+                            estimateData.ED = StopTime;
                         }
                         else
                         {
-                            //延長用車總時數 超過6小時則取超出時數的預估總金額【租金+里程+安心】
-                            if (extendHour > 6)
+                            if (orderInfo.ProjType == 0) //同站
                             {
-                                canAuth = true;
+                                //收6小時
+                                estimateData.SD = orderInfo.ED;
+                                estimateData.ED = orderInfo.ED.AddHours(6);
+                            }
+                            else if (orderInfo.ProjType == 3)//路邊
+                            {
                                 //新的預估租金與原預授權的差額進行預授權
                                 deduct = true;
-                                estimateData.ED = StopTime;
+                                estimateData.ED = orderInfo.ED.AddHours(6);
                             }
                         }
 
-                        if (canAuth)
+                    }
+                    else
+                    {
+                        //延長用車總時數 超過6小時則取超出時數的預估總金額【租金+里程+安心】
+                        if (extendHour > 6)
                         {
-                            EstimateDetail outData;
-                            commonService.EstimatePreAuthAmt(estimateData, out outData);
-                            preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? outData.estimateAmt - orderInfo.PreAuthAmt : outData.estimateAmt) : outData.estimateAmt;
-                            estimateDetail = outData;
+                            canAuth = true;
+                            //新的預估租金與原預授權的差額進行預授權
+                            deduct = true;
+                            estimateData.ED = StopTime;
                         }
-                        trace.traceAdd("EstimatePreAuthAmt", new { canAuth, oriHour, extendHour, estimateData, estimateDetail, preAuthAmt });
-                        trace.FlowList.Add("計算預授權金");
+                    }
+
+                    if (canAuth)
+                    {
+                        EstimateDetail outData;
+                        commonService.EstimatePreAuthAmt(estimateData, out outData);
+                        preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? outData.estimateAmt - orderInfo.PreAuthAmt : outData.estimateAmt) : outData.estimateAmt;
+                        estimateDetail = outData;
+                    }
+                    trace.traceAdd("EstimatePreAuthAmt", new { canAuth, oriHour, extendHour, estimateData, estimateDetail, preAuthAmt });
+                    trace.FlowList.Add("計算預授權金");
+                    #endregion
+                    #region 後續流程
+                    if (canAuth && preAuthAmt > 0)
+                    {
+                        bool authFlag = false;
+                        string error = "";
+
+                        #region 刷卡授權
+                        CreditAuthComm creditAuthComm = new CreditAuthComm();
+                        var AuthInput = new IFN_CreditAuthRequest
+                        {
+                            CheckoutMode = 4,
+                            OrderNo = tmpOrder,
+                            IDNO = IDNO,
+                            Amount = preAuthAmt,
+                            PayType = 0,
+                            autoClose = 0,
+                            funName = funName,
+                            insUser = funName,
+                            AuthType = 4
+                        };
+                        try
+                        {
+                            authFlag = creditAuthComm.DoAuthV4(AuthInput, ref error, ref AuthOutput);
+                        }
+                        catch (Exception ex)
+                        {
+                            authFlag = false; //刷卡錯誤不擋延長用車
+                            trace.BaseMsg = ex.Message;
+                        }
+                        trace.traceAdd("DoAuthV4", new { authFlag, AuthInput, AuthOutput, error });
+                        trace.FlowList.Add("刷卡授權");
 
                         #endregion
-                        #region 後續流程
-                        if (canAuth && preAuthAmt > 0)
+                        #region 授權結果
+                        if (authFlag)
                         {
-                            bool authFlag = false;
-                            string error = "";
 
-                            #region 刷卡授權
-                            CreditAuthComm creditAuthComm = new CreditAuthComm();
-                            var AuthInput = new IFN_CreditAuthRequest
+                            #region 寫入預授權
+                            SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
                             {
-                                CheckoutMode = 4,
-                                OrderNo = tmpOrder,
                                 IDNO = IDNO,
-                                Amount = preAuthAmt,
-                                PayType = 0,
-                                autoClose = 0,
-                                funName = funName,
-                                insUser = funName,
-                                AuthType = 4
+                                LogID = LogID,
+                                Token = Access_Token,
+                                AuthType = 4,
+                                CardType = 1,
+                                final_price = preAuthAmt,
+                                OrderNo = tmpOrder,
+                                PRGName = funName,
+                                MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                                BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
+                                Status = 2
                             };
-                            authFlag = creditAuthComm.DoAuthV4(AuthInput, ref error, ref AuthOutput);
+                            commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
 
-                            trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, error });
-                            trace.FlowList.Add("刷卡授權");
-
+                            trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
+                            trace.FlowList.Add("寫入預授權");
                             #endregion
-                            #region 授權結果
-                            if (authFlag)
+                            #region 授權成功新增推播訊息
+                            string cardNo = (AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0));
+                            SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
                             {
-                                #region 寫入預授權
-                                SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
-                                {
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    Token = Access_Token,
-                                    AuthType = 4,
-                                    CardType = AuthOutput == null ? -1 : AuthOutput.CardType,
-                                    final_price = preAuthAmt,
-                                    OrderNo = tmpOrder,
-                                    PRGName = funName,
-                                    MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
-                                    BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
-                                    Status = 2
-                                };
-                                commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
+                                OrderNo = Convert.ToInt32(tmpOrder),
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                NType = 19,
+                                STime = DateTime.Now.AddSeconds(10),
+                                Title = "取授權成功通知",
+                                imageurl = "",
+                                url = "",
+                                Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}以末四碼{cardNo}信用卡延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
 
-                                trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
-                                trace.FlowList.Add("寫入預授權");
-                                #endregion
-                                #region 授權成功新增推播訊息
-                                string cardNo = (AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0));
-                                SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
-                                {
-                                    OrderNo = Convert.ToInt32(tmpOrder),
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    NType = 19,
-                                    STime = DateTime.Now.AddSeconds(10),
-                                    Title = "取授權成功通知",
-                                    imageurl = "",
-                                    url = "",
-                                    Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}以末四碼{cardNo}信用卡延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
+                            };
+                            commonService.sp_InsPersonNotification(input_Notification, ref error);
 
-                                };
-                                commonService.sp_InsPersonNotification(input_Notification, ref error);
+                            trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
+                            trace.FlowList.Add("新增推播訊息");
+                            #endregion
+                        }
+                        else
+                        {
+                            //回傳錯誤代碼，但仍可延長用車
+                            errCode = "ERR604";
 
-                                trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
-                                trace.FlowList.Add("新增推播訊息");
-                                #endregion
-                            }
-                            else
+                            #region 發送MAIL通知據點人員
+                            if (isDebug == "0") // isDebug == "1" 不發Mail
                             {
-                                //回傳錯誤代碼，但仍可延長用車
-                                errCode = "ERR604";
-                                if (isDebug == "0") // isDebug = 1，不發Mail
+                                if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
                                 {
-                                    //發送MAIL通知據點人員
-                                    if (!string.IsNullOrWhiteSpace(orderInfo.StationID))
+                                    SendMail send = new SendMail();
+                                    string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
+                                    string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
+                                    string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
+
+                                    try
                                     {
-                                        SendMail send = new SendMail();
-                                        string Receiver = $"{orderInfo.StationID.Trim()}@hotaimotor.com.tw";
-                                        string Title = $"({apiInput.OrderNo})延長用車取授權失敗通知";
-                                        string Body = "再麻煩協助聯繫用戶，告知延長用車取授權失敗且需在還車前確認卡片餘額或是重新綁卡，謝謝!";
                                         send.DoSendMail(Title, Body, Receiver);
+                                    }
+                                    catch (Exception ex)
+                                    {
                                     }
                                 }
                             }
@@ -373,16 +387,12 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
-                    catch (Exception ex)
-                    {
-                        trace.BaseMsg = ex.Message;
-                    }
+                    #endregion
 
                     trace.traceAdd("TraceFinal", new { errCode, errMsg });
                     trace.OrderNo = tmpOrder;
                     var carRepo = new CarRentRepo();
                     carRepo.AddTraceLog(51, funName, trace, flag);
-
                 }
             }
             #endregion
