@@ -1695,7 +1695,7 @@ namespace OtherService
                 {
                     orderInfo.creditType = type.Value;
                     orderInfo.OrderString = ori.Substring(0, Index);
-                    if (orderInfo.creditType == 0)
+                    if (orderInfo.creditType == 0 || orderInfo.creditType == 6) //租金or訂金
                     {
                         orderInfo.OrderNo = Convert.ToInt64(orderInfo.OrderString);
                     }
