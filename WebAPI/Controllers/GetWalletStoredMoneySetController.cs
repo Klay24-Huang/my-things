@@ -65,12 +65,17 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                if (apiInput == null || apiInput.StoreType < 1 || apiInput.StoreType > 4)
+                List<int> storeTypeList = new List<int>() { 0, 2, 3, 4 };
+                if (apiInput == null)
                 {
                     flag = false;
                     errCode = "ERR900";//參數遺漏
                 }
-
+                else if (!storeTypeList.Contains(apiInput.StoreType))
+                {
+                    flag = false;
+                    errCode = "ERR902";//參數遺漏(格式不符)
+                }
             }
 
             if (isGuest)
