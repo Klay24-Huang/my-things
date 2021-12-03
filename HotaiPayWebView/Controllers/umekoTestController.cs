@@ -140,6 +140,8 @@ namespace HotaiPayWebView.Controllers
 
             WebQPIInput_InquiryByLidm input = new WebQPIInput_InquiryByLidm();
             string errCode = "";
+            input.OrderID = ivm.OrderID;
+
             var flag = hotaipayService.DoQueryCTBCTransaction(input,out var output, ref errCode);
 
             return Json(output);
