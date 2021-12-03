@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Domain.WebAPI.output.Hotai.Payment
 {
-    public class WebAPIOutput_AddHotaiCards
+    public class WebAPIOutput_AddHotaiCards: WebAPOutput_PaymentBase
     {
         public HotaiResAddCard ResponseData { get; set; }
 

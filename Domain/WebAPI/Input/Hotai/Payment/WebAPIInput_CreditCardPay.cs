@@ -6,8 +6,11 @@ namespace Domain.WebAPI.Input.Hotai.Payment
 {
     public class WebAPIInput_CreditCardPay : WebAPIInput_PaymentBase
     {
-        public int TokenID { get; set; }
-        public  string MerID { get; set; }
+        public string CardToken { get; set; }
+        /// <summary>
+        /// 77465 
+        /// </summary>
+        public string MerID { get; set; }
 
         public string TerMinnalID { get; set; }
 
