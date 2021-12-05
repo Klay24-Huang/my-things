@@ -234,6 +234,7 @@
     <Content Include="Views\umekoTest\Index.cshtml" />
     <Content Include="Views\umekoTest\GetList.cshtml" />
     <Content Include="Views\HotaiPayCtbc\CreditCardChoose.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\ChooseNewCard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

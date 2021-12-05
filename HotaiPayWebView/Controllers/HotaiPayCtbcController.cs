@@ -27,5 +27,9 @@ namespace HotaiPayWebView.Controllers
             return View(lstData);
         }
 
+        public ActionResult ChooseNewCard()
+        {
+            return View();
+        }
     }
 }
