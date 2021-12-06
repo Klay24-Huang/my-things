@@ -33,6 +33,7 @@ namespace HotaiPayWebView.Controllers
             ViewBag.phone = Request.QueryString["phone"];
             TempData["phone"] = Request.QueryString["phone"];
             return View();
+            //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
         }
 
         public void RefreshToken(ref string accessToken, ref string refreshToken)

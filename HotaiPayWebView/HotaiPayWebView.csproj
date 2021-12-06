@@ -135,8 +135,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper\HtmlOutputExtensions.cs" />
+    <Compile Include="Models\CreditCardChoose.cs" />
+    <Compile Include="Models\ErrorInfo.cs" />
     <Compile Include="Models\UmekoTestViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\BaseRepository.cs" />
+    <Compile Include="Repository\HotaiPayCtbcRepository.cs" />
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\LoginService.cs" />
   </ItemGroup>
@@ -229,10 +233,11 @@
     <Content Include="Views\HotaiPay\RegisterSuccessBindFail.cshtml" />
     <Content Include="Views\umekoTest\Index.cshtml" />
     <Content Include="Views\umekoTest\GetList.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\CreditCardChoose.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\ChooseNewCard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\HotaiPayCtbc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
