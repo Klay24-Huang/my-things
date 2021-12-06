@@ -104,5 +104,9 @@ namespace Domain.SP.Output.OrderList
         /// 轉乘優惠
         /// </summary>
         public int init_TransDiscount { set; get; }
+        /// <summary>
+        /// 訂單取消原因
+        /// </summary>
+        public string cancel_status { get; set; }
     }
 }

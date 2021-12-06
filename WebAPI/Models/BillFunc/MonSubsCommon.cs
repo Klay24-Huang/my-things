@@ -51,8 +51,11 @@ namespace WebAPI.Models.BillFunc
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
 
         private MonSubsSp msp = new MonSubsSp();
-
+        
         protected static Logger logger = LogManager.GetCurrentClassLogger();
+
+        //20211106 ADD BY ADAM REASON.預授權
+        private const int CreditAutoClose = 1;
 
         public bool MonArrears_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
@@ -202,8 +205,11 @@ namespace WebAPI.Models.BillFunc
                                 WSAuthInput.RequestParams.Item.Add(item);
                                 trace.FlowList.Add("刷卡交易");
 
-                                flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, sour.IDNO, ref errCode, ref WSAuthOutput);                                
-                                trace.traceAdd("DoCreditCardAuthV2", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
+                                //flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, sour.IDNO, ref errCode, ref WSAuthOutput);
+                                //trace.traceAdd("DoCreditCardAuthV2", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
+                                //20211106 ADD BY ADAM REASON.預授權
+                                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, sour.IDNO, CreditAutoClose, "TSIBCardTrade", sour.IDNO, ref errCode, ref WSAuthOutput,8);
+                                trace.traceAdd("DoCreditCardAuthV3", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
 
                                 if (WSAuthOutput.RtnCode != "1000")
                                 {

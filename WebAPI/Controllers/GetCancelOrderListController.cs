@@ -173,6 +173,7 @@ namespace WebAPI.Controllers
                                 InsuranceBill = orderCancelDataLists[i].InsurancePurePrice,
                                 TransDiscount = (orderCancelDataLists[i].init_TransDiscount < 0) ? 0 : orderCancelDataLists[i].init_TransDiscount,
                                 MileageBill = billCommon.CarMilageCompute(orderCancelDataLists[i].start_time, orderCancelDataLists[i].stop_time, orderCancelDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>()),
+                                cancel_status=orderCancelDataLists[i].cancel_status
                             };
                             obj.Bill = obj.CarRentBill + obj.InsuranceBill + obj.MileageBill - obj.TransDiscount;
                             outputApi.CancelObj.Add(obj);

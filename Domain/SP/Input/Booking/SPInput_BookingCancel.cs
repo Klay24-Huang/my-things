@@ -15,5 +15,19 @@ namespace Domain.SP.Input.Booking
         public Int64 OrderNo { set; get; }
         public string Token { set; get; }
         public Int64 LogID { set; get; }
+
+        /// <summary>
+        /// 是否檢查Token (0:否 1:是)
+        /// </summary>
+        public int CheckToken { set; get; }
+
+        /// <summary>
+        /// 自定義取消狀態
+        /// </summary>
+        public int Cancel_Status_in { set; get; }
+        /// <summary>
+        /// 自定義描述
+        /// </summary>
+        public string Descript { set; get; }
     }
 }

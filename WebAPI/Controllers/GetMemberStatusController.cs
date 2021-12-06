@@ -1,9 +1,7 @@
 ﻿using Domain.Common;
 using Domain.MemberData;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Member;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -11,7 +9,6 @@ using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 
@@ -25,11 +22,10 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
-        public Dictionary<string, object> doGetMemberStatus(Dictionary<string, object> value)
+        public Dictionary<string, object> DoGetMemberStatus(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -73,23 +69,9 @@ namespace WebAPI.Controllers
 
             #region TB
             #region Token判斷
-            //Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = "usp_CheckTokenReturnID";
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
 

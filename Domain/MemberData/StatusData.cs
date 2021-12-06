@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Domain.MemberData
+﻿namespace Domain.MemberData
 {
     public class StatusData
     {
@@ -117,5 +115,12 @@ namespace Domain.MemberData
         /// 是否有推播訊息 20210917 ADD BY ADAM
         /// </summary>
         public string HasNoticeMsg { get; set; }
+
+        /// <summary>
+        /// 預授權條款狀態
+        /// <para>Y：重新確認</para>
+        /// <para>N：不需重新確認</para>
+        /// </summary>
+        public string AuthStatus { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Common;
 using Domain.TB;
 using Domain.TB.BackEnd;
 using Repository.Interface;
@@ -667,6 +668,35 @@ namespace Reposotory.Implement
             return lstData;
         }
 
+        /// <summary>
+        /// 取得共用代碼清單
+        /// </summary>
+        /// <param name="CodeGroup">功能群組</param>
+        /// <returns></returns>
+        public List<CodeData> GetCodeData(string CodeGroup)
+        {
+            bool flag = false;
+            List<CodeData> lstData = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            int nowCount = 0;
+            string SQL = "SELECT CodeId,CodeNm,CodeDisc,CodeGroup,Sort,TBMap,TBFieldMap,MapCode FROM TB_Code WITH(NOLOCK) WHERE UseFlag=1 ";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            term = " CodeGroup=@CodeGroup";
+            para[nowCount] = new SqlParameter("@CodeGroup", SqlDbType.VarChar, 100);
+            para[nowCount].Value = CodeGroup;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if (term != "")
+            {
+                SQL += " AND " + term;
+            }
+
+            lstData = GetObjList<CodeData>(ref flag, ref lstError, SQL, para, term);
+
+            return lstData;
+        }
     }
 }
 
