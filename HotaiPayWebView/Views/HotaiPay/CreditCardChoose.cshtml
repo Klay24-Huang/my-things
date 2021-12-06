@@ -1,6 +1,7 @@
-﻿
+﻿@model List<Domain.TB.Hotai.HotaiCardInfo>
 @{
     ViewBag.Title = "CreditCardChoose";
+    List<Domain.TB.Hotai.HotaiCardInfo> L_Output = new List<Domain.TB.Hotai.HotaiCardInfo>();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -16,52 +17,94 @@
 </head>
 <body>
 
-
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
-
 
 
     <div class="container" style="max-width: 414px;">
         <div class="mt-4">
             <p class="text-gray">請選擇您欲綁定的信用卡</p>
         </div>
-        <div class="credit-card-box mb-4">
-            <input class="mr-3" type="radio">
-            <div class="credit-style mr-2">
-                <img src="~/images/icon/credit_pay_JCB.svg" alt="">
-                信用卡
-            </div>
-            <div class="credit-number">*1234</div>
-        </div>
-        <div class="credit-card-box mb-4">
-            <input class="mr-3" type="radio">
-            <div class="credit-style mr-2">
-                <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
-                信用卡
-            </div>
-            <div class="credit-number">*1234</div>
-        </div>
-        <div class="credit-card-box mb-4">
-            <input class="mr-3" type="radio">
-            <div class="credit-style mr-2">
-                <img src="~/images/icon/credit_pay_VISA.svg" alt="">
-                信用卡
-            </div>
-            <div class="credit-number">*1234</div>
-        </div>
+
+        @{
+            for (int i = 0; i < L_Output.Count; i++)
+            {
+                var A_output = L_Output.ElementAt(i);
+                if (A_output.CardType == "01")
+                {
+                    var CardName = A_output.CardName;
+                    var CardNumber = A_output.CardNumber;
+                    var CardType = A_output.CardType;
+                    var BankDesc = A_output.BankDesc;
+                    var CardToken = A_output.CardToken;
+                    var IsDefault = A_output.IsDefault;
+                    var MemberOneID = A_output.MemberOneID;
+
+                    <div class="credit-card-box mb-4">
+                        <input class="mr-3" type="radio" id="isDefault">
+                        <div class="credit-style mr-2">
+                            <img src="~/images/icon/credit_pay_JCB.svg" alt="">
+                            信用卡
+                        </div>
+                        <div class="credit-number">*1234</div>
+                    </div>
+                }
+
+                if (A_output.CardType == "02")
+                {
+
+                    var CardName = A_output.CardName;
+                    var CardNumber = A_output.CardNumber;
+                    var CardType = A_output.CardType;
+                    var BankDesc = A_output.BankDesc;
+                    var CardToken = A_output.CardToken;
+                    var IsDefault = A_output.IsDefault;
+                    var MemberOneID = A_output.MemberOneID;
+
+                    <div class="credit-card-box mb-4">
+                        <input class="mr-3" type="radio" id="isDefault">
+                        <div class="credit-style mr-2">
+                            <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
+                            信用卡
+                        </div>
+                        <div class="credit-number">*1234</div>
+                    </div>
+                }
+                if (A_output.CardType == "03")
+                {
+
+                    var CardName = A_output.CardName;
+                    var CardNumber = A_output.CardNumber;
+                    var CardType = A_output.CardType;
+                    var BankDesc = A_output.BankDesc;
+                    var CardToken = A_output.CardToken;
+                    var IsDefault = A_output.IsDefault;
+                    var MemberOneID = A_output.MemberOneID;
+
+                    <div class="credit-card-box mb-4">
+                        <input class="mr-3" type="radio" id="isDefault">
+                        <div class="credit-style mr-2">
+                            <img src="~/images/icon/credit_pay_VISA.svg" alt="">
+                            信用卡
+                        </div>
+                        <div class="credit-number">*1234</div>
+                    </div>
+                }
+            }
+        }
+
 
     </div>
 
-    <div class="footer-btn-box footer-btn-margin">
-        <div class="buttonBox mb-2">
-            <a class="text-blue" href="">＋ 新增信用卡</a>
+        <div class="footer-btn-box footer-btn-margin">
+            <div class="buttonBox mb-2">
+                <a class="text-blue" href="">＋ 新增信用卡</a>
+            </div>
+            <div class="buttonBox">
+                <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
+                    選擇預設信用卡
+                </button>
+            </div>
         </div>
-        <div class="buttonBox">
-            <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
-                選擇預設信用卡
-            </button>
-        </div>
-    </div>
 
 </body>
 </html>

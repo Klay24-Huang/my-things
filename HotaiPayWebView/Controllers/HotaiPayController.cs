@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Data.SqlClient;
 using System.Data;
+using Domain.TB.Hotai;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -349,7 +350,7 @@ namespace HotaiPayWebView.Controllers
 
             flag = string.IsNullOrWhiteSpace(HCToken);
             //token檢核
-            int a = 404;
+            int a = 404;//測試用資料 上線需更改
             flag = hotaiMemAPI.DoCheckToken(HCToken, ref errCode, ref a);
 
             /*if (!flag)
@@ -357,24 +358,26 @@ namespace HotaiPayWebView.Controllers
                 //TODO Token失效 導URL至登入畫面 請使用者重登
                 return View("Login");
             }*/
-            HotaiPaymentAPI HPAPI = new HotaiPaymentAPI();
             HotaipayService HPServices = new HotaipayService();
             //取得卡片清單
             IFN_QueryCardList input = new IFN_QueryCardList();
             OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
             //設定查詢的IDNO
-            input.IDNO = "F128697972";//測試用資料 上線需更改
+            input.IDNO = "C221120413";//測試用資料 上線需更改
             flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
+           
             if (flag)
             {
                 if (output.CreditCards.Count > 0)
                 { //TODO 跳轉卡片清單畫面
-                    return View("CreditCardChoose");
-                    //call Java Script 調整畫面上資料?
+
+                    List<HotaiCardInfo> L_Output = output.CreditCards;
+                    
+                    return View("CreditCardChoose", L_Output);
                 }
             }
-            else
-            { //TODO API回傳失敗
+            else { //TODO API回傳失敗
+
             }
             return View();
         }
