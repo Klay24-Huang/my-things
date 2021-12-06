@@ -208,7 +208,6 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\HotaiPay\Login.cshtml" />
-    <Content Include="Views\HotaiPay\MembershipTerms.cshtml" />
     <Content Include="Views\HotaiPay\Supplememtary.cshtml" />
     <Content Include="Views\HotaiPay\RegisterStep1.cshtml" />
     <Content Include="Views\HotaiPay\RegisterStep2.cshtml" />
@@ -220,7 +219,6 @@
     <Content Include="Views\HotaiPay\PersonalInformation.cshtml" />
     <Content Include="Views\HotaiPay\NoCreditCard.cshtml" />
     <Content Include="Views\HotaiPay\SuccessBind.cshtml" />
-    <Content Include="Views\HotaiPay\Unbind.cshtml" />
     <Content Include="Views\HotaiPay\UnbindSuccess.cshtml" />
     <Content Include="Views\HotaiPay\RegisterMembershipTerm.cshtml" />
     <Content Include="Views\HotaiPay\RegisterSuccess.cshtml" />
@@ -228,6 +226,9 @@
     <Content Include="Views\HotaiPay\RegisterSuccessBindFail.cshtml" />
     <Content Include="Views\umekoTest\Index.cshtml" />
     <Content Include="Views\umekoTest\GetList.cshtml" />
+    <Content Include="Views\HotaiPay\AlreadyMember.cshtml" />
+    <Content Include="Views\HotaiPay\MembershipTerms1.cshtml" />
+    <Content Include="Views\HotaiPay\MembershipTerms2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
