@@ -34,15 +34,21 @@ namespace HotaiPayWebView.Controllers
         #region 登入頁面
         public ActionResult Login()
         {
-            ViewBag.phone = Request.QueryString["phone"].Trim();
-            Session["phone"] = Request.QueryString["phone"].Trim();
+            if (!string.IsNullOrEmpty(Request.QueryString["phone"]))
+            {
+                ViewBag.phone = Request.QueryString["phone"].Trim();
+                Session["phone"] = Request.QueryString["phone"].Trim();
+            }
 
-            string IDNO = "";
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string errCode = "";
-            var flag = HPServices.GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
+            if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            {
+                string IDNO = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                string errCode = "";
+                var flag = HPServices.GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
+                Session["id"] = IDNO;
+            }
 
-            Session["id"] = IDNO;
             return View();
             //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
         }
@@ -422,12 +428,17 @@ namespace HotaiPayWebView.Controllers
                 {
                     Session["oneID"] = getOneID.memberSeq;
                     errCode = InsertMemberDataToDB(Session["id"].ToString().Trim(), Session["oneID"].ToString().Trim(), Session["hotai_access_token"].ToString().Trim(), Session["hotai_refresh_token"].ToString().Trim());
-                    return Redirect("RegisterSuccess");
+                    if (errCode=="0000")
+                        return Redirect("RegisterSuccess");
+                    else
+                        return Redirect("RegisterSuccessBindFail");
                 }
+                else 
+                    return View("RegisterStep3");
             }
             else
             {
-                return View("RegisterStep3");
+                return View("RegisterFail");
             }
         }
 
