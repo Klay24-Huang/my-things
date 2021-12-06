@@ -15,7 +15,7 @@ namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayCtbcController : Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
 
         // GET: HotaiPayCtbc
@@ -61,7 +61,20 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult InsPersonInfo(string ID,string BIRTHDATE)
         {
-            string b = ID;
+            bool flag;
+            HotaipayService addcard = new HotaipayService();
+            IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
+            OFN_HotaiFastAddCard output = new OFN_HotaiFastAddCard();
+            input.Birthday = BIRTHDATE;
+            input.IDNO = ID;
+            input.CTBCIDNO = ID;
+            input.RedirectURL = "https://www.gamer.com.tw/";
+            string errCode = "";
+            flag = addcard.DoFastAddCard(input,ref output,ref errCode);
+            return View();
+        }
+        public ActionResult SuccessBind()
+        {
             return View();
         }
     }
