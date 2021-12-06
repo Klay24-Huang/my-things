@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewBag.Title = "MembershipTerms2";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰集團會員條款</title>
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+
+
+<body>
+
+
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員與隱私權條款</h6></header>
+
+    <div class="tab-choose d-flex" style="max-width: 414px;margin: auto;">
+        <button class="btn tab-btn tab-active">會員條款</button>
+        <button class="btn tab-btn">隱私權條款</button>
+    </div>
+
+    <div class="container" style="max-width: 414px;position:relative">
+
+        <div class="notice-text pre-scrollable">
+            <ul>
+                <h6>本頁面包含以下條款：【和泰集團會員中心-會員條款】、【和泰Points服務條款】、【和泰Pay服務條款】。</h6>
+                <br>
+
+                <h6>【和泰集團會員中心-會員條款】 202110版</h6>
+                <li>
+                    &emsp;&emsp;以下條款為和泰汽車股份有限公司(以下簡稱本公司)藉由和泰集團會員中心(以下簡稱本平台)提供會員服務的同時，會員必須了解的相關事項。為保障會員權益及讓會員合法使用本平台服務，請於註冊成為會員前詳細閱讀本會員條款之內容。當使用者點選「我同意」鍵，即表示使用者已成為會員、可開始使用本平台所提供之服務，並視為使用者已知悉並同意遵守本會員條款、相關之法律規定及相關國際網際網路規定與慣例。
+                </li>
+                </li>
+                <br>
+
+                <h6>一、會員及註冊</h6>
+                <li>
+                    &emsp;&emsp;會員必須是具備完全行為能力的自然人，若會員為未成年人，應由其法定代理人閱讀、暸解、並同意本會員條款之所有約定內容及其修改後之內容，始得開始使用或繼續使用本服務；若是會員開始使用或繼續使用本平台，即視為其法定代理人(或監護人)已閱讀、暸解並同意會員條款之所有約定內容及其修改後之內容。會員應完成註冊程序，包括填寫正確會員資料、以及提供註冊流程中所要求之相關文件或資料。會員欲使用本平台之所有功能者，應以會員本人之真實身份註冊，並完成手機認證。會員不得以第三人之名義註冊為會員，且應擔保其所提供的所有資料均為正確且即時；若是會員所提供的資料後續有變更，會員應即時更新其資料。如會員未即時提供資料、所提供之資料不正確或與事實不符、或未按指定方式提供資料，本平台得不經事先通知，逕行拒絕或暫停對該會員提供本平台之全部或一部分服務。本平台得限制同一自然人所得申請註冊之會員帳號數量；對於註冊成為會員之申請，本平台並保留是否同意其註冊之權利。
+                </li>
+
+                <br>
+                <h6>二、會員資料之修改與刪除</h6>
+                <li>
+                    &emsp;&emsp;基於本平台所提供之各項服務，使用者同意於註冊時提供正確詳實之個人資料，使用者所登錄之資料嗣後有變更時，應隨時於線上更新，或透過和泰集團會員客服信箱告知，表明會員有意修改個人資料的要求，本公司即會按會員的要求作出變更。若使用者有刪除會員資料之需求，可透過和泰集團會員客服信箱或本公司客服電話聯繫告知，經填妥申請文件並經本平台檢核無誤後，始進行會員資料刪除作業流程。會員提供之個人資料若有填寫不實、或原登錄之資料已不符而未更新、或以任何虛假或冒用他人名義登錄，或會員所提供之個人資料有其他違反或破壞本服務宗旨之情事，除應自負法律責任，本公司保留隨時終止會員資格及使用各項服務資格之權利。
+                </li>
+
+            </ul>
+
+
+
+        </div>
+    </div>
+
+
+
+    <div class="container footer" style="max-width: 414px;position:relative">
+        <div class="form-check form-check-inline mb-3">
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
+            <label class="form-check-label" for="inlineCheckbox1">
+                我已經閱讀並同意<a class="text-blue">「和泰集團會員條款」</a>與
+                <a class="text-blue">「隱私權條款」</a>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn">同意</button>
+    </div>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- 自己寫的js -->
+    <script src="js/main.js"></script>
+    <!-- 自己寫的js -->
+
+
+    <script>$(":checkbox").click(function(){
+      $("#redbtn").toggleClass("checked-active")
+  })</script>
+
+</body>
+</html>
+

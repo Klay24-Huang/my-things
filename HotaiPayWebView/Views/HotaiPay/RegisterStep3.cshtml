@@ -18,11 +18,12 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="@Url.Content("~/Scripts/jquery-3.4.1.min.js")" type="text/javascript"></script>
     <script src="~/Scripts/HotaiPayJS/ActionJS/RegisterStep3.js" type="text/javascript"></script>
+    <script src="~/Scripts/HotaiPayJS/sweetalert.js" type="text/javascript"></script>
 </head>
 
 <body>
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員註冊</h6></header>
-
+    
     <div class="container" style="max-width: 414px;padding-bottom: 16px;">
         <div class="msform mt-4">
             <!-- progressbar -->
@@ -38,22 +39,22 @@
         </div>
 
         <label>姓名</label>
-        <input type="text" class="form-control input-light" placeholder="吳志賢" v-model="form.Name" required >
-
+        <input type="text" class="form-control input-light" placeholder="吳志賢" name="name" value="@ViewBag.Name" required>
+        <p id="pwdHint" style="color:red;">@ViewBag.NameAlert</p>
         <div class="credit-card-box mt-4">
-            <div class="gender-choose mr-5"><input class="mr-1" type="radio" id="sex_sir">先生</div>
-            <div class="gender-choose"><input class="mr-1" type="radio" id="sex_lady">女士</div>
+            <div class="gender-choose mr-5"><input class="mr-1" type="radio" id="sex" name="sex" value="male" checked="@ViewBag.MaleCheck">先生</div>
+            <div class="gender-choose"><input class="mr-1" type="radio" id="sex" name="sex" value="female" checked="@ViewBag.FemaleCheck">女士</div>
         </div>
 
         <label class="mt-4">身分證字號</label>
-        <input type="text" class="form-control input-light" placeholder="A123456789" v-model="form.CustID" required>
-
+        <input type="text" class="form-control input-light" name="custID" placeholder="A123456789" value="@ViewBag.CustID" required>
+        <p id="pwdHint" style="color:red;">@ViewBag.CustIDAlert</p>
         <label class="mt-4">生日</label>
-        <input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" v-model="form.Birth" required>
-
+        <input type="text" class="form-control input-light" name="birth" placeholder="輸入生日 ex.19950101" value="@ViewBag.Birthday" required>
+        <p id="pwdHint" style="color:red;">@ViewBag.BirthAlert</p>
         <label class="mt-4">Email</label>
-        <input type="text" class="form-control input-light" placeholder="orange@goonsdesign.com" v-model="form.Email" required>
-
+        <input type="text" class="form-control input-light" name="email" placeholder="orange@goonsdesign.com" value="@ViewBag.Email" required>
+        <p id="pwdHint" style="color:red;">@ViewBag.EmailAlert</p>
 
         <!-- 提示文字＋圖-->
         <div class="form-check form-check-inline mt-4 d-flex align-items-start">
@@ -65,10 +66,23 @@
 
 
 
-        <button type="submit" class="btn btn-disable-gray mt-3 sweet-1" id="redbtn" v-on:click="SetSignUpProfile()" onclick="_gaq.push">完成註冊</button>
+        <button type="submit" class="btn btn-blue mt-4 sweet-1 d-block d-sm-none" id="redbtn" onclick="_gaq.push">完成註冊</button>
 
         <div class="my-3">
-            <p class="text-gray">身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。</p>
+            <p class="text-gray d-block d-sm-none">
+                身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。<br>
+                外籍人士請於「身分證字號」欄位輸入居留證號碼。
+            </p>
+        </div>
+
+
+        <button type="submit" class="btn btn-blue sweet-2 d-none d-sm-block" style="margin-top:168px ;" id="redbtn" onclick="_gaq.push">完成註冊</button>
+
+        <div class="my-3" style="margin-top:168px ;">
+            <p class="text-gray d-none d-sm-block">
+                身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。<br>
+                外籍人士請於「身分證字號」欄位輸入居留證號碼。
+            </p>
         </div>
 
 
@@ -95,12 +109,12 @@
       $("#redbtn").toggleClass("checked-active")
   })
 
-document.querySelector('.sweet-1').onclick = function(){
+        document.getElementById("redbtn").onclick = function () {
 
         swal({
           title: "",
           text: "身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。",
-          imageUrl: 'images/alert-popup.svg',
+          imageUrl: '../images/alert-popup.svg',
           showCancelButton: true,
           cancelButtonText: "取消",
           cancelButtonClass: "btn-outline-gray-small",
