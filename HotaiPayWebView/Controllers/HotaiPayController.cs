@@ -14,6 +14,10 @@ using Reposotory.Implement;
 using System.Configuration;
 using Domain.TB;
 using Domain.Flow.Hotai;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -27,33 +31,16 @@ namespace HotaiPayWebView.Controllers
         private static readonly Dictionary<string, string> errorDic = commonRepository.GetErrorList("").ToLookup(x => x.ErrCode, y => y.ErrMsg).ToDictionary(x => x.Key, y => y.First());
         static HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
         private static HashAlgorithmHelper helper = new HashAlgorithmHelper();
+
+
         #region 登入頁面
         public ActionResult Login()
         {
             ViewBag.phone = Request.QueryString["phone"];
-            TempData["phone"] = Request.QueryString["phone"];
+            Session["phone"] = Request.QueryString["phone"];
+            Session["id"] = Request.QueryString["id"];
             return View();
             //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
-        }
-
-        public void RefreshToken(ref string accessToken, ref string refreshToken)
-        {
-            bool flag = false;
-            WebAPIInput_RefreshToken tokenInput = new WebAPIInput_RefreshToken
-            {
-                access_token = _accessToken,
-                refresh_token = _refreshToken
-            };
-            WebAPIOutput_Token tokenOutput = new WebAPIOutput_Token();
-            string errCode = "";
-            int a = 404;
-            flag = hotaiAPI.DoRefreshToken(tokenInput, ref tokenOutput, ref errCode, ref a);
-
-            if (flag)
-            {
-                _accessToken = tokenOutput.access_token;
-                _refreshToken = tokenOutput.refresh_token;
-            }
         }
 
         [HttpPost]
@@ -77,7 +64,7 @@ namespace HotaiPayWebView.Controllers
 
             if (flag)
             {
-                TempData["token"] = apioutput.access_token;
+                Session["token"] = apioutput.access_token;
                 if (apioutput.memberState == "1" || apioutput.memberState == "2")
                     return View("Supplememtary");
                 else
@@ -90,9 +77,9 @@ namespace HotaiPayWebView.Controllers
                         if (!string.IsNullOrEmpty(checkVer.memberBenefitsVersion) || !string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
                         {
                             if (string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
-                                TempData["terms"] += checkVer.memberBenefits;
+                                Session["terms"] += checkVer.memberBenefits;
                             if (string.IsNullOrEmpty(checkVer.privacyPolicyVersion))
-                                TempData["terms"] += checkVer.privacyPolicy;
+                                Session["terms"] += checkVer.privacyPolicy;
                             return View("MembershipTerms");
                         }
                         else
@@ -101,9 +88,14 @@ namespace HotaiPayWebView.Controllers
                             flag = hotaiAPI.DoGetMobilePhoneToOneID(phone, ref getOneID, ref errCode);
                             if (flag)
                             {
-                                TempData["oneID"] = getOneID.memberSeq;
-                                return RedirectToAction("CreditStart");
-                                //以下取得信用卡列表流程
+                                Session["oneID"] = getOneID.memberSeq;
+
+                                errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, apioutput.access_token, apioutput.refresh_token);
+                                if (errCode=="0000")
+                                {
+                                    //以下取得信用卡列表流程
+                                }
+
                             }
                             else
                             {
@@ -123,20 +115,20 @@ namespace HotaiPayWebView.Controllers
                     return RedirectToAction("BindCardFailed");
                 }
             }
-
-            //RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
-            //return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
-            return RedirectToAction("BindCardFailed");
-
+            return RedirectToRoute(new { controller = "HotaiPay", action = "AlreadyMember" });
         }
         #endregion
 
-
         #region 更新會員條款
-        public ActionResult MembershipTerms()
+        public ActionResult MembershipTerms1()
         {
             return View();
         }
+        public ActionResult MembershipTerms2()
+        {
+            return View();
+        }
+
         #endregion
 
         #region 補填會員資料頁面
@@ -146,8 +138,9 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
-        [Route("~/HotaiPay/RegisterStep1")]
+
         #region 註冊驗證步驟一:手機驗證
+        [Route("~/HotaiPay/RegisterStep1")]
         public ActionResult RegisterStep1()
         {
             ViewBag.Phone = Session["Phone"];
@@ -157,9 +150,9 @@ namespace HotaiPayWebView.Controllers
         }
 
         [HttpPost]
-        public RedirectResult GetOtpCode(string phone)
+        public ActionResult GetOtpCode(string phone)
         {
-            TempData["Phone"] = phone;
+            Session["Phone"] = phone;
             string errCode = "";
             bool flag = false;
             WebAPIInput_CheckSignup checkSignUp = new WebAPIInput_CheckSignup
@@ -193,19 +186,20 @@ namespace HotaiPayWebView.Controllers
                 {
                     Session["Alert"] = errorDic[errCode];
 
-                    return Redirect("RegisterStep2");
+                    return Redirect("RegisterStep1");
                 }
             }
         }
+
         [HttpPost]
-        public ActionResult CheckOtpCode(string phone, string otpCode)
+        public ActionResult CheckOtpCode(string otpCode)
         {
 
 
             bool flag = false;
             WebAPIInput_SmsOtpValidation checkSMSOpt = new WebAPIInput_SmsOtpValidation
             {
-                mobilePhone = phone,
+                mobilePhone = Session["Phone"].ToString(),
                 otpCode = otpCode,
                 useType = 1
             };
@@ -215,14 +209,13 @@ namespace HotaiPayWebView.Controllers
 
             if (flag)
             {
-                Session["Phone"] = phone;
                 Session["OtpCode"] = otpCode;
                 Session["OtpID"] = checkSMSOptOutput.otpId;
-                return RedirectToAction("RegisterStep2", "HotaiPay");
+                return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
             }
             else
             {
-                return RedirectToAction("RegisterStep1", "HotaiPay");
+                return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
             }
 
         }
@@ -232,15 +225,14 @@ namespace HotaiPayWebView.Controllers
         [Route("~/Home/RegisterStep2")]
         public ActionResult RegisterStep2()
         {
-            var phone = Session["Phone"].ToString();
             return View();
         }
 
         [HttpPost]
         public ActionResult DoSignUp(string pwd, string comfirmPwd)
         {
-            var phone = TempData["Phone"].ToString();
-            var otpID = TempData["OtpID"].ToString();
+            var phone = Session["Phone"].ToString();
+            var otpID = Session["OtpID"].ToString();
             bool flag = false;
             WebAPIInput_Signup signUp = new WebAPIInput_Signup
             {
@@ -267,27 +259,57 @@ namespace HotaiPayWebView.Controllers
         #region 註冊驗證步驟三:會員資料填寫
         public ActionResult RegisterStep3()
         {
-            var phone = TempData["Phone"].ToString();
-
             return View();
         }
-        public ActionResult SetSignUpProfile(WebAPIInput_SignupProfile memberProfileInput)
+
+        public ActionResult SetSignUpProfile(FormCollection form)
         {
-            bool flag = false;
+            bool flag = true;
             string errCode = "";
+
+            ViewBag.CustID = form["custID"].Trim();
+            ViewBag.Name = form["name"].Trim();
+            ViewBag.Birthday = form["birth"].Trim();
+            ViewBag.Email = form["email"].Trim();
+
+            if (form["sex"].Trim() == "male")
+            {
+                ViewBag.MaleCheck = true;
+                ViewBag.FemaleCheck = false;
+            }
+            else
+            {
+                ViewBag.MaleCheck = false;
+                ViewBag.FemaleCheck = true;
+            }
+
+            if (!CheckROCID(form["custID"].Trim()))
+            {
+                ViewBag.CustIDAlert = "身分證格式錯誤";
+                return View("RegisterStep3");
+            }
+
+            WebAPIInput_SignupProfile memberProfileInput = new WebAPIInput_SignupProfile
+            {
+                id = form["custID"].Trim(),
+                name = form["name"].Trim(),
+                sex = (form["sex"].Trim() == "male") ? "M" : "F",
+                birthday = DateTime.ParseExact(form["birth"].Trim(), "yyyyMMdd", CultureInfo.CurrentCulture),
+                email = form["email"].Trim()
+            };
 
             flag = hotaiAPI.DoSignupProfile(_accessToken, memberProfileInput, ref errCode);
 
             if (flag)
             {
-
+                return Redirect("RegisterSuccess");
             }
             else
             {
-
+                return View("RegisterStep3");
             }
-            return View();
         }
+
         #endregion
 
         #region 綁卡失敗
@@ -366,7 +388,7 @@ namespace HotaiPayWebView.Controllers
         #endregion
 
         #region 已是和泰會員
-        public ActionResult NoBind()
+        public ActionResult AlreadyMember()
         {
             return View();
         }
@@ -393,6 +415,7 @@ namespace HotaiPayWebView.Controllers
 
         #endregion
 
+
         #region 註冊成功
         public ActionResult RegisterSuccess()
         {
@@ -414,6 +437,74 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
+        public string InsertMemberDataToDB(string id,string oneID,string accessToken,string refreshToken)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+            var logID = 999;
+            using (SqlConnection conn=new SqlConnection(connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("usp_InsHotaiMember_I01", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@IDNO", SqlDbType.VarChar, 10).Value = id;
+                cmd.Parameters.Add("@OneID", SqlDbType.VarChar, 50).Value = oneID;
+                cmd.Parameters.Add("@RefreshToken", SqlDbType.VarChar, 50).Value = accessToken;
+                cmd.Parameters.Add("@AccessToken", SqlDbType.VarChar, 1000).Value = refreshToken;
+                cmd.Parameters.Add("@LogID", SqlDbType.BigInt).Value = logID;
+                cmd.Parameters.Add("@ErrorCode", SqlDbType.VarChar, 8);
+                cmd.Parameters["@ErrorCode"].Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("@ErrorMsg", SqlDbType.VarChar, 100);
+                cmd.Parameters["@ErrorMsg"].Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("@SQLExceptionCode", SqlDbType.VarChar, 10);
+                cmd.Parameters["@SQLExceptionCode"].Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("@SQLExceptionMsg", SqlDbType.VarChar, 1000);
+                cmd.Parameters["@SQLExceptionMsg"].Direction = ParameterDirection.Output;
 
+
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    return cmd.Parameters["@ErrorCode"].Value.ToString();
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+                
+        }
+
+        public bool CheckROCID(string idNo)
+        {
+            if (idNo == null)
+            {
+                return false;
+            }
+            idNo = idNo.ToUpper();
+            Regex regex = new Regex(@"^([A-Z])([1-2]\d{8})$");
+            Match match = regex.Match(idNo);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            ///建立字母對應表(A~Z)
+            ///A=10 B=11 C=12 D=13 E=14 F=15 G=16 H=17 J=18 K=19 L=20 M=21 N=22
+            ///P=23 Q=24 R=25 S=26 T=27 U=28 V=29 X=30 Y=31 W=32  Z=33 I=34 O=35 
+            string alphabet = "ABCDEFGHJKLMNPQRSTUVXYWZIO";
+            string transferIdNo = $"{(alphabet.IndexOf(match.Groups[1].Value) + 10)}" +
+                                  $"{match.Groups[2].Value}";
+            int[] idNoArray = transferIdNo.ToCharArray()
+                                          .Select(c => Convert.ToInt32(c.ToString()))
+                                          .ToArray();
+            int sum = idNoArray[0];
+            int[] weight = new int[] { 9, 8, 7, 6, 5, 4, 3, 2, 1, 1 };
+            for (int i = 0; i < weight.Length; i++)
+            {
+                sum += weight[i] * idNoArray[i + 1];
+            }
+            return (sum % 10 == 0);
+        }
     }
 }
