@@ -40,11 +40,13 @@ namespace HotaiPayWebView.Controllers
             Session["phone"] = Request.QueryString["phone"];
             Session["id"] = Request.QueryString["id"];
             return View();
+            //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
         }
 
         [HttpPost]
         public ActionResult Login(string phone, string pwd)
         {
+            HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
 
             bool flag = false;
             string errCode = "";
@@ -54,7 +56,6 @@ namespace HotaiPayWebView.Controllers
                 account = phone,
                 password = pwd
             };
-
             WebAPIOutput_Signin apioutput = new WebAPIOutput_Signin();
 
             HashAlgorithmHelper helper = new HashAlgorithmHelper();
@@ -98,7 +99,8 @@ namespace HotaiPayWebView.Controllers
                             }
                             else
                             {
-                                RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+                                //RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+                                return RedirectToAction("BindCardFailed");
                             }
                         }
                     }
@@ -110,6 +112,7 @@ namespace HotaiPayWebView.Controllers
                 if (errCode == "ERR980" || errCode == "ERR953")
                 {
                     this.TempData["MSG"] = "密碼錯誤";
+                    return RedirectToAction("BindCardFailed");
                 }
             }
             return RedirectToRoute(new { controller = "HotaiPay", action = "AlreadyMember" });

@@ -82,10 +82,10 @@ namespace WebAPI.Controllers
             List<CardList> lstCardList = new List<CardList>();
             OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
             SPOutput_BeforeBookingStart spOut = new SPOutput_BeforeBookingStart();
-            var trace = new TraceCom();
+
             #endregion
             #region 防呆
-            trace.traceAdd("apiIn", value);
+
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -214,43 +214,42 @@ namespace WebAPI.Controllers
                 #region 預授權機制
                 if (flag)
                 {
-                    try
+
+                    int preAuthAmt = 0;
+                    CommonService commonService = new CommonService();
+                    SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
+                    string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
+                    //1.路邊 2.預授權不處理專案(長租客服月結E077)
+                    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID))
                     {
+                        var trace = new TraceCom();
+                        trace.traceAdd("apiIn", value);
+
                         #region 計算預授權金
-                        int preAuthAmt = 0;
-                        CommonService commonService = new CommonService();
-                        SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
-                        string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
-                        //1.路邊 2.預授權不處理專案(長租客服月結E077)
-                        if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID))
+                        DateTime.TryParse(apiInput.ED, out StopTime);
+                        //有調整還車時間
+                        if (DateTime.Compare(StopTime, orderData.ED) > 0)
                         {
-                            DateTime.TryParse(apiInput.ED, out StopTime);
-
-                            //有調整還車時間
-                            if (DateTime.Compare(StopTime, orderData.ED) > 0)
+                            EstimateData estimateData = new EstimateData()
                             {
-                                EstimateData estimateData = new EstimateData()
-                                {
-                                    ProjID = orderData.ProjID,
-                                    SD = orderData.SD,
-                                    ED = StopTime,
-                                    CarNo = orderData.CarNo,
-                                    CarTypeGroupCode = orderData.CarTypeGroupCode,
-                                    WeekdayPrice = orderData.PRICE,
-                                    HoildayPrice = orderData.PRICE_H,
-                                    Insurance = apiInput.Insurance,
-                                    InsurancePerHours = orderData.InsurancePerHours,
-                                    ProjType = orderData.ProjType
-                                };
-                                EstimateDetail estimateDetail;
-                                commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
-                                preAuthAmt = estimateDetail.estimateAmt - orderData.PreAuthAmt;
+                                ProjID = orderData.ProjID,
+                                SD = orderData.SD,
+                                ED = StopTime,
+                                CarNo = orderData.CarNo,
+                                CarTypeGroupCode = orderData.CarTypeGroupCode,
+                                WeekdayPrice = orderData.PRICE,
+                                HoildayPrice = orderData.PRICE_H,
+                                Insurance = apiInput.Insurance,
+                                InsurancePerHours = orderData.InsurancePerHours,
+                                ProjType = orderData.ProjType
+                            };
+                            EstimateDetail estimateDetail;
+                            commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
+                            preAuthAmt = estimateDetail.estimateAmt - orderData.PreAuthAmt;
 
-                                trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt });
-                                trace.FlowList.Add("計算預授權金");
-                            }
+                            trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt });
+                            trace.FlowList.Add("計算預授權金");
                         }
-
                         #endregion
                         #region 後續流程
                         if (preAuthAmt > 0)
@@ -268,8 +267,17 @@ namespace WebAPI.Controllers
                                 insUser = funName,
                                 AuthType = 3
                             };
-                            flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                            trace.traceAdd("DoAuthV4", new { AuthInput, AuthOutput, errCode });
+                            try
+                            {
+                                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                            }
+                            catch (Exception ex)
+                            {
+                                flag = false;
+                                trace.BaseMsg = ex.Message;
+                            }
+
+                            trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
                             trace.FlowList.Add("刷卡授權");
                             if (!flag)
                             {
@@ -281,14 +289,13 @@ namespace WebAPI.Controllers
                             {
                                 #region 寫入預授權
 
-
                                 SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
                                 {
                                     IDNO = IDNO,
                                     LogID = LogID,
                                     Token = Access_Token,
                                     AuthType = 3,
-                                    CardType = AuthOutput == null ? -1 : AuthOutput.CardType,
+                                    CardType = 1,
                                     final_price = preAuthAmt,
                                     OrderNo = tmpOrder,
                                     PRGName = funName,
@@ -323,19 +330,15 @@ namespace WebAPI.Controllers
                             #endregion
                         }
                         #endregion
-                    }
-                    catch (Exception ex)
-                    {
-                        trace.BaseMsg = ex.Message;
-                    }
 
-                    trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                    trace.OrderNo = tmpOrder;
-                    var carRepo = new CarRentRepo();
-                    carRepo.AddTraceLog(50, funName, trace, flag);
+
+                        trace.traceAdd("TraceFinal", new { errCode, errMsg });
+                        trace.OrderNo = tmpOrder;
+                        var carRepo = new CarRentRepo();
+                        carRepo.AddTraceLog(50, funName, trace, flag);
+                    }
                 }
                 #endregion
-
             }
 
             //開始對車機做動作
@@ -779,24 +782,27 @@ namespace WebAPI.Controllers
             #region 寫取車照片到azure
             if (flag)
             {
-                OtherRepository otherRepository = new OtherRepository(connetStr);
-                List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
-                int PICLen = lstCarPIC.Count;
-                for (int i = 0; i < PICLen; i++)
+                if (isDebug == "0") // isDebug = 1，不寫azure
                 {
-                    try
+                    OtherRepository otherRepository = new OtherRepository(connetStr);
+                    List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
+                    int PICLen = lstCarPIC.Count;
+                    for (int i = 0; i < PICLen; i++)
                     {
-                        string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
-
-                        flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
-                        if (flag)
+                        try
                         {
-                            bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                            string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
+                            if (flag)
+                            {
+                                bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        flag = true; //先bypass，之後補傳再刪
+                        catch (Exception ex)
+                        {
+                            flag = true; //先bypass，之後補傳再刪
+                        }
                     }
                 }
             }

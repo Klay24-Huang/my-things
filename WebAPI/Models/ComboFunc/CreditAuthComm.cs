@@ -1,5 +1,7 @@
-﻿using Domain.SP.Input;
+﻿using Domain.Flow.Hotai;
+using Domain.SP.Input;
 using Domain.SP.Output;
+using Domain.TB.Hotai;
 using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.output.Taishin;
@@ -422,6 +424,7 @@ namespace WebAPI.Models.ComboFunc
                     Item = new List<Domain.WebAPI.Input.Taishin.AuthItem>(),
                     MerchantTradeDate = DateTime.Now.ToString("yyyyMMdd"),
                     MerchantTradeTime = DateTime.Now.ToString("HHmmss"),
+                    //todo 
                     MerchantTradeNo = string.Format("{0}{1}{2}", PayType == 0 ? OrderNo.ToString() : IDNO, PaySuff, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                     NonRedeemAmt = Amount.ToString() + "00",
                     NonRedeemdescCode = "",
@@ -515,21 +518,71 @@ namespace WebAPI.Models.ComboFunc
         {
             bool flag = true;
 
-            int CardType = 0;
-            int CheckoutMode = 4;
+            int cardType = 0;
+            int checkoutMode = 4;
 
             var FindCardResult = CheckHotaiBindCard(ref flag, AuthInput.IDNO, ref errCode);
 
             if (flag)
             {
+                HotaipayService hotaipayService = new HotaipayService();
                 //ToDo 補上和泰支付
+                string cardToken = FindCardResult.cardToken;
+                var temPayTypeInfo = GetPayTypeInfo(AuthInput.PayType);
+                string PayTypeStr = temPayTypeInfo.PayTypeStr;
+                string PaySuff = temPayTypeInfo.PaySuff;
+
+                Thread.Sleep(1000);
+
+                var WSAuthInput = new IFN_HotaiPaymentAuth
+                {
+                    CardToken = cardToken,
+                    Amount = AuthInput.Amount,
+                    //Transaction_no = string.Format("{0}{1}{2}", AuthInput.PayType == 0 ? AuthInput.OrderNo.ToString() : AuthInput.IDNO, PaySuff, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                    OrderNo = AuthInput.OrderNo,
+                    IDNO = AuthInput.IDNO,
+                    AutoClose = AuthInput.autoClose,
+                    PayType = AuthInput.PayType,
+                    AuthType = AuthInput.AuthType,
+                    PaySuff = PaySuff,
+                };
+
+                flag = hotaipayService.DoReqPaymentAuth(WSAuthInput,ref errCode);
+                    
+                //logger.Trace("DoHotaiAuth:" + JsonConvert.SerializeObject(WSAuthOutput));
+
+                //if (WSAuthOutput.RtnCode != "1000")
+                //{
+                //    flag = false;
+                //    errCode = "ERR197";
+                //}
+                ////修正錯誤偵測
+                //if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams.ResultCode != "1000")
+                //{
+                //    flag = false;
+                //    errCode = "ERR197";
+                //}
+
+
+                //AuthOutput.AuthCode = WSAuthOutput.ResponseParams.ResultCode;
+                //AuthOutput.AuthMessage = WSAuthOutput.ResponseParams.ResultMessage;
+
+                //AuthOutput.CardType = CardType;
+                //AuthOutput.CheckoutMode = CheckoutMode;
+                //AuthOutput.Transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
+                //AuthOutput.BankTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
+                //AuthOutput.CardNo = WSAuthOutput?.ResponseParams?.ResultData?.CardNumber ?? FindCardResult.cardNumber;
+
+
+
+
             }
-           
+
             if (flag)
             {
                 //ToDo 支付成功回傳資訊
-                AuthOutput.CardType = CardType;
-                AuthOutput.CheckoutMode = CheckoutMode;
+                AuthOutput.CardType = cardType;
+                AuthOutput.CheckoutMode = checkoutMode;
                 AuthOutput.CardNo = "";
                 AuthOutput.Transaction_no = "";
             }
@@ -553,24 +606,27 @@ namespace WebAPI.Models.ComboFunc
         public (string cardNumber, string cardToken) CheckHotaiBindCard(ref bool flag, string IDNO, ref string errCode)
         {
             (string cardNumber, string cardToken) result = ("", "");
-            //ToDo 需補上和泰Pay取卡流程
-            //DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errCode);
 
-            //if (flag)
-            //{
-            //    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            //    {
-            //        result.cardToken = ds.Tables[0].Rows[0]["CardToken"].ToString();
-            //        result.cardNumber = ds.Tables[0].Rows[0]["CardNumber"].ToString();
-            //    }
-            //    else
-            //    {
-            //        flag = false;
-            //        errCode = "ERR730";
-            //    }
-            //}
+            HotaipayService hotaipayService = new HotaipayService();
 
-            //ds.Dispose();
+            var input = new IFN_QueryDefaultCard();
+            var card = new HotaiCardInfo();
+            flag = hotaipayService.DoQueryDefaultCard(input, ref card, ref errCode);
+           
+            if (flag)
+            {
+                if(card != null & !string.IsNullOrEmpty(card.CardToken))
+                {
+                    result.cardToken = card.CardToken;
+                    result.cardNumber = card.CardNumber;
+                }
+                else
+                {
+                    flag = false;
+                    errCode = "ERR730";
+                }
+            }
+           
             return result;
         }
 

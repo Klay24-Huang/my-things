@@ -1,0 +1,113 @@
+﻿@model IEnumerable<HotaiPayWebView.Models.CreditCardChoose>
+
+@{
+    ViewBag.Title = "CreditCardChoose";
+
+    int LEN = -1;
+    List<HotaiPayWebView.Models.CreditCardChoose> lstData = null;
+    if (Model != null)
+    {
+        lstData = new List<HotaiPayWebView.Models.CreditCardChoose>();
+        lstData = Model.ToList();
+        LEN = lstData.Count();
+    }
+}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰Pay設定</title>
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+<body>
+
+
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
+
+
+
+    <div class="container" style="max-width: 414px;">
+        <div class="mt-4">
+            <p class="text-gray">請選擇您欲綁定的信用卡</p>
+        </div>
+
+        @{
+            if (LEN == 0)
+            {
+                <div class="credit-card-box mb-4">
+                    <div class="credit-number">信用卡查無結果</div>
+                </div>
+            }
+            else
+            {
+                for (int i = 0; i < LEN; i++)
+                {
+                    <div class="credit-card-box mb-4">
+                        <input class="mr-3" type="radio" name="card">
+                        <div class="credit-style mr-2">
+                            <img src="~/images/icon/credit_pay_@(lstData[i].CardType).svg" alt="">
+                            信用卡
+                        </div>
+                        <div class="credit-number">@lstData[i].CardNo</div>
+                    </div>
+                }
+
+            }
+        }
+        @*<div class="credit-card-box mb-4">
+                <input class="mr-3" type="radio" name="card">
+                <div class="credit-style mr-2">
+                    <img src="~/images/icon/credit_pay_JCB.svg" alt="">
+                    信用卡
+                </div>
+                <div class="credit-number">*1234</div>
+            </div>
+            <div class="credit-card-box mb-4">
+                <input class="mr-3" type="radio" name="card">
+                <div class="credit-style mr-2">
+                    <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
+                    信用卡
+                </div>
+                <div class="credit-number">*1234</div>
+            </div>
+            <div class="credit-card-box mb-4">
+                <input class="mr-3" type="radio" name="card">
+                <div class="credit-style mr-2">
+                    <img src="~/images/icon/credit_pay_VISA.svg" alt="">
+                    信用卡
+                </div>
+                <div class="credit-number">*1234</div>
+            </div>*@
+    </div>
+
+    <div class="footer-btn-box footer-btn-margin">
+        <div class="buttonBox mb-2">
+            <a class="text-blue" onclick="JumpUrl()" style="cursor: pointer;">＋ 新增信用卡</a>
+        </div>
+        <div class="buttonBox">
+            <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
+                選擇預設信用卡
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>
+
+<script>
+    @*var obj = new Object()
+    obj = '@lstData';
+    console.log(obj);
+    console.log('@lstData');*@
+    function JumpUrl() {
+        window.location.href = '@Url.Action("ChooseNewCard", "HotaiPayCtbc")';
+    }
+
+</script>
+
