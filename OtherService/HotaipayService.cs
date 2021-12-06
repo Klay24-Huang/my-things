@@ -686,7 +686,7 @@ namespace OtherService
             return flag;
         }
         /// <summary>
-        /// 
+        /// 解析AccessToken取得IDNO
         /// </summary>
         /// <param name="Access_Token"></param>
         /// <param name="LogID"></param>
