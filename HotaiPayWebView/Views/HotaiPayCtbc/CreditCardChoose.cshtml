@@ -1,13 +1,16 @@
-﻿@model IEnumerable<HotaiPayWebView.Models.CreditCardChoose>
+﻿@*@model IEnumerable<HotaiPayWebView.Models.CreditCardChoose>*@
+@model IEnumerable<Domain.TB.Hotai.HotaiCardInfo>
 
 @{
     ViewBag.Title = "CreditCardChoose";
 
     int LEN = -1;
-    List<HotaiPayWebView.Models.CreditCardChoose> lstData = null;
+    //List<HotaiPayWebView.Models.CreditCardChoose> lstData = null;
+    List<Domain.TB.Hotai.HotaiCardInfo> lstData = null;
     if (Model != null)
     {
-        lstData = new List<HotaiPayWebView.Models.CreditCardChoose>();
+        //lstData = new List<HotaiPayWebView.Models.CreditCardChoose>();
+        lstData = new List<Domain.TB.Hotai.HotaiCardInfo>();
         lstData = Model.ToList();
         LEN = lstData.Count();
     }
@@ -49,12 +52,12 @@
                 for (int i = 0; i < LEN; i++)
                 {
                     <div class="credit-card-box mb-4">
-                        <input class="mr-3" type="radio" name="card">
+                        <input class="mr-3" type="radio" name="card" @(lstData[i].IsDefault==0?"":"checked")>
                         <div class="credit-style mr-2">
                             <img src="~/images/icon/credit_pay_@(lstData[i].CardType).svg" alt="">
                             信用卡
                         </div>
-                        <div class="credit-number">@lstData[i].CardNo</div>
+                        <div class="credit-number">@lstData[i].CardNumber</div>
                     </div>
                 }
 
