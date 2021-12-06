@@ -331,7 +331,6 @@ namespace HotaiPayWebView.Controllers
             flag = hotaiMemAPI.DoCheckToken(HCToken, ref errCode, ref a);
 
             /*if (!flag)
-
             {
                 //TODO Token失效 導URL至登入畫面 請使用者重登
                 return View("Login");

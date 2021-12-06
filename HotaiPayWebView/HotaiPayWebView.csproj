@@ -180,7 +180,9 @@
     <Content Include="images\icon\.DS_Store" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\BindNewCard.js" />
+    <Content Include="Scripts\HotaiPayJS\ActionJS\CreditStart.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
+    <Content Include="Scripts\HotaiPayJS\ActionJS\NoCreditcard.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep1.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep2.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep3.js" />
