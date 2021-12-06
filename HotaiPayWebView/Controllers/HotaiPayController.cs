@@ -23,22 +23,26 @@ namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
-        private static string _accessToken = "";
-        private static string _refreshToken = "";
-
         private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
         private static readonly Dictionary<string, string> errorDic = commonRepository.GetErrorList("").ToLookup(x => x.ErrCode, y => y.ErrMsg).ToDictionary(x => x.Key, y => y.First());
-        static HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
+        private static HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
         private static HashAlgorithmHelper helper = new HashAlgorithmHelper();
-
+        private static HotaipayService HPServices = new HotaipayService();
+        private static long LogID = 666;
 
         #region 登入頁面
         public ActionResult Login()
         {
-            ViewBag.phone = Request.QueryString["phone"];
-            Session["phone"] = Request.QueryString["phone"];
-            Session["id"] = Request.QueryString["id"];
+            ViewBag.phone = Request.QueryString["phone"].Trim();
+            Session["phone"] = Request.QueryString["phone"].Trim();
+
+            string IDNO = "";
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string errCode = "";
+            var flag = HPServices.GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
+
+            Session["id"] = IDNO;
             return View();
             //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
         }
@@ -64,7 +68,8 @@ namespace HotaiPayWebView.Controllers
 
             if (flag)
             {
-                Session["token"] = apioutput.access_token;
+                Session["hotai_access_token"] = apioutput.access_token;
+                Session["refresh_token"]= apioutput.refresh_token;
                 if (apioutput.memberState == "1" || apioutput.memberState == "2")
                     return View("Supplememtary");
                 else
@@ -80,7 +85,7 @@ namespace HotaiPayWebView.Controllers
                                 Session["terms"] += checkVer.memberBenefits;
                             if (string.IsNullOrEmpty(checkVer.privacyPolicyVersion))
                                 Session["terms"] += checkVer.privacyPolicy;
-                            return View("MembershipTerms");
+                            return RedirectToRoute(new { controller = "HotaiPay", action = "MembershipTerms1" });
                         }
                         else
                         {
@@ -93,14 +98,18 @@ namespace HotaiPayWebView.Controllers
                                 errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, apioutput.access_token, apioutput.refresh_token);
                                 if (errCode=="0000")
                                 {
+                                    return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "CreditCardChoose" });
                                     //以下取得信用卡列表流程
+                                }
+                                else
+                                {
+                                    return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                                 }
 
                             }
                             else
                             {
-                                //RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
-                                return RedirectToAction("BindCardFailed");
+                                return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                             }
                         }
                     }
@@ -124,23 +133,128 @@ namespace HotaiPayWebView.Controllers
         {
             return View();
         }
+        public ActionResult AgreeTerms1()
+        {
+            return RedirectToRoute(new { controller = "HotaiPay", action = "MembershipTerms2" });
+        }
         public ActionResult MembershipTerms2()
         {
             return View();
         }
-
+        public ActionResult AgreeTerms2()
+        {
+            return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep1" });
+        }
         #endregion
 
         #region 補填會員資料頁面
         public ActionResult Supplememtary()
         {
+            string errCode = "";
+
+            WebAPIOutput_GetMemberProfile getMemberProflie = new WebAPIOutput_GetMemberProfile();
+            var flag = hotaiAPI.DoGetMemberProfile(Session["hotai_access_token"].ToString().Trim(), ref getMemberProflie, ref errCode);
+            if (flag)
+            {
+                ViewBag.CustID = getMemberProflie.id;
+                ViewBag.Name = getMemberProflie.name;
+                ViewBag.Birthday = getMemberProflie.birthday;
+                ViewBag.Email = getMemberProflie.email;
+
+                if (string.IsNullOrEmpty(getMemberProflie.sex)){
+                    ViewBag.MaleCheck = false;
+                    ViewBag.FemaleCheck =false;
+                }else if (getMemberProflie.sex == "M"){
+                    ViewBag.MaleCheck = true;
+                    ViewBag.FemaleCheck = false;
+                }
+                else if (getMemberProflie.sex == "F"){
+                    ViewBag.MaleCheck = false;
+                    ViewBag.FemaleCheck = true;
+                }
+            }
             return View();
+        }
+
+        public ActionResult UpdateProfile(FormCollection form)
+        {
+            bool flag = true;
+            string errCode = "";
+
+            ViewBag.CustID = form["custID"].Trim();
+            ViewBag.Name = form["name"].Trim();
+            ViewBag.Birthday = form["birth"].Trim();
+            ViewBag.Email = form["email"].Trim();
+
+            if (form["sex"].Trim() == "male")
+            {
+                ViewBag.MaleCheck = true;
+                ViewBag.FemaleCheck = false;
+            }
+            else
+            {
+                ViewBag.MaleCheck = false;
+                ViewBag.FemaleCheck = true;
+            }
+
+            if (!CheckROCID(form["custID"].Trim()))
+            {
+                ViewBag.CustIDAlert = "身分證格式錯誤";
+                return View("RegisterStep3");
+            }
+
+            WebAPIInput_UpdateMemberProfile memberProfileInput = new WebAPIInput_UpdateMemberProfile
+            {
+                id = form["custID"].Trim(),
+                name = form["name"].Trim(),
+                sex = (form["sex"].Trim() == "male") ? "M" : "F",
+                birthday = DateTime.ParseExact(form["birth"].Trim(), "yyyyMMdd", CultureInfo.CurrentCulture),
+                email = form["email"].Trim()
+            };
+
+            flag = hotaiAPI.DoUpdateMemberProfile(Session["hotai_access_token"].ToString().Trim(), memberProfileInput, ref errCode);
+
+            if (flag)
+            {
+                WebAPIOutput_IsMissingMemberProfile isMissingProfile = new WebAPIOutput_IsMissingMemberProfile();
+                flag = hotaiAPI.DoIsMissingMemberProfile(Session["hotai_access_token"].ToString().Trim(), ref isMissingProfile, ref errCode);
+                if (flag && isMissingProfile.memberState == "3")
+                    return Redirect("RegisterSuccess");
+                else
+                {
+                    if (isMissingProfile.missingId)
+                    {
+                        ViewBag.CustID = "缺少身份證字號";
+                    }
+                    if (isMissingProfile.missingName)
+                    {
+                        ViewBag.Name = "缺少姓名";
+                    }
+                    if (isMissingProfile.missingBirthday)
+                    {
+                        ViewBag.Birthday = "缺少生日";
+                    }
+                    if (isMissingProfile.missingEmail)
+                    {
+                        ViewBag.Email = "缺少電子郵件";
+                    }
+                    if (isMissingProfile.missingSex)
+                    {
+                        ViewBag.MaleCheck = false;
+                        ViewBag.FemaleCheck = false;
+                    }
+                    return View();
+                }
+            }
+            else
+            {
+                return View("RegisterStep3");
+            }
         }
         #endregion
 
 
         #region 註冊驗證步驟一:手機驗證
-        [Route("~/HotaiPay/RegisterStep1")]
         public ActionResult RegisterStep1()
         {
             ViewBag.Phone = Session["Phone"];
@@ -249,10 +363,10 @@ namespace HotaiPayWebView.Controllers
 
             if (flag)
             {
-                _accessToken = getToken.access_token;
-                _refreshToken = getToken.refresh_token;
+                Session["hotai_access_token"] = getToken.access_token;
+                Session["hotai_refresh_token"] = getToken.refresh_token;
             }
-            return View();
+            return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep3" });
         }
         #endregion
 
@@ -298,11 +412,18 @@ namespace HotaiPayWebView.Controllers
                 email = form["email"].Trim()
             };
 
-            flag = hotaiAPI.DoSignupProfile(_accessToken, memberProfileInput, ref errCode);
+            flag = hotaiAPI.DoSignupProfile(Session["hotai_access_token"].ToString().Trim(), memberProfileInput, ref errCode);
 
             if (flag)
             {
-                return Redirect("RegisterSuccess");
+                WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
+                flag = hotaiAPI.DoGetMobilePhoneToOneID(Session["phone"].ToString().Trim(), ref getOneID, ref errCode);
+                if (flag)
+                {
+                    Session["oneID"] = getOneID.memberSeq;
+                    errCode = InsertMemberDataToDB(Session["id"].ToString().Trim(), Session["oneID"].ToString().Trim(), Session["hotai_access_token"].ToString().Trim(), Session["hotai_refresh_token"].ToString().Trim());
+                    return Redirect("RegisterSuccess");
+                }
             }
             else
             {
@@ -359,7 +480,7 @@ namespace HotaiPayWebView.Controllers
                 return View("Login");
             }*/
             HotaiPaymentAPI HPAPI = new HotaiPaymentAPI();
-            HotaipayService HPServices = new HotaipayService();
+            
             //取得卡片清單
             IFN_QueryCardList input = new IFN_QueryCardList();
             OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
