@@ -15,7 +15,7 @@ namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayCtbcController : Controller
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
 
         // GET: HotaiPayCtbc
@@ -33,7 +33,7 @@ namespace HotaiPayWebView.Controllers
             OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
             IFN_QueryDefaultCard input2 = new IFN_QueryDefaultCard();
             HotaiCardInfo card = new HotaiCardInfo();
-            string errorcode="";
+            string errorcode = "";
             input.IDNO = "A225668592";
             input.PRGName = "CreditCardChoose";
             flag = getlist.DoQueryCardList(input, ref output, ref errorcode);
@@ -59,18 +59,26 @@ namespace HotaiPayWebView.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult InsPersonInfo(string ID,string BIRTHDATE)
+        public ActionResult InsPersonInfo(string ID, string BIRTHDATE)
         {
             bool flag;
             HotaipayService addcard = new HotaipayService();
-            IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
             OFN_HotaiFastAddCard output = new OFN_HotaiFastAddCard();
-            input.Birthday = BIRTHDATE;
-            input.IDNO = ID;
-            input.CTBCIDNO = ID;
-            input.RedirectURL = "https://www.gamer.com.tw/";
+
+            //IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
+            //input.Birthday = BIRTHDATE;
+            IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard()
+            {
+                Birthday = BIRTHDATE,
+                IDNO = ID,
+                CTBCIDNO=ID,
+                RedirectURL= "https://irentcar.com.tw/",
+                insUser="",
+                LogID= 0,
+                PRGName= "InsPersonInfo"
+            };
             string errCode = "";
-            flag = addcard.DoFastAddCard(input,ref output,ref errCode);
+            flag = addcard.DoFastAddCard(input, ref output, ref errCode);
             return View();
         }
         public ActionResult SuccessBind()
