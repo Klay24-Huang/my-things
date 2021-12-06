@@ -238,6 +238,8 @@
     <Content Include="Views\HotaiPay\MembershipTerms2.cshtml" />
     <Content Include="Views\HotaiPayCtbc\CreditCardChoose.cshtml" />
     <Content Include="Views\HotaiPayCtbc\ChooseNewCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\InsPersonInfo.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\SuccessBind.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

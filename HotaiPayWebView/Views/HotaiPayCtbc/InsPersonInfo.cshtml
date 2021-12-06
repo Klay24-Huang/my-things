@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "InsPersonInfo";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>輸入個人資料</title>
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+
+<body>
+
+
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">輸入個人資料</h6></header>
+    @using (Html.BeginForm("InsPersonInfo", "HotaiPayCtbc", FormMethod.Post, new { id = "frmAudit", @class = "form-horizontal", enctype = "multipart/form-data" }))
+    {
+        <div class="container" style="max-width: 414px;position:relative">
+            <div class="mt-4">
+                <p class="text-gray">輸入個人資料後，將透過簡訊驗證向中國信託取得您的中信卡資訊，確保支付安全。</p>
+            </div>
+
+            <div class="mt-4">
+                <label>生日</label>
+                <input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" name="BIRTHDATE" id="BIRTHDATE" required>
+            </div>
+
+            <div class="mt-4">
+
+                <label>身分證字號</label>
+                <input type="text" class="form-control input-light" placeholder="輸入身分證字號" name="ID" id="ID" required>
+            </div>
+
+
+
+            <!-- <button type="submit" class="btn btn-blue bottom-btn mb-2">快速新增中信卡
+            </button> -->
+
+        </div>
+
+        <div class="footer-btn-box footer-btn-margin">
+            <div class="buttonBox">
+                <button type="submit" class="btn btn-blue bottom-btn mb-2" style="max-width:414px">
+                    快速新增中信卡
+                </button>
+            </div>
+        </div>
+    }
+
+
+
+</body>
+</html>
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+
+
+<!-- 自己寫的js -->
+<script src="js/main.js"></script>
+
+<!-- 自己寫的js -->

@@ -23,7 +23,8 @@
 
 <body>
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員註冊</h6></header>
-    
+    @using (Html.BeginForm("SetSignUpProfile", "HotaiPay", FormMethod.Post))
+    {
     <div class="container" style="max-width: 414px;padding-bottom: 16px;">
         <div class="msform mt-4">
             <!-- progressbar -->
@@ -40,7 +41,7 @@
 
         <label>姓名</label>
         <input type="text" class="form-control input-light" placeholder="吳志賢" name="name" value="@ViewBag.Name" required>
-        <p id="pwdHint" style="color:red;">@ViewBag.NameAlert</p>
+        <p style="color:red;">@ViewBag.NameAlert</p>
         <div class="credit-card-box mt-4">
             <div class="gender-choose mr-5"><input class="mr-1" type="radio" id="sex" name="sex" value="male" checked="@ViewBag.MaleCheck">先生</div>
             <div class="gender-choose"><input class="mr-1" type="radio" id="sex" name="sex" value="female" checked="@ViewBag.FemaleCheck">女士</div>
@@ -48,13 +49,13 @@
 
         <label class="mt-4">身分證字號</label>
         <input type="text" class="form-control input-light" name="custID" placeholder="A123456789" value="@ViewBag.CustID" required>
-        <p id="pwdHint" style="color:red;">@ViewBag.CustIDAlert</p>
+        <p style="color:red;">@ViewBag.CustIDAlert</p>
         <label class="mt-4">生日</label>
         <input type="text" class="form-control input-light" name="birth" placeholder="輸入生日 ex.19950101" value="@ViewBag.Birthday" required>
-        <p id="pwdHint" style="color:red;">@ViewBag.BirthAlert</p>
+        <p style="color:red;">@ViewBag.BirthAlert</p>
         <label class="mt-4">Email</label>
         <input type="text" class="form-control input-light" name="email" placeholder="orange@goonsdesign.com" value="@ViewBag.Email" required>
-        <p id="pwdHint" style="color:red;">@ViewBag.EmailAlert</p>
+        <p style="color:red;">@ViewBag.EmailAlert</p>
 
         <!-- 提示文字＋圖-->
         <div class="form-check form-check-inline mt-4 d-flex align-items-start">
@@ -87,6 +88,7 @@
 
 
     </div>
+    }
 
 
 
