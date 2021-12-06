@@ -376,14 +376,12 @@ namespace WebAPI.Controllers
                                         {
                                             if (clearFlag)
                                             {
-                                                #region Adam哥上線記得打開
-                                                //bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
-                                                //if (CarFlag == false)
-                                                //{
-                                                //    //寫入車機錯誤
-                                                //}
-                                                //errCode = "000000";
-                                                #endregion
+                                                bool CarFlag = new CarCommonFunc().DoBECloseRent(tmpOrder, IDNO, LogID, apiInput.UserID, ref errCode, apiInput.ByPass);
+                                                if (CarFlag == false)
+                                                {
+                                                    //寫入車機錯誤
+                                                }
+                                                errCode = "000000";
                                             }
 
                                             #region 取得預授權金額
