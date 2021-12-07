@@ -23,11 +23,11 @@
     <div class="container text-center" style="max-width: 414px;">
         <div class="web-img mt-8">
 
-            <img class="object-fit mb-8" alt="iRent汽機車共享" src="images/hotai-logo.svg">
+            <img class="object-fit mb-8" alt="iRent汽機車共享" src="~/images/hotai-logo.svg">
         </div>
 
         <div class="image-box">
-            <img src="images/success-face-icon.svg" alt="">
+            <img src="~/images/success-face-icon.svg" alt="">
         </div>
 
         <div class="text-box mb-8">
@@ -47,7 +47,7 @@
 
     <div class="footer-btn-box footer-btn-margin">
         <div class="buttonBox">
-            <button type="submit" class="btn btn-outline-gray my-3" style="max-width: 414px;">修改和泰集團會員資料</button>
+            <button type="submit" id="modifyData" class="btn btn-outline-gray my-3" style="max-width: 414px;" >修改和泰集團會員資料</button>
         </div>
         <div class="buttonBox">
             <a class="text-gray text-underline sweet-1" href="">我要解綁</a>
@@ -58,18 +58,13 @@
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-
-
-    <!-- 自己寫的js -->
-    <script src="js/main.js"></script>
-
-    <script src="js/sweetalert.js"></script>
-
+    <script src="~/Scripts/HotaiPayJS/sweetalert.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
 
     <script>
-
+        document.getElementById("modifyData").onclick = function () {
+            window.location.href = "https://www.hotaimember.com.tw/Account/Profile";
+        }
         document.querySelector('.sweet-1').onclick = function () {
 
             swal({

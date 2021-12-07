@@ -23,9 +23,11 @@
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員與隱私權條款</h6></header>
 
     <div class="tab-choose d-flex" style="max-width: 525px;margin: auto;">
-        <button class="btn tab-btn">會員條款</button>
-        <button class="btn tab-btn tab-active">隱私權條款</button>
-    </div>
+       
+            <button class="btn tab-btn" onclick="javascript:location.href='MembershipTerms2'">會員條款</button>
+        
+            <button class="btn tab-btn tab-active" onclick="javascript:location.href='MembershipTerms1'">隱私權條款</button>
+        </div>
 
     <div class="container" style="max-width: 525px;position:relative">
 
@@ -74,7 +76,7 @@
     </div>
 
 
-    @using (Html.BeginForm("AgreeTerms1", "HotaiPay", FormMethod.Get))
+    @using (Html.BeginForm("AgreeTerms", "HotaiPay", FormMethod.Get))
     {
     <div class="container footer" style="max-width: 414px;position:relative">
         <div class="form-check form-check-inline mb-3">
@@ -90,16 +92,15 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- 自己寫的js -->
-    <script src="js/main.js"></script>
-    <!-- 自己寫的js -->
+    <script src="~/Scripts/bootstrap.min.js"></script>
 
 
-    <script>$(":checkbox").click(function(){
+
+    <script>
+        $(":checkbox").click(function () {
       $("#redbtn").toggleClass("checked-active")
-  })</script>
+        })
+    </script>
 
 </body>
 </html>
