@@ -393,18 +393,17 @@ namespace WebAPI.Controllers
             #region 預授權機制
             if (flag && spOut.haveCar == 1 && (ProjType == 0 || ProjType == 3))
             {
-                var trace = new TraceCom();
-                trace.traceAdd("apiIn", value);
-
+                SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);
                 //預授權不處理專案(長租客服月結E077)
                 string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
-                if (!notHandle.Contains(apiInput.ProjID))
+                if (!notHandle.Contains(apiInput.ProjID) && orderData.DoPreAuth ==1)
                 {
-                    #region 計算預授權金
+                    var trace = new TraceCom();
+                    trace.traceAdd("apiIn", value);
                     int preAuthAmt = 0;
                     bool canAuth = false;
                     bool authflag = false;
-                    SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);
+                    #region 計算預授權金
                     EstimateData estimateData = new EstimateData()
                     {
                         ProjID = orderData.ProjID,
@@ -439,7 +438,6 @@ namespace WebAPI.Controllers
 
                     trace.traceAdd("GetEsimateAuthAmt", new { canAuth, estimateData, estimateDetail, preAuthAmt });
                     trace.FlowList.Add("計算預授權金");
-
                     #endregion
                     #region 後續流程
                     if (preAuthAmt > 0)
@@ -545,12 +543,12 @@ namespace WebAPI.Controllers
                         #endregion
                     }
                     #endregion
-                }
 
-                trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                trace.OrderNo = spOut.OrderNum;
-                var carRepo = new CarRentRepo();
-                carRepo.AddTraceLog(34, funName, trace, flag);
+                    trace.traceAdd("TraceFinal", new { errCode, errMsg });
+                    trace.OrderNo = spOut.OrderNum;
+                    var carRepo = new CarRentRepo();
+                    carRepo.AddTraceLog(34, funName, trace, flag);
+                }             
             }
 
             #endregion

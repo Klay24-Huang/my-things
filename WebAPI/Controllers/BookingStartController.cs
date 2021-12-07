@@ -203,7 +203,7 @@ namespace WebAPI.Controllers
                     SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
                     string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
                     //1.路邊 2.預授權不處理專案(長租客服月結E077)
-                    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID))
+                    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID) && orderData.DoPreAuth == 1)
                     {
                         var trace = new TraceCom();
                         trace.traceAdd("apiIn", value);
