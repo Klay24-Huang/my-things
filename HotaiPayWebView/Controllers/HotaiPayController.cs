@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.Data.SqlClient;
 using System.Data;
 using Domain.TB.Hotai;
+using Domain.SP.Input.Hotai;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -531,7 +532,51 @@ namespace HotaiPayWebView.Controllers
         #region 已是和泰會員
         public ActionResult AlreadyMember()
         {
-            return View();
+            string accessToken = "";
+            accessToken = Request.QueryString["accessToken"];       
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                ViewData["Token"] = accessToken;
+                return View();
+            }
+        }
+        #endregion
+
+        #region 解綁
+        [HttpPost]
+        public JsonResult Unbind(string token)
+        {
+            bool flag = false;
+            string errCode = "";
+            string IDNO = "";
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                flag = HPServices.GetIDNOFromToken(token, 0, ref IDNO, ref lstError, ref errCode);
+            }
+            else
+            {
+                flag = false; //導登入頁
+            }
+
+            if (flag)
+            {
+                SPInput_MemberUnBind sp_unBindinput = new SPInput_MemberUnBind() { IDNO = IDNO, PRGName = "Unbind" };
+                flag = HPServices.sp_MemberUnBind(sp_unBindinput, ref errCode);                
+            }
+
+            if (flag)
+            {
+                return Json(new { redirectUrl = Url.Action("UnbindSuccess", "HotaiPay") });
+            }
+            else
+            {
+                return Json(flag);
+            }          
         }
         #endregion
 
