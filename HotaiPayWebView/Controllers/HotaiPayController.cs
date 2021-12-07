@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.Data.SqlClient;
 using System.Data;
 using Domain.TB.Hotai;
+using Domain.SP.Input.Hotai;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -478,46 +479,93 @@ namespace HotaiPayWebView.Controllers
         #endregion
 
         #region 無信用卡列表頁面 
-        public ActionResult NoCreditCard(string HCToken)
+        public ActionResult NoCreditCard(string irent_access_token)
         {
-            HotaiMemberAPI hotaiMemAPI = new HotaiMemberAPI();
+            HotaipayService HPServices = new HotaipayService();
             bool flag = false;
             string errCode = "";
-
-            flag = string.IsNullOrWhiteSpace(HCToken);
-            //token檢核
-            int a = 404;//測試用資料 上線需更改
-            flag = hotaiMemAPI.DoCheckToken(HCToken, ref errCode, ref a);
-
-            /*if (!flag)
+            string PRGName = "NoCreditCard";
+            List<ErrorInfo> errList = new List<ErrorInfo>();
+            var IDNO = "";
+            flag = HPServices.GetIDNOFromToken(_accessToken, LogID, ref IDNO,ref errList, ref errCode);
+             
+            if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
             {
-                //TODO Token失效 導URL至登入畫面 請使用者重登
-                return View("Login");
-            }*/
-            HotaiPaymentAPI HPAPI = new HotaiPaymentAPI();
-            
-            HotaipayService HPServices = new HotaipayService();
+                flag = HPServices.GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), LogID, ref IDNO, ref errList, ref errCode);
+                
+                System.Web.HttpContext.Current.Session["IDNO"] = IDNO;
+                System.Web.HttpContext.Current.Session["irent_access_token"] = Request.QueryString["irent_access_token"];
+            }
+            //取得和泰Token
+            var hotaiToken = new HotaiToken();
+            flag = HPServices.DoQueryToken(IDNO, PRGName, ref hotaiToken, ref errCode);
+            if (!flag)
+            {
+                logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
+                return Redirect("/HotaiPay/Login?irent_access_token=" + Request.QueryString["irent_access_token"]);
+            }
+
             //取得卡片清單
             IFN_QueryCardList input = new IFN_QueryCardList();
             OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
+
             //設定查詢的IDNO
             input.IDNO = "C221120413";//測試用資料 上線需更改
+            //input.IDNO = IDNO;//測試用資料 上線需更改
             flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
            
             if (flag)
             {
                 if (output.CreditCards.Count > 0)
-                { //TODO 跳轉卡片清單畫面
-
+                {
                     List<HotaiCardInfo> L_Output = output.CreditCards;
-                    
-                    return View("CreditCardChoose", L_Output);
+                    if(L_Output.Count > 0)
+                        return View("CreditCardChoose", L_Output);
                 }
             }
-            else { //TODO API回傳失敗
-
+            else {
+                logger.Error("HotaiPay.NoCreditCard.DoQueryCardList 查詢卡清單失敗 ERRCODE:" + errCode);
             }
             return View();
+        }
+        #endregion
+
+        #region 選擇綁定卡片
+        [HttpPost]
+        public ActionResult CreditcardChoose(FormCollection form)
+        {
+            string IDNO = System.Web.HttpContext.Current.Session["IDNO"].ToString();
+            string irent_access_token = System.Web.HttpContext.Current.Session["irent_access_token"].ToString();
+            Boolean flag = true;
+            string errCode = "";
+            HotaipayService HPServices = new HotaipayService();
+            string thatCardValue = form["CreditCardList"].Trim();
+            if (thatCardValue != "")
+            {
+                string[] input = thatCardValue.Split('|');
+                string MemberOneID = input[0];
+                string CardType = input[1];
+                string BankDesc = input[2];
+                string CardNumber = input[3];
+                string CardToken = input[4];
+
+                var sp_input = new SPInput_SetDefaultCard();
+                    sp_input.IDNO       = IDNO;
+                    sp_input.OneID      = MemberOneID;
+                    sp_input.CardToken  = CardToken;
+                    sp_input.CardNo     = CardNumber;
+                    sp_input.CardType   = CardType;
+                    sp_input.BankDesc   = BankDesc;
+                    sp_input.PRGName    = "CreditcardChoose";
+
+                flag = HPServices.sp_SetDefaultCard(sp_input,ref errCode);
+                if(!flag)
+                    logger.Error("HotaiPay.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗 ERRCODE:"+ errCode);
+            }
+            if (flag)
+                return Redirect("/HotaiPay/RegisterSuccess");
+            else
+                return Redirect("/HotaiPay/BindCardFailed");
         }
         #endregion
 
