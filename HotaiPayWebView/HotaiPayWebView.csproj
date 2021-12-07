@@ -154,6 +154,7 @@
     <Content Include="Content\HotaiPayCss\normalize.css" />
     <Content Include="Content\HotaiPayCss\style.css" />
     <Content Include="Content\HotaiPayCss\sweetalert.css" />
+    <Content Include="Content\HotaiPayCss\AlreadyMember.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -180,10 +181,7 @@
     <Content Include="images\graphic\popup\.DS_Store" />
     <Content Include="images\icon\.DS_Store" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
-    <Content Include="Scripts\HotaiPayJS\ActionJS\BindNewCard.js" />
-    <Content Include="Scripts\HotaiPayJS\ActionJS\CreditStart.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
-    <Content Include="Scripts\HotaiPayJS\ActionJS\NoCreditcard.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep1.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep2.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep3.js" />

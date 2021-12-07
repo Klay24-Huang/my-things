@@ -18,7 +18,9 @@
     "HotaiPaymentIV": "5dsubdixk7y/WHfKSCdUvA==",
     "CTBCBindCard": "https://testepos.ctbcbank.com:9443/mFastPay/TxnServlet",
     "CTBCFastBind": "https://obtest.ctbcbank.com/api/cpc/init-bind-card",
-    "CTBCMerID": "77465",
-    "CTBCTerminalID": "90100031"
+    "CTBCPosAPI": "https://testepos.ctbcbank.com",
+    "CTBCMerID": "77495",
+    "CTBCTerminalID": "99833350",
+    "MacKey": "N1vqWqFUvdjtDRemdhKGSPAK"
   }
 }

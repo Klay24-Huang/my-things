@@ -627,6 +627,8 @@
     <Build Include="dbo\Stored Procedures\usp_HotaiMemberUnBind_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiToken_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiToken_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_MemberUnbind.sql" />
+    <Build Include="dbo\Stored Procedures\usp_MemberUnBindCheck.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
