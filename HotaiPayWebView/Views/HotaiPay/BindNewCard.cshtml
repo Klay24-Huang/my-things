@@ -9,7 +9,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="@Url.Content("~/Scripts/jquery-3.4.1.min.js")" type="text/javascript"></script>
-    <script src="~/Scripts/HotaiPayJS/ActionJS/BindNewCard.js" type="text/javascript"></script>
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -74,4 +73,22 @@
 
 </body>
 </html>
+
+<script>
+
+    function goCTBCBindCard() {
+        //跳轉畫面
+
+        document.location.href = "/HotaiPay/PersonalInformation";
+
+        alert("走中信快速綁卡");
+
+    }
+
+    function goOtherBindCard() {
+        //call API
+        alert("走其他銀行綁卡");
+    }
+
+</script>
 

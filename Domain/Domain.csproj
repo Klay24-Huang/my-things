@@ -62,6 +62,8 @@
     <Compile Include="SP\Input\Hotai\SPInput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_SetDefaultCard.cs" />
+    <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
+    <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />
     <Compile Include="TB\Hotai\HotaiCardInfo.cs" />
@@ -635,7 +637,13 @@
     <Compile Include="WebAPI\Input\CENS\WSInput_SendCardNo.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SendLock.cs" />
     <Compile Include="WebAPI\Input\CENS\WSInput_SetOrderStatus.cs" />
-    <Compile Include="WebAPI\Input\CTBCPOS\WebQPIInput_InquiryByLidm.cs" />
+    <Compile Include="WebAPI\Input\CTBCPOS\WebAPIInput_RefundRev.cs" />
+    <Compile Include="WebAPI\Input\CTBCPOS\WebAPIInput_Refund.cs" />
+    <Compile Include="WebAPI\Input\CTBCPOS\WebAPIInput_CTBCBase.cs" />
+    <Compile Include="WebAPI\Input\CTBCPOS\WebAPIInput_AuthRev.cs" />
+    <Compile Include="WebAPI\Input\CTBCPOS\WebAPIInput_CapRev.cs" />
+    <Compile Include="WebAPI\Input\CTBCPOS\WebAPIInput_Cap.cs" />
+    <Compile Include="WebAPI\Input\CTBCPOS\WebAPIInput_InquiryByLidm.cs" />
     <Compile Include="WebAPI\Input\FET\WebAPIInput_GCPUpMapping.cs" />
     <Compile Include="WebAPI\Input\FET\WSInput_Base.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_ArrearsQuery.cs" />
@@ -739,6 +747,12 @@
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdatePassword.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
+    <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_RefundRev.cs" />
+    <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_Refund.cs" />
+    <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_CTBCBase.cs" />
+    <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_AuthRev.cs" />
+    <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_CapRev.cs" />
+    <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_Cap.cs" />
     <Compile Include="WebAPI\output\FET\WebAPIOutput_AddDeviceToken.cs" />
     <Compile Include="WebAPI\output\FET\WebAPIOutput_GCPUpMapping.cs" />
     <Compile Include="WebAPI\output\FET\WebAPIOutput_GetDeviceId.cs" />

@@ -8,8 +8,7 @@ window.onload = function () {
     var getUrlString = location.href;
     var url = new URL(getUrlString);
     var url_HCToken = url.searchParams.get('HCToken');
-    var url_PhoneNo = url.searchParams.get('PhoneNo');
-    var url_IDNO = url.searchParams.get('IDNO');
+    var url_IRToken = url.searchParams.get('IRToken');
 
     var flag = 0;
 
@@ -31,7 +30,7 @@ window.onload = function () {
                 if (url_HCToken != null && url_HCToken != '') {
                     // 使用 jQuery Ajax 傳送至後端
                     $.ajax({
-                        url: 'DoCreditStart',
+                        url: 'NoCreditCard',
                         method: 'POST',
                         dataType: 'json',
                         data: {
@@ -61,10 +60,11 @@ window.onload = function () {
 function goAddNewCard() {
 
     //TODO 連結的值須帶過去
+    var Token = ""
 
-    document.location.href ="/HotaiPay/BindNewCard";
+    document.location.href = "/HotaiPay/BindNewCard" + Token == "" ? "" : "?Token="+Token;
 
 
     var Today = new Date();
-    alert("今天日期是 " + Today.getFullYear() + " 年 " + (Today.getMonth() + 1) + " 月 " + Today.getDate() + " 日");
+    alert("測試觸發事件：今天日期是 " + Today.getFullYear() + " 年 " + (Today.getMonth() + 1) + " 月 " + Today.getDate() + " 日");
 }

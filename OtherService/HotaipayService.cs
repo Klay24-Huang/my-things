@@ -25,7 +25,7 @@ namespace OtherService
     public class HotaipayService
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"]?.ToString()??"";
         private static ConfigManager configManager = new ConfigManager("hotaipayment");
         private string merID = configManager.GetKey("CTBCMerID");
@@ -675,7 +675,7 @@ namespace OtherService
         }
 
 
-        public bool DoQueryCTBCTransaction(WebQPIInput_InquiryByLidm input, out WebAPIOutput_InquiryByLidm output,ref string errCode)
+        public bool DoQueryCTBCTransaction(WebAPIInput_InquiryByLidm input, out WebAPIOutput_InquiryByLidm output,ref string errCode)
         {
             output = new WebAPIOutput_InquiryByLidm();
 
