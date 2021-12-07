@@ -163,7 +163,7 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-                        if (ProjType == 3)
+                        if (ProjType == 3 || ProjType == 4)
                         {
                             //20201212 ADD BY ADAM REASON.路邊改預設一天
                             EDate = SDate.AddDays(1);
