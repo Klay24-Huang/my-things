@@ -23,8 +23,9 @@ namespace HotaiPayWebView.Controllers
         {
             return View();
         }
-        //[HttpPost]
-        public ActionResult CreditCardChoose()
+
+        [HttpGet]
+        public ActionResult CreditCardChoose(string AccessToken)
         {
             //List<CreditCardChoose> lstData = new HotaiPayCtbcRepository(connetStr).GetCreditCarLists("C221120413");
             bool flag;
@@ -34,7 +35,7 @@ namespace HotaiPayWebView.Controllers
             IFN_QueryDefaultCard input2 = new IFN_QueryDefaultCard();
             HotaiCardInfo card = new HotaiCardInfo();
             string errorcode = "";
-            input.IDNO = "A225668592";
+            input.IDNO = AccessToken;
             input.PRGName = "CreditCardChoose";
             flag = getlist.DoQueryCardList(input, ref output, ref errorcode);
             //if (flag)
@@ -59,19 +60,21 @@ namespace HotaiPayWebView.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult InsPersonInfo(string ID, string BIRTHDATE)
+        public ActionResult InsPersonInfo(TangViewModel inn)
         {
             bool flag;
             HotaipayService addcard = new HotaipayService();
             OFN_HotaiFastAddCard output = new OFN_HotaiFastAddCard();
 
+            OFN_HotaiFastAddCard vm = new OFN_HotaiFastAddCard();
+
             //IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
             //input.Birthday = BIRTHDATE;
             IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard()
             {
-                Birthday = BIRTHDATE,
-                IDNO = ID,
-                CTBCIDNO=ID,
+                Birthday = inn.Birthday,
+                IDNO = inn.CTBCIDNO,
+                CTBCIDNO= inn.CTBCIDNO,
                 RedirectURL= "https://irentcar.com.tw/",
                 insUser="",
                 LogID= 0,
@@ -79,7 +82,17 @@ namespace HotaiPayWebView.Controllers
             };
             string errCode = "";
             flag = addcard.DoFastAddCard(input, ref output, ref errCode);
-            return View();
+            if (flag)
+            {
+                vm = output;
+            }
+            else
+            {
+                vm.succ = false;
+            }
+
+            return Json(vm);
+            //return View();
         }
         public ActionResult SuccessBind()
         {
