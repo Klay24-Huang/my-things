@@ -19,36 +19,30 @@
 </head>
 <body>
 
-    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員登入</h6></header>
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
 
-    <div  class="container text-center relative" style="max-width: 414px;">
+    <div class="container text-center relative" style="max-width: 414px;">
 
-    <div class="image-box mt-8">
-        <img src="~/images/success-face-icon.svg" alt="">
+        <div class="image-box mt-8">
+            <img src="~/images/success-face-icon.svg" alt="">
+        </div>
+
+        <div class="text-box">
+            <p class="text-gray">
+                接下來需要綁定信用卡<br>
+                才可以使用和泰Pay進行預約哦！
+            </p>
+        </div>
+
     </div>
 
-    <div class="text-box">
-        <p class="text-gray">
-            接下來需要綁定信用卡<br>
-            才可以使用和泰Pay進行預約哦！
-        </p>
-    </div>
 
-
-
-
-
-</div>
-
-
-    <div class="footer-btn-box footer-btn-margin">
-        <div class="buttonBox">
+    <div class="footer-btn-box footer-btn-margin" >
+        <div class="buttonBox" onclick="goBindNewCard()">
             <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;">進行信用卡綁定 </button>
 
         </div>
     </div>
-
-
 
 </body>
 </html>
@@ -58,8 +52,6 @@
     //點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
     function goBindNewCard() {
 
-        document.location.href = "/HotaiPay/BindNewCard";
-        var Today = new Date();
-        alert("今天日期是 " + Today.getFullYear() + " 年 " + (Today.getMonth() + 1) + " 月 " + Today.getDate() + " 日");
+        document.location.href = "/HotaiPay/NoCreditCard";
     }
 </script>
