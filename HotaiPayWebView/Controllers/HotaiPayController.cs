@@ -533,14 +533,14 @@ namespace HotaiPayWebView.Controllers
         public ActionResult AlreadyMember()
         {
             string accessToken = "";
-            accessToken = Request.QueryString["accessToken"];       
+            accessToken = Request.QueryString["irent_access_token"];       
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 return RedirectToAction("Login");
             }
             else
             {
-                ViewData["Token"] = accessToken;
+                ViewData["Token"] = accessToken.Trim();
                 return View();
             }
         }
