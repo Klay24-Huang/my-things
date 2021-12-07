@@ -62,6 +62,8 @@
     <Compile Include="SP\Input\Hotai\SPInput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_SetDefaultCard.cs" />
+    <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
+    <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />
     <Compile Include="TB\Hotai\HotaiCardInfo.cs" />
