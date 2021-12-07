@@ -37,7 +37,7 @@
                 <br>
                 <div class="ml-2">
                     <span class="item-content text-gray">・無需輸入卡號，可快速綁定</span><br>
-                    @*<span class="item-content text-gray">・<span class="text-red">中信和泰聯名卡</span>搭車最高<span class="text-red">6%</span>和泰Points回饋</span>*@
+                    <!-- <span class="item-content text-gray">・<span class="text-red">中信和泰聯名卡</span>租車最高<span class="text-red">6%</span>和泰Points回饋</span> -->
                 </div>
             </div>
             <div class="d-flex"><img class="align-self-start mt-2" src="~/images/icon/more.svg" alt=""></div>
@@ -53,11 +53,6 @@
         </div>
 
     </div>
-
-
-
-
-
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -79,15 +74,15 @@
     function goCTBCBindCard() {
         //跳轉畫面
 
-        document.location.href = "/HotaiPay/PersonalInformation";
+        document.location.href = "/HotaiPayCtbc/InsPersonInfo";
 
-        alert("走中信快速綁卡");
+        //alert("走中信快速綁卡");
 
     }
 
     function goOtherBindCard() {
         //call API
-        alert("走其他銀行綁卡");
+        alert("其他銀行綁卡>>call API>> Redirect");
     }
 
 </script>
