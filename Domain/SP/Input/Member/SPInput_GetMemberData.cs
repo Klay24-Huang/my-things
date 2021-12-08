@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.SP.Input.Member
+﻿namespace Domain.SP.Input.Member
 {
-    public class SPInput_GetMemberData
+    public class SPInput_GetMemberData : SPInput_Base
     {
         /// <summary>
         /// 帳號
@@ -16,9 +10,10 @@ namespace Domain.SP.Input.Member
         /// JWT Token
         /// </summary>
         public string Token { set; get; }
+
         /// <summary>
-        /// 
+        /// 是否檢查Token (0:不檢查 1:要檢查)
         /// </summary>
-        public Int64 LogID { set; get; }
+        public int CheckToken { get; set; } = 1;
     }
 }
