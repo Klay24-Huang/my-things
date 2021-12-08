@@ -288,34 +288,35 @@ namespace WebAPI.Controllers
                             trace.traceAdd("ckTime", ckTime);
                         }
                         #endregion
-                        #region Adam哥上線記得打開
-                        //#region 檢查車機狀態
-                        //if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要檢核 20201212 ADD BY ADAM
-                        //{
-                        //    flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
-                        //    trace.traceAdd("CarDevCk", flag);
-                        //}
-                        //#endregion
-                        //#region 檢查iButton
-                        //if (flag && OrderDataLists[0].ProjType != 4 && iButton == 1)
-                        //{
-                        //    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
-                        //    {
-                        //        OrderNo = tmpOrder,
-                        //        Token = Access_Token,
-                        //        IDNO = IDNO,
-                        //        LogID = LogID
-                        //    };
-                        //    string SPName = "usp_CheckCarIButton";
-                        //    SPOutput_Base SPOutputBase = new SPOutput_Base();
-                        //    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
-                        //    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
-                        //    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
 
-                        //    trace.traceAdd("iBtnSp", new { spInput, SPOutputBase });
-                        //}
-                        //#endregion
+                        #region 檢查車機狀態
+                        if (flag && OrderDataLists[0].ProjType != 4)    //汽車才需要檢核 20201212 ADD BY ADAM
+                        {
+                            flag = new CarCommonFunc().CheckReturnCar(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
+                            trace.traceAdd("CarDevCk", flag);
+                        }
                         #endregion
+                        #region 檢查iButton
+                        if (flag && OrderDataLists[0].ProjType != 4 && iButton == 1)
+                        {
+                            SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                            {
+                                OrderNo = tmpOrder,
+                                Token = Access_Token,
+                                IDNO = IDNO,
+                                LogID = LogID
+                            };
+                            string SPName = "usp_CheckCarIButton";
+                            SPOutput_Base SPOutputBase = new SPOutput_Base();
+                            SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                            flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+
+                            trace.traceAdd("iBtnSp", new { spInput, SPOutputBase });
+                        }
+                        #endregion
+
+
                         #region 台新信用卡-Mark
                         //if (flag)
                         //{
@@ -462,23 +463,23 @@ namespace WebAPI.Controllers
                         //    flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
                         //}
 
-                        #region Adam哥上線記得打開
-                        //#region 車機指令
-                        ////20210102 ADD BY ADAM REASON.車機處理挪到外層呼叫，不放在台新金流內了，偶爾會遇到沒做完就跳出的情況
-                        //if (flag)
-                        //{
-                        //    bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
 
-                        //    trace.traceAdd("DoCloseRent", new { errCode, dis = "不管車機執行是否成功，都把errCode=000000" });
+                        #region 車機指令
+                        //20210102 ADD BY ADAM REASON.車機處理挪到外層呼叫，不放在台新金流內了，偶爾會遇到沒做完就跳出的情況
+                        if (flag)
+                        {
+                            bool CarFlag = new CarCommonFunc().DoCloseRent(tmpOrder, IDNO, LogID, Access_Token, ref errCode);
 
-                        //    if (CarFlag == false)
-                        //    {
-                        //        //寫入車機錯誤
-                        //    }
-                        //    errCode = "000000";     //不管車機執行是否成功，都把errCode清掉
-                        //}
-                        //#endregion
+                            trace.traceAdd("DoCloseRent", new { errCode, dis = "不管車機執行是否成功，都把errCode=000000" });
+
+                            if (CarFlag == false)
+                            {
+                                //寫入車機錯誤
+                            }
+                            errCode = "000000";     //不管車機執行是否成功，都把errCode清掉
+                        }
                         #endregion
+                        
 
                         #region 取得預授權金額
                         if (flag)
@@ -555,6 +556,8 @@ namespace WebAPI.Controllers
                                     Access_Token,
                                     tmpOrder,
                                     "",
+                                    0,
+                                    funName,
                                     LogID
                                 },
                                 objparms

@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
 
         private CommonFunc baseVerify { get; set; }
 
-        [HttpGet]
+        [HttpPost]
         public Dictionary<string, object> DoCreditAuthJob(Dictionary<string, object> value)
         {
             logger.Trace("Init");
