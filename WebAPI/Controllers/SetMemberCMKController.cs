@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR900";
                 }
-                if (apiInput.SeqNo <= 0)
+                if (apiInput.SeqNo < 0)
                 {
                     flag = false;
                     errCode = "ERR900";
@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
                 if (apiInput.CHKStatus == "Y")
                 {
                     //string spName = "usp_SetMemberCMK";
-                    string spName = "usp_SetMemberCMK_20211207";    //20211207 ADD BY ADAM REASON.為了版本共存先切一版出來
+                    string spName = "usp_SetMemberCMK_V20211207";    //20211207 ADD BY ADAM REASON.為了版本共存先切一版出來
                     SPInput_SetMemberCMK spInput = new SPInput_SetMemberCMK()
                     {
                         IDNO = IDNO,

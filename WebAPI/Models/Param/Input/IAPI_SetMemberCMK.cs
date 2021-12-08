@@ -12,6 +12,6 @@
         /// <summary>
         /// 流水號 (對應TB_CMKDEF)
         /// </summary>
-        public int SeqNo { get; set; }
+        public int SeqNo { get; set; } = 0;
     }
 }
