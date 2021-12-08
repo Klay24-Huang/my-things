@@ -654,7 +654,6 @@ namespace HotaiPayWebView.Controllers
             string PRGName = "NoCreditCard";
             List<ErrorInfo> errList = new List<ErrorInfo>();
             var IDNO = "";
-            flag = HPServices.GetIDNOFromToken(Session["irent_access_token"].ToString(), LogID, ref IDNO,ref errList, ref errCode);
 
             if(System.Web.HttpContext.Current.Session["irent_access_token"] == null )
                 System.Web.HttpContext.Current.Session["irent_access_token"] = Request.QueryString["irent_access_token"] ;
@@ -664,6 +663,7 @@ namespace HotaiPayWebView.Controllers
                 flag = HPServices.GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), LogID, ref IDNO, ref errList, ref errCode);
                 System.Web.HttpContext.Current.Session["IDNO"] = IDNO;
             }
+            /*
             //取得和泰Token
             var hotaiToken = new HotaiToken();
             flag = HPServices.DoQueryToken(IDNO, PRGName, ref hotaiToken, ref errCode);
@@ -672,14 +672,14 @@ namespace HotaiPayWebView.Controllers
                 logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
                 return Redirect("/HotaiPay/Login?irent_access_token=" + Request.QueryString["irent_access_token"]);
             }
-
+            */
             //取得卡片清單
             IFN_QueryCardList input = new IFN_QueryCardList();
             OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
 
             //設定查詢的IDNO
-            //input.IDNO = "C221120413";//測試用資料 上線需更改
-            input.IDNO = IDNO;//測試用資料 上線需更改
+            input.IDNO = "A225668592";//測試用資料 上線需更改
+            //input.IDNO = IDNO;//測試用資料 上線需更改
             flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
            
             if (flag)
