@@ -153,7 +153,6 @@
     <Content Include="Content\HotaiPayCss\normalize.css" />
     <Content Include="Content\HotaiPayCss\style.css" />
     <Content Include="Content\HotaiPayCss\sweetalert.css" />
-    <Content Include="Content\HotaiPayCss\AlreadyMember.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
