@@ -28,11 +28,9 @@ namespace OtherService
 		private string _fastBind = configManager.GetKey("CTBCFastBind");//ConfigurationManager.AppSettings["CTBCFastBind"].ToString();
 		private byte[] Key = Convert.FromBase64String(configManager.GetKey("HotaiPaymentKey"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentKey"].ToString());                               
 		private byte[] IV = Convert.FromBase64String(configManager.GetKey("HotaiPaymentIV"));//Convert.FromBase64String(ConfigurationManager.AppSettings["HotaiPaymentIV"].ToString());
-		
 
 		public bool GetHotaiCardList(WebAPIInput_GetCreditCards input, ref WebAPIOutput_GetCreditCards output)
 		{
-			
 			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<List<HotaiCardInfoOriginal>>, object>(null, "GET", "/creditcard/card", input.AccessToken);
 			logger.Info($"GetHotaiCardList apiResult {JsonConvert.SerializeObject(apiResult)}");
 
@@ -110,16 +108,16 @@ namespace OtherService
 		}
 
 		/// <summary>
-		/// 信用卡授權請求
+		/// 信用卡授權請求加密
 		/// </summary>
 		/// <returns></returns>
-		public bool CreaditCardPay(WebAPIInput_CreditCardPay input, ref WebAPIOutput_CreditCardPay output)
+		public bool CreaditCardPayEncpypt(WebAPIInput_CreditCardPayEncpypt input, ref WebAPIOutput_CreditCardPayEncrypt output)
 		{
 			var Body = new Body_CreditCardPay
 			{
 				TokenID = int.Parse(input.CardToken),
-				//MerID = input.MerID,
-				//TerMinnalID = input.TerMinnalID,
+				MerID = input.MerID,
+				TerMinnalID = input.TerMinnalID,
 				Lidm = input.Lidm,
 				PurchAmt = input.PurchAmt,
 				TxType = input.TxType,
@@ -136,12 +134,12 @@ namespace OtherService
 			};
 			
 			var jsonSetting = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-			logger.Info($"Body_CreditCardPay requset body {JsonConvert.SerializeObject(Body, Formatting.Indented, jsonSetting)}");
+			logger.Info($"CreaditCardPayEncpypt requset body {JsonConvert.SerializeObject(Body, Formatting.Indented, jsonSetting)}");
 
 			var apiResult = HotaiPaymentApiPost<WebAPIOutput_PaymentGeneric<HotaiResReqJsonPwd>, Body_CreditCardPay>(Body, "POST", "/creditcard/pay/json", input.AccessToken);
 
 			var reqjsonpwd = "";
-			logger.Info($"Body_CreditCardPay apiResult {JsonConvert.SerializeObject(apiResult)}");
+			logger.Info($"CreaditCardPayEncpypt apiResult {JsonConvert.SerializeObject(apiResult)}");
 			if (apiResult.Succ)
 			{
 				reqjsonpwd = apiResult.Data?.Data?.reqjsonpwd ?? "";
@@ -149,30 +147,44 @@ namespace OtherService
 			if(string.IsNullOrWhiteSpace(reqjsonpwd))
             {
 				apiResult.Succ = false;
+
+			}
+			if (apiResult.Succ)
+			{
+				output.PostData = apiResult.Data?.Data;
+			}
+			logger.Info($"CreaditCardPayEncpypt output {JsonConvert.SerializeObject(output)}");
+			return apiResult.Succ;
+		}
+
+		/// <summary>
+		/// 信用卡授權請求
+		/// </summary>
+		/// <returns></returns>
+		public bool CreaditCardPay(WebAPIInput_CreditCardPay input, ref WebAPIOutput_CreditCardPay output)
+		{
+			var apiResult = new PostJsonResultInfo();
+
+			logger.Info($"CreaditCardPay requset {JsonConvert.SerializeObject(input.PostData)}");
+
+			apiResult = ApiPost.DoApiPostForm<HotaiResReqJsonPwd>(_bindCardURL, input.PostData, "POST", null);
+
+			logger.Info($"CreaditCardPay apiResult {JsonConvert.SerializeObject(apiResult)}");
+
+			output.ProtocolStatusCode = apiResult.ProtocolStatusCode;
+			if (output.ProtocolStatusCode == 200)
+			{
+				output.PageText = apiResult.ResponseData;
+				output.PageTitle = GetCTBCPageTitle(apiResult.ResponseData);
+			}
+			else
+			{
+				apiResult.Succ = false;
+				output.ErrorCode = apiResult.ErrCode;
+				output.ErrorMessage = apiResult.Message;
 			}
 
-			if(apiResult.Succ)
-            {
-				var CTBCResult = new PostJsonResultInfo();
-
-				logger.Info($"Body_CreditCardPay 中信取授權 前 {JsonConvert.SerializeObject(apiResult.Data.Data)}");
-
-				CTBCResult = ApiPost.DoApiPostForm<HotaiResReqJsonPwd>(_bindCardURL, apiResult.Data.Data, "POST", null);
-
-				logger.Info($"Body_CreditCardPay CTBCResult {JsonConvert.SerializeObject(CTBCResult)}");
-
-				output.ProtocolStatusCode = CTBCResult.ProtocolStatusCode;
-				if(output.ProtocolStatusCode == 200)
-				{ 
-					output.PageText = CTBCResult.ResponseData;
-					output.PageTitle = GetCTBCPageTitle(CTBCResult.ResponseData);
-				}
-				else
-                {
-					apiResult.Succ = false;
-				}
-			}
-
+			logger.Info($"CreaditCardPay output {JsonConvert.SerializeObject(output)}");
 			return apiResult.Succ;
 		}
 
@@ -180,12 +192,11 @@ namespace OtherService
 		public bool DecryptCTBCHtml(WebAPIInput_DecryptCTBCHtml input, ref WebAPIOutput_DecryptCTBCHtml output)
         {
 
+			var flag = true;
 			var Body = new Body_CreditCardDecrypt
 			{
 				Data = Uri.EscapeUriString(input.PageText)
-				//WebUtility.UrlEncode()
-
-				//HttpUtility.UrlPathEncode(input.PageText)
+				//WebUtility.UrlEncode()  空白會轉成+
 			};
 
 			logger.Info($"Body_DecryptCTBCHtml requset body {JsonConvert.SerializeObject(Body)}");
@@ -194,18 +205,34 @@ namespace OtherService
 			
 			logger.Info($"Body_DecryptCTBCHtml apiResult {JsonConvert.SerializeObject(apiResult)}");
 
-			if(apiResult.Succ)
+
+			if (!apiResult.Succ)
             {
+				flag = false;
+				output.ErrorCode = apiResult.ErrCode;
+				output.ErrorMessage = apiResult.Message;
+			}
+			
+			if(flag)
+            {
+				var QueryStringToObject = new QueryStringHelper().QueryStringToObject<WebAPIOutput_DecryptCTBCHtml>(apiResult.Data.Data);
+				output = QueryStringToObject;
 				output.FullString = apiResult.Data.Data;
 
+				if(output.Errcode == "00" && output.StatusCode == "I0000" && output.Status == 0)
+                {
+					flag = true;
+				}
+				else
+                {
+					flag = false;
+                }
 			}
-
-			return true;
-
+			return flag;
 		}
 
 		/// <summary>
-		/// Hotai金流
+		/// Hotai金流 共用 POST Method
 		/// </summary>
 		/// <typeparam name="TResponse"></typeparam>
 		/// <typeparam name="TRequest"></typeparam>
@@ -306,6 +333,7 @@ namespace OtherService
 
 		private string GetCTBCPageTitle(string input)
         {
+
 			string MatchPattern = @"<title>(?'title'.*)</title>";
 			
 			var match = Regex.Match(input, MatchPattern);
@@ -320,5 +348,6 @@ namespace OtherService
 
 		}
 
+	
 	}
 }
