@@ -39,7 +39,7 @@
  
     <div class="footer-btn-box footer-btn-margin">
         <div class="buttonBox">
-            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;"  onclick="javascript: location.href = '../HotaiPay/NoCreditCard?irent_access_token=@ViewBag.HotaiAccessToken'">進行信用卡綁定 </button>
+            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;"  onclick="javascript: location.href = '../HotaiPayCtbc/NoCreditCard?irent_access_token=@ViewBag.HotaiAccessToken'">進行信用卡綁定 </button>
         </div>
     </div>
 
@@ -52,6 +52,6 @@
     //點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
     function goBindNewCard() {
 
-        document.location.href = "/HotaiPay/NoCreditCard";
+        document.location.href = "/HotaiPayCtbc/NoCreditCard";
     }
 </script>

@@ -1,22 +1,10 @@
-﻿@*@model IEnumerable<HotaiPayWebView.Models.CreditCardChoose>*@
-@model IEnumerable<Domain.TB.Hotai.HotaiCardInfo>
-
+﻿@model List<Domain.TB.Hotai.HotaiCardInfo>
 @{
     ViewBag.Title = "CreditCardChoose";
-
-    int LEN = -1;
-    //List<HotaiPayWebView.Models.CreditCardChoose> lstData = null;
-    List<Domain.TB.Hotai.HotaiCardInfo> lstData = null;
-    if (Model != null)
-    {
-        //lstData = new List<HotaiPayWebView.Models.CreditCardChoose>();
-        lstData = new List<Domain.TB.Hotai.HotaiCardInfo>();
-        lstData = Model.ToList();
-        LEN = lstData.Count();
-    }
+    List<Domain.TB.Hotai.HotaiCardInfo> L_Output = new List<Domain.TB.Hotai.HotaiCardInfo>();
+    L_Output = Model;
 }
-
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -30,68 +18,95 @@
 </head>
 <body>
 
-
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
 
-
-
+    @using (Html.BeginForm("CreditcardChoose", "HotaiPay", FormMethod.Post))
+    {
     <div class="container" style="max-width: 414px;">
         <div class="mt-4">
             <p class="text-gray">請選擇您欲綁定的信用卡</p>
         </div>
 
         @{
-            if (LEN == 0)
+            for (int i = 0; i < L_Output.Count; i++)
             {
-                <div class="credit-card-box mb-4">
-                    <div class="credit-number">信用卡查無結果</div>
-                </div>
-            }
-            else
-            {
-                for (int i = 0; i < LEN; i++)
+                var A_output = L_Output.ElementAt(i);
+                if (A_output.CardType == "JCB")
                 {
+                    var CardName = A_output.CardName;
+                    var CardNumber = A_output.CardNumber;
+                    CardNumber = CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*");
+                    var CardType = A_output.CardType;
+                    var BankDesc = A_output.BankDesc;
+                    var CardToken = A_output.CardToken;
+                    var IsDefault = A_output.IsDefault == 1 ? true : false;
+                    var MemberOneID = A_output.MemberOneID;
+
                     <div class="credit-card-box mb-4">
-                        <input class="mr-3" type="radio" name="card" @(lstData[i].IsDefault==0?"":"checked")>
+                        <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
+                                value=("@MemberOneID"+"|"+"@CardType"+"|"+"@BankDesc"+"|"+"@CardNumber"+"|"+"@A_output") />
+
                         <div class="credit-style mr-2">
-                            <img src="~/images/icon/credit_pay_@(lstData[i].CardType).svg" alt="">
+                            <img src="~/images/icon/credit_pay_JCB.svg" alt="">
                             信用卡
                         </div>
-                        <div class="credit-number">@lstData[i].CardNumber</div>
+                        <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
                     </div>
                 }
 
+                if (A_output.CardType == "MasterCard")
+                {
+
+                    var CardName = A_output.CardName;
+                    var CardNumber = A_output.CardNumber;
+                    CardNumber = CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*");
+                    var CardType = A_output.CardType;
+                    var BankDesc = A_output.BankDesc;
+                    var CardToken = A_output.CardToken;
+                    var IsDefault = A_output.IsDefault == 1 ? true : false;
+                    var MemberOneID = A_output.MemberOneID;
+
+                    <div class="credit-card-box mb-4">
+                        <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
+                                value=("@MemberOneID"+"|"+"@CardType"+"|"+"@BankDesc"+"|"+"@CardNumber"+"|"+"@A_output") />
+
+                        <div class="credit-style mr-2">
+                            <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
+                            信用卡
+                        </div>
+                        <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                    </div>
+                }
+                if (A_output.CardType == "Visa")
+                {
+
+                    var CardName = A_output.CardName;//666
+                    var CardNumber = A_output.CardNumber;//-8441
+                    var CardType = A_output.CardType;//VISA
+                    var BankDesc = A_output.BankDesc;//國外卡
+                    var CardToken = A_output.CardToken;//1850
+                    var IsDefault = A_output.IsDefault == 1 ? true : false;
+                    var MemberOneID = A_output.MemberOneID;//112bd64b..........af980
+
+                    <div class="credit-card-box mb-4">
+                        <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
+                                value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
+
+                        <div class="credit-style mr-2">
+                            <img src="~/images/icon/credit_pay_VISA.svg" alt="">
+                            信用卡
+                        </div>
+                        <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                    </div>
+                }
             }
         }
-        @*<div class="credit-card-box mb-4">
-                <input class="mr-3" type="radio" name="card">
-                <div class="credit-style mr-2">
-                    <img src="~/images/icon/credit_pay_JCB.svg" alt="">
-                    信用卡
-                </div>
-                <div class="credit-number">*1234</div>
-            </div>
-            <div class="credit-card-box mb-4">
-                <input class="mr-3" type="radio" name="card">
-                <div class="credit-style mr-2">
-                    <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
-                    信用卡
-                </div>
-                <div class="credit-number">*1234</div>
-            </div>
-            <div class="credit-card-box mb-4">
-                <input class="mr-3" type="radio" name="card">
-                <div class="credit-style mr-2">
-                    <img src="~/images/icon/credit_pay_VISA.svg" alt="">
-                    信用卡
-                </div>
-                <div class="credit-number">*1234</div>
-            </div>*@
+
     </div>
 
     <div class="footer-btn-box footer-btn-margin">
         <div class="buttonBox mb-2">
-            <a class="text-blue" onclick="JumpUrl()" style="cursor: pointer;">＋ 新增信用卡</a>
+            <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()">＋ 新增信用卡</a>
         </div>
         <div class="buttonBox">
             <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
@@ -100,17 +115,46 @@
         </div>
     </div>
 
+    }
 </body>
 </html>
 
 <script>
-    @*var obj = new Object()
-    obj = '@lstData';
-    console.log(obj);
-    console.log('@lstData');*@
-    function JumpUrl() {
-        window.location.href = '@Url.Action("ChooseNewCard", "HotaiPayCtbc")';
+    function getURLToken() {
+        var getUrlString = location.href;
+        var url = new URL(getUrlString);
+        var url_Token = "";
+        url_Token = url.searchParams.get('Token');
+        return url_Token
+    }
+    function getHerfAddreess_ToBindNewCard() {
+        var urlToken = getURLToken();
+        var rtnURL = "";
+        if (urlToken != null && urlToken != "") {
+            rtnURL = "/HotaiPayCtbc/BindNewCard?Token=" + urlToken;
+        } else
+            rtnURL = "/HotaiPay/BindNewCard";
+        alert("rtnURL =" + rtnURL);
+        document.location.href = rtnURL;
+    }
+    function doSubmit() {
+        var rtnValue = "";
+        var obj = document.getElementsByName("CreditCardList");
+        var radioId = "";
+        for (var i = 0; i < obj.length; i++) {
+            radioId = "card" + i;
+            if (document.getElementById(radioId).checked) {
+                rtnValue = document.getElementById(radioId).value;
+                break;
+            }
+        } 
+
+        var getUrlString = location.href;
+        var url = new URL(getUrlString);
+        var url_Token = url.searchParams.get('irent_access_token');
+        
+        //Todo 將  rtnValue Post到controller
     }
 
+    
 </script>
-

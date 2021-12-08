@@ -153,7 +153,6 @@
     <Content Include="Content\HotaiPayCss\normalize.css" />
     <Content Include="Content\HotaiPayCss\style.css" />
     <Content Include="Content\HotaiPayCss\sweetalert.css" />
-    <Content Include="Content\HotaiPayCss\AlreadyMember.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -217,12 +216,12 @@
     <Content Include="Views\HotaiPay\RegisterStep1.cshtml" />
     <Content Include="Views\HotaiPay\RegisterStep2.cshtml" />
     <Content Include="Views\HotaiPay\RegisterStep3.cshtml" />
-    <Content Include="Views\HotaiPay\CreditStart.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\CreditStart.cshtml" />
     <Content Include="Views\HotaiPay\BindCardFailed.cshtml" />
-    <Content Include="Views\HotaiPay\CreditCardChoose.cshtml" />
-    <Content Include="Views\HotaiPay\BindNewCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\CreditCardChoose.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\BindNewCard.cshtml" />
     <Content Include="Views\HotaiPay\PersonalInformation.cshtml" />
-    <Content Include="Views\HotaiPay\NoCreditCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\NoCreditCard.cshtml" />
     <Content Include="Views\HotaiPay\SuccessBind.cshtml" />
     <Content Include="Views\HotaiPay\UnbindSuccess.cshtml" />
     <Content Include="Views\HotaiPay\RegisterMembershipTerm.cshtml" />
@@ -234,7 +233,7 @@
     <Content Include="Views\HotaiPay\AlreadyMember.cshtml" />
     <Content Include="Views\HotaiPay\MembershipTerms1.cshtml" />
     <Content Include="Views\HotaiPay\MembershipTerms2.cshtml" />
-    <Content Include="Views\HotaiPayCtbc\CreditCardChoose.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\unUse\CreditCardChoose.cshtml" />
     <Content Include="Views\HotaiPayCtbc\ChooseNewCard.cshtml" />
     <Content Include="Views\HotaiPayCtbc\InsPersonInfo.cshtml" />
     <Content Include="Views\HotaiPayCtbc\SuccessBind.cshtml" />
