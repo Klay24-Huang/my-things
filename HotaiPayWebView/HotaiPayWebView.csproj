@@ -136,7 +136,6 @@
     </Compile>
     <Compile Include="Helper\HtmlOutputExtensions.cs" />
     <Compile Include="Models\CreditCardChoose.cs" />
-    <Compile Include="Models\ErrorInfo.cs" />
     <Compile Include="Models\TangViewModel.cs" />
     <Compile Include="Models\UmekoTestViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

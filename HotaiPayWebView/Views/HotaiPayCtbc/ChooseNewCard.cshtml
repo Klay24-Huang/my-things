@@ -20,13 +20,13 @@
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">選擇新的信用卡</h6></header>
 
     <div class="container" style="max-width: 414px;">
-
         <div class="mt-4">
             <p class="text-gray">小提醒，一張信用卡只能綁定一個帳號哦！</p>
         </div>
 
-        <div class="new-card d-flex ctbc-card mt-5">
 
+
+        <div class="new-card d-flex ctbc-card mt-5">
             <div class="w-100">
                 <a class="text-blue" onclick="JumpUrl()" style="cursor: pointer;">
                     <span class="item-title"><img class="mr-2" src="~/images/icon/ctbcbank.svg" alt="">中信銀行信用卡</span>
@@ -43,13 +43,18 @@
         </div>
 
         <div class="new-card d-flex ctbc-card mt-5">
-
             <div class="w-100">
-                <span class="item-title">  <img class="mr-2" src="~/images/icon/credit_pay_card.svg" alt="">所有銀行信用卡</span>
-
+                <a class="text-blue" onclick="AddCard()" style="cursor: pointer;">
+                    <span class="item-title">  <img class="mr-2" src="~/images/icon/credit_pay_card.svg" alt="">所有銀行信用卡</span>
+                </a>
             </div>
-            <div class="d-flex"><img class="align-self-center" src="~/images/icon/more.svg" alt=""></div>
+            <a class="text-blue" onclick="AddCard()" style="cursor: pointer;">
+                <div class="d-flex"><img class="align-self-center" src="~/images/icon/more.svg" alt=""></div>
+            </a>
         </div>
+
+
+
 
     </div>
 
@@ -60,6 +65,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/main.js"></script>
+<script src="~/Scripts/HotaiPayJS/PostAndGoto.js"></script>
 <script>
     @*var obj = new Object()
     obj = '@lstData';
@@ -69,5 +75,24 @@
         window.location.href = '@Url.Action("InsPersonInfo", "HotaiPayCtbc")';
     }
 
+    function AddCard() {
+        $.ajax({
+            type: "POST",
+            url:"@Url.Action("AddCard")",
+            data: "",
+            success: function (result) {
+                console.log(result);
+                if (result.succ) {
+                    GOTO("toCTBCSmall", result.gotoUrl, result.postData);
+                }
+                else {
+                    alert("getPWD Error");
+                }
+            },
+            error: function () {
+            }
+        })
+            return false;
+    }
 </script>
 

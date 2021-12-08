@@ -1,4 +1,5 @@
 ﻿window.onload = function () {
+
     const optCode = document.getElementById('otpCode');
     const nextStep = document.getElementById('nextStep');
 
@@ -8,6 +9,4 @@
         nextStep.disabled = false ;
         nextStep.className = 'btn btn-blue mb-2';
     }
-}
-
-    
+}    

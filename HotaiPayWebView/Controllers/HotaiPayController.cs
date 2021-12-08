@@ -375,11 +375,12 @@ namespace HotaiPayWebView.Controllers
 
 
         #region 註冊驗證步驟一:手機驗證
-        public ActionResult RegisterStep1()
+        public ActionResult RegisterStep1(string msg)
         {
             ViewBag.Phone = Session["Phone"];
             ViewBag.OtpCode = Session["OtpCode"];
             ViewBag.Alert = Session["Alert"];
+            ViewData["Msg"] = msg;
             return View();
         }
 
@@ -428,30 +429,35 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult CheckOtpCode(string otpCode)
         {
-
-
-            bool flag = false;
-            WebAPIInput_SmsOtpValidation checkSMSOpt = new WebAPIInput_SmsOtpValidation
+            try
             {
-                mobilePhone = Session["Phone"].ToString(),
-                otpCode = otpCode,
-                useType = 1
-            };
-            WebAPIOutput_OtpValidation checkSMSOptOutput = new WebAPIOutput_OtpValidation();
-            string errCode = "";
-            flag = hotaiAPI.DoSmsOtpValidation(checkSMSOpt, ref checkSMSOptOutput, ref errCode);
+                bool flag = false;
+                WebAPIInput_SmsOtpValidation checkSMSOpt = new WebAPIInput_SmsOtpValidation
+                {
+                    mobilePhone = Session["Phone"].ToString(),
+                    otpCode = otpCode,
+                    useType = 1
+                };
+                WebAPIOutput_OtpValidation checkSMSOptOutput = new WebAPIOutput_OtpValidation();
+                string errCode = "";
+                flag = hotaiAPI.DoSmsOtpValidation(checkSMSOpt, ref checkSMSOptOutput, ref errCode);
 
-            if (flag)
-            {
-                Session["OtpCode"] = otpCode;
-                Session["OtpID"] = checkSMSOptOutput.otpId;
-                return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
+                if (flag)
+                {
+                    Session["OtpCode"] = otpCode;
+                    Session["OtpID"] = checkSMSOptOutput.otpId;
+                    return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
+                }
+                else
+                {
+                    return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
+                }
             }
-            else
+            catch(Exception e)
             {
-                return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
+                //return View("~/Views/HotaiPay/RegisterStep1.cshtml");
+                return RedirectToAction("RegisterStep1", "HotaiPay", new { msg = "error" }); //自動存進ViewData
             }
-
         }
         #endregion
 
