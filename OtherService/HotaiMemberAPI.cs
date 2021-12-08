@@ -516,7 +516,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString());
+                //output = JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString()); 和泰沒回ResponseData
             }
             return flag;
         }
