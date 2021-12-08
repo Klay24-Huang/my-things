@@ -456,7 +456,7 @@ namespace HotaiPayWebView.Controllers
             catch(Exception e)
             {
                 //return View("~/Views/HotaiPay/RegisterStep1.cshtml");
-                return RedirectToAction("RegisterStep1", "HotaiPay", new { msg = "error" }); //自動存進ViewData
+                return RedirectToAction("RegisterStep1", "HotaiPay", new { msg = "error" }); //參數由url帶入
             }
         }
         #endregion

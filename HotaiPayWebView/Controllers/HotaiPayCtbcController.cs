@@ -73,7 +73,7 @@ namespace HotaiPayWebView.Controllers
 
             var input = new IFN_HotaiAddCard() 
             { 
-                IDNO = MEMIDNO, //,"C221120413"
+                IDNO = "A227548440",//MEMIDNO,
                 RedirectURL = "https://irentcar.com.tw/", 
                 insUser = "TangWeiChi", 
                 LogID = 0, 
