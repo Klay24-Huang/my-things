@@ -26,11 +26,8 @@ namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayController : Controller
     {
-        private static string _accessToken = "";
-        private static string _refreshToken = "";
-
         private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
+        private static readonly CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
         private static readonly Dictionary<string, string> errorDic = commonRepository.GetErrorList("").ToLookup(x => x.ErrCode, y => y.ErrMsg).ToDictionary(x => x.Key, y => y.First());
         private static HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
         private static HashAlgorithmHelper helper = new HashAlgorithmHelper();
@@ -63,6 +60,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult Login(string phone, string pwd)
         {
+            
             HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
 
             bool flag = false;
@@ -81,6 +79,7 @@ namespace HotaiPayWebView.Controllers
 
             if (flag)
             {
+                Session["phone"] = phone.Trim();
                 Session["hotai_access_token"] = apioutput.access_token;
                 Session["refresh_token"]= apioutput.refresh_token;
                 if (apioutput.memberState == "1" || apioutput.memberState == "2")
@@ -123,7 +122,7 @@ namespace HotaiPayWebView.Controllers
                                 errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, apioutput.access_token, apioutput.refresh_token);
                                 if (errCode=="0000")
                                 {
-                                    return Redirect($"../HotaiPayCtbc/CreditCardChoose?irent_access_token={Session["irent_access_token"].ToString().Trim()}");
+                                    return Redirect($"../HotaiPay/NoCreditCard?irent_access_token={Session["irent_access_token"].ToString().Trim()}");
                                     //以下取得信用卡列表流程
                                 }
                                 else
@@ -649,7 +648,7 @@ namespace HotaiPayWebView.Controllers
             string PRGName = "NoCreditCard";
             List<ErrorInfo> errList = new List<ErrorInfo>();
             var IDNO = "";
-            flag = HPServices.GetIDNOFromToken(_accessToken, LogID, ref IDNO,ref errList, ref errCode);
+            flag = HPServices.GetIDNOFromToken(Session["irent_access_token"].ToString(), LogID, ref IDNO,ref errList, ref errCode);
 
             if(System.Web.HttpContext.Current.Session["irent_access_token"] == null )
                 System.Web.HttpContext.Current.Session["irent_access_token"] = Request.QueryString["irent_access_token"] ;
@@ -843,8 +842,8 @@ namespace HotaiPayWebView.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@IDNO", SqlDbType.VarChar, 10).Value = id;
                 cmd.Parameters.Add("@OneID", SqlDbType.VarChar, 50).Value = oneID;
-                cmd.Parameters.Add("@RefreshToken", SqlDbType.VarChar, 50).Value = accessToken;
-                cmd.Parameters.Add("@AccessToken", SqlDbType.VarChar, 1000).Value = refreshToken;
+                cmd.Parameters.Add("@RefreshToken", SqlDbType.VarChar, 50).Value = refreshToken;
+                cmd.Parameters.Add("@AccessToken", SqlDbType.VarChar, 1000).Value = accessToken;
                 cmd.Parameters.Add("@LogID", SqlDbType.BigInt).Value = logID;
                 cmd.Parameters.Add("@ErrorCode", SqlDbType.VarChar, 8);
                 cmd.Parameters["@ErrorCode"].Direction = ParameterDirection.Output;
