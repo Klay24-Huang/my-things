@@ -532,7 +532,6 @@ namespace WebAPI.Models.ComboFunc
             if (flag)
             {
                 HotaipayService hotaipayService = new HotaipayService();
-                //ToDo 補上和泰支付
                 string cardToken = FindCardResult.cardToken;
                
                 Thread.Sleep(1000);
@@ -546,7 +545,6 @@ namespace WebAPI.Models.ComboFunc
                     AutoClose = AuthInput.autoClose,
                     PayType = AuthInput.PayType,
                     AuthType = AuthInput.AuthType,
-                    //PaySuff = PaySuff,
                     PromoCode = "",
                 };
                 
@@ -555,7 +553,12 @@ namespace WebAPI.Models.ComboFunc
                 logger.Trace("DoHotaiAuth:" + JsonConvert.SerializeObject(WSAuthOutput));
             }
 
-
+            if (WSAuthOutput.RtnCode != "1000")
+            {   
+                flag = false;
+                errCode = "ERR197";
+            }
+           
             AuthOutput.CardType = cardType;
             AuthOutput.CheckoutMode = checkoutMode;
 
@@ -567,6 +570,7 @@ namespace WebAPI.Models.ComboFunc
 
             if (!flag)
             {
+                errCode = "000000";
                 return DoTaishinAuth(AuthInput, ref errCode, ref AuthOutput);
             }
 

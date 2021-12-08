@@ -764,7 +764,7 @@ namespace OtherService
                 }
             }
             output.RtnCode = spStep4Input?.RetCode ?? "";
-            output.AuthCode = spStep4Input?.RetCode??"";
+            output.AuthCode = spStep4Input?.RetCode?? "";
             output.AuthMessage = spStep4Input?.RetMsg ?? "";
             output.CardNo = spStep4Input?.CardNumber ?? "";
             output.BankTradeNo = spStep4Input?.Xid ?? "";
