@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
 using HotaiPayWebView.Models;
+using WebCommon;
 
 namespace HotaiPayWebView.Repository
 {
