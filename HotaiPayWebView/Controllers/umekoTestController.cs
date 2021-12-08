@@ -123,15 +123,18 @@ namespace HotaiPayWebView.Controllers
                 AuthType = 1,
                 AutoClose = 0,
                 IDNO = "C221120413",
-                OrderNo = 999999,
-                Transaction_no = ivm.OrderID
+                OrderNo = int.Parse(ivm.OrderID),
+                //Transaction_no = ivm.OrderID,
+                //insUser = "umeko",
+                //LogID = 0,
+                //PRGName = "Test"
             };
-            //var output = new OFN_HotaiFastAddCard();
+            var output = new OFN_HotaiPaymentAuth();
             string errCode = "";
-            var flag = hotaipayService.DoReqPaymentAuth(input,ref errCode);
+            var flag = hotaipayService.DoReqPaymentAuth(input, ref output, ref errCode);
             
 
-            return Json(flag);
+            return Json(output);
         }
         [HttpPost]
         public JsonResult inquiry(UmekoTestViewModel ivm)

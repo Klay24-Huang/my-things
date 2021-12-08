@@ -7,6 +7,7 @@ using CTCB.POS;
 using Domain.WebAPI.Input.CTBCPOS;
 using Domain.WebAPI.output;
 using Domain.WebAPI.output.CTBCPOS;
+using Newtonsoft.Json;
 using NLog;
 using WebCommon;
 
@@ -54,10 +55,15 @@ namespace OtherService
                     output.CurrentState = inquiry.CurrentState;
                     output.CardNo = inquiry.CardNo;
                     output.Amount = inquiry.AuthAmt;
+                    
+                    
                 }
+
+                logger.Trace($"CTBC return result:{ret} InquiryByLidm obj {JsonConvert.SerializeObject(inquiry)} ");
             }
             return flag;
         }
+
 
     }
 }

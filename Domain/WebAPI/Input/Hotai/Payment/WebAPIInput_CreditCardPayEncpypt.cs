@@ -4,15 +4,17 @@ using System.Text;
 
 namespace Domain.WebAPI.Input.Hotai.Payment
 {
-    public class Body_CreditCardPay
+    public class WebAPIInput_CreditCardPayEncpypt : WebAPIInput_PaymentBase
     {
-        public int TokenID { get; set; }
-        
+        public string CardToken { get; set; }
+        /// <summary>
+        /// 77465 
+        /// </summary>
         public string MerID { get; set; }
 
         public string TerMinnalID { get; set; }
 
-        public string Lidm { get; set; }
+        public string  Lidm { get; set; }
 
         public int PurchAmt { get; set; }
         /// <summary>
@@ -60,5 +62,8 @@ namespace Domain.WebAPI.Input.Hotai.Payment
         /// 產品代碼;紅利折一般的產品代碼。(紅利折抵一般特店必填，其餘免填)(非必要欄位，請請固定填"")
         /// </summary>
         public string ProdCode { get; set; }
+
+
+
     }
 }
