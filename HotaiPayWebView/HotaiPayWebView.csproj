@@ -135,8 +135,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper\HtmlOutputExtensions.cs" />
+    <Compile Include="Models\CreditCardChoose.cs" />
+    <Compile Include="Models\TangViewModel.cs" />
     <Compile Include="Models\UmekoTestViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\BaseRepository.cs" />
+    <Compile Include="Repository\HotaiPayCtbcRepository.cs" />
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\LoginService.cs" />
   </ItemGroup>
@@ -175,7 +179,6 @@
     <Content Include="images\graphic\popup\.DS_Store" />
     <Content Include="images\icon\.DS_Store" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
-    <Content Include="Scripts\HotaiPayJS\ActionJS\BindNewCard.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep1.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep2.js" />
@@ -209,19 +212,17 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\HotaiPay\Login.cshtml" />
-    <Content Include="Views\HotaiPay\MembershipTerms.cshtml" />
     <Content Include="Views\HotaiPay\Supplememtary.cshtml" />
     <Content Include="Views\HotaiPay\RegisterStep1.cshtml" />
     <Content Include="Views\HotaiPay\RegisterStep2.cshtml" />
     <Content Include="Views\HotaiPay\RegisterStep3.cshtml" />
-    <Content Include="Views\HotaiPay\CreditStart.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\CreditStart.cshtml" />
     <Content Include="Views\HotaiPay\BindCardFailed.cshtml" />
-    <Content Include="Views\HotaiPay\CreditCardChoose.cshtml" />
-    <Content Include="Views\HotaiPay\BindNewCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\CreditCardChoose.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\BindNewCard.cshtml" />
     <Content Include="Views\HotaiPay\PersonalInformation.cshtml" />
-    <Content Include="Views\HotaiPay\NoCreditCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\NoCreditCard.cshtml" />
     <Content Include="Views\HotaiPay\SuccessBind.cshtml" />
-    <Content Include="Views\HotaiPay\Unbind.cshtml" />
     <Content Include="Views\HotaiPay\UnbindSuccess.cshtml" />
     <Content Include="Views\HotaiPay\RegisterMembershipTerm.cshtml" />
     <Content Include="Views\HotaiPay\RegisterSuccess.cshtml" />
@@ -229,10 +230,16 @@
     <Content Include="Views\HotaiPay\RegisterSuccessBindFail.cshtml" />
     <Content Include="Views\umekoTest\Index.cshtml" />
     <Content Include="Views\umekoTest\GetList.cshtml" />
+    <Content Include="Views\HotaiPay\AlreadyMember.cshtml" />
+    <Content Include="Views\HotaiPay\MembershipTerms1.cshtml" />
+    <Content Include="Views\HotaiPay\MembershipTerms2.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\unUse\CreditCardChoose.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\ChooseNewCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\InsPersonInfo.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\SuccessBind.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\HotaiPayCtbc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

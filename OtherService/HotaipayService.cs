@@ -1,6 +1,8 @@
 ﻿using Domain.Flow.Hotai;
+using Domain.SP.Input.Common;
 using Domain.SP.Input.Hotai;
 using Domain.SP.Output;
+using Domain.SP.Output.Common;
 using Domain.SP.Output.Hotai;
 using Domain.TB.Hotai;
 using Domain.WebAPI.Input.CTBCPOS;
@@ -12,6 +14,7 @@ using Domain.WebAPI.output.Hotai.Member;
 using Domain.WebAPI.output.Hotai.Payment;
 using Newtonsoft.Json;
 using NLog;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -22,7 +25,7 @@ namespace OtherService
     public class HotaipayService
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"]?.ToString()??"";
         private static ConfigManager configManager = new ConfigManager("hotaipayment");
         private string merID = configManager.GetKey("CTBCMerID");
@@ -672,7 +675,7 @@ namespace OtherService
         }
 
 
-        public bool DoQueryCTBCTransaction(WebQPIInput_InquiryByLidm input, out WebAPIOutput_InquiryByLidm output,ref string errCode)
+        public bool DoQueryCTBCTransaction(WebAPIInput_InquiryByLidm input, out WebAPIOutput_InquiryByLidm output,ref string errCode)
         {
             output = new WebAPIOutput_InquiryByLidm();
 
@@ -681,6 +684,71 @@ namespace OtherService
             var flag = posAPI.QueryCTBCTransaction(input,out output);
 
             return flag;
+        }
+        /// <summary>
+        /// 解析AccessToken取得IDNO
+        /// </summary>
+        /// <param name="Access_Token"></param>
+        /// <param name="LogID"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="lstError"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool GetIDNOFromToken(string Access_Token, Int64 LogID, ref string IDNO, ref List<ErrorInfo> lstError, ref string errCode)
+        {
+            bool flag = true;
+            string CheckTokenName = "usp_CheckTokenReturnID";
+            SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+            {
+                LogID = LogID,
+                Token = Access_Token
+            };
+            SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+            SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+            checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            if (flag)
+            {
+                IDNO = spOut.IDNO;
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 驗證SP回傳值
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="Error"></param>
+        /// <param name="ErrorCode"></param>
+        /// <param name="lstError"></param>
+        /// <param name="errCode"></param>
+        public void checkSQLResult(ref bool flag, int Error, string ErrorCode, ref List<ErrorInfo> lstError, ref string errCode)
+        {
+            if (flag)
+            {
+                if (Error == 1)
+                {
+                    lstError.Add(new ErrorInfo() { ErrorCode = ErrorCode });
+                    errCode = ErrorCode;
+                    flag = false;
+                }
+                else
+                {
+                    if (ErrorCode != "0000")
+                    {
+                        lstError.Add(new ErrorInfo() { ErrorCode = ErrorCode });
+                        errCode = ErrorCode;
+                        flag = false;
+                    }
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
         }
     }
 }

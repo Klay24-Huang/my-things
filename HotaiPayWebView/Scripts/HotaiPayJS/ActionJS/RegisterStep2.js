@@ -6,7 +6,7 @@
 
     function updateValue(e) {
         nextStep.disabled = false;
-        nextStep.className = 'btn-blue';
+        nextStep.className = 'btn btn-blue mb-2';
     }
 
     var VuePage = new Vue({

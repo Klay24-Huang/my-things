@@ -43,12 +43,15 @@
 
     </div>
 
+    @using (Html.BeginForm("Login", "HotaiPay", FormMethod.Get))
+    {
+    <div class="footer-btn-box footer-btn-margin">
+        <div class="buttonBox">
+            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;">重新進行綁定</button>
 
-    <div class="footer">
-
-        <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn">重新進行綁定</button>
+        </div>
     </div>
-
+    }
 </body>
 </html>
 

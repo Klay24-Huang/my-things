@@ -138,7 +138,7 @@ namespace HotaiPayWebView.Controllers
         {
             HotaipayService hotaipayService = new HotaipayService();
 
-            WebQPIInput_InquiryByLidm input = new WebQPIInput_InquiryByLidm();
+            WebAPIInput_InquiryByLidm input = new WebAPIInput_InquiryByLidm();
             string errCode = "";
             var flag = hotaipayService.DoQueryCTBCTransaction(input,out var output, ref errCode);
 
