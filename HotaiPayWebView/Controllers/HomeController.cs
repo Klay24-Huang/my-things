@@ -10,7 +10,8 @@ namespace HotaiPayWebView.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            //return View();
+            return RedirectToAction("Login", "HotaiPay");
         }
 
         public ActionResult About()

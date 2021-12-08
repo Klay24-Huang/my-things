@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.WebAPI.Input.CTBCPOS
 {
-    public class WebQPIInput_InquiryByLidm
+    public class WebAPIInput_InquiryByLidm
     {
         public string OrderID { get; set; }
     }

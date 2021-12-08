@@ -64,8 +64,11 @@ BEGIN
 		    UPDATE TB_MemberHotaiCard 
 			SET isCancel=1,CancelTime=@NowTime,U_PRGID=@PRGID,U_USERID=@IDNO WHERE IDNO=@IDNO AND isCancel=0;
 		 END
-		END
 
+		--預設付費方式改為信用卡 PayMode(0:信用卡 4:和泰PAY) 
+		UPDATE TB_MemberData SET PayMode=0,U_PRGID=@PRGID,U_USERID=@IDNO,U_SYSDT=@NowTime WHERE MEMIDNO=@IDNO AND PayMode=4
+		END
+		
 		--寫入錯誤訊息
 		IF @Error=1
 		BEGIN

@@ -1,0 +1,84 @@
+﻿
+@{
+    ViewBag.Title = "MembershipTerms1";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰集團會員條款</title>
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+
+
+<body>
+
+
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員與隱私權條款</h6></header>
+
+    <div class="tab-choose d-flex" style="max-width: 525px;margin: auto;">
+       
+            <button class="btn tab-btn" onclick="javascript:location.href='MembershipTerms2'">會員條款</button>
+        
+            <button class="btn tab-btn tab-active" onclick="javascript:location.href='MembershipTerms1'">隱私權條款</button>
+        </div>
+
+    <div class="container" style="max-width: 525px;position:relative">
+
+        <div class="notice-text pre-scrollable">
+            <ul>
+                <li>
+                    <span style="white-space: pre-line">@ViewBag.Privacy</span>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+
+    @using (Html.BeginForm("AgreeTerms", "HotaiPay", FormMethod.Get))
+    {
+    <div class="container footer" style="max-width: 414px;position:relative">
+        <div class="form-check form-check-inline mb-3">
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
+            <label class="form-check-label" for="inlineCheckbox1">
+                我已經閱讀並同意<a class="text-blue">「和泰集團會員條款」</a>與
+                <a class="text-blue">「隱私權條款」</a>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn" disabled>同意</button>
+    </div>
+    }
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+
+
+    <script>
+        $(":checkbox").click(function () {
+            var e = document.getElementById("redbtn");
+            var flag = 0;
+            if (flag===0) {
+                $("#redbtn").toggleClass("checked-active");
+                e.removeAttribute("disabled");
+                flag = 1;
+            } else {
+                $("#redbtn").toggleClass("btn btn-disable-gray mb-2");
+                e.setAttribute('disabled', 'disabled');
+                flag = 0
+            }  
+        })
+
+    </script>
+
+</body>
+</html>
+

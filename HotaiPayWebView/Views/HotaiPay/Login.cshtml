@@ -2,10 +2,7 @@
 @{
     ViewBag.Title = "Login";
     string msg = "";
-    if (!string.IsNullOrEmpty(ViewBag.MSG))
-    {
-        msg = ViewBag.MSG;
-    }
+    
 }
 
 <html lang="en">
@@ -26,40 +23,44 @@
 <body>
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員登入</h6></header>
 
+@using (Html.BeginForm("Login", "HotaiPay", FormMethod.Post))
+{
     <div class="container text-center" style="max-width: 414px;">
         <!-- 提示文字＋圖-->
         <div class="web-img mt-8">
 
             <img class="object-fit mb-8" alt="iRent汽機車共享" src="~/images/hotai-logo.svg">
         </div>
-        <div id="VuePage">
-            <h6 class="mb-4">和泰集團會員登入</h6>
+        <h6 class="mb-4">和泰集團會員登入</h6>
 
 
-            <div class="input-box mb-2">
-                <input class="input-light" type="text" v-model="form.Phone" placeholder="手機號碼">
-
-            </div>
-
-            <div class="input-box mb-2">
-                <input id="demo_input" class="input-light" type="password" v-model="form.UserPwd" placeholder="密碼">
-                <label><img src="~/images/eye-slash-regular.svg" alt="" id="eyes"></label>
-
-            </div>
-            <div class="text-left">
-                <p id="pwdHint" style="color:red;">@msg.ToString()</p>
-            </div>
-            <div class="text-right">
-                <a class="text-gray text-underline" href="https://www.hotaimember.com.tw/login/ForgotPassword">忘記密碼</a>
-            </div>
-
-
-            <button type="button" class="btn btn-blue my-3" v-on:click="DoLogin()">登入</button>
-            <a class="text-gray text-underline" href="">立即註冊</a>
+        <div class="input-box mb-2">
+            <input class="input-light" type="text" id="phone" name="phone" placeholder="手機號碼" value="@ViewBag.phone">
         </div>
 
+        <div class="input-box mb-2">
+            <input id="demo_input" class="input-light" name="pwd" type="password" placeholder="密碼">
+            <label><img src="~/images/eye-slash-regular.svg" alt="" id="eyes"></label>
 
-
+        </div>
+        <div class="text-left">
+            <p id="pwdHint" style="color:red;">@ViewBag.Alert</p>
+        </div>
+        <div class="text-right">
+            <a class="text-gray text-underline" href="https://www.hotaimember.com.tw/login/ForgotPassword">忘記密碼</a>
+        </div>
     </div>
+    <div class="footer-btn-box footer-btn-margin">
+        <div class="buttonBox">
+
+            <button class="btn btn-blue my-3" style="max-width: 414px;" type="submit">登入</button>
+            <button type="button" class="btn btn-blue my-3" onclick="location.href='@Url.Action("CreditCardChoose", "HotaiPayCtbc",new { AccessToken = "sdvdsvsdvsdvsdvdsvsdvsdv" })'">唐登入</button>
+
+        </div>
+        <div class="buttonBox">
+            <a class="text-gray text-underline" href="/HotaiPay/RegisterStep1">立即註冊</a>
+        </div>
+    </div>
+}
 </body>
 </html>

@@ -1,4 +1,5 @@
 ﻿function GOTO(formid, goto, data) {
+    console.log('3');
     var newform = document.createElement("form");
     newform.id = formid;
     newform.setAttribute("method", "post");
@@ -13,6 +14,7 @@
             .attr("value", value)
             .appendTo(newform);
     });
+    console.log('4');
     console.log($("#" + formid).serialize());
 
     newform.submit();
