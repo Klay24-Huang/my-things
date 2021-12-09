@@ -38,6 +38,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebView", "WebView\WebView.csproj", "{30DD9910-4FD3-47A6-98D6-A99B62077F10}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotaiPayWebView", "HotaiPayWebView\HotaiPayWebView.csproj", "{4DAD4138-4BC3-44CD-B158-49CEE32D24D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelayAPI", "RelayAPI\RelayAPI.csproj", "{7B303B46-838D-4727-86F7-A082AD019308}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +112,10 @@ Global
 		{4DAD4138-4BC3-44CD-B158-49CEE32D24D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DAD4138-4BC3-44CD-B158-49CEE32D24D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DAD4138-4BC3-44CD-B158-49CEE32D24D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B303B46-838D-4727-86F7-A082AD019308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B303B46-838D-4727-86F7-A082AD019308}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B303B46-838D-4727-86F7-A082AD019308}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B303B46-838D-4727-86F7-A082AD019308}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
