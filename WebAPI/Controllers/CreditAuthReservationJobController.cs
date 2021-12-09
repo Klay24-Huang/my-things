@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
                             var creditAuthComm = new CreditAuthComm();
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                CheckoutMode = (OrderAuth.CardType == 1) ? 0 : -1,
+                                CheckoutMode = (OrderAuth.CardType == 1) ? 0 : 4,
                                 OrderNo = OrderAuth.order_number,
                                 IDNO = OrderAuth.IDNO,
                                 Amount = Amount,
@@ -159,17 +159,19 @@ namespace WebAPI.Controllers
                             IDNO = OrderAuth.IDNO,
                             AutoClosed = OrderAuth.AutoClosed,
                             final_price = OrderAuth.final_price,
-                            ProName = "CreditAuthJobV2"
+                            ProName = "ReservationJob",
+                            CardNumber = AuthOutput.CardNo,
+
                         };
 
                         var updateFlag = UpdateOrdarAuthStatus(UpdateOrderAuthList, ref lstError, ref errCode);
+                        
+                        //if (payStatus == false && OrderAuth.AuthType == 1 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace(OrderAuth.Mobile))
+                        //{
+                        //    CreditAuthJobComm creditAuthJobComm = new CreditAuthJobComm();
 
-                        if (payStatus == false && OrderAuth.AuthType == 1 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace(OrderAuth.Mobile))
-                        {
-                            CreditAuthJobComm creditAuthJobComm = new CreditAuthJobComm();
-
-                            var sendSMS = creditAuthJobComm.SendSMS(OrderAuth.Mobile);
-                        }
+                        //    var sendSMS = creditAuthJobComm.SendSMS(OrderAuth.Mobile);
+                        //}
                     }
                     catch (Exception ex)
                     {

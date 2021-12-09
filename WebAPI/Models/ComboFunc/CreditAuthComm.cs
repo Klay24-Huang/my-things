@@ -353,7 +353,7 @@ namespace WebAPI.Models.ComboFunc
                     errCode = "ERR197";
                 }
                 //修正錯誤偵測
-                if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams.ResultCode != "1000")
+                if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams?.ResultCode != "1000")
                 {
                     flag = false;
                     errCode = "ERR197";
