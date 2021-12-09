@@ -69,6 +69,7 @@
 <script src="js/bootstrap.min.js"></script>
 <script src="js/main.js"></script>
 <script src="~/Scripts/HotaiPayJS/PostAndGoto.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
 
     function goCTBCBindCard() {
@@ -90,7 +91,7 @@
                     GOTO("toCTBCSmall", result.gotoUrl, result.postData);
                 }
                 else {
-                    alert("getPWD Error");
+                    swal("錯誤2!", "請確認!", "error");
                 }
             },
             error: function () {

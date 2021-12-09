@@ -51,7 +51,7 @@ namespace HotaiPayWebView.Controllers
             flag = true;
             if (flag)
             {
-                MEMIDNO = "A227548440";// ID;
+                MEMIDNO = ID; //"A227548440";
                 AT = irent_access_token;
                 input.IDNO = ID;// "C221120413";
                 input.PRGName = "CreditCardChoose";
@@ -80,9 +80,9 @@ namespace HotaiPayWebView.Controllers
 
             var input = new IFN_HotaiAddCard() 
             { 
-                IDNO = MEMIDNO, //"A227548440",
-                //RedirectURL= "https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-                RedirectURL = "https://www.irentcar.com.tw",
+                IDNO = MEMIDNO,//"A227548440",
+                RedirectURL = "https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                //RedirectURL = "https://www.irentcar.com.tw",
                 insUser = "TangWeiChi", 
                 LogID = 0, 
                 PRGName = "AddCard"
