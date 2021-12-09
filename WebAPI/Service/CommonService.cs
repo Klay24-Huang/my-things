@@ -294,7 +294,8 @@ namespace WebAPI.Service
         /// <returns></returns>
         public PreAmountData GetPreAmount(string IDNO, string Token, Int64 OrderNo, string NeedToken, Int64 LogID, ref bool flag, ref string errCode)
         {
-            PreAmountData Result = new PreAmountData() {
+            PreAmountData Result = new PreAmountData()
+            {
                 DiffAmount = 0,
                 TradeCloseList = new List<TradeCloseList>()
             }; // 回傳結果
@@ -357,7 +358,7 @@ namespace WebAPI.Service
         #endregion
 
         #region 訂單預授權判斷
-        public List<TradeCloseList> DoPreAmount(PreAmountData PreAmount,int FinalPrice)
+        public List<TradeCloseList> DoPreAmount(PreAmountData PreAmount, int FinalPrice)
         {
             List<TradeCloseList> Result = new List<TradeCloseList>();   // 回傳結果
             Result = PreAmount.TradeCloseList;
