@@ -18,6 +18,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
 <body>
@@ -62,23 +63,31 @@
 
 <script type="text/javascript">
 
-    console.log('1');
+    //console.log('1');
+    var msg = '@(ViewData["ERROR"] == null ? "" : ViewData["ERROR"].ToString())';
+    if (msg == 'ERROR') {
+        swal("錯誤!", "請確認!", "error");
+    }
 
     function FastAddCard() {
-        console.log('2');
+        console.log('2QQQ');
         //alert("Fast");
             $.ajax({
                 type: "POST",
                 url:"@Url.Action("InsPersonInfo")",
                 data: $("#FastAddCardForm").serialize(),
                 success: function (result) {
-                    console.log(result);
+                    console.log('AAA');
                     if (result.succ) {
-                        GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);
+                        console.log('VVV');
+                        GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);//gotoUrl是去中信的網址/creditcard/fbinding
+                    }
+                    else {
+                        swal("錯誤2!", "請確認!", "error");
                     }
                 },
                 error: function () {
-                    console.log("x");
+                    //controller那就回傳錯誤訊息給view了，不在這做
                 }
             })
 
