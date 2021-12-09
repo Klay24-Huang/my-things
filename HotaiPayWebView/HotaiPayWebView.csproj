@@ -135,7 +135,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper\HtmlOutputExtensions.cs" />
+    <Compile Include="Models\ConfirmPwd.cs" />
     <Compile Include="Models\CreditCardChoose.cs" />
+    <Compile Include="Models\Login.cs" />
+    <Compile Include="Models\SignUpProfile.cs" />
     <Compile Include="Models\TangViewModel.cs" />
     <Compile Include="Models\UmekoTestViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
