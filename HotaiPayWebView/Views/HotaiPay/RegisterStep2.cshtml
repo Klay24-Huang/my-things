@@ -45,14 +45,18 @@
     </div>
 
     <div class="input-box">
-        <input id="demo_input" class="input-light" type="password" placeholder="密碼" name="pwd">
+        <input id="demo_input" class="input-light" type="password" placeholder="密碼" name="Pwd">
         <label><img src="../images/eye-slash-regular.svg" alt="" id="eyes" name="eyesPwd"></label>
-        <p id="pwdHint" style="color:red;"></p>
     </div>
-
+    <div class="text-left">
+        <p style="color:red;">@Html.ValidationMessage("Pwd")</p>
+    </div>
     <div class="input-box">
-        <input id="confirmPwd" class="input-light" type="password" placeholder="密碼" name="comfirmPwd">
+        <input id="confirmPwd" class="input-light" type="password" placeholder="密碼" name="PwdConfirm">
         <label><img src="../images/eye-slash-regular.svg" alt="" id="eyes" name="eyesConfirm"></label>
+    </div>
+    <div class="text-left">
+        <p style="color:red;">@Html.ValidationMessage("PwdConfirm")</p>
     </div>
     @*<button type="submit" class="btn btn-disable-gray mb-2 d-block d-sm-none" id="nextStep" disabled>下一步</button>*@
     <div class="mt-3">

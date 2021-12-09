@@ -23,71 +23,72 @@
 
 <body>
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員註冊</h6></header>
-    @using (Html.BeginForm("SetSignUpProfile", "HotaiPay", FormMethod.Post))
+    @using (Html.BeginForm("SetSignUpProfile", "HotaiPay", FormMethod.Post,new {id="ProfileForm" }))
     {
-    <div class="container" style="max-width: 414px;padding-bottom: 16px;">
-        <div class="msform mt-4">
-            <!-- progressbar -->
-            <ul id="progressbar">
-                <li></li>
-                <li></li>
-                <li class="active"></li>
-            </ul>
-
-        </div>
-        <div class="mt-3">
-            <p class="text-gray">請確實填寫個人資料，以確保您的會員權益</p>
-        </div>
-
-        <label>姓名</label>
-        <input type="text" class="form-control input-light" placeholder="吳志賢" name="name" value="@ViewBag.Name" required>
-        <p style="color:red;">@ViewBag.NameAlert</p>
-        <div class="credit-card-box mt-4">
-            <div class="gender-choose mr-5"><input class="mr-1" type="radio" id="sex" name="sex" value="male" checked="@ViewBag.MaleCheck">先生</div>
-            <div class="gender-choose"><input class="mr-1" type="radio" id="sex" name="sex" value="female" checked="@ViewBag.FemaleCheck">女士</div>
-        </div>
-
-        <label class="mt-4">身分證字號</label>
-        <input type="text" class="form-control input-light" name="custID" placeholder="A123456789" value="@ViewBag.CustID" required>
-        <p style="color:red;">@ViewBag.CustIDAlert</p>
-        <label class="mt-4">生日</label>
-        <input type="text" class="form-control input-light" name="birth" placeholder="輸入生日 ex.19950101" value="@ViewBag.Birthday" required>
-        <p style="color:red;">@ViewBag.BirthAlert</p>
-        <label class="mt-4">Email</label>
-        <input type="text" class="form-control input-light" name="email" placeholder="orange@goonsdesign.com" value="@ViewBag.Email" required>
-        <p style="color:red;">@ViewBag.EmailAlert</p>
-
-        <!-- 提示文字＋圖-->
-        <div class="form-check form-check-inline mt-4 d-flex align-items-start">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
-            <label class="form-check-label" for="inlineCheckbox1">
-                <p class="text-gray">我已閱讀並同意和泰集團會員權益及隱私條款、APP使用條款</p>
-            </label>
-        </div>
-
-
-
-        <button type="submit" class="btn btn-blue mt-4 sweet-1 d-block d-sm-none" id="redbtn" onclick="_gaq.push">完成註冊</button>
-
-        <div class="my-3">
-            <p class="text-gray d-block d-sm-none">
-                身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。<br>
-                外籍人士請於「身分證字號」欄位輸入居留證號碼。
-            </p>
-        </div>
-
-
-        <button type="submit" class="btn btn-blue sweet-2 d-none d-sm-block" style="margin-top:168px ;" id="redbtn" onclick="_gaq.push">完成註冊</button>
-
-        <div class="my-3" style="margin-top:168px ;">
-            <p class="text-gray d-none d-sm-block">
-                身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。<br>
-                外籍人士請於「身分證字號」欄位輸入居留證號碼。
-            </p>
-        </div>
-
+<div class="container" style="max-width: 414px;padding-bottom: 16px;">
+    <div class="msform mt-4">
+        <!-- progressbar -->
+        <ul id="progressbar">
+            <li></li>
+            <li></li>
+            <li class="active"></li>
+        </ul>
 
     </div>
+    <div class="mt-3">
+        <p class="text-gray">請確實填寫個人資料，以確保您的會員權益</p>
+    </div>
+
+    <label>姓名</label>
+    <input type="text" class="form-control input-light" placeholder="吳志賢" name="Name" value="@ViewBag.Name" required>
+    <p style="color:red;">@Html.ValidationMessage("Name")</p>
+    <div class="credit-card-box mt-4">
+        <div class="gender-choose mr-5"><input class="mr-1" type="radio" id="sex" name="Sex" value="male" checked="@ViewBag.MaleCheck">先生</div>
+        <div class="gender-choose"><input class="mr-1" type="radio" id="sex" name="Sex" value="female" checked="@ViewBag.FemaleCheck">女士</div>
+    </div>
+
+    <label class="mt-4">身分證字號</label>
+    <input type="text" class="form-control input-light" name="CustID" placeholder="A123456789" value="@ViewBag.CustID" required>
+    <p style="color:red;">@Html.ValidationMessage("CustID")</p>
+    <p style="color:red;">@ViewBag.CustIDAlert</p>
+    <label class="mt-4">生日</label>
+    <input type="text" class="form-control input-light" name="Birth" placeholder="輸入生日 ex.19950101" value="@ViewBag.Birthday" required>
+    <p style="color:red;">@Html.ValidationMessage("Birth")</p>
+    <label class="mt-4">Email</label>
+    <input type="text" class="form-control input-light" name="Email" placeholder="orange@goonsdesign.com" value="@ViewBag.Email" required>
+    <p style="color:red;">@Html.ValidationMessage("Email")</p>
+
+    <!-- 提示文字＋圖-->
+    <div class="form-check form-check-inline mt-4 d-flex align-items-start">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
+        <label class="form-check-label" for="inlineCheckbox1">
+            <p class="text-gray">我已閱讀並同意和泰集團會員權益及隱私條款、APP使用條款</p>
+        </label>
+    </div>
+
+
+
+    <button type="submit" class="btn btn-blue mt-4 sweet-1 d-block d-sm-none" id="redbtn" >完成註冊</button>
+
+    <div class="my-3">
+        <p class="text-gray d-block d-sm-none">
+            身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。<br>
+            外籍人士請於「身分證字號」欄位輸入居留證號碼。
+        </p>
+    </div>
+
+
+    <button type="submit" class="btn btn-blue sweet-2 d-none d-sm-block" style="margin-top:168px ;" id="redbtn">完成註冊</button>
+
+    <div class="my-3" style="margin-top:168px ;">
+        <p class="text-gray d-none d-sm-block">
+            身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。<br>
+            外籍人士請於「身分證字號」欄位輸入居留證號碼。
+        </p>
+    </div>
+
+
+</div>
     }
 
 
@@ -98,20 +99,14 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
 
-
-    <!-- 自己寫的js -->
-    <script src="js/main.js"></script>
-
-    <script src="js/sweetalert.js"></script>
-
-
-    <script>$(":checkbox").click(function(){
+    <script>
+      $(":checkbox").click(function () {
       $("#redbtn").toggleClass("checked-active")
   })
 
-        document.getElementById("redbtn").onclick = function () {
+        function checkSubmit(ctl,event) {
 
         swal({
           title: "",
@@ -122,7 +117,17 @@
           cancelButtonClass: "btn-outline-gray-small",
           confirmButtonClass: 'btn-blue-small',
           confirmButtonText: '完成註冊'
-        });
+        },function(isConfirm)
+             {
+                if (isConfirm)
+                {
+                  $("#ProfileForm").submit();
+                } else
+                {
+                    swal("Cancelled", "You have Cancelled Form Submission!", "error");
+                }
+            }
+        );
 };</script>
 </body>
 </html>
