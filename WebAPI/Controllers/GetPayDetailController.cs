@@ -230,15 +230,15 @@ namespace WebAPI.Controllers
                             errCode = "ERR914";
                         }
 
-                        if (flag)
-                        {
-                            if (item.BaseMinutesPrice == 0)
-                            {
-                                flag = false;
-                                errMsg = "訂單資訊中BaseMinutesPrice(機車基消)不可為0";
-                                errCode = "ERR914";
-                            }
-                        }
+                        //if (flag)
+                        //{
+                        //    if (item.BaseMinutesPrice == 0)
+                        //    {
+                        //        flag = false;
+                        //        errMsg = "訂單資訊中BaseMinutesPrice(機車基消)不可為0";
+                        //        errCode = "ERR914";
+                        //    }
+                        //}
                     }
 
                     if (ProjType != 4)  // 非機車專案
@@ -252,13 +252,15 @@ namespace WebAPI.Controllers
                 #region 第二階段判斷及計價
                 if (flag)
                 {
-                    //判斷狀態
+                    #region 訂單判斷狀態
                     if (OrderDataLists[0].car_mgt_status == 16 || OrderDataLists[0].car_mgt_status < 11 || OrderDataLists[0].cancel_status > 0)
                     {
                         flag = false;
                         errCode = "ERR204";
                     }
+                    #endregion
 
+                    #region 日期判斷
                     //取得專案狀態
                     if (flag)
                     {
@@ -455,6 +457,7 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
+                    #endregion
 
                     #region 取得使用中訂閱制月租
                     if (flag)
@@ -830,7 +833,7 @@ namespace WebAPI.Controllers
                                 if (ED <= sprSD)
                                 {
                                     // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, 200, lstHoliday, new List<MonthlyRentData>(), Discount, 199, item.MaxPrice, item.BaseMinutesPrice);
+                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPriceH, motoBaseMins, DayMaxMinute, lstHoliday, new List<MonthlyRentData>(), Discount, DayMaxMinute, item.MaxPrice, item.BaseMinutesPrice, item.FirstFreeMins);
                                     if (xre != null)
                                     {
                                         carInfo = xre;
@@ -842,7 +845,7 @@ namespace WebAPI.Controllers
                                 else
                                 {
                                     // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPrice, motoBaseMins, DayMaxMinute, lstHoliday, new List<MonthlyRentData>(), Discount, DayMaxMinute, item.MaxPrice, item.BaseMinutesPrice);
+                                    var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPriceH, motoBaseMins, DayMaxMinute, lstHoliday, new List<MonthlyRentData>(), Discount, DayMaxMinute, item.MaxPrice, item.BaseMinutesPrice, item.FirstFreeMins);
                                     if (xre != null)
                                     {
                                         carInfo = xre;
@@ -974,13 +977,15 @@ namespace WebAPI.Controllers
                         trace.FlowList.Add("總價計算");
                         #endregion
 
-                        #region 修正輸出欄位
-                        //note: 修正輸出欄位PayDetail                      
+                        #region 修正輸出欄位                 
                         if (ProjType == 4)
                         {
                             outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
                             outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
-                            outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
+
+                            // 20211209 UPD BY YEH REASON:給前端顯示的租用時數改用可折抵時數
+                            //outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
+                            outputApi.Rent.RentalTimeInterval = carInfo.DiscRentInMins.ToString();  // 可折抵時數
 
                             //2020-12-29 所有點數改成皆可折抵
                             //outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
