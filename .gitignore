@@ -307,3 +307,4 @@ WebAPI/Properties/ServiceDependencies/iRentV2-Backend-Api - Web Deploy/profile.a
 WebAPI/Properties/ServiceDependencies/iRentV2-backend-api-test - Web Deploy/profile.arm.json
 WebAPI/Properties/ServiceDependencies/iRentV2-Taishin-Api2 - Web Deploy/profile.arm.json
 /WebAPI/App_Data/Logs
+/HotaiPayWebView/App_Data/Logs
