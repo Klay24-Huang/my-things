@@ -21,7 +21,7 @@ namespace HotaiPayWebView.Models
 
         public string OrderID { get; set; }
 
-        public int CardToken { get; set; } = 1863;
+        public int CardToken { get; set; } = 1850;
 
     }
 

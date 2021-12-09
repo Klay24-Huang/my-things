@@ -237,7 +237,7 @@
     <Content Include="Views\HotaiPay\MembershipTerms1.cshtml" />
     <Content Include="Views\HotaiPay\MembershipTerms2.cshtml" />
     <Content Include="Views\HotaiPayCtbc\unUse\CreditCardChoose.cshtml" />
-    <Content Include="Views\HotaiPayCtbc\ChooseNewCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\unUse\ChooseNewCard.cshtml" />
     <Content Include="Views\HotaiPayCtbc\InsPersonInfo.cshtml" />
     <Content Include="Views\HotaiPayCtbc\SuccessBind.cshtml" />
   </ItemGroup>

@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="CensWebAPI.cs" />
     <Compile Include="Common\CreditCardPayInfo.cs" />
+    <Compile Include="Common\PayInfoForCredit.cs" />
     <Compile Include="Common\TaishinWalletLog.cs" />
     <Compile Include="Common\WebAPILogCommon.cs" />
     <Compile Include="Common\WebServiceBase.cs" />

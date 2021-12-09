@@ -23,8 +23,10 @@ namespace OtherService.Common
         /// </summary>
         public string PayTypeCode { get; set; }
 
+        public string FrontPart { get; set; }
 
-        
+
+
 
     }
 }
