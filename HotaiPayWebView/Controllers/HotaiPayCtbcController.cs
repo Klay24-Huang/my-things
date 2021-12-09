@@ -173,9 +173,9 @@ namespace HotaiPayWebView.Controllers
         #endregion
 
         #region 開始綁定信用卡
-        public ActionResult CreditStart()
+        public ActionResult CreditStart(string irent_access_token)
         {
-            ViewBag.HotaiAccessToken = Session["hotai_access_token"].ToString().Trim();
+            Session["irent_access_token"] = irent_access_token;
             return View();
         }
         #endregion
@@ -194,7 +194,14 @@ namespace HotaiPayWebView.Controllers
 
             if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
             {
-                flag = GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), 8514, ref IDNO, ref errList);
+                //若沒有傳值則從網址列帶參數 --上正式需+串解密
+                if (string.IsNullOrEmpty(irent_access_token)) 
+                {
+                    irent_access_token = Request.QueryString["irent_access_token"].Trim();
+                }
+                //else{} 沒收到任何token
+
+                flag = GetIDNOFromToken(irent_access_token, 8514, ref IDNO, ref errList);
                 System.Web.HttpContext.Current.Session["IDNO"] = IDNO;
 
                 //將Session賦予值
@@ -273,7 +280,7 @@ namespace HotaiPayWebView.Controllers
                     logger.Error("HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗 ERRCODE:" + errCode);
             }
             if (flag)
-                return Redirect("/HotaiPay/SuccessBind");
+                return Redirect("/HotaiPayCtbc/SuccessBind");
             else
                 return Redirect("/HotaiPay/BindCardFailed");
         }
