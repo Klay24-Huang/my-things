@@ -45,7 +45,11 @@
                 <button type="submit" class="btn btn-blue-small mb-2">發送驗證碼</button>
             </form>
         </div>
-
+        <div class="buttonBox d-none d-sm-block desktop-margin-top">
+            <!-- 填寫資料後變成切換class成btn-blue -->
+            <button class="btn btn-disable-gray" style="max-width: 414px;">下一步</button>
+            <!-- 填寫資料後變成切換class成btn-blue -->
+        </div>
     </div>
     @using (Html.BeginForm("CheckOtpCode", "HotaiPay", FormMethod.Post))
     {
