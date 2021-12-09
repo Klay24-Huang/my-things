@@ -106,7 +106,7 @@
 
     <div class="footer-btn-box footer-btn-margin">
         <div class="buttonBox mb-2">
-            <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()">＋ 新增信用卡</a>
+            <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
         </div>
         <div class="buttonBox">
             <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
@@ -122,19 +122,21 @@
 <script>
     function getURLToken() {
         var getUrlString = location.href;
+        //console.log('ssss')
+        //console.log(location.href)
         var url = new URL(getUrlString);
         var url_Token = "";
-        url_Token = url.searchParams.get('Token');
+        url_Token = url.searchParams.get('irent_access_token');
         return url_Token
     }
     function getHerfAddreess_ToBindNewCard() {
         var urlToken = getURLToken();
         var rtnURL = "";
         if (urlToken != null && urlToken != "") {
-            rtnURL = "/HotaiPayCtbc/BindNewCard?Token=" + urlToken;
+            rtnURL = "/HotaiPayCtbc/BindNewCard?irent_access_token=" + urlToken;
         } else
-            rtnURL = "/HotaiPay/BindNewCard";
-        alert("rtnURL =" + rtnURL);
+            rtnURL = "/HotaiPayCtbc/BindNewCard";
+        //alert("rtnURL =" + rtnURL);
         document.location.href = rtnURL;
     }
     function doSubmit() {

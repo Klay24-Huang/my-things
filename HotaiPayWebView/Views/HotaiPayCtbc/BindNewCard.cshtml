@@ -19,8 +19,7 @@
     <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
 </head>
 
-<style>
-</style>
+
 <body>
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">選擇新的信用卡</h6></header>
 
@@ -30,60 +29,74 @@
             <p class="text-gray">小提醒，一張信用卡只能綁定一個帳號哦！</p>
         </div>
 
-        <div class="new-card d-flex ctbc-card mt-5" onclick="goCTBCBindCard()"><!--第一塊觸發區域-->
-
+        <div class="new-card d-flex ctbc-card mt-5">
+            <!--第一塊觸發區域-->
             <div class="w-100">
-                <span class="item-title">  <img class="mr-2" src="~/images/icon/ctbcbank.svg" alt="">中信銀行信用卡</span>
+                <a class="text-blue" onclick="goCTBCBindCard()" style="cursor: pointer;">
+                    <span class="item-title"><img class="mr-2" src="~/images/icon/ctbcbank.svg" alt="">中信銀行信用卡</span>
+                </a>
                 <br>
                 <div class="ml-2">
                     <span class="item-content text-gray">・無需輸入卡號，可快速綁定</span><br>
                     <!-- <span class="item-content text-gray">・<span class="text-red">中信和泰聯名卡</span>租車最高<span class="text-red">6%</span>和泰Points回饋</span> -->
                 </div>
             </div>
-            <div class="d-flex"><img class="align-self-start mt-2" src="~/images/icon/more.svg" alt=""></div>
+            <a class="text-blue" onclick="goCTBCBindCard()" style="cursor: pointer;">
+                <div class="d-flex"><img class="align-self-start mt-2" src="~/images/icon/more.svg" alt=""></div>
+            </a>
         </div>
 
-        <div class="new-card d-flex ctbc-card mt-5" onclick="goOtherBindCard()"><!--第二塊觸發區域-->
-
+        <div class="new-card d-flex ctbc-card mt-5">
+            <!--第二塊觸發區域-->
             <div class="w-100">
-                <span class="item-title">  <img class="mr-2" src="~/images/icon/credit_pay_card.svg" alt="">所有銀行信用卡</span>
-
+                <a class="text-blue" onclick="goOtherBindCard()" style="cursor: pointer;">
+                    <span class="item-title">  <img class="mr-2" src="~/images/icon/credit_pay_card.svg" alt="">所有銀行信用卡</span>
+                </a>
             </div>
-            <div class="d-flex"><img class="align-self-center" src="~/images/icon/more.svg" alt=""></div>
+            <a class="text-blue" onclick="goOtherBindCard()" style="cursor: pointer;">
+                <div class="d-flex"><img class="align-self-center" src="~/images/icon/more.svg" alt=""></div>
+            </a>
         </div>
 
     </div>
 
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-
-
-    <!-- 自己寫的js -->
-    <script src="js/main.js"></script>
-
-    <!-- 自己寫的js -->
-
 </body>
 </html>
 
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+<script src="js/main.js"></script>
+<script src="~/Scripts/HotaiPayJS/PostAndGoto.js"></script>
 <script>
 
     function goCTBCBindCard() {
         //跳轉畫面
-
         document.location.href = "/HotaiPayCtbc/InsPersonInfo";
-
-        //alert("走中信快速綁卡");
-
+        //window.location.href = '@Url.Action("InsPersonInfo", "HotaiPayCtbc")';
     }
 
     function goOtherBindCard() {
         //call API
-        alert("其他銀行綁卡>>call API>> Redirect");
+        //alert("其他銀行綁卡>>call API>> Redirect");
+        $.ajax({
+            type: "POST",
+            url:"@Url.Action("AddCard")",
+            data: "",
+            success: function (result) {
+                console.log(result);
+                if (result.succ) {
+                    GOTO("toCTBCSmall", result.gotoUrl, result.postData);
+                }
+                else {
+                    alert("getPWD Error");
+                }
+            },
+            error: function () {
+            }
+        })
+        return false;
     }
-
 </script>
 
