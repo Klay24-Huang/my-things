@@ -8,14 +8,16 @@
     [AuthType]        INT          CONSTRAINT [DF_TB_OrderAuthAmount_AuthType] DEFAULT ((0)) NOT NULL,
     [Status]          INT          CONSTRAINT [DF_TB_OrderAuthAmount_Status] DEFAULT ((0)) NOT NULL,
     [final_price]     INT          CONSTRAINT [DF_TB_OrderAuthAmount_final_price] DEFAULT ((0)) NOT NULL,
-    [A_PRGID]         VARCHAR (20) CONSTRAINT [DF_TB_OrderAuthAmount_A_PRGID] DEFAULT ('') NOT NULL,
+    [A_PRGID]         VARCHAR (50) CONSTRAINT [DF_TB_OrderAuthAmount_A_PRGID] DEFAULT ('') NOT NULL,
     [A_USERID]        VARCHAR (20) CONSTRAINT [DF_TB_OrderAuthAmount_A_USERID] DEFAULT ('') NOT NULL,
     [A_SYSDT]         DATETIME     CONSTRAINT [DF_TB_OrderAuthAmount_A_SYSDT] DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
-    [U_PRGID]         VARCHAR (20) CONSTRAINT [DF_TB_OrderAuthAmount_U_PRGID] DEFAULT ('') NOT NULL,
+    [U_PRGID]         VARCHAR (50) CONSTRAINT [DF_TB_OrderAuthAmount_U_PRGID] DEFAULT ('') NOT NULL,
     [U_USERID]        VARCHAR (20) CONSTRAINT [DF_TB_OrderAuthAmount_U_USERID] DEFAULT ('') NOT NULL,
     [U_SYSDT]         DATETIME     CONSTRAINT [DF_TB_OrderAuthAmount_U_SYSDT] DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
     CONSTRAINT [PK_TB_OrderAuthAmount] PRIMARY KEY NONCLUSTERED ([Seqno] ASC)
 );
+
+
 
 
 GO
@@ -52,11 +54,15 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權金�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'0:未處理; 1:處理中; 2:已處理', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuthAmount', @level2type = N'COLUMN', @level2name = N'Status';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'處理狀態0:未處理; 1:處理中; 2:已處理', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuthAmount', @level2type = N'COLUMN', @level2name = N'Status';
+
+
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權類別TB_Code.CodeID (16:預約; 17:訂金; 18:延長用車; 19:取車; 20:逾時; 21:欠費; 22:還車)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuthAmount', @level2type = N'COLUMN', @level2name = N'AuthType';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權類別 TB_Code.MapCode (1:預約; 2:訂金; 3:取車; 4:延長用車; 5:逾時; 6:欠費; 7:還車)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuthAmount', @level2type = N'COLUMN', @level2name = N'AuthType';
+
+
 
 
 GO
