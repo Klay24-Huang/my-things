@@ -31,6 +31,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoBookingExtend(Dictionary<string, object> value)
         {
@@ -205,7 +206,7 @@ namespace WebAPI.Controllers
                 string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
                 int preAuthAmt = 0;
                 bool canAuth = false;
-                if (orderInfo != null && (orderInfo.ProjType == 0 || orderInfo.ProjType == 3) && !notHandle.Contains(orderInfo.ProjID))
+                if (orderInfo != null && (orderInfo.ProjType == 0 || orderInfo.ProjType == 3) && !notHandle.Contains(orderInfo.ProjID) && orderInfo.DoPreAuth == 1)
                 {
                     var trace = new TraceCom();
                     trace.traceAdd("apiIn", value);
@@ -381,6 +382,7 @@ namespace WebAPI.Controllers
                                     catch (Exception ex)
                                     {
                                     }
+
                                 }
                             }
                             #endregion

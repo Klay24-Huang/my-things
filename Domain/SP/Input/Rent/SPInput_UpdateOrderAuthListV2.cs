@@ -55,7 +55,7 @@ namespace Domain.SP.Input.Rent
         /// <summary>
         /// 信用卡號
         /// </summary>
-        public int CardNumber { get; set; }
+        public string CardNumber { get; set; }
         /// <summary>
         /// 執行程式名稱
         /// </summary>

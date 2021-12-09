@@ -100,6 +100,10 @@ namespace Domain.SP.Output.Bill
         /// </summary>
         public string StationID { get; set; }
 
+        /// <summary>
+        /// 是否要預授權 (預留訂閱制不走預授權)
+        /// </summary>
+        public short DoPreAuth { get; set; } = 1;
 
     }
 }
