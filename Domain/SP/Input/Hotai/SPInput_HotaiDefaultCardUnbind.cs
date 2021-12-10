@@ -9,11 +9,11 @@ namespace Domain.SP.Input.Hotai
         /// <summary>
         /// 更新程式
         /// </summary>
-        public string U_FuncName { get; set; }
+        public string U_FuncName { get; set; } = "";
         /// <summary>
         /// 更新人
         /// </summary>
-        public string U_USERID { get; set; }
+        public string U_USERID { get; set; } = "";
 
     }
 }
