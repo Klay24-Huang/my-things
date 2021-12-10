@@ -255,6 +255,7 @@ namespace HotaiPayWebView.Controllers
             {
                 input.IDNO = IDNO;
                 flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
+                logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
             }
 
             //和泰Token失效
