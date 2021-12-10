@@ -6,7 +6,7 @@
 * 程式功能 : 授權結果存檔
 * 作    者 : Umeko
 * 撰寫日期 : 20211108
-* 修改日期 : 
+* 修改日期 : 20211208 UPD BY Amber REASON: 修正推播訊息內容
 
 * Example  : 
 ***********************************************************************************************/
@@ -22,7 +22,7 @@ CREATE PROCEDURE [dbo].[usp_UpdateOrderAuthReservationList_U01]
     @IDNO                          varchar(10),
 	@AutoClosed				int,
 	@final_price                 int,
-	@CardNumber            varchar(16),
+	@CardNumber            varchar(19),
 	@ProName              	VARCHAR(50),
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -51,37 +51,41 @@ SET @hasData=0;
 
 SET @NowTime=dbo.GET_TWDATE();
 
+Declare @PRGID varchar(50) = '0'
+Declare @UID varchar(20)=''
+Set @UID = Left(@ProName,20)
+
+
 BEGIN TRY
 	UPDATE TB_OrderAuthReservation
 	SET AuthFlg=@AuthFlg,
 		AuthCode=@AuthCode,
 		AuthMessage=@AuthMessage,
 		transaction_no=@transaction_no,
-		U_USERID=@ProName,
+		U_USERID=@UID,
 		U_PRGID=@ProName,
 		U_SYSDT=@NowTime
 	WHERE authSeq=@authSeq
 	
 	Declare @iError int, @iErrorCode  VARCHAR(6)	,@iErrorMsg NVARCHAR(100),@iSQLExceptionCode VARCHAR(10),@iSQLExceptionMsg NVARCHAR(1000)
-
-	IF @AuthFlg=1 
-	BEGIN
-		IF @AuthType  IN (1,5 )
-		Begin
-			--推播需要欄位
-			Declare @Title nvarchar(500)
+	
+	--推播需要欄位
+	Declare @Title nvarchar(500)
 				,@Message nvarchar(500)=''
 				,@url varchar(500) =''
 				,@imageurl varchar(500) = ''
 				,@ActionName nvarchar(10)
 				,@STime datetime
 
+	IF @AuthFlg=1 
+	BEGIN
+		IF @AuthType  IN (1,5 )
+		Begin
 				Set @ActionName = Case @AuthType When 1 then N'預約取授權' When 5 Then N'逾時取授權' Else '' End
 
 				Set @STime = DateAdd(SECOND,10,@NowTime)
 				Set @Title =  '取授權成功通知'
-				Set  @Message =  CONCAT(N'已於',Format(@NowTime,'MM-dd hh:mm','zh-TW'),N'以末四碼',RIGHT(@CardNumber,4),N'信用卡',@ActionName,N'成功，N金額',@final_price,N'，謝謝!')
-
+				Set  @Message =  CONCAT(N'已於',Format(@NowTime,'MM/dd hh:mm','zh-TW'),N'以末四碼',RIGHT(@CardNumber,4),N'信用卡',@ActionName,N'成功，金額',@final_price,N'，謝謝!') --20211208 UPD BY Amber REASON: 修正推播訊息內容
 
 				Exec @iError = usp_InsPersonNotification_I01 
 									  @OrderNo
@@ -102,7 +106,7 @@ BEGIN TRY
 			--授權成功且為最後一筆結案訂單準備傳送合約
 		IF @AutoClosed = 1 And @AuthType =7
 		Begin
-		EXEC usp_SendReturnCarControl_I01 @OrderNo,'','','',''
+			EXEC usp_SendReturnCarControl_I01 @OrderNo,'','','',''
 		End
 	END
 
@@ -110,22 +114,43 @@ BEGIN TRY
 	Begin
 		Declare @Token VARCHAR(1024) 
 
-		 IF @isRetry = 0 And @AuthType =1
+		--第一次授權失敗
+		IF @isRetry = 0 And @AuthType =1
 		Begin
 			Declare @StartTime  datetime,@AppointmentTime datetime			
 			Select @StartTime = start_time From TB_OrderMain with(nolock) Where order_number = @OrderNo
 			Set @AppointmentTime = DATEADD(hour,-4,@StartTime)
-
-			--寫入2次授權預約
+			--寫入第二次授權時間
 			EXEC @iError =  usp_InsOrderAuthReservation_I01 @OrderNo,@IDNO,@final_price
 			,1,1,0,1,0,'UpdReservationList','UpdReservationList',@AppointmentTime
 			,@iErrorCode output,@iErrorMsg output,@iSQLExceptionCode output,@iSQLExceptionMsg output
+			--發送推播
+			Set @STime = DateAdd(SECOND,10,@NowTime)
+			Set @Title =  'iRent取授權失敗通知'
+			Set  @Message =  'iRent取授權失敗通知: 請檢查卡片餘額或是重新綁卡，將於取車前4小時再次取授權。若再次取授權失敗，則將自動取消預約，請見諒。'
+
+			Exec @iError = usp_InsPersonNotification_I01 
+									@OrderNo
+								, @IDNO
+								, 19				
+								, @STime
+								, @Title
+								, @Message
+								, @url
+								, @imageurl
+								, 123456
+								, @iErrorCode output
+								, @iErrorMsg output
+								, @iSQLExceptionCode output
+								, @iSQLExceptionMsg output
+
+
 		End
 
 		if(@isRetry = 1  And @AuthType =1)
 		Begin
 		     --寫入取消訂單
-			Exec @iError = usp_BookingCancel_U01 @IDNO,@OrderNo,@Token,0,'授權失敗取消訂單',6,
+			Exec @iError = usp_BookingCancel_U01 @IDNO,@OrderNo,@Token,0,'授權失敗取消訂單',6,0,
 			@iErrorCode output,@iErrorMsg output,@iSQLExceptionCode output,@iSQLExceptionMsg output
 		End
 	End

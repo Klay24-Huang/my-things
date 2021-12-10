@@ -629,6 +629,17 @@
     <Build Include="dbo\Stored Procedures\usp_HotaiToken_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_MemberUnbind.sql" />
     <Build Include="dbo\Stored Procedures\usp_MemberUnBindCheck.sql" />
+    <Build Include="dbo\Tables\TB_MemberHotaiCard.sql" />
+    <Build Include="dbo\Tables\TB_MemberHotai.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsHotaiMember_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiTranStep6_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiTranStep5_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiTranStep4_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiTranStep3_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiTranStep2_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiTranStep1_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiGetDefaultCard_Q01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HotaiDefaultCardUnbind_U01.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

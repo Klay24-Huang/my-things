@@ -99,8 +99,8 @@ SET @IsSuccess      =ISNULL(@IsSuccess      ,-2);
 					SET IsSuccess=@IsSuccess,RetCode=@RetCode,RetMsg=@RetMsg,TaishinTradeNo=@TaishinTradeNo,CardNumber=@CardNumber,process_date=@process_date,AUTHAMT=@AUTHAMT,AuthIdResp=@AuthIdResp,UPDTime=@NowTime,MerchantMemberID=@MerchantMemberID
 					WHERE OrderNo=@OrderNo AND MerchantTradeNo=@MerchantTradeNo
 					
-					Insert into [dbo].[TB_TradeClose]([TradeID], [OrderNo], [MerchantTradeNo], [CardType], [AuthType], [ChkClose], [CloseAmout], [CloseTime], [A_PRGID], [A_USERID], [U_PRGID], [U_USERID])
-					values(@TradeID,@OrderNo,@MerchantTradeNo,@CardType,@AuthType,@ChkClose,@AUTHAMT,dbo.GET_TWDATE(),@PRGID,@UserID,@PRGID,@UserID)
+					Insert into [dbo].[TB_TradeClose]([TradeID], [OrderNo], [MerchantTradeNo], [CardType], [AuthType], [ChkClose], [CloseAmout],  [A_PRGID], [A_USERID], [U_PRGID], [U_USERID])
+					values(@TradeID,@OrderNo,@MerchantTradeNo,@CardType,@AuthType,@ChkClose,@AUTHAMT,@PRGID,@UserID,@PRGID,@UserID)
 				Commit
 			END
 		END

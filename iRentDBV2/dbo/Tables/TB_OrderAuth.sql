@@ -1,9 +1,9 @@
-/****** Object:  Table [dbo].[TB_OrderAuth]    Script Date: 2021/2/23 下午 03:47:20 ******/
+﻿/****** Object:  Table [dbo].[TB_OrderAuth]    Script Date: 2021/2/23 下午 03:47:20 ******/
 CREATE TABLE [dbo].[TB_OrderAuth] (
-    [A_PRGID]        VARCHAR (20)   CONSTRAINT [DF_TB_OrderAuth_A_PRGID] DEFAULT ('') NOT NULL,
+    [A_PRGID]        VARCHAR (50)   CONSTRAINT [DF_TB_OrderAuth_A_PRGID] DEFAULT ('') NOT NULL,
     [A_USERID]       VARCHAR (20)   CONSTRAINT [DF_TB_OrderAuth_A_USERID] DEFAULT ('') NOT NULL,
     [A_SYSDT]        DATETIME       CONSTRAINT [DF_TB_OrderAuth_A_SYSDT] DEFAULT (getdate()) NOT NULL,
-    [U_PRGID]        VARCHAR (20)   CONSTRAINT [DF_TB_OrderAuth_U_PRGID] DEFAULT ('') NOT NULL,
+    [U_PRGID]        VARCHAR (50)   CONSTRAINT [DF_TB_OrderAuth_U_PRGID] DEFAULT ('') NOT NULL,
     [U_USERID]       VARCHAR (20)   CONSTRAINT [DF_TB_OrderAuth_U_USERID] DEFAULT ('') NOT NULL,
     [U_SYSDT]        DATETIME       CONSTRAINT [DF_TB_OrderAuth_U_SYSDT] DEFAULT (getdate()) NOT NULL,
     [authSeq]        BIGINT         IDENTITY (1, 1) NOT NULL,
@@ -21,6 +21,8 @@ CREATE TABLE [dbo].[TB_OrderAuth] (
     [AutoClose]      INT            CONSTRAINT [DF_TB_OrderAuth_AutoClose] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_TB_OrderAuth] PRIMARY KEY CLUSTERED ([authSeq] ASC)
 );
+
+
 
 
 GO
@@ -140,9 +142,13 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'信用卡�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'自動關帳', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuth', @level2type = N'COLUMN', @level2name = N'AutoClose';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'自動關帳(1:自動關 0:手動關)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuth', @level2type = N'COLUMN', @level2name = N'AutoClose';
+
+
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權類別', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuth', @level2type = N'COLUMN', @level2name = N'AuthType';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權類別 (TB_Code.MapCode)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_OrderAuth', @level2type = N'COLUMN', @level2name = N'AuthType';
+
+
 
