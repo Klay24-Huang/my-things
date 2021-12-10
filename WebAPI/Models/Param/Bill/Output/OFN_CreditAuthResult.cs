@@ -37,6 +37,10 @@ namespace WebAPI.Models.Param.Bill.Output
         /// 支付系統回傳的驗證訊息
         /// </summary>
         public string AuthMessage { get; set; }
-        
+        /// <summary>
+        /// 回復代碼(目前只有台新有 因為欠費要拋短租 所以接出)
+        /// </summary>
+        public string AuthIdResp { get; set; }
+
     }
 }
