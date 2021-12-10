@@ -610,7 +610,6 @@ namespace HotaiPayWebView.Controllers
         {
             bool flag = false;
             string errCode = "";
-
             ViewBag.CustID = signUpProfile.CustID.Trim();
             ViewBag.Name = signUpProfile.Name.Trim();
             ViewBag.Birthday = signUpProfile.Birth.Trim();
