@@ -13,11 +13,10 @@ namespace RelayAPI
     {
         protected void Application_Start()
         {
-            AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            //唐加prometheus
+            //AspNetMetricServer.RegisterRoutes(GlobalConfiguration.Configuration);
         }
     }
 }

@@ -41,6 +41,11 @@ namespace OtherService
         private string Auth = ConfigurationManager.AppSettings["Auth"].ToString();              //直接授權   
         private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();
         private string CreditCardTest = ConfigurationManager.AppSettings["CreditCardTest"].ToString();
+        private string RelayBaseURL = ConfigurationManager.AppSettings["RelayBaseURL"].ToString();                  //中繼網址
+        private string RelayPostApi = ConfigurationManager.AppSettings["RelayPostApi"].ToString();                  //中繼API
+        private string RelayStatus = ConfigurationManager.AppSettings["RelayStatus"].ToString();                    //是否要啟用中繼
+        private string relayEnKey = ConfigurationManager.AppSettings["RelayEnKey"].ToString();                      //中繼加密key
+        private string relayEnSalt = ConfigurationManager.AppSettings["RelayEnSalt"].ToString();                    //中繼加密Salt
 
         private static MemoryCache _cache = MemoryCache.Default;
 
@@ -1000,7 +1005,7 @@ namespace OtherService
         /// <param name="errCode"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoCreditCardAuthV3(PartOfCreditCardAuth wsInput, string IDNO, int AutoClosed,string funName,string InsUser, ref string errCode, ref WebAPIOutput_Auth output ,int AuthType=0)
+        public bool DoCreditCardAuthV3(PartOfCreditCardAuth wsInput, string IDNO, int AutoClosed, string funName, string InsUser, ref string errCode, ref WebAPIOutput_Auth output, int AuthType = 0)
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
@@ -1037,7 +1042,7 @@ namespace OtherService
 
             if (flag)
             {
-                output = DoCreditCardAuthSendForClose(Input,AutoClosed, AuthType, funName , InsUser).Result;
+                output = DoCreditCardAuthSendForClose(Input, AutoClosed, AuthType, funName, InsUser).Result;
                 if (output.RtnCode == "1000")
                 {
                     //if (output.Data == null)
@@ -1241,19 +1246,19 @@ namespace OtherService
         }
 
 
-        public async Task<WebAPIOutput_Auth> DoCreditCardAuthSendForClose(WebAPIInput_Auth input,int AutoClose, int AuthType, string FunName, string InsUser)
+        public async Task<WebAPIOutput_Auth> DoCreditCardAuthSendForClose(WebAPIInput_Auth input, int AutoClose, int AuthType, string FunName, string InsUser)
         {
             WebAPIOutput_Auth output = null;
-            
-            string Site = ECBaseURL + Auth;
+            string Site = RelayStatus == "0" ? $"{ECBaseURL}{Auth}" : $"{RelayBaseURL}{RelayPostApi}";
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
-            request.KeepAlive = false;
+            request.KeepAlive = true;
+            //request.KeepAlive = false;
             //SetHeaderValue(request.Headers, "Connection", "close");
-            request.Timeout = 78000;
+            //request.Timeout = 78000;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
             //{
@@ -1264,7 +1269,24 @@ namespace OtherService
                 if (CreditCardTest == "0")
                 {
                     System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                    string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                    string body = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                    string postBody = "";
+                    if (RelayStatus == "0")
+                    {
+                        postBody = body;
+                    }
+                    else
+                    {
+                        WebAPIInput_RelayPost relayPostinput = new WebAPIInput_RelayPost()
+                        {
+                            BaseUrl = "TaishinECBaseURL",
+                            ApiUrl = "Auth",
+                            RequestData = new AESEncrypt().doEncrypt(relayEnKey, relayEnSalt, body)
+                        };
+                        
+                        postBody = JsonConvert.SerializeObject(relayPostinput);
+                    }
+
                     byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
 
                     using (Stream reqStream = request.GetRequestStream())
@@ -1281,7 +1303,30 @@ namespace OtherService
                         {
                             responseStr = reader.ReadToEnd();
                             RTime = DateTime.Now;
-                            output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
+
+                            if (RelayStatus == "0")
+                            {
+                                output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
+                            }
+                            else
+                            {
+                                var result = JsonConvert.DeserializeObject<WebAPIOutput_RelayPost>(responseStr);
+                                if (result.IsSuccess)
+                                {
+                                    string oriData = new AESEncrypt().doDecrypt(relayEnKey, relayEnSalt, result.ResponseData);
+                                    output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(oriData);
+                                }
+                                else
+                                {
+                                    output = new WebAPIOutput_Auth()
+                                    {
+                                        RtnCode = "0",
+                                        RtnMessage = result.RtnMessage
+                                    };
+
+                                }
+                            }
+
 
                             //20201125紀錄接收資料
                             logger.Trace(responseStr);
@@ -1299,6 +1344,8 @@ namespace OtherService
                     output = ForTest(input.RequestParams.TradeAmount);
                 }
             }
+
+
             catch (Exception ex)
             {
                 RTime = DateTime.Now;
@@ -1340,7 +1387,7 @@ namespace OtherService
                     ProName = FunName,
                     UserID = (InsUser == FunName) ? "" : ((InsUser.Length > 20) ? InsUser.Substring(0, 20) : InsUser),
                     AuthType = AuthType
-                    
+
                 };
                 if (output.RtnCode == "0")
                 {
@@ -1675,9 +1722,9 @@ namespace OtherService
             return sign;
         }
 
-        private (int creditType,string OrderString, Int64 OrderNo) GetOrderInfoFromMerchantTradeNo(string ori)
+        private (int creditType, string OrderString, Int64 OrderNo) GetOrderInfoFromMerchantTradeNo(string ori)
         {
-            (int creditType,string OrderString, Int64 OrderNo) orderInfo = (99,"", 0);
+            (int creditType, string OrderString, Int64 OrderNo) orderInfo = (99, "", 0);
 
             var payTypeInfos = GetCreditCardPayInfoColl();
 
@@ -1729,7 +1776,7 @@ namespace OtherService
             return ForTestTrue(TradeAmount);
             //Random rnd = new Random();
             //int result = rnd.Next(1, 1);
-            
+
             //if (result == 0)
             //{
             //    return ForTestTrue(TradeAmount);
@@ -1742,7 +1789,7 @@ namespace OtherService
 
         private WebAPIOutput_Auth ForTestTrue(string TradeAmount)
         {
-            WebAPIOutput_Auth output = 
+            WebAPIOutput_Auth output =
             new WebAPIOutput_Auth()
             {
                 RtnCode = "1000",
