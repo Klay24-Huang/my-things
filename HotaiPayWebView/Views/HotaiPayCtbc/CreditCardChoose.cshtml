@@ -20,7 +20,9 @@
 
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
 
+
     @using (Html.BeginForm("CreditCardChoose", "HotaiPayCtbc", FormMethod.Post)) //使用@Html.BeginForm()預設使用Post傳遞變數，並且將表單傳送到與檢視同名的Action
+
     {
         <div class="container" style="max-width: 414px;">
             <div class="mt-4">
@@ -92,16 +94,25 @@
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
                                    value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
-                        <div class="credit-style mr-2">
-                            <img src="~/images/icon/credit_pay_VISA.svg" alt="">
-                            信用卡
+                            <div class="credit-style mr-2">
+                                <img src="~/images/icon/credit_pay_VISA.svg" alt="">
+                                信用卡
+                            </div>
+                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
                         </div>
-                        <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
-                    </div>
 
+                    }
                 }
             }
-        }
+
+            <div class="buttonBox text-center mb-2 d-none d-sm-block desktop-margin-top">
+                <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
+            </div>
+            <div class="buttonBox d-none d-sm-block">
+                <button type="submit" class="btn btn-blue" onclick="doSubmitCheck()" style="max-width: 414px;" id="agree-btn">
+                    選擇預設信用卡
+                </button>
+            </div>
 
         </div>
 
@@ -114,9 +125,9 @@
                     選擇預設信用卡
                 </button>
             </div>
-        </div>
+        </div> <!--container-->
 
-    }
+    } <!--FormMethod.Post-->
 </body>
 </html>
 
@@ -138,9 +149,12 @@
         } else
             rtnURL = "/HotaiPayCtbc/BindNewCard";
         //alert("rtnURL =" + rtnURL);
-        document.location.href = rtnURL;
+
+            document.location.href = rtnURL;
     }
-    function doSubmit() {
+
+
+    function doSubmitCheck() {
         var rtnValue = "";
         var obj = document.getElementsByName("CreditCardList");
         var radioId = "";
@@ -151,13 +165,8 @@
                 break;
             }
         }
-
-        var getUrlString = location.href;
-        var url = new URL(getUrlString);
-        var url_Token = url.searchParams.get('irent_access_token');
-
+        if (rtnValue == "")
+            swal("錯誤!", "請至少選擇一張卡片!", "error");
         //Todo 將  rtnValue Post到controller
     }
-
-
 </script>

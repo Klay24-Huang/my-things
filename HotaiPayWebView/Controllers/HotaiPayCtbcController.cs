@@ -24,8 +24,8 @@ namespace HotaiPayWebView.Controllers
         private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
         private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
-        string MEMIDNO = "";
-        string AT = "";
+        private static string MEMIDNO = "";
+        private static string AT = "";
 
         // GET: HotaiPayCtbc
         public ActionResult Index()
@@ -68,7 +68,7 @@ namespace HotaiPayWebView.Controllers
             List<HotaiCardInfo> Data = new List<HotaiCardInfo>();
 
             flag = GetIDNOFromToken(irent_access_token, LogID, ref ID, ref lstError);
-            flag = true;
+            //flag = true;
             if (flag)
             {
                 MEMIDNO = ID; //"A227548440";
@@ -111,6 +111,7 @@ namespace HotaiPayWebView.Controllers
 
             var errCode = "";
             var flag = hotaipayService.DoAddCard(input, ref output, ref errCode);
+            //System.Web.HttpContext.Current.Session["IDNO"]
 
             if (flag)
             {
@@ -234,6 +235,8 @@ namespace HotaiPayWebView.Controllers
 
                 flag = GetIDNOFromToken(irent_access_token, 8514, ref IDNO, ref errList);
                 System.Web.HttpContext.Current.Session["IDNO"] = IDNO;
+                MEMIDNO = IDNO;
+                AT = irent_access_token;
 
                 //將Session賦予值
                 if (System.Web.HttpContext.Current.Session["irent_access_token"] == null)
