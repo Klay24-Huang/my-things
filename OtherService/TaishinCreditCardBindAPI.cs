@@ -1035,7 +1035,8 @@ namespace OtherService
                 MemberID = IDNO,
                 CardToken = Input.RequestParams.CardToken,
                 AutoClose = AutoClosed,
-                AuthType = AuthType
+                AuthType = AuthType,
+                MerchantID = wsInput.ApposId,
             };
 
             new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);

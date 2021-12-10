@@ -159,7 +159,7 @@ namespace WebAPI.Controllers
                             IDNO = OrderAuth.IDNO,
                             AutoClosed = OrderAuth.AutoClosed,
                             final_price = OrderAuth.final_price,
-                            ProName = "CreditAuthReservationJob",
+                            ProName = "ReservationJob",
                             CardNumber = AuthOutput.CardNo,
 
                         };
