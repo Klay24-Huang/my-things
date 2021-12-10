@@ -9,14 +9,17 @@
     [IsClose]         INT          CONSTRAINT [DF_TB_TradeClose_IsClose] DEFAULT ((0)) NOT NULL,
     [CloseAmout]      INT          CONSTRAINT [DF_TB_TradeClose_CloseAmout] DEFAULT ((0)) NOT NULL,
     [CloseTime]       DATETIME     NULL,
-    [A_PRGID]         VARCHAR (20) CONSTRAINT [DF_TB_TradeClose_A_PRGID] DEFAULT ('') NOT NULL,
+    [CloseCount]      SMALLINT     CONSTRAINT [DF_TB_TradeClose_isRetry] DEFAULT ((0)) NOT NULL,
+    [A_PRGID]         VARCHAR (50) CONSTRAINT [DF_TB_TradeClose_A_PRGID] DEFAULT ('') NOT NULL,
     [A_USERID]        VARCHAR (20) CONSTRAINT [DF_TB_TradeClose_A_USERID] DEFAULT ('') NOT NULL,
     [A_SYSDT]         DATETIME     CONSTRAINT [DF_TB_TradeClose_A_SYSDT] DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
-    [U_PRGID]         VARCHAR (20) CONSTRAINT [DF_TB_TradeClose_U_PRGID] DEFAULT ('') NOT NULL,
+    [U_PRGID]         VARCHAR (50) CONSTRAINT [DF_TB_TradeClose_U_PRGID] DEFAULT ('') NOT NULL,
     [U_USERID]        VARCHAR (20) CONSTRAINT [DF_TB_TradeClose_U_USERID] DEFAULT ('') NOT NULL,
     [U_SYSDT]         DATETIME     CONSTRAINT [DF_TB_TradeClose_U_SYSDT] DEFAULT (dateadd(hour,(8),getdate())) NOT NULL,
     CONSTRAINT [PK_TB_TradeClose] PRIMARY KEY NONCLUSTERED ([CloseID] ASC)
 );
+
+
 
 
 GO
@@ -57,7 +60,9 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'關帳金�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'是否已關帳(關帳狀態)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_TradeClose', @level2type = N'COLUMN', @level2name = N'IsClose';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'關帳狀態(0:未關帳; 1:已關帳; 2:已送收單行處理中)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_TradeClose', @level2type = N'COLUMN', @level2name = N'IsClose';
+
+
 
 
 GO
@@ -65,7 +70,9 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'可否關�
 
 
 GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權類別TB_Code.CodeID (16:預約; 17:訂金; 18:延長用車; 19:取車; 20:逾時; 21:欠費; 22:還車)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_TradeClose', @level2type = N'COLUMN', @level2name = N'AuthType';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'授權類別TB_Code.MapCode (1:預約; 2:訂金; 3:取車; 4:延長用車; 5:逾時;6:欠費; 7:還車)', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_TradeClose', @level2type = N'COLUMN', @level2name = N'AuthType';
+
+
 
 
 GO
@@ -86,4 +93,8 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'TB_Trade流
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'關帳紀錄檔流水號', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_TradeClose', @level2type = N'COLUMN', @level2name = N'CloseID';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'關帳次數', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'TB_TradeClose', @level2type = N'COLUMN', @level2name = N'CloseCount';
 

@@ -592,7 +592,14 @@ namespace WebAPI.Models.ComboFunc
 
             HotaipayService hotaipayService = new HotaipayService();
 
-            var input = new IFN_QueryDefaultCard();
+            var input = new IFN_QueryDefaultCard
+            { 
+                IDNO= IDNO,
+                PRGName = "CheckHotaiBindCard",
+                insUser = "CheckHotaiBindCard",
+                LogID = 0,
+            };
+
             var card = new HotaiCardInfo();
             flag = hotaipayService.DoQueryDefaultCard(input, ref card, ref errCode);
            

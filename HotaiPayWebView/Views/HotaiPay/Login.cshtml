@@ -36,7 +36,7 @@
     </div>
     <div class="text-left">
         <p style="color:red;">@Html.ValidationMessage("Phone")</p>
-        <p style="color:red;">AccessToken過期，@ViewBag.Alert</p>
+        <p style="color:red;">@ViewBag.Alert</p>
     </div>
     <div class="input-box mb-2">
         <input id="demo_input" class="input-light" name="Pwd" type="password" placeholder="密碼" value="@ViewBag.pwd">
@@ -52,10 +52,10 @@
         <button class="btn btn-blue my-3" style="max-width: 414px;">登入</button>
     </div>
     <div class="buttonBox d-none d-sm-block">
-        <a class="text-gray text-underline" href="">立即註冊</a>
+        <a class="text-gray text-underline" href="/HotaiPay/MembershipTerms1">立即註冊</a>
     </div>
 </div>
-    <div class="footer-btn-box footer-btn-margin">
+    <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
         <div class="buttonBox">
 
             <button class="btn btn-blue my-3" style="max-width: 414px;" type="submit">登入</button>

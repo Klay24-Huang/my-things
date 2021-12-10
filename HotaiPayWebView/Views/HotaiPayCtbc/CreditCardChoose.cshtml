@@ -20,7 +20,11 @@
 
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
 
+<<<<<<< HEAD
     @using (Html.BeginForm("CreditcardChoose", "HotaiPayCtbc", FormMethod.Post))
+=======
+    @using (Html.BeginForm("CreditCardChoose", "HotaiPayCtbc", FormMethod.Post)) //使用@Html.BeginForm()預設使用Post傳遞變數，並且將表單傳送到與檢視同名的Action
+>>>>>>> 4e3c9b70ea73a8cde02e72ab1bd8dc3513349226
     {
         <div class="container" style="max-width: 414px;">
             <div class="mt-4">
@@ -103,6 +107,7 @@
                 }
             }
 
+<<<<<<< HEAD
             <div class="buttonBox text-center mb-2 d-none d-sm-block desktop-margin-top">
                 <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
             </div>
@@ -112,6 +117,20 @@
                 </button>
             </div>
 
+=======
+        </div>
+
+        <div class="footer-btn-box footer-btn-margin">
+            <div class="buttonBox mb-2">
+                <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
+            </div>
+            <div class="buttonBox">
+                <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
+                    選擇預設信用卡
+                </button>
+            </div>
+        </div>
+>>>>>>> 4e3c9b70ea73a8cde02e72ab1bd8dc3513349226
 
             <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
                 <div class="buttonBox mb-2">
@@ -164,8 +183,20 @@
                 break;
             }
         }
+<<<<<<< HEAD
         if (rtnValue == "")
             swal("錯誤!", "請至少選擇一張卡片!", "error");
     }
 
+=======
+
+        var getUrlString = location.href;
+        var url = new URL(getUrlString);
+        var url_Token = url.searchParams.get('irent_access_token');
+
+        //Todo 將  rtnValue Post到controller
+    }
+
+
+>>>>>>> 4e3c9b70ea73a8cde02e72ab1bd8dc3513349226
 </script>

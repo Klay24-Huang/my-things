@@ -1,3 +1,7 @@
+﻿
+
+
+
 /***********************************************************************************************
 * Serve    : sqyhi03az.database.windows.net
 * Database : IRENT_V2
@@ -68,7 +72,10 @@ BEGIN
 		   INSERT INTO TB_MemberHotaiCard (OneID,IDNO,CardType,BankDesc,CardNo,CardToken,A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT)
 		   VALUES (@OneID,@IDNO,@CardType,@BankDesc,@CardNo,@CardToken,@PRGID,@IDNO,@NowTime,@PRGID,@IDNO,@NowTime);
 		 END
-       END
+        
+		 --PayMode(0:信用卡 4:和泰PAY)
+	     UPDATE TB_MemberData SET PayMode=4,U_PRGID=0,U_USERID=@IDNO,U_SYSDT=@NowTime WHERE MEMIDNO=@IDNO AND PayMode=0;
+		END
 		
 		--寫入錯誤訊息
 		IF @Error=1
