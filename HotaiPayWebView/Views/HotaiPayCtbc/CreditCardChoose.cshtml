@@ -92,15 +92,16 @@
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
                                    value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
-                            <div class="credit-style mr-2">
-                                <img src="~/images/icon/credit_pay_VISA.svg" alt="">
-                                信用卡
-                            </div>
-                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                        <div class="credit-style mr-2">
+                            <img src="~/images/icon/credit_pay_VISA.svg" alt="">
+                            信用卡
                         </div>
-                    }
+                        <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                    </div>
+
                 }
             }
+        }
 
         </div>
 

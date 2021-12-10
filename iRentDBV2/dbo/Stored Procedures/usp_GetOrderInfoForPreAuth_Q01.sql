@@ -32,11 +32,16 @@ BEGIN TRY
 WITH extendInfo
 AS (
 SELECT MIN(StopTime) AS extendStartTime,MAX(ExtendStopTime) AS extendStopTime,COUNT(order_number) AS extendTimes,order_number
-FROM TB_OrderExtendHistory 	WITH(NOLOCK) WHERE order_number=@OrderNumber GROUP BY order_number)
+FROM TB_OrderExtendHistory 	WITH(NOLOCK) WHERE order_number=@OrderNumber GROUP BY order_number),
+monthly
+AS (SELECT TOP 1 OrderNo,u.MonthlyRentId,u.Mode,WorkDayRateForCar,WorkDayRateForMoto,HoildayRateForCar,HoildayRateForMoto FROM TB_MonthlyRentUse u WITH(NOLOCK)
+JOIN TB_SubsBookingMonth s WITH(NOLOCK) ON u.MonthlyRentId=s.MonthlyRentId WHERE u.useFlag=1 AND OrderNo=@OrderNumber)
 SELECT VW.order_number AS OrderNo,	 
 			   VW.ProjID,
 			   VW.ProjType,
-			   VW.PRICE,
+			   PRICE =CASE WHEN monthly.MonthlyRentId >0 AND VW.ProjType =4 THEN monthly.WorkDayRateForMoto
+			          WHEN monthly.MonthlyRentId >0 AND VW.ProjType <4 THEN (monthly.WorkDayRateForCar * 10) --20211125訂閱制目前無假日費率，假日用原本專案費率
+					  ELSE VW.PRICE END, 
 			   VW.PRICE_H,
 			   VW.start_time AS SD,
 			   VW.stop_time AS ED,		
@@ -44,23 +49,24 @@ SELECT VW.order_number AS OrderNo,
 			   VW.CarNo,
 			   VW.CarTypeGroupCode,
 			   VW.Insurance,
-			   VW.WeekdayPrice, 
-		       VW.HoildayPrice, 
+			   VW.WeekdayPrice, --汽車平日逾時原價
+		       VW.HoildayPrice, --汽車假日逾時原價
 		 	   InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0
 										WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours
 										WHEN K.InsuranceLevel < 4 THEN K.InsurancePerHours
 										ELSE 0 END,
-		       (SELECT ISNULL(SUM(Auth.final_price),0) FROM TB_OrderAuthAmount Auth WITH(NOLOCK) WHERE VW.order_number=Auth.order_number AND AuthType IN (1,3,4)) AS PreAuthAmt,	--1:預約 3:取車	4:延長用車		
+		       (SELECT ISNULL(SUM(Auth.final_price),0) FROM TB_OrderAuthAmount Auth WITH(NOLOCK) WHERE VW.order_number=Auth.order_number AND AuthType IN (1,2,3,4)) AS PreAuthAmt,	--1:預約 2.訂金 3:取車 4:延長用車		
 		       ISNULL(extendInfo.extendTimes,0) AS ExtendTimes,
 			   ISNULL(extendInfo.extendStartTime,'1911-01-01 00:00:00') AS ExtendStartTime,
 			   ISNULL(extendInfo.extendStopTime,'1911-01-01 00:00:00') AS ExtendStopTime,
 			   VW.StationID
 		FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
-		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
+		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate) 
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3--預設專用
 		LEFT JOIN extendInfo ON VW.order_number=extendInfo.order_number
+		LEFT JOIN monthly ON VW.order_number=monthly.OrderNo
 		WHERE VW.order_number=@OrderNumber;
 END TRY
 BEGIN CATCH

@@ -665,7 +665,7 @@ padding: 0 24px 24px 24px;
 /* 置底btn css */
 
 .footer-btn-box {
-  z-index: 9999;
+  /* z-index: 9999; */
   position:fixed;
   bottom:0px;
   width: 100%
@@ -681,6 +681,7 @@ padding: 0 24px 24px 24px;
 .footer-btn-margin{
   margin-bottom: 80px;
 }
+
 
 
 @media screen and (max-width: 768px){
@@ -808,6 +809,19 @@ padding: 0px 16px;
 
   }
   
+
+
+
+.desktop-margin-top{
+  margin-top: 168px;
+}
+
+@media screen and (max-width: 768px){
+  .desktop-margin-top{
+    margin-top: 340px;
+  }
+
+}
 
 
 /* -------------------------------------------login閮剖��------------------------------------------------ */

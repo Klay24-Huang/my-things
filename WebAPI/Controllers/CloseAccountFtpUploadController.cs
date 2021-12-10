@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
         public string DoCloseAccountFtpUpload()
         {
             HttpContext httpContext = HttpContext.Current;
-            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
+            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; 
             string OutputMSG = "";  //回覆狀況
 
             List<BE_GetMemberScoreFull> lstData = null;

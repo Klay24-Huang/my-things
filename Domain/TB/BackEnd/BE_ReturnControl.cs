@@ -222,5 +222,10 @@ namespace Domain.TB.BackEnd
         /// etag費用
         /// </summary>
         public int eTag { get; set; }
+
+        /// <summary>
+        /// 關帳金額
+        /// </summary>
+        public int CloseAmout { get; set; }
     }
 }
