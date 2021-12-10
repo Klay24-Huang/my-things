@@ -234,7 +234,7 @@ namespace WebAPI.Controllers
 
             }
             //這邊資料用api拋給sqyhi06vm
-            if (flag)
+            if (flag && apiInput.AuditStatus == 1)
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
