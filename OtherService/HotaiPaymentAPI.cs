@@ -257,11 +257,13 @@ namespace OtherService
 			var jsonSetting = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
 			var body = Body == null ? "" : JsonConvert.SerializeObject(Body, Formatting.Indented,jsonSetting);
 
-			logger.Info($@"Request Info--requestUrl:{requestUrl}
-									   --method:{Method}
-									   --header:{header}
-							           --origana body
-									   --{body}");
+			logger.Info($@"Request Info
+								--requestUrl:{requestUrl}
+								--API:{API}
+								--method:{Method}
+								--header:{header}
+								--origana body:
+								{body}");
 
 			var resinfo = SetRequestBody(body, API, Method);
 
