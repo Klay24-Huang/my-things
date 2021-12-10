@@ -33,7 +33,7 @@
         for (int i = 0; i < L_Output.Count; i++)
         {
             var A_output = L_Output.ElementAt(i);
-            if (A_output.CardType == "JCB")
+            if (A_output.CardType == "Jcb")
             {
                 var CardName = A_output.CardName;
                 var CardNumber = A_output.CardNumber;
@@ -46,7 +46,7 @@
 
                 <div class="credit-card-box mb-4">
                     <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
-                           value=("@MemberOneID"+"|"+"@CardType"+"|"+"@BankDesc"+"|"+"@CardNumber"+"|"+"@A_output") />
+                           value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
 
                     <div class="credit-style mr-2">
                         <img src="~/images/icon/credit_pay_JCB.svg" alt="">
@@ -56,7 +56,7 @@
                 </div>
             }
 
-            if (A_output.CardType == "MasterCard")
+            if (A_output.CardType == "Master")
             {
 
                 var CardName = A_output.CardName;
@@ -70,7 +70,7 @@
 
                 <div class="credit-card-box mb-4">
                     <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                           value=("@MemberOneID"+"|"+"@CardType"+"|"+"@BankDesc"+"|"+"@CardNumber"+"|"+"@A_output") />
+                           value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
 
                     <div class="credit-style mr-2">
                         <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
@@ -92,7 +92,7 @@
 
                 <div class="credit-card-box mb-4">
                     <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                           value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
+                           value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
 
                     <div class="credit-style mr-2">
                         <img src="~/images/icon/credit_pay_VISA.svg" alt="">
@@ -104,12 +104,16 @@
             }
         }
     }
-
+    @Html.ValidationMessage("CreditCardList")
     @{
         if (IsPost)
         {
             string CreditCard = Request.Form["CreditCardList"];
-            if (CreditCard.Trim().Length == 0) { 
+            if (CreditCard.Trim().Length == 0)
+            {
+                <p>
+                    請至少選擇一張卡片
+                </p>
 
             }
         }
@@ -163,19 +167,4 @@
     }
 
 
-    function doSubmitCheck() {
-        var rtnValue = "";/*
-        var obj = document.getElementsByName("CreditCardList");
-        var radioId = "";
-        for (var i = 0; i < obj.length; i++) {
-            radioId = "card" + i;
-            if (document.getElementById(radioId).checked) {
-                rtnValue = document.getElementById(radioId).value;
-                break;
-            }
-        }*/
-        if (rtnValue == "")
-            swal("錯誤!", "請至少選擇一張卡片!", "error");
-        //Todo 將  rtnValue Post到controller
-    }
 </script>
