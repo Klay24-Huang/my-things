@@ -165,6 +165,10 @@ namespace WebAPI.Controllers
                     {
                         if (ProjType == 3)
                         {
+                            //路邊調整取車時間APP僅有十進位顯示故去除後面尾數，以免影響預授權判斷
+                            int diff = SDate.Minute % 10;
+                            string timeString = diff > 0 ? SDate.AddMinutes(10 - diff).ToString("yyyy/MM/dd HH:mm") : SDate.ToString("yyyy/MM/dd HH:mm");
+                            DateTime.TryParse(timeString, out SDate);
                             //20201212 ADD BY ADAM REASON.路邊改預設一天
                             EDate = SDate.AddDays(1);
                         }
