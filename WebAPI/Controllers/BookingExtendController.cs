@@ -245,18 +245,23 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            if (orderInfo.ProjType == 0) //同站
-                            {
-                                //收6小時
-                                estimateData.SD = orderInfo.ED;
-                                estimateData.ED = orderInfo.ED.AddHours(6);
-                            }
-                            else if (orderInfo.ProjType == 3)//路邊
-                            {
-                                //新的預估租金與原預授權的差額進行預授權
-                                deduct = true;
-                                estimateData.ED = orderInfo.ED.AddHours(6);
-                            }
+
+                            //新的預估租金與原預授權的差額進行預授權
+                            deduct = true;
+                            estimateData.ED = orderInfo.ED.AddHours(6);
+
+                            //if (orderInfo.ProjType == 0) //同站
+                            //{
+                            //    //收6小時
+                            //    estimateData.SD = orderInfo.ED;
+                            //    estimateData.ED = orderInfo.ED.AddHours(6);
+                            //}
+                            //else if (orderInfo.ProjType == 3)//路邊
+                            //{
+                            //    //新的預估租金與原預授權的差額進行預授權
+                            //    deduct = true;
+                            //    estimateData.ED = orderInfo.ED.AddHours(6);
+                            //}
                         }
 
                     }
@@ -351,7 +356,7 @@ namespace WebAPI.Controllers
                                 Title = "取授權成功通知",
                                 imageurl = "",
                                 url = "",
-                                Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}以末四碼{cardNo}信用卡延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
+                                Message = $"已於{DateTime.Now.ToString("MM/dd HH:mm")}以末四碼{cardNo}信用卡延長用車取授權成功，金額 {preAuthAmt}，謝謝!"
 
                             };
                             commonService.sp_InsPersonNotification(input_Notification, ref error);

@@ -364,6 +364,7 @@ namespace WebAPI.Models.ComboFunc
                 AuthOutput.Transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
                 AuthOutput.BankTradeNo = WSAuthOutput?.ResponseParams?.ResultData?.ServiceTradeNo??"";
                 AuthOutput.CardNo = WSAuthOutput?.ResponseParams?.ResultData?.CardNumber?? FindCardResult.cardNumber;
+                AuthOutput.AuthIdResp = WSAuthOutput?.ResponseParams?.ResultData?.AuthIdResp ?? "0000";
             }
             
             return flag;

@@ -35,6 +35,9 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
+using WebAPI.Models.ComboFunc;
+using WebAPI.Models.Param.Bill.Input;
+using WebAPI.Models.Param.Bill.Output;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
@@ -795,7 +798,7 @@ namespace WebAPI.Controllers
                                         trace.traceAdd("DonePayBack", new { spInput_PayBack, errCode, lstError });
                                     }
 
-                                    if (flag && RTNCODE == "1000" && RESULTCODE == "1000")  //20210106 ADD BY ADAM REASON.有成功才呼叫
+                                    if (flag && payStatus)  //20210106 ADD BY ADAM REASON.有成功才呼叫
                                     {
                                         HiEasyRentAPI webAPI = new HiEasyRentAPI();
 
