@@ -339,11 +339,8 @@ namespace HotaiPayWebView.Controllers
             //string b = StatusDesc;
             if (StatusCode == "I0000" && StatusDesc == "SUCCESS")
             {
-<<<<<<< HEAD
                 return RedirectToAction("CreditCardChoose", "HotaiPayCtbc", new { irent_access_token = AToken });
-=======
-                return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
->>>>>>> 3ad5b992303f0e2296158806c66423e453fd1100
+                //return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
             }
             else
             {

@@ -130,6 +130,7 @@ namespace HotaiPayWebView.Controllers
                             {
                                 WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
                                 flag = hotaiAPI.DoGetMobilePhoneToOneID(loginVale.Phone, ref getOneID, ref errCode);
+                                flag = true;//唐寫死，等和泰開通安康防火牆再弄
                                 if (flag)
                                 {
                                     Session["oneID"] = getOneID.memberSeq;
