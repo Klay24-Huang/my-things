@@ -45,18 +45,14 @@
                 <button type="submit" class="btn btn-blue-small mb-2">發送驗證碼</button>
             </form>
         </div>
-        <div class="buttonBox d-none d-sm-block desktop-margin-top">
-            <!-- 填寫資料後變成切換class成btn-blue -->
-            <button class="btn btn-disable-gray" style="max-width: 414px;">下一步</button>
-            <!-- 填寫資料後變成切換class成btn-blue -->
-        </div>
+        
     </div>
     @using (Html.BeginForm("CheckOtpCode", "HotaiPay", FormMethod.Post))
     {
         <div class="container" style="max-width: 414px;position:relative">
             <div class="mt-4">
 
-                <input type="text" id="otpCode" class="form-control input-light" name="otpCode" placeholder="輸入驗證碼" value="@ViewBag.OtpCode" v-model="form.OtpCode" required>
+                <input type="text" id="otpCode" class="form-control input-light" name="otpCode" placeholder="輸入驗證碼" value="@ViewBag.OtpCode" required>
                 <p id="pwdHint" style="color:red;">@ViewBag.Alert</p>
             </div>
         </div>
@@ -69,21 +65,8 @@
             </div>
         </div>
     }
-
             <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
             <!-- Include all compiled plugins (below), or include individual files as needed -->
 </body>
 </html>
-
-<script>
-    var msg = '@(ViewData["Msg"] == null ? "" : ViewData["Msg"].ToString())';
-
-    if (msg != '') {
-        //console.log("sssaaaaaaaaaaaaaa")
-        swal("驗證碼錯誤!", "請確認!", "error");
-    }
-    else {
-        //console.log("9999")
-    }
-</script>

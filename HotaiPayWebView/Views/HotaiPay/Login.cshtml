@@ -20,41 +20,42 @@
 
 <body>
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員登入</h6></header>
-@{Html.EnableClientValidation(); }
-@{Html.BeginForm("Login", "HotaiPay", FormMethod.Post); }
-<div class="container text-center" style="max-width: 414px;">
-    <!-- 提示文字＋圖-->
-    <div class="web-img mt-8">
+    @{Html.EnableClientValidation(); }
+    @{Html.BeginForm("Login", "HotaiPay", FormMethod.Post); }
+    @Html.AntiForgeryToken()
+    <div class="container text-center" style="max-width: 414px;">
+        <!-- 提示文字＋圖-->
+        <div class="web-img mt-8">
 
-        <img class="object-fit mb-8" alt="iRent汽機車共享" src="~/images/hotai-logo.svg">
-    </div>
-    <h6 class="mb-4">和泰集團會員登入</h6>
+            <img class="object-fit mb-8" alt="iRent汽機車共享" src="~/images/hotai-logo.svg">
+        </div>
+        <h6 class="mb-4">和泰集團會員登入</h6>
 
 
-    <div class="input-box mb-2">
-        <input class="input-light" type="text" id="phone" name="Phone" placeholder="手機號碼" value="@ViewBag.phone">
+        <div class="input-box mb-2">
+            <input class="input-light" type="text" id="phone" name="Phone" placeholder="手機號碼" value="@ViewBag.phone">
+        </div>
+        <div class="text-left">
+            <p style="color:red;">@Html.ValidationMessage("Phone")</p>
+            <p style="color:red;">@ViewBag.Alert</p>
+        </div>
+        <div class="input-box mb-2">
+            <input id="demo_input" class="input-light" name="Pwd" type="password" placeholder="密碼" value="@ViewBag.pwd">
+            <label><img src="~/images/eye-slash-regular.svg" alt="" id="eyes"></label>
+        </div>
+        <div class="text-left">
+            <p style="color:red;">@Html.ValidationMessage("Pwd")</p>
+        </div>
+        <div class="text-right">
+            <a class="text-gray text-underline" href="https://www.hotaimember.com.tw/login/ForgotPassword">忘記密碼</a>
+        </div>
+        <div class="buttonBox d-none d-sm-block desktop-margin-top">
+            <button class="btn btn-blue my-3" style="max-width: 414px;">登入</button>
+        </div>
+        <div class="buttonBox d-none d-sm-block">
+            <a class="text-gray text-underline" href="/HotaiPay/MembershipTerms1">立即註冊</a>
+        </div>
     </div>
-    <div class="text-left">
-        <p style="color:red;">@Html.ValidationMessage("Phone")</p>
-        <p style="color:red;">@ViewBag.Alert</p>
-    </div>
-    <div class="input-box mb-2">
-        <input id="demo_input" class="input-light" name="Pwd" type="password" placeholder="密碼" value="@ViewBag.pwd">
-        <label><img src="~/images/eye-slash-regular.svg" alt="" id="eyes"></label>
-    </div>
-    <div class="text-left">
-        <p style="color:red;">@Html.ValidationMessage("Pwd")</p>
-    </div>
-    <div class="text-right">
-        <a class="text-gray text-underline" href="https://www.hotaimember.com.tw/login/ForgotPassword">忘記密碼</a>
-    </div>
-    <div class="buttonBox d-none d-sm-block desktop-margin-top">
-        <button class="btn btn-blue my-3" style="max-width: 414px;">登入</button>
-    </div>
-    <div class="buttonBox d-none d-sm-block">
-        <a class="text-gray text-underline" href="/HotaiPay/MembershipTerms1">立即註冊</a>
-    </div>
-</div>
     <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
         <div class="buttonBox">
 
