@@ -219,7 +219,6 @@ namespace HotaiPayWebView.Controllers
             HotaipayService HPServices = new HotaipayService();
             bool flag = false;
             string errCode = "";
-            string PRGName = "NoCreditCard";
             List<ErrorInfo> errList = new List<ErrorInfo>();
             var IDNO = "";
 
@@ -255,13 +254,13 @@ namespace HotaiPayWebView.Controllers
             {
                 input.IDNO = IDNO;
                 flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
-                logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
+                //logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
             }
 
             //和泰Token失效
             if (errCode == "ERR941")
             {
-                logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
+                //logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
                 return RedirectToRoute("/HotaiPay/Login", new { irent_access_token = irent_access_token });
             }
 
@@ -276,7 +275,7 @@ namespace HotaiPayWebView.Controllers
             }
             else
             {
-                logger.Error("HotaiPayCtbc.NoCreditCard.DoQueryCardList 查詢卡清單失敗 ERRCODE:" + errCode);
+                logger.Error($"HotaiPayCtbc.NoCreditCard.DoQueryCardList 查詢卡清單失敗\n ERRCODE={errCode} \n irent_access_token ={irent_access_token}");
             }
             return View();
         }
@@ -314,7 +313,7 @@ namespace HotaiPayWebView.Controllers
                 logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
-                    logger.Error("HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗 ERRCODE:" + errCode);
+                    logger.Error($"HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗IDNO={IDNO} ERRCODE= {errCode} );
             }
             else {
                 return View("NoCreditCard", irent_access_token);
