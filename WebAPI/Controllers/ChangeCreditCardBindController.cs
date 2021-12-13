@@ -28,6 +28,8 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        //20211213 ADD BY ADAM REASON.強制把換卡改到舊的商代，此目的在解決台新預授權用的商代在綁卡設定上有問題做的處置
+        private string oldTaishinAPPOS = ConfigurationManager.AppSettings["oldTaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string BindSuccessURL = ConfigurationManager.AppSettings["BindSuccessURL"].ToString();
         private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
@@ -201,7 +203,8 @@ namespace WebAPI.Controllers
                 WebAPIInput_Base wsInput = new WebAPIInput_Base()
                 {
                     ApiVer = ApiVer,
-                    ApposId = TaishinAPPOS,
+                    //ApposId = TaishinAPPOS,
+                    ApposId = oldTaishinAPPOS,      //20211213 ADD BY ADAM REASON.強制把換卡改到舊的商代
                     RequestParams = new RequestParamsData()
                     {
                         FailUrl = HttpUtility.UrlEncode(BindFailURL),

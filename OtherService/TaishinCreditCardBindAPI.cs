@@ -29,6 +29,8 @@ namespace OtherService
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         private string apikey = ConfigurationManager.AppSettings["TaishinAPIKey"].ToString();
+        //20211213 ADD BY ADAM REASON.強制把換卡改到舊的商代，此目的在解決台新預授權用的商代在綁卡設定上有問題做的處置
+        private string oldapikey = ConfigurationManager.AppSettings["oldTaishinAPIKey"].ToString();
         private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                     //台新base網址
         private string ECBaseURL = ConfigurationManager.AppSettings["TaishinECBaseURL"].ToString();
         private string GetCardPage = ConfigurationManager.AppSettings["GetCardPage"].ToString();                    //取得綁卡網址
@@ -56,7 +58,8 @@ namespace OtherService
         public bool DoBind(WebAPIInput_Base wsInput, ref string errCode, ref WebAPIOutput_Base output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            //string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);
             string checksum = GenerateSign(ori);
 
             WebAPIInput_Bind Input = new WebAPIInput_Bind()
@@ -222,7 +225,7 @@ namespace OtherService
         public bool DoGetCreditCardList_ori(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);
             string checksum = GenerateSign(ori);
 
             WebAPIInput_GetCreditCardList Input = new WebAPIInput_GetCreditCardList()
