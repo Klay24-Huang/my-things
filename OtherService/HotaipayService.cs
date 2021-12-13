@@ -999,5 +999,38 @@ namespace OtherService
                 }
             }
         }
+
+        /// <summary>
+        /// AES解密
+        /// </summary>
+        public Dictionary<string,string> QueryStringDecryption(string encrypStr)
+        {
+            Dictionary<string, string> resultDic = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(encrypStr))
+            {
+                //base64解碼
+                string KEY = configManager.GetKey("AESKEY").Trim();
+                string IV = configManager.GetKey("AESIV").Trim();
+                string ReqParam = AESEncrypt.DecryptAES128(encrypStr, KEY, IV);
+
+                if (ReqParam != "")
+                { 
+                    var parms = ReqParam.Split(new char[] { '&' }).ToList();
+                    foreach(var param in parms)
+                    {
+                        var resultQStr = param.Split(new char[] { '=' }).ToList();
+                        if (resultQStr.Count==2)
+                            resultDic.Add(resultQStr[0], resultQStr[1]);
+                            
+                    }
+                }
+
+                return resultDic;
+            }
+            else
+                return new Dictionary<string, string>();
+
+            
+        }
     }
 }

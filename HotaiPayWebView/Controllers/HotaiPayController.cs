@@ -37,21 +37,23 @@ namespace HotaiPayWebView.Controllers
         #region 登入頁面
         public ActionResult Login()
         {
-            if (!string.IsNullOrEmpty(Request.QueryString["phone"]))
+            var decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+
+            if (!string.IsNullOrEmpty(decryptDic["phone"]))
             {
-                ViewBag.phone = Request.QueryString["phone"].Trim();
-                Session["phone"] = Request.QueryString["phone"].Trim();
+                ViewBag.phone = decryptDic["phone"].Trim();
+                Session["phone"] = decryptDic["phone"].Trim();
             }
 
-            if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
             {
                 string IDNO = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 string errCode = "";
-                var flag = HPServices.GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
+                var flag = HPServices.GetIDNOFromToken(decryptDic["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
                 if (flag)
                 {
-                    Session["irent_access_token"] = Request.QueryString["irent_access_token"].Trim();
+                    Session["irent_access_token"] = decryptDic["irent_access_token"].Trim();
                     Session["id"] = IDNO;
                 }
                 else
@@ -746,17 +748,12 @@ namespace HotaiPayWebView.Controllers
         #region 已是和泰會員
         public ActionResult AlreadyMember()
         {
-            string accessToken = "";
-            accessToken = Request.QueryString["irent_access_token"];
-            if (string.IsNullOrWhiteSpace(accessToken))
+            var decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+            if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
             {
+                    return View();
+            }else
                 return RedirectToAction("Login");
-            }
-            else
-            {
-                ViewData["Token"] = accessToken.Trim();
-                return View();
-            }
         }
         #endregion
 
