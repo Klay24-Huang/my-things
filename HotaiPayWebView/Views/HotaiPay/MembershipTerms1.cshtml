@@ -63,16 +63,17 @@
 
 
     <script>
+        let flag = 0;
         $(":checkbox").click(function () {
             var e = document.getElementById("redbtn");
-            var flag = 0;
-            if (flag===0) {
-                $("#redbtn").toggleClass("checked-active");
-                e.removeAttribute("disabled");
+            
+            if (flag === 0) {
+                e.className = "btn btn-blue mb-2";
+                e.disabled = false;
                 flag = 1;
             } else {
-                $("#redbtn").toggleClass("btn btn-disable-gray mb-2");
-                e.setAttribute('disabled', 'disabled');
+                e.className = "btn btn-disable-gray mb-2";
+                e.disabled = true;
                 flag = 0
             }  
         })
