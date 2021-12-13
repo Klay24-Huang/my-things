@@ -1232,7 +1232,7 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-        \
+        
         /// <summary>
         /// 機車租金計算(月租平日折扣,月租假日折扣,折扣後金額,月租平日剩餘分,月租假日剩餘分,月租折扣後剩餘分鐘,使用一般折扣點數)
         /// </summary>
