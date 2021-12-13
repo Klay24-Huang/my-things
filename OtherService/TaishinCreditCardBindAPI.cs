@@ -1272,7 +1272,8 @@ namespace OtherService
                     System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                     string body = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
                     string postBody = "";
-                    if (RelayStatus == "0")
+                    #region 中繼API啟用判斷
+                    if (RelayStatus == "0") // 0:不啟用
                     {
                         postBody = body;
                     }
@@ -1287,6 +1288,7 @@ namespace OtherService
                         
                         postBody = JsonConvert.SerializeObject(relayPostinput);
                     }
+                    #endregion
 
                     byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
 
@@ -1305,17 +1307,18 @@ namespace OtherService
                             responseStr = reader.ReadToEnd();
                             RTime = DateTime.Now;
 
-                            if (RelayStatus == "0")
+                            if (RelayStatus == "0") // 0:不啟用
                             {
                                 output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
                             }
                             else
                             {
-                                var result = JsonConvert.DeserializeObject<WebAPIOutput_RelayPost>(responseStr);
+                                var result = JsonConvert.DeserializeObject<WebAPIOutput_RelayPost>(responseStr);                               
                                 if (result.IsSuccess)
                                 {
-                                    string oriData = new AESEncrypt().doDecrypt(relayEnKey, relayEnSalt, result.ResponseData);
-                                    output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(oriData);
+                                    responseStr = "";
+                                    responseStr = new AESEncrypt().doDecrypt(relayEnKey, relayEnSalt, result.ResponseData);
+                                    output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
                                 }
                                 else
                                 {

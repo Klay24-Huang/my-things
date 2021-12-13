@@ -28,7 +28,8 @@ namespace RelayAPI.Controllers
             string Contentjson = JsonConvert.SerializeObject(value);
             IAPI_RelayPost apiInput = null;
             OAPI_RelayPost output = new OAPI_RelayPost();
-            apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_RelayPost>(Contentjson);
+            output.RtnMessage = "";
+            apiInput = JsonConvert.DeserializeObject<IAPI_RelayPost>(Contentjson);
             logger.Trace("DoRelayPostInput: " + Contentjson);
 
             if (apiInput != null)
@@ -62,7 +63,7 @@ namespace RelayAPI.Controllers
                         {
                             responseStr = reader.ReadToEnd();
                             output.IsSuccess = true;
-                            output.ResponseData = new AESEncrypt().doEncrypt(relayEnKey, relayEnSalt, JsonConvert.SerializeObject(responseStr));
+                            output.ResponseData = new AESEncrypt().doEncrypt(relayEnKey, relayEnSalt, responseStr);
                             logger.Trace("DoRelayPostResponse: " + responseStr);
                             reader.Close();
                             reader.Dispose();
@@ -71,7 +72,7 @@ namespace RelayAPI.Controllers
                         //增加關閉連線的呼叫
                         response.Close();
                         response.Dispose();
-                    }
+                    }                
                 }
                 catch (Exception ex)
                 {
