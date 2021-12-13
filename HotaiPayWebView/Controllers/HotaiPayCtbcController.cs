@@ -231,48 +231,38 @@ namespace HotaiPayWebView.Controllers
             string IDNO = "";
             long LogID = 65471;
             var decryptDic = new Dictionary<string, string>() ;
-            //try
-            //{
-            //   decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
-            //}
-            //catch (Exception E) { }
 
-            //if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
-            //{
-            //    List<ErrorInfo> lstError = new List<ErrorInfo>();
-            //    flag = HPServices.GetIDNOFromToken(decryptDic["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
-            //    if (flag)
-            //    {
-            //        Session["irent_access_token"] = decryptDic["irent_access_token"].Trim();
-            //        Session["id"] = IDNO;
-            //    }
-            //    else
-            //    {
-            //        ViewBag.Alert = "無法取得加密資訊";
-            //        return View();
-            //    }
-            //}
-
-            if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            //若呼叫時有傳入irent_access_token
+            if (!string.IsNullOrEmpty(irent_access_token))
             {
-                //若沒有傳值則從網址列帶參數 --上正式需+串解密
-                if (string.IsNullOrEmpty(irent_access_token))
-                {
-                    irent_access_token = Request.QueryString["irent_access_token"].Trim();
-                }
+                //irent_access_token = irent_access_token;
+            }
+            //若網址列有irent_access_token
+            else if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            {
+                irent_access_token = Request.QueryString["irent_access_token"].Trim();
+            }
+            //若有p加密字串
+            else if (Request.QueryString["p"].Trim().Length > 0) {
+                //進行解密
+                decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+                irent_access_token = decryptDic["irent_access_token"].Trim();
+            }
+            
+            //以上面獲得的Token取IDNO
+            flag = GetIDNOFromToken(irent_access_token, LogID, ref IDNO, ref errList);
 
-                flag = GetIDNOFromToken(irent_access_token, LogID, ref IDNO, ref errList);
-
+            if (flag)
+            {
                 Session["id"] = IDNO;
-                //MEMIDNO = IDNO;
                 Session["irent_access_token"] = irent_access_token;
-
             }
-            else 
+            else
             {
-                flag = GetIDNOFromToken(irent_access_token, 8513, ref IDNO, ref errList);
-                System.Web.HttpContext.Current.Session["id"] = IDNO;
+                ViewBag.Alert = "fail to get user info";
+                return View();
             }
+
 
             //取得卡片清單
             IFN_QueryCardList input = new IFN_QueryCardList();
