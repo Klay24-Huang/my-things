@@ -24,95 +24,95 @@
     @using (Html.BeginForm("CreditCardChoose", "HotaiPayCtbc", FormMethod.Post)) //使用@Html.BeginForm()預設使用Post傳遞變數，並且將表單傳送到與檢視同名的Action
 
     {
-<div class="container" style="max-width: 414px;">
-    <div class="mt-4">
-        <p class="text-gray">請選擇您欲綁定的信用卡</p>
-    </div>
+        <div class="container" style="max-width: 414px;">
+            <div class="mt-4">
+                <p class="text-gray">請選擇您欲綁定的信用卡</p>
+            </div>
 
-    @{
-        for (int i = 0; i < L_Output.Count; i++)
-        {
-            var A_output = L_Output.ElementAt(i);
-            if (A_output.CardType == "Jcb")
-            {
-                var CardName = A_output.CardName;
-                var CardNumber = A_output.CardNumber;
-                var CardType = A_output.CardType;
-                var BankDesc = A_output.BankDesc;
-                var CardToken = A_output.CardToken;
-                var IsDefault = A_output.IsDefault == 1 ? true : false;
-                var MemberOneID = A_output.MemberOneID;
+            @{
+                for (int i = 0; i < L_Output.Count; i++)
+                {
+                    var A_output = L_Output.ElementAt(i);
+                    if (A_output.CardType == "Jcb")
+                    {
+                        var CardName = A_output.CardName;
+                        var CardNumber = A_output.CardNumber;
+                        var CardType = A_output.CardType;
+                        var BankDesc = A_output.BankDesc;
+                        var CardToken = A_output.CardToken;
+                        var IsDefault = A_output.IsDefault == 1 ? true : false;
+                        var MemberOneID = A_output.MemberOneID;
 
-                <div class="credit-card-box mb-4">
-                    <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
-                           value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
+                        <div class="credit-card-box mb-4">
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
+                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
 
-                    <div class="credit-style mr-2">
-                        <img src="~/images/icon/credit_pay_JCB.svg" alt="">
-                        信用卡
-                    </div>
-                    <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
-                </div>
+                            <div class="credit-style mr-2">
+                                <img src="~/images/icon/credit_pay_JCB.svg" alt="">
+                                信用卡
+                            </div>
+                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                        </div>
+                    }
+
+                    if (A_output.CardType == "Master")
+                    {
+                        var CardName = A_output.CardName;
+                        var CardNumber = A_output.CardNumber;
+                        var CardType = A_output.CardType;
+                        var BankDesc = A_output.BankDesc;
+                        var CardToken = A_output.CardToken;
+                        var IsDefault = A_output.IsDefault == 1 ? true : false;
+                        var MemberOneID = A_output.MemberOneID;
+
+                        <div class="credit-card-box mb-4">
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
+                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+
+                            <div class="credit-style mr-2">
+                                <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
+                                信用卡
+                            </div>
+                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                        </div>
+                    }
+                    if (A_output.CardType == "Visa")
+                    {
+                        var CardName = A_output.CardName;//666
+                        var CardNumber = A_output.CardNumber;//-8441
+                        var CardType = A_output.CardType;//VISA
+                        var BankDesc = A_output.BankDesc;//國外卡
+                        var CardToken = A_output.CardToken;//1850
+                        var IsDefault = A_output.IsDefault == 1 ? true : false;
+                        var MemberOneID = A_output.MemberOneID;//112bd64b..........af980
+
+                        <div class="credit-card-box mb-4">
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
+                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+
+                            <div class="credit-style mr-2">
+                                <img src="~/images/icon/credit_pay_VISA.svg" alt="">
+                                信用卡
+                            </div>
+                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                        </div>
+
+                    }
+                }
             }
 
-            if (A_output.CardType == "Master")
-            {
-                var CardName = A_output.CardName;
-                var CardNumber = A_output.CardNumber;
-                var CardType = A_output.CardType;
-                var BankDesc = A_output.BankDesc;
-                var CardToken = A_output.CardToken;
-                var IsDefault = A_output.IsDefault == 1 ? true : false;
-                var MemberOneID = A_output.MemberOneID;
+            <div class="buttonBox text-center mb-2 d-none d-sm-block desktop-margin-top">
+                <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
+            </div>
+            <div class="buttonBox d-none d-sm-block">
+                <button type="submit" class="btn btn-blue" onclick="doSubmitCheck()" style="max-width: 414px;" id="agree-btn">
+                    選擇預設信用卡
+                </button>
+            </div>
 
-                <div class="credit-card-box mb-4">
-                    <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                           value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
+        </div>
 
-                    <div class="credit-style mr-2">
-                        <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
-                        信用卡
-                    </div>
-                    <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
-                </div>
-            }
-            if (A_output.CardType == "Visa")
-            {
-                var CardName = A_output.CardName;//666
-                var CardNumber = A_output.CardNumber;//-8441
-                var CardType = A_output.CardType;//VISA
-                var BankDesc = A_output.BankDesc;//國外卡
-                var CardToken = A_output.CardToken;//1850
-                var IsDefault = A_output.IsDefault == 1 ? true : false;
-                var MemberOneID = A_output.MemberOneID;//112bd64b..........af980
-
-                <div class="credit-card-box mb-4">
-                    <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                           value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
-
-                    <div class="credit-style mr-2">
-                        <img src="~/images/icon/credit_pay_VISA.svg" alt="">
-                        信用卡
-                    </div>
-                    <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
-                </div>
-
-            }
-        }
-    }
-
-    <div class="buttonBox text-center mb-2 d-none d-sm-block desktop-margin-top">
-        <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
-    </div>
-    <div class="buttonBox d-none d-sm-block">
-        <button type="submit" class="btn btn-blue" onclick="doSubmitCheck()" style="max-width: 414px;" id="agree-btn">
-            選擇預設信用卡
-        </button>
-    </div>
-
-</div>
-
-        <div class="footer-btn-box footer-btn-margin">
+        @*<div class="footer-btn-box footer-btn-margin">
             <div class="buttonBox mb-2">
                 <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
             </div>
@@ -121,9 +121,9 @@
                     選擇預設信用卡3
                 </button>
             </div>
-        </div> <!--container-->
+        </div>*@
 
-    } <!--FormMethod.Post-->
+    }
 </body>
 </html>
 
@@ -154,7 +154,7 @@
             rtnURL = "/HotaiPayCtbc/BindNewCard";
         //alert("rtnURL =" + rtnURL);
 
-            document.location.href = rtnURL;
+        document.location.href = rtnURL;
     }
 
 
