@@ -26,7 +26,7 @@ namespace OtherService
     public class HotaipayService
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"]?.ToString()??"";
         private static ConfigManager configManager = new ConfigManager("hotaipayment");
         private string merID = configManager.GetKey("CTBCMerID");
