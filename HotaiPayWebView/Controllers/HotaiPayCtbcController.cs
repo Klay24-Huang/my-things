@@ -286,7 +286,9 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult CreditcardChoose(FormCollection form)
         {
-            string IDNO = System.Web.HttpContext.Current.Session["IDNO"].ToString();
+            string IDNO = "";
+            if (System.Web.HttpContext.Current.Session["IDNO"].ToString() != null)
+                IDNO = System.Web.HttpContext.Current.Session["IDNO"].ToString();
             string irent_access_token = System.Web.HttpContext.Current.Session["irent_access_token"].ToString();
             Boolean flag = true;
             string errCode = "";
@@ -309,10 +311,13 @@ namespace HotaiPayWebView.Controllers
                 sp_input.CardType = CardType;
                 sp_input.BankDesc = BankDesc;
                 sp_input.PRGName = "CreditcardChoose";
-
+                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
                     logger.Error("HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗 ERRCODE:" + errCode);
+            }
+            else {
+                return View("NoCreditCard", irent_access_token);
             }
             if (flag)
                 return Redirect("/HotaiPayCtbc/SuccessBind");

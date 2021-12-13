@@ -37,7 +37,6 @@
             {
                 var CardName = A_output.CardName;
                 var CardNumber = A_output.CardNumber;
-                CardNumber = CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*");
                 var CardType = A_output.CardType;
                 var BankDesc = A_output.BankDesc;
                 var CardToken = A_output.CardToken;
@@ -46,7 +45,7 @@
 
                 <div class="credit-card-box mb-4">
                     <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
-                           value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+                           value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                     <div class="credit-style mr-2">
                         <img src="~/images/icon/credit_pay_JCB.svg" alt="">
@@ -58,10 +57,8 @@
 
             if (A_output.CardType == "Master")
             {
-
                 var CardName = A_output.CardName;
                 var CardNumber = A_output.CardNumber;
-                CardNumber = CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*");
                 var CardType = A_output.CardType;
                 var BankDesc = A_output.BankDesc;
                 var CardToken = A_output.CardToken;
@@ -70,7 +67,7 @@
 
                 <div class="credit-card-box mb-4">
                     <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                           value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+                           value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                     <div class="credit-style mr-2">
                         <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
@@ -81,7 +78,6 @@
             }
             if (A_output.CardType == "Visa")
             {
-
                 var CardName = A_output.CardName;//666
                 var CardNumber = A_output.CardNumber;//-8441
                 var CardType = A_output.CardType;//VISA
@@ -92,7 +88,7 @@
 
                 <div class="credit-card-box mb-4">
                     <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                           value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+                           value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                     <div class="credit-style mr-2">
                         <img src="~/images/icon/credit_pay_VISA.svg" alt="">
@@ -104,20 +100,7 @@
             }
         }
     }
-    @Html.ValidationMessage("CreditCardList")
-    @{
-        if (IsPost)
-        {
-            string CreditCard = Request.Form["CreditCardList"];
-            if (CreditCard.Trim().Length == 0)
-            {
-                <p>
-                    請至少選擇一張卡片
-                </p>
 
-            }
-        }
-    }
     <div class="buttonBox text-center mb-2 d-none d-sm-block desktop-margin-top">
         <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
     </div>
@@ -145,6 +128,12 @@
 </html>
 
 <script>
+    windows.onload() = function () {
+        var selected = document.querySelector('input[name="CreditCardList"]:checked').value;
+        if (selected == null || selected == "") 
+            document.getElementById("agree-btn").disabled = ture;
+    };
+
     function getURLToken() {
         var getUrlString = location.href;
         //console.log('ssss')
