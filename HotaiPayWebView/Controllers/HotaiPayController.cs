@@ -37,7 +37,14 @@ namespace HotaiPayWebView.Controllers
         #region 登入頁面
         public ActionResult Login()
         {
-            var decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+            Dictionary<string, string> decryptDic = new Dictionary<string, string>();
+            if (!Request.QueryString["p"].IsNullOrWhiteSpace())
+                decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+            if (decryptDic.Count == 0) {
+
+                ViewBag.Alert = "iRent帳號過期，請重新登入";
+                return View();
+            }
 
             if (!string.IsNullOrEmpty(decryptDic["phone"]))
             {
@@ -50,21 +57,26 @@ namespace HotaiPayWebView.Controllers
                 string IDNO = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 string errCode = "";
+
                 var flag = HPServices.GetIDNOFromToken(decryptDic["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
+
                 if (flag)
                 {
                     Session["irent_access_token"] = decryptDic["irent_access_token"].Trim();
                     Session["id"] = IDNO;
+                    return View();
                 }
                 else
                 {
                     ViewBag.Alert = errorDic[errCode];
                     return View();
                 }
-
             }
-
-            return View();
+            else
+            {
+                ViewBag.Alert = "iRent帳號過期，請重新登入";
+                return View();
+            }
             //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
         }
 
