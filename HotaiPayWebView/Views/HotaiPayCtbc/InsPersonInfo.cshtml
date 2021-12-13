@@ -25,6 +25,7 @@
 
 
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">輸入個人資料</h6></header>
+    @{Html.EnableClientValidation(); }
     @using (Html.BeginForm("InsPersonInfo", "HotaiPayCtbc", FormMethod.Post, new { @id = "FastAddCardForm", @class = "form-horizontal", enctype = "multipart/form-data" }))
     {
         <div class="container" style="max-width: 414px;position:relative">
@@ -37,19 +38,25 @@
                 @*<input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" name="BIRTHDATE" id="BIRTHDATE" required>*@
                 @Html.TextBoxFor(m => m.Birthday, new { @class = "form-control input-light", placeholder = "輸入生日 ex.19950101" })
             </div>
+            <div class="text-left">
+                <p style="color:red;">@Html.ValidationMessage("Birthday")</p>
+            </div>
 
             <div class="mt-4">
-
                 <label>身分證字號</label>
                 @*<input type="text" class="form-control input-light" placeholder="輸入身分證字號" name="ID" id="ID" required>*@
                 @Html.TextBoxFor(m => m.CTBCIDNO, new { @class = "form-control input-light", placeholder = "輸入身分證字號" })
+            </div>
+            <div class="text-left">
+                <p style="color:red;">@Html.ValidationMessage("CTBCIDNO")</p>
             </div>
 
         </div>
 
         <div class="footer-btn-box footer-btn-margin">
             <div class="buttonBox">
-                <button type="submit" class="btn btn-blue bottom-btn mb-2" style="max-width:414px" onclick="FastAddCard()">
+                <button type="button" class="btn btn-blue bottom-btn mb-2" style="max-width:414px" onclick="FastAddCard()">
+                    @*type="submit" 我不要讓其呼叫action執行*@
                     快速新增中信卡
                 </button>
             </div>
@@ -65,31 +72,28 @@
 
     var msg = '@(ViewData["ERROR"] == null ? "" : ViewData["ERROR"].ToString())';
     if (msg == 'ERROR') {
-        swal("錯誤!", "請確認!", "error");
+        swal("錯誤40!", "請確認!", "error");
     }
 
     function FastAddCard() {
-        console.log('2QQQ');
         //alert("Fast");
-            $.ajax({
-                type: "POST",
-                url:"@Url.Action("InsPersonInfo")",
-                data: $("#FastAddCardForm").serialize(),
-                success: function (result) {
-                    console.log('AAA');
-                    if (result.succ) {
-                        console.log('VVV');
-                        GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);//gotoUrl是去中信的網址/creditcard/fbinding
-                    }
-                    else {
-                        swal("錯誤2!", "請確認!", "error");
-                    }
-                },
-                error: function () {
-                    //controller那就回傳錯誤訊息給view了，不在這做
+        $.ajax({
+            type: "POST",
+            url:"@Url.Action("InsPersonInfo")",
+            data: $("#FastAddCardForm").serialize(),
+            success: function (result) {
+                if (result.succ) {
+                    GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);//gotoUrl是去中信的網址/creditcard/fbinding
                 }
-            })
-
-            return false;
-        }
+                else {
+                    swal("錯誤20!", "請確認!", "error");
+                }
+            },
+            error: function () {
+                //controller那就回傳錯誤訊息給view了，不在這做
+                swal("錯誤60!", "請確認!", "error");
+            }
+        })
+        //return false;
+    }
 </script>

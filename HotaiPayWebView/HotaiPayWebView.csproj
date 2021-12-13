@@ -240,6 +240,7 @@
     <Content Include="Views\HotaiPayCtbc\unUse\ChooseNewCard.cshtml" />
     <Content Include="Views\HotaiPayCtbc\InsPersonInfo.cshtml" />
     <Content Include="Views\HotaiPayCtbc\SuccessBind.cshtml" />
+    <Content Include="Views\HotaiPay\BindCardFailed2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

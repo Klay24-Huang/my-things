@@ -22,10 +22,10 @@ namespace HotaiPayWebView.Controllers
     {
 
         private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
-        private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
         private static string MEMIDNO = "";
-        private static string AT = "";
+        private static string AToken = "";
 
         // GET: HotaiPayCtbc
         public ActionResult Index()
@@ -72,7 +72,7 @@ namespace HotaiPayWebView.Controllers
             if (flag)
             {
                 MEMIDNO = ID; //"A227548440";
-                AT = irent_access_token;
+                AToken = irent_access_token;
                 input.IDNO = ID;// "C221120413";
                 input.PRGName = "CreditCardChoose";
                 flag = getlist.DoQueryCardList(input, ref output, ref errorcode);
@@ -133,39 +133,47 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult InsPersonInfo(TangViewModel inn)
         {
-            bool flag;
-            HotaipayService addcard = new HotaipayService();
-            OFN_HotaiFastAddCard output = new OFN_HotaiFastAddCard();
-
-            OFN_HotaiFastAddCard vm = new OFN_HotaiFastAddCard();
-
-            //IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
-            //input.Birthday = BIRTHDATE;
-            IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard()
+            if (ModelState.IsValid)
             {
-                Birthday = "19910804",//inn.Birthday,
-                IDNO = "A121563290",//inn.CTBCIDNO,
-                CTBCIDNO = "A121563290",//inn.CTBCIDNO,
-                RedirectURL = "https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-                //RedirectURL = "https://www.irentcar.com.tw",
-                insUser = "TangWeiChi",
-                LogID = 0,
-                PRGName = "InsPersonInfo"
-            };
-            string errCode = "";
-            flag = addcard.DoFastAddCard(input, ref output, ref errCode);
-            if (flag)
-            {
-                vm = output;
-                return Json(vm);
+                bool flag;
+                HotaipayService addcard = new HotaipayService();
+                OFN_HotaiFastAddCard output = new OFN_HotaiFastAddCard();
+
+                OFN_HotaiFastAddCard vm = new OFN_HotaiFastAddCard();
+
+                //IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
+                //input.Birthday = BIRTHDATE;
+                IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard()
+                {
+                    Birthday = inn.Birthday,//"19910804"
+                    IDNO = inn.CTBCIDNO,//"A121563290"
+                    CTBCIDNO = inn.CTBCIDNO,//"A121563290"
+                    RedirectURL = "https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                    //RedirectURL = "https://www.irentcar.com.tw",
+                    insUser = "TangWeiChi",
+                    LogID = 0,
+                    PRGName = "InsPersonInfo"
+                };
+                string errCode = "";
+                flag = addcard.DoFastAddCard(input, ref output, ref errCode);
+                if (flag)
+                {
+                    vm = output;
+                    return Json(vm);
+                }
+                else
+                {
+                    vm.succ = false;
+                    ViewData["ERROR"] = "ERROR";
+                    return View();
+                }
             }
             else
             {
-                vm.succ = false;
-                ViewData["ERROR"] = "ERROR";
+                //ViewBag.CTBCIDNO = inn.CTBCIDNO;
+                //ViewBag.Birthday = inn.Birthday;
                 return View();
             }
-
             //return Json(vm);
             //return View();
         }
@@ -219,7 +227,6 @@ namespace HotaiPayWebView.Controllers
             HotaipayService HPServices = new HotaipayService();
             bool flag = false;
             string errCode = "";
-            string PRGName = "NoCreditCard";
             List<ErrorInfo> errList = new List<ErrorInfo>();
             var IDNO = "";
 
@@ -236,7 +243,7 @@ namespace HotaiPayWebView.Controllers
                 flag = GetIDNOFromToken(irent_access_token, 8514, ref IDNO, ref errList);
                 System.Web.HttpContext.Current.Session["IDNO"] = IDNO;
                 MEMIDNO = IDNO;
-                AT = irent_access_token;
+                AToken = irent_access_token;
 
                 //將Session賦予值
                 if (System.Web.HttpContext.Current.Session["irent_access_token"] == null)
@@ -255,13 +262,13 @@ namespace HotaiPayWebView.Controllers
             {
                 input.IDNO = IDNO;
                 flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
-                logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
+                //logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
             }
 
             //和泰Token失效
             if (errCode == "ERR941")
             {
-                logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
+                //logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
                 return RedirectToRoute("/HotaiPay/Login", new { irent_access_token = irent_access_token });
             }
 
@@ -276,7 +283,7 @@ namespace HotaiPayWebView.Controllers
             }
             else
             {
-                logger.Error("HotaiPayCtbc.NoCreditCard.DoQueryCardList 查詢卡清單失敗 ERRCODE:" + errCode);
+                logger.Error($"HotaiPayCtbc.NoCreditCard.DoQueryCardList 查詢卡清單失敗\n ERRCODE={errCode} \n irent_access_token ={irent_access_token}");
             }
             return View();
         }
@@ -314,7 +321,7 @@ namespace HotaiPayWebView.Controllers
                 logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
-                    logger.Error("HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗 ERRCODE:" + errCode);
+                    logger.Error($"HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗IDNO={IDNO} ERRCODE= {errCode}" );
             }
             else {
                 return View("NoCreditCard", irent_access_token);
@@ -332,10 +339,12 @@ namespace HotaiPayWebView.Controllers
             //string b = StatusDesc;
             if (StatusCode == "I0000" && StatusDesc == "SUCCESS")
             {
-                return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
+                return RedirectToAction("CreditCardChoose", "HotaiPayCtbc", new { irent_access_token = AToken });
+                //return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
             }
             else
             {
+                //return RedirectToAction("BindCardFailed", "HotaiPay",new { a=1}); //造成login時說BindCardFailed有兩個無法分辨
                 return RedirectToAction("BindCardFailed", "HotaiPay");
             }
         }

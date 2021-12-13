@@ -15,12 +15,9 @@
     <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
 </head>
 <body>
-
-
-
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
 
-
+    @{Html.BeginForm("BindCardFailed", "HotaiPay", FormMethod.Post, new { }); }
     <div class="container text-center" style="max-width: 414px;">
 
         <div class="image-box mt-8">
@@ -33,7 +30,6 @@
         </div>
         <div class="buttonBox d-none d-sm-block desktop-margin-top">
             <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;">重新進行綁定</button>
-
         </div>
 
     </div>
@@ -41,9 +37,8 @@
     <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
         <div class="buttonBox">
             <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;">重新進行綁定</button>
-
         </div>
     </div>
-
+    @{Html.EndForm();}
 </body>
 </html>

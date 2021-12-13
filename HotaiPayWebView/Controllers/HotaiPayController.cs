@@ -59,7 +59,7 @@ namespace HotaiPayWebView.Controllers
                     ViewBag.Alert = errorDic[errCode];
                     return View();
                 }
-               
+
             }
 
             return View();
@@ -70,7 +70,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult Login(Login loginVale)
         {
-            if (Session["id"]==null)
+            if (Session["id"] == null)
             {
                 ViewBag.Alert = "iRent帳號過期，請重新登入。";
                 return View("Login");
@@ -130,6 +130,7 @@ namespace HotaiPayWebView.Controllers
                             {
                                 WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
                                 flag = hotaiAPI.DoGetMobilePhoneToOneID(loginVale.Phone, ref getOneID, ref errCode);
+                                flag = true;//唐寫死，等和泰開通安康防火牆再弄
                                 if (flag)
                                 {
                                     Session["oneID"] = getOneID.memberSeq;
@@ -147,14 +148,15 @@ namespace HotaiPayWebView.Controllers
                                     }
                                     else
                                     {
-                                        return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+                                        //return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+                                        return RedirectToAction("BindCardFailed",new { });
                                     }
 
                                 }
                                 else
                                 {
                                     //RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
-                                    return RedirectToAction("BindCardFailed");
+                                    return RedirectToAction("BindCardFailed", new { });
                                 }
                             }
                         }
@@ -231,8 +233,9 @@ namespace HotaiPayWebView.Controllers
                         errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, Session["irent_access_token"].ToString().Trim(), Session["refresh_token"].ToString().Trim());
                         if (errCode == "0000")
                         {
-                            return RedirectToRoute(new { 
-                                controller = "HotaiPayCtbc", 
+                            return RedirectToRoute(new
+                            {
+                                controller = "HotaiPayCtbc",
                                 action = "NoCreditCard",
                                 irent_access_token = Session["irent_access_token"]
                             });
@@ -283,7 +286,7 @@ namespace HotaiPayWebView.Controllers
             ViewBag.Benefits = Session["Benefitsterms"].ToString();
             return View();
         }
-        
+
         #endregion
 
         #region 補填會員資料頁面
@@ -546,7 +549,7 @@ namespace HotaiPayWebView.Controllers
                     return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //return View("~/Views/HotaiPay/RegisterStep1.cshtml");
                 return RedirectToAction("RegisterStep1", "HotaiPay", new { msg = "error" }); //參數由url帶入
@@ -703,7 +706,25 @@ namespace HotaiPayWebView.Controllers
         public ActionResult BindCardFailed()
         {
             return View();
+            //return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
         }
+        [HttpPost]
+        public ActionResult BindCardFailed(string mode)
+        {
+            return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
+        }
+        //public ActionResult BindCardFailed2(string mode)
+        //{
+        //    if (mode == "1")
+        //    {
+        //        return View();
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
+        //    }
+        //    //return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
+        //}
         #endregion
 
 
@@ -726,7 +747,7 @@ namespace HotaiPayWebView.Controllers
         public ActionResult AlreadyMember()
         {
             string accessToken = "";
-            accessToken = Request.QueryString["irent_access_token"];       
+            accessToken = Request.QueryString["irent_access_token"];
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 return RedirectToAction("Login");
@@ -759,7 +780,7 @@ namespace HotaiPayWebView.Controllers
             if (flag)
             {
                 SPInput_MemberUnBind sp_unBindinput = new SPInput_MemberUnBind() { IDNO = IDNO, PRGName = "Unbind" };
-                flag = HPServices.sp_MemberUnBind(sp_unBindinput, ref errCode);                
+                flag = HPServices.sp_MemberUnBind(sp_unBindinput, ref errCode);
             }
 
             if (flag)
@@ -769,7 +790,7 @@ namespace HotaiPayWebView.Controllers
             else
             {
                 return Json(flag);
-            }          
+            }
         }
         #endregion
 
@@ -816,11 +837,11 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
-        public string InsertMemberDataToDB(string id,string oneID,string accessToken,string refreshToken)
+        public string InsertMemberDataToDB(string id, string oneID, string accessToken, string refreshToken)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
             var logID = 999;
-            using (SqlConnection conn=new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 SqlCommand cmd = new SqlCommand("usp_InsHotaiMember_I01", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -851,7 +872,7 @@ namespace HotaiPayWebView.Controllers
                     throw;
                 }
             }
-                
+
         }
 
         public bool CheckROCID(string idNo)

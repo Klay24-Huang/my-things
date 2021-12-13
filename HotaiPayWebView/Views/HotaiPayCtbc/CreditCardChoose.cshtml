@@ -118,7 +118,7 @@
             </div>
             <div class="buttonBox">
                 <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
-                    選擇預設信用卡
+                    選擇預設信用卡3
                 </button>
             </div>
         </div> <!--container-->
@@ -130,8 +130,10 @@
 <script>
     windows.onload() = function () {
         var selected = document.querySelector('input[name="CreditCardList"]:checked').value;
-        if (selected == null || selected == "") 
+        if (selected == null || selected == "") {
             document.getElementById("agree-btn").disabled = ture;
+            alert("no card to show");
+        }
     };
 
     function getURLToken() {
