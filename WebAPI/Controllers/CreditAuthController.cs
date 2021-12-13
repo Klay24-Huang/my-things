@@ -798,7 +798,7 @@ namespace WebAPI.Controllers
                                         trace.traceAdd("DonePayBack", new { spInput_PayBack, errCode, lstError });
                                     }
 
-                                    if (flag && payStatus)  //20210106 ADD BY ADAM REASON.有成功才呼叫
+                                    if (flag)  //20210106 ADD BY ADAM REASON.有成功才呼叫
                                     {
                                         HiEasyRentAPI webAPI = new HiEasyRentAPI();
 
