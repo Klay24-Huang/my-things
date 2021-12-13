@@ -37,10 +37,11 @@ namespace HotaiPayWebView.Controllers
             var vm = new UmekoTestViewModel();
             HotaipayService hotaipayService = new HotaipayService();
 
+
             IFN_QueryCardList ifnInput = new IFN_QueryCardList
             {
                 LogID = 0,
-                IDNO = "C221120413",
+                IDNO = "F128697972",
                 PRGName = "testPage",
                 insUser = "umeko"
             };
