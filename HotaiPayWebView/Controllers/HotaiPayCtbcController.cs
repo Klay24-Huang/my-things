@@ -227,7 +227,6 @@ namespace HotaiPayWebView.Controllers
             HotaipayService HPServices = new HotaipayService();
             bool flag = false;
             string errCode = "";
-            string PRGName = "NoCreditCard";
             List<ErrorInfo> errList = new List<ErrorInfo>();
             var IDNO = "";
 
@@ -263,12 +262,13 @@ namespace HotaiPayWebView.Controllers
             {
                 input.IDNO = IDNO;
                 flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
+                //logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
             }
 
             //和泰Token失效
             if (errCode == "ERR941")
             {
-                logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
+                //logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
                 return RedirectToRoute("/HotaiPay/Login", new { irent_access_token = irent_access_token });
             }
 
@@ -283,7 +283,7 @@ namespace HotaiPayWebView.Controllers
             }
             else
             {
-                logger.Error("HotaiPayCtbc.NoCreditCard.DoQueryCardList 查詢卡清單失敗 ERRCODE:" + errCode);
+                logger.Error($"HotaiPayCtbc.NoCreditCard.DoQueryCardList 查詢卡清單失敗\n ERRCODE={errCode} \n irent_access_token ={irent_access_token}");
             }
             return View();
         }
@@ -293,7 +293,9 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult CreditcardChoose(FormCollection form)
         {
-            string IDNO = System.Web.HttpContext.Current.Session["IDNO"].ToString();
+            string IDNO = "";
+            if (System.Web.HttpContext.Current.Session["IDNO"].ToString() != null)
+                IDNO = System.Web.HttpContext.Current.Session["IDNO"].ToString();
             string irent_access_token = System.Web.HttpContext.Current.Session["irent_access_token"].ToString();
             Boolean flag = true;
             string errCode = "";
@@ -316,10 +318,13 @@ namespace HotaiPayWebView.Controllers
                 sp_input.CardType = CardType;
                 sp_input.BankDesc = BankDesc;
                 sp_input.PRGName = "CreditcardChoose";
-
+                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
-                    logger.Error("HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗 ERRCODE:" + errCode);
+                    logger.Error($"HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗IDNO={IDNO} ERRCODE= {errCode}" );
+            }
+            else {
+                return View("NoCreditCard", irent_access_token);
             }
             if (flag)
                 return Redirect("/HotaiPayCtbc/SuccessBind");
@@ -334,7 +339,11 @@ namespace HotaiPayWebView.Controllers
             //string b = StatusDesc;
             if (StatusCode == "I0000" && StatusDesc == "SUCCESS")
             {
+<<<<<<< HEAD
                 return RedirectToAction("CreditCardChoose", "HotaiPayCtbc", new { irent_access_token = AToken });
+=======
+                return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
+>>>>>>> 3ad5b992303f0e2296158806c66423e453fd1100
             }
             else
             {

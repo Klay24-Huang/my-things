@@ -9,7 +9,7 @@ namespace HotaiPayWebView.Models
     public class Login
     {
         [Required(ErrorMessage = "手機必填")]
-        [RegularExpression(@"^09[0-9]{8}$", ErrorMessage = "手機號碼格式不正確")]
+        [RegularExpression(@"^09[0-9]{8}$", ErrorMessage = "帳號格式不正確")]
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "密碼必填")]

@@ -66,6 +66,7 @@ namespace HotaiPayWebView.Controllers
             //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Login(Login loginVale)
         {
@@ -469,12 +470,11 @@ namespace HotaiPayWebView.Controllers
 
 
         #region 註冊驗證步驟一:手機驗證
-        public ActionResult RegisterStep1(string msg)
+        public ActionResult RegisterStep1()
         {
             ViewBag.Phone = Session["Phone"];
             ViewBag.OtpCode = Session["OtpCode"];
             ViewBag.Alert = Session["Alert"];
-            ViewData["Msg"] = msg;
             return View();
         }
 
@@ -494,10 +494,11 @@ namespace HotaiPayWebView.Controllers
             if (checkSignUpOutput.isSignup)
             {
                 Session["Alert"] = "此帳號已被註冊";
-                return Redirect("RegisterStep1");
+                return RedirectToAction("RegisterStep1");
             }
             else
             {
+                Session["Alert"] = "";
                 WebAPIInput_SendSmsOtp getSMSOTP = new WebAPIInput_SendSmsOtp
                 {
                     mobilePhone = phone,
@@ -625,6 +626,8 @@ namespace HotaiPayWebView.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SetSignUpProfile(SignUpProfile signUpProfile)
         {
             bool flag = false;
