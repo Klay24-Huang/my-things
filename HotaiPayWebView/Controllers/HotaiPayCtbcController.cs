@@ -225,8 +225,9 @@ namespace HotaiPayWebView.Controllers
         #endregion
 
         #region 無信用卡列表頁面 
-        public ActionResult NoCreditCard(string irent_access_token)
+        public ActionResult NoCreditCard()
         {
+            string irent_access_token = "";
             HotaipayService HPServices = new HotaipayService();
             bool flag = false;
             string errCode = "";
@@ -235,15 +236,10 @@ namespace HotaiPayWebView.Controllers
             long LogID = 65471;
             var decryptDic = new Dictionary<string, string>() ;
 
-            //若呼叫時有傳入irent_access_token
-            if (!string.IsNullOrEmpty(irent_access_token))
-            {
-                //irent_access_token = irent_access_token;
-            }
             //若網址列有irent_access_token
-            else if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            if (TempData["irent_access_token"]!=null)
             {
-                irent_access_token = Request.QueryString["irent_access_token"].Trim();
+                irent_access_token = TempData["irent_access_token"].ToString().Trim();
             }
             //若有p加密字串
             else if (Request.QueryString["p"].Trim().Length > 0) {

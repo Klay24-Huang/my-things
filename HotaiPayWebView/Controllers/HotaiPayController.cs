@@ -152,12 +152,9 @@ namespace HotaiPayWebView.Controllers
                                     errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, apioutput.access_token, apioutput.refresh_token);
                                     if (errCode == "0000")
                                     {
-                                        return RedirectToRoute(new
-                                        {
-                                            controller = "HotaiPayCtbc",
-                                            action = "NoCreditCard",
-                                            irent_access_token = Session["irent_access_token"]
-                                        });
+                                        TempData["irent_access_token"] = Session["irent_access_token"];
+
+                                        return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "NoCreditCard" });
                                         //以下取得信用卡列表流程
                                     }
                                     else
@@ -247,11 +244,11 @@ namespace HotaiPayWebView.Controllers
                         errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, Session["irent_access_token"].ToString().Trim(), Session["refresh_token"].ToString().Trim());
                         if (errCode == "0000")
                         {
+                            TempData["irent_access_token"] = Session["irent_access_token"];
                             return RedirectToRoute(new
                             {
                                 controller = "HotaiPayCtbc",
-                                action = "NoCreditCard",
-                                irent_access_token = Session["irent_access_token"]
+                                action = "NoCreditCard"
                             });
                             //以下取得信用卡列表流程
                         }
@@ -280,11 +277,11 @@ namespace HotaiPayWebView.Controllers
 
                     if (flag)
                     {
+                        TempData["irent_access_token"] = Session["irent_access_token"];
                         return RedirectToRoute(new
                         {
                             controller = "HotaiPayCtbc",
-                            action = "NoCreditCard",
-                            irent_access_token = Session["irent_access_token"]
+                            action = "NoCreditCard"
                         });
                     }
                     else
@@ -421,11 +418,11 @@ namespace HotaiPayWebView.Controllers
                                         errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, Session["hotai_access_token"].ToString().Trim(), Session["refresh_token"].ToString().Trim());
                                         if (errCode == "0000")
                                         {
+                                            TempData["irent_access_token"] = Session["irent_access_token"];
                                             return RedirectToRoute(new
                                             {
                                                 controller = "HotaiPayCtbc",
-                                                action = "NoCreditCard",
-                                                irent_access_token = Session["irent_access_token"]
+                                                action = "NoCreditCard"
                                             });
                                             //以下取得信用卡列表流程
                                         }
@@ -691,12 +688,14 @@ namespace HotaiPayWebView.Controllers
                         Session["oneID"] = getOneID.memberSeq;
                         errCode = InsertMemberDataToDB(signUpProfile.CustID.Trim(), Session["oneID"].ToString().Trim(), Session["hotai_access_token"].ToString().Trim(), Session["hotai_refresh_token"].ToString().Trim());
                         if (errCode == "0000")
+                        {
+                            TempData["irent_access_token"] = Session["irent_access_token"];
                             return RedirectToRoute(new
                             {
                                 controller = "HotaiPayCtbc",
-                                action = "CreditStart",
-                                irent_access_token = Session["irent_access_token"]
+                                action = "CreditStart"
                             });
+                        }
                         else
                             return Redirect("RegisterSuccessBindFail");
                     }
