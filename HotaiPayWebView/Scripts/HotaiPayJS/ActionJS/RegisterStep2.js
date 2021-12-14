@@ -19,12 +19,12 @@
         if (flagPwd == 0) {
             inputPwd.type = 'text';
             inputConfirm.type = 'text';
-            eyes.src = '/images/eye-regular.svg';//睜眼圖
+            eyes.src = '../images/eye-regular.svg';//睜眼圖
             flagPwd = 1;
         } else {
             inputPwd.type = 'password';
             inputConfirm.type = 'password';
-            eyes.src = '/images/eye-slash-regular.svg';//閉眼圖
+            eyes.src = '../images/eye-slash-regular.svg';//閉眼圖
             flagPwd = 0;
         }
     }

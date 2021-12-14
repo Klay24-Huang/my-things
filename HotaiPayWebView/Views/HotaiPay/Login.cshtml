@@ -27,7 +27,7 @@
         <!-- 提示文字＋圖-->
         <div class="web-img mt-8">
 
-            <img class="object-fit mb-8" alt="iRent汽機車共享" src="~/images/hotai-logo.svg">
+            <img class="object-fit mb-8" alt="iRent汽機車共享" src="../images/hotai-logo.svg">
         </div>
         <h6 class="mb-4">和泰集團會員登入</h6>
 
@@ -41,7 +41,7 @@
         </div>
         <div class="input-box mb-2">
             <input id="demo_input" class="input-light" name="Pwd" type="password" placeholder="密碼" value="@ViewBag.pwd">
-            <label><img src="~/images/eye-slash-regular.svg" alt="" id="eyes"></label>
+            <label><img src="../images/eye-slash-regular.svg" alt="" id="eyes"></label>
         </div>
         <div class="text-left">
             <p style="color:red;">@Html.ValidationMessage("Pwd")</p>
@@ -53,7 +53,7 @@
             <button class="btn btn-blue my-3" style="max-width: 414px;">登入</button>
         </div>
         <div class="buttonBox d-none d-sm-block">
-            <a class="text-gray text-underline" href="/HotaiPay/MembershipTerms1">立即註冊</a>
+            <a class="text-gray text-underline" href="MembershipTerms1">立即註冊</a>
         </div>
     </div>
     <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
@@ -64,7 +64,7 @@
 
         </div>
         <div class="buttonBox">
-            <a class="text-gray text-underline" href="/HotaiPay/MembershipTerms1">立即註冊</a>
+            <a class="text-gray text-underline" href="MembershipTerms1">立即註冊</a>
         </div>
     </div>
     @{Html.EndForm();}
