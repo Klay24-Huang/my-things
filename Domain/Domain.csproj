@@ -641,6 +641,7 @@
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_EC_Refund.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_GetPaymentInfo.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_RelayPost.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
     <Compile Include="WebAPI\output\FET\WebAPIOutput_AddDeviceToken.cs" />
@@ -739,6 +740,7 @@
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_ECRefund.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetPaymentInfo.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_RelayPost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebCommon\WebCommon.csproj">

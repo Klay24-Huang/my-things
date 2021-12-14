@@ -10,6 +10,10 @@ namespace Domain.SP.Input.OtherService.Taishin
     {
         public int AutoClose { get; set; }
         public int AuthType { get; set; }
+        /// <summary>
+        /// 廠商代碼(金流單位提供)
+        /// </summary>
+        public string MerchantID { get; set; }
     }
 
 }
