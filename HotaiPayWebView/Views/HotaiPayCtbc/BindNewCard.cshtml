@@ -33,7 +33,7 @@
             <!--第一塊觸發區域-->
             <div class="w-100">
                 <a class="text-blue" onclick="goCTBCBindCard()" style="cursor: pointer;">
-                    <span class="item-title"><img class="mr-2" src="~/images/icon/ctbcbank.svg" alt="">中信銀行信用卡</span>
+                    <span class="item-title"><img class="mr-2" src="../images/icon/ctbcbank.svg" alt="">中信銀行信用卡</span>
                 </a>
                 <br>
                 <div class="ml-2">
@@ -42,7 +42,7 @@
                 </div>
             </div>
             <a class="text-blue" onclick="goCTBCBindCard()" style="cursor: pointer;">
-                <div class="d-flex"><img class="align-self-start mt-2" src="~/images/icon/more.svg" alt=""></div>
+                <div class="d-flex"><img class="align-self-start mt-2" src="../images/icon/more.svg" alt=""></div>
             </a>
         </div>
 
@@ -50,11 +50,11 @@
             <!--第二塊觸發區域-->
             <div class="w-100">
                 <a class="text-blue" style="cursor: pointer;">
-                    <span class="item-title">  <img class="mr-2" src="~/images/icon/credit_pay_card.svg" alt="">所有銀行信用卡</span>
+                    <span class="item-title">  <img class="mr-2" src="../images/icon/credit_pay_card.svg" alt="">所有銀行信用卡</span>
                 </a>
             </div>
             <a class="text-blue" style="cursor: pointer;">
-                <div class="d-flex"><img class="align-self-center" src="~/images/icon/more.svg" alt=""></div>
+                <div class="d-flex"><img class="align-self-center" src="../images/icon/more.svg" alt=""></div>
             </a>
         </div>
 
@@ -74,8 +74,8 @@
 
     function goCTBCBindCard() {
         //跳轉畫面
-        document.location.href = "/irweb/HotaiPayCtbc/InsPersonInfo";
-        //window.location.href = '@Url.Action("InsPersonInfo", "HotaiPayCtbc")';
+        document.location.href = "@ViewBag.reURL"+"HotaiPayCtbc/InsPersonInfo";
+        @*window.location.href = '@Url.Action("InsPersonInfo", "HotaiPayCtbc")';*@
     }
 
     function goOtherBindCard() {
