@@ -205,7 +205,6 @@ namespace WebAPI.Controllers
                 //預授權不處理專案(長租客服月結E077)
                 string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
                 int preAuthAmt = 0;
-                bool canAuth = false;
                 if (orderInfo != null && (orderInfo.ProjType == 0 || orderInfo.ProjType == 3) && !notHandle.Contains(orderInfo.ProjID) && orderInfo.DoPreAuth == 1)
                 {
                     var trace = new TraceCom();
@@ -228,67 +227,34 @@ namespace WebAPI.Controllers
 
                     //原預計用車時數
                     double oriHour = orderInfo.ED.Subtract(orderInfo.SD).TotalHours;
-                    //延長用車總時數
-                    double extendHour = StopTime.Subtract(orderInfo.ED).TotalHours;
+                    //延長用車時數
+                    double extendHour = orderInfo.ExtendTimes == 0 ? StopTime.Subtract(orderInfo.ED).TotalHours : StopTime.Subtract(orderInfo.ExtendStartTime).TotalHours;
                     //扣除預授權金額註記
-                    bool deduct = false;
+                    bool deduct = true;
+
                     var estimateDetail = new EstimateDetail();
-                    //首次延長
-                    if (orderInfo.ExtendTimes == 0)
+
+                    if (extendHour > 6)
                     {
-                        canAuth = true;
-                        if (extendHour >= 6)
-                        {
-                            //新的預估租金與原預授權的差額進行預授權
-                            deduct = true;
-                            estimateData.ED = StopTime;
-                        }
-                        else
-                        {
-
-                            //新的預估租金與原預授權的差額進行預授權
-                            deduct = true;
-                            estimateData.ED = orderInfo.ED.AddHours(6);
-
-                            //if (orderInfo.ProjType == 0) //同站
-                            //{
-                            //    //收6小時
-                            //    estimateData.SD = orderInfo.ED;
-                            //    estimateData.ED = orderInfo.ED.AddHours(6);
-                            //}
-                            //else if (orderInfo.ProjType == 3)//路邊
-                            //{
-                            //    //新的預估租金與原預授權的差額進行預授權
-                            //    deduct = true;
-                            //    estimateData.ED = orderInfo.ED.AddHours(6);
-                            //}
-                        }
-
+                        //新的預估租金與原預授權的差額進行預授權
+                        estimateData.ED = StopTime;
                     }
                     else
                     {
-                        //延長用車總時數 超過6小時則取超出時數的預估總金額【租金+里程+安心】
-                        if (extendHour > 6)
-                        {
-                            canAuth = true;
-                            //新的預估租金與原預授權的差額進行預授權
-                            deduct = true;
-                            estimateData.ED = StopTime;
-                        }
+                        //延長時數<=6 預計取車到原預計還車+6H算出預估租金 與原預授權差額 進行預授權
+                        estimateData.ED = orderInfo.ExtendTimes == 0 ? orderInfo.ED.AddHours(6) : orderInfo.ExtendStartTime.AddHours(6);
                     }
 
-                    if (canAuth)
-                    {
-                        EstimateDetail outData;
-                        commonService.EstimatePreAuthAmt(estimateData, out outData);
-                        preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? outData.estimateAmt - orderInfo.PreAuthAmt : outData.estimateAmt) : outData.estimateAmt;
-                        estimateDetail = outData;
-                    }
-                    trace.traceAdd("EstimatePreAuthAmt", new { canAuth, oriHour, extendHour, estimateData, estimateDetail, preAuthAmt });
+                    EstimateDetail outData;
+                    commonService.EstimatePreAuthAmt(estimateData, out outData);
+                    preAuthAmt = deduct ? (orderInfo.PreAuthAmt > 0 ? outData.estimateAmt - orderInfo.PreAuthAmt : outData.estimateAmt) : outData.estimateAmt;
+                    estimateDetail = outData;
+
+                    trace.traceAdd("EstimatePreAuthAmt", new { oriHour, extendHour, estimateData, estimateDetail, preAuthAmt });
                     trace.FlowList.Add("計算預授權金");
                     #endregion
                     #region 後續流程
-                    if (canAuth && preAuthAmt > 0)
+                    if (preAuthAmt > 0)
                     {
                         bool authFlag = false;
                         string error = "";
