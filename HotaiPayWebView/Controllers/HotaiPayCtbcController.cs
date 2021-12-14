@@ -23,9 +23,15 @@ namespace HotaiPayWebView.Controllers
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
+        private string redirectURL = ConfigurationManager.AppSettings["redirectURL"];
+        private string iRentCarURL = ConfigurationManager.AppSettings["iRentCarURL"];
+        private string localURL = ConfigurationManager.AppSettings["localURL"];
+
         //private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
         //private static string MEMIDNO = "";
         //private static string AToken = "";
+
 
         // GET: HotaiPayCtbc
         public ActionResult Index()
@@ -99,7 +105,8 @@ namespace HotaiPayWebView.Controllers
             var vm = new OFN_HotaiAddCard();
             HotaipayService hotaipayService = new HotaipayService();
 
-            var input = new IFN_HotaiAddCard()
+
+        var input = new IFN_HotaiAddCard()
             {
                 IDNO = Session["id"].ToString(),
                 RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
@@ -273,6 +280,19 @@ namespace HotaiPayWebView.Controllers
                 //logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
             }
 
+            var redirectURL = "";
+            var nowDomain = Request.Url.AbsoluteUri;
+            if (nowDomain.IndexOf("hieasyrent.hotaimotor.com.tw") != -1) {
+                redirectURL = this.redirectURL;
+            }
+            else if (nowDomain.IndexOf("www.irentcar.com.tw") != -1) {
+                redirectURL = this.iRentCarURL;
+            }
+            else if (nowDomain.IndexOf("localhost:44330/") != -1) {
+                redirectURL = this.localURL;
+            }
+            @ViewBag.reURL = redirectURL;
+
             //和泰Token失效
             if (errCode == "ERR941")
             {
@@ -304,7 +324,7 @@ namespace HotaiPayWebView.Controllers
             string IDNO = "";
             if (Session["id"].ToString() != null)
                 IDNO = Session["id"].ToString();
-            string irent_access_token = System.Web.HttpContext.Current.Session["irent_access_token"].ToString();
+            string irent_access_token = Session["irent_access_token"].ToString();
             Boolean flag = true;
             string errCode = "";
             HotaipayService HPServices = new HotaipayService();

@@ -137,25 +137,9 @@
         }
     };
 
-    function getURLToken() {
-        var getUrlString = location.href;
-        //console.log('ssss')
-        //console.log(location.href)
-        var url = new URL(getUrlString);
-        var url_Token = "";
-        url_Token = url.searchParams.get('irent_access_token');
-        return url_Token
-    }
     function getHerfAddreess_ToBindNewCard() {
-        var urlToken = getURLToken();
-        var rtnURL = "";
-        //if (urlToken != null && urlToken != "") {
-        //    rtnURL = "/HotaiPayCtbc/BindNewCard?irent_access_token=" + urlToken;
-        //} else
-        rtnURL = "/irweb/HotaiPayCtbc/BindNewCard";
-        //alert("rtnURL =" + rtnURL);
+        window.location.href = "@ViewBag.reURL"+"/HotaiPayCtbc/BindNewCard";
 
-        document.location.href = rtnURL;
     }
 
 
