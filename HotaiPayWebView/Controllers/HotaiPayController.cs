@@ -760,12 +760,24 @@ namespace HotaiPayWebView.Controllers
         #region 已是和泰會員
         public ActionResult AlreadyMember()
         {
-            var decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
-            if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
+            string encryptStr = Request.QueryString["p"] != null ? (Request.QueryString["p"].Trim()): "";
+            if (!string.IsNullOrWhiteSpace(encryptStr))
             {
+                var decryptDic = HPServices.QueryStringDecryption(encryptStr);
+                if (!string.IsNullOrWhiteSpace(decryptDic["irent_access_token"]))
+                {
+                    ViewData["Token"] = decryptDic["irent_access_token"];
                     return View();
-            }else
-                return RedirectToAction("Login");
+                }
+                else
+                {
+                    return RedirectToAction("MemberFail");
+                }
+            }
+            else
+            {
+                return RedirectToAction("MemberFail");
+            }
         }
         #endregion
 
@@ -780,10 +792,6 @@ namespace HotaiPayWebView.Controllers
             if (!string.IsNullOrWhiteSpace(token))
             {
                 flag = HPServices.GetIDNOFromToken(token, 0, ref IDNO, ref lstError, ref errCode);
-            }
-            else
-            {
-                flag = false; //導登入頁
             }
 
             if (flag)
@@ -805,6 +813,13 @@ namespace HotaiPayWebView.Controllers
 
         #region 成功解綁頁面
         public ActionResult UnbindSuccess()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 和泰會員進入失敗
+        public ActionResult MemberFail()
         {
             return View();
         }
