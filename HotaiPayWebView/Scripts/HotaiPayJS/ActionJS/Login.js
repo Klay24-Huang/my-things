@@ -7,11 +7,11 @@
     imgs.onclick = function () {
         if (flag == 0) {
             input.type = 'text';
-            eyes.src = '/images/eye-regular.svg';//睜眼圖
+            eyes.src = '../images/eye-regular.svg';//睜眼圖
             flag = 1;
         } else {
             input.type = 'password';
-            eyes.src = '/images/eye-slash-regular.svg';//閉眼圖
+            eyes.src = '../images/eye-slash-regular.svg';//閉眼圖
             flag = 0;
         }
     }
