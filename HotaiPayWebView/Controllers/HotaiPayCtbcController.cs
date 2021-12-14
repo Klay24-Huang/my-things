@@ -277,7 +277,7 @@ namespace HotaiPayWebView.Controllers
             if (errCode == "ERR941")
             {
                 //logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
-                return RedirectToRoute("/HotaiPay/Login", new { irent_access_token = irent_access_token });
+                return RedirectToRoute("/HotaiPay/Login", new { p = decryptDic });
             }
 
             if (flag)
