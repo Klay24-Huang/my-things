@@ -28,6 +28,7 @@ namespace RelayAPI.Controllers
             string Contentjson = JsonConvert.SerializeObject(value);
             IAPI_RelayPost apiInput = null;
             OAPI_RelayPost output = new OAPI_RelayPost();
+            output.IsSuccess =false;
             output.RtnMessage = "";
             apiInput = JsonConvert.DeserializeObject<IAPI_RelayPost>(Contentjson);
             logger.Trace("DoRelayPostInput: " + Contentjson);
