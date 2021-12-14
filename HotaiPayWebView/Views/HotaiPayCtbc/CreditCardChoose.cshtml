@@ -44,7 +44,7 @@
                         var MemberOneID = A_output.MemberOneID;
 
                         <div class="credit-card-box mb-4">
-                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
                                    value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
@@ -66,7 +66,7 @@
                         var MemberOneID = A_output.MemberOneID;
 
                         <div class="credit-card-box mb-4">
-                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
                                    value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
@@ -87,7 +87,7 @@
                         var MemberOneID = A_output.MemberOneID;//112bd64b..........af980
 
                         <div class="credit-card-box mb-4">
-                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
                                    value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
@@ -149,10 +149,10 @@
     function getHerfAddreess_ToBindNewCard() {
         var urlToken = getURLToken();
         var rtnURL = "";
-        if (urlToken != null && urlToken != "") {
-            rtnURL = "/HotaiPayCtbc/BindNewCard?irent_access_token=" + urlToken;
-        } else
-            rtnURL = "/HotaiPayCtbc/BindNewCard";
+        //if (urlToken != null && urlToken != "") {
+        //    rtnURL = "/HotaiPayCtbc/BindNewCard?irent_access_token=" + urlToken;
+        //} else
+        rtnURL = "/irweb/HotaiPayCtbc/BindNewCard";
         //alert("rtnURL =" + rtnURL);
 
         document.location.href = rtnURL;
