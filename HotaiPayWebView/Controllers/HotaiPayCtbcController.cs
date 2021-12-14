@@ -102,7 +102,7 @@ namespace HotaiPayWebView.Controllers
             var input = new IFN_HotaiAddCard()
             {
                 IDNO = Session["id"].ToString(),
-                RedirectURL = "https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
                 //RedirectURL = "https://www.irentcar.com.tw",
                 insUser = "TangWeiChi",
                 LogID = 0,
@@ -148,7 +148,7 @@ namespace HotaiPayWebView.Controllers
                     Birthday = inn.Birthday,//"19910804"
                     IDNO = inn.CTBCIDNO,//"A121563290"
                     CTBCIDNO = inn.CTBCIDNO,//"A121563290"
-                    RedirectURL = "https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                    RedirectURL = ConfigurationManager.AppSettings["redirectURL"] + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
                     //RedirectURL = "https://www.irentcar.com.tw",
                     insUser = "TangWeiChi",
                     LogID = 0,
