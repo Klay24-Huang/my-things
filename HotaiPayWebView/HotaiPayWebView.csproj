@@ -47,7 +47,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.7.12\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.7.13\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -181,6 +181,9 @@
     <Content Include="images\graphic\.DS_Store" />
     <Content Include="images\graphic\popup\.DS_Store" />
     <Content Include="images\icon\.DS_Store" />
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep1.js" />
@@ -241,6 +244,7 @@
     <Content Include="Views\HotaiPayCtbc\InsPersonInfo.cshtml" />
     <Content Include="Views\HotaiPayCtbc\SuccessBind.cshtml" />
     <Content Include="Views\HotaiPay\BindCardFailed2.cshtml" />
+    <Content Include="Views\HotaiPay\MemberFail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
