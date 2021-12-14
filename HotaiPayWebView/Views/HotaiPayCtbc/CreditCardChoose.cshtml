@@ -40,12 +40,12 @@
                         var CardType = A_output.CardType;
                         var BankDesc = A_output.BankDesc;
                         var CardToken = A_output.CardToken;
-                        var IsDefault = A_output.IsDefault == 1 ? true : false;
+                        bool IsDefault = A_output.IsDefault == 1 ? true : false;
                         var MemberOneID = A_output.MemberOneID;
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked")
-                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+                                   value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
                                 <img src="~/images/icon/credit_pay_JCB.svg" alt="">
@@ -62,12 +62,12 @@
                         var CardType = A_output.CardType;
                         var BankDesc = A_output.BankDesc;
                         var CardToken = A_output.CardToken;
-                        var IsDefault = A_output.IsDefault == 1 ? true : false;
+                        bool IsDefault = A_output.IsDefault == 1 ? true : false;
                         var MemberOneID = A_output.MemberOneID;
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+                                   value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
                                 <img src="~/images/icon/credit_pay_MasterCard.svg" alt="">
@@ -83,12 +83,12 @@
                         var CardType = A_output.CardType;//VISA
                         var BankDesc = A_output.BankDesc;//國外卡
                         var CardToken = A_output.CardToken;//1850
-                        var IsDefault = A_output.IsDefault == 1 ? true : false;
+                        bool IsDefault = A_output.IsDefault == 1 ? true : false;
                         var MemberOneID = A_output.MemberOneID;//112bd64b..........af980
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" @(IsDefault ? "checked=checked" : "checked=unchecked" )
-                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
+                                   value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
                                 <img src="~/images/icon/credit_pay_VISA.svg" alt="">

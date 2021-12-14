@@ -24,8 +24,8 @@ namespace HotaiPayWebView.Controllers
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         //private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
-        private static string MEMIDNO = "";
-        private static string AToken = "";
+        //private static string MEMIDNO = "";
+        //private static string AToken = "";
 
         // GET: HotaiPayCtbc
         public ActionResult Index()
@@ -71,9 +71,10 @@ namespace HotaiPayWebView.Controllers
             //flag = true;
             if (flag)
             {
-                MEMIDNO = ID; //"A227548440";
-                AToken = irent_access_token;
-                input.IDNO = ID;// "C221120413";
+                Session["id"] = ID;
+                Session["irent_access_token"] = irent_access_token;
+
+                input.IDNO = ID;
                 input.PRGName = "CreditCardChoose";
                 flag = getlist.DoQueryCardList(input, ref output, ref errorcode);
                 Data = output.CreditCards;
@@ -100,7 +101,7 @@ namespace HotaiPayWebView.Controllers
 
             var input = new IFN_HotaiAddCard()
             {
-                IDNO = MEMIDNO,//"A227548440",
+                IDNO = Session["id"].ToString(),
                 RedirectURL = "https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
                 //RedirectURL = "https://www.irentcar.com.tw",
                 insUser = "TangWeiChi",
@@ -111,7 +112,6 @@ namespace HotaiPayWebView.Controllers
 
             var errCode = "";
             var flag = hotaipayService.DoAddCard(input, ref output, ref errCode);
-            //System.Web.HttpContext.Current.Session["IDNO"]
 
             if (flag)
             {
@@ -231,32 +231,41 @@ namespace HotaiPayWebView.Controllers
             bool flag = false;
             string errCode = "";
             List<ErrorInfo> errList = new List<ErrorInfo>();
-            var IDNO = "";
+            string IDNO = "";
+            long LogID = 65471;
+            var decryptDic = new Dictionary<string, string>() ;
 
-
-            if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            //若呼叫時有傳入irent_access_token
+            if (!string.IsNullOrEmpty(irent_access_token))
             {
-                //若沒有傳值則從網址列帶參數 --上正式需+串解密
-                if (string.IsNullOrEmpty(irent_access_token))
-                {
-                    irent_access_token = Request.QueryString["irent_access_token"].Trim();
-                }
-                //else{} 沒收到任何token
+                //irent_access_token = irent_access_token;
+            }
+            //若網址列有irent_access_token
+            else if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            {
+                irent_access_token = Request.QueryString["irent_access_token"].Trim();
+            }
+            //若有p加密字串
+            else if (Request.QueryString["p"].Trim().Length > 0) {
+                //進行解密
+                decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+                irent_access_token = decryptDic["irent_access_token"].Trim();
+            }
+            
+            //以上面獲得的Token取IDNO
+            flag = GetIDNOFromToken(irent_access_token, LogID, ref IDNO, ref errList);
 
-                flag = GetIDNOFromToken(irent_access_token, 8514, ref IDNO, ref errList);
-                System.Web.HttpContext.Current.Session["IDNO"] = IDNO;
-                MEMIDNO = IDNO;
-                AToken = irent_access_token;
-
-                //將Session賦予值
-                if (System.Web.HttpContext.Current.Session["irent_access_token"] == null)
-                    System.Web.HttpContext.Current.Session["irent_access_token"] = Request.QueryString["irent_access_token"];
+            if (flag)
+            {
+                Session["id"] = IDNO;
+                Session["irent_access_token"] = irent_access_token;
             }
             else
             {
-                flag = GetIDNOFromToken(irent_access_token, 8513, ref IDNO, ref errList);
-                System.Web.HttpContext.Current.Session["IDNO"] = IDNO;
+                ViewBag.Alert = "fail to get user info";
+                return View();
             }
+
 
             //取得卡片清單
             IFN_QueryCardList input = new IFN_QueryCardList();
@@ -297,8 +306,8 @@ namespace HotaiPayWebView.Controllers
         public ActionResult CreditcardChoose(FormCollection form)
         {
             string IDNO = "";
-            if (System.Web.HttpContext.Current.Session["IDNO"].ToString() != null)
-                IDNO = System.Web.HttpContext.Current.Session["IDNO"].ToString();
+            if (Session["id"].ToString() != null)
+                IDNO = Session["id"].ToString();
             string irent_access_token = System.Web.HttpContext.Current.Session["irent_access_token"].ToString();
             Boolean flag = true;
             string errCode = "";
@@ -342,7 +351,7 @@ namespace HotaiPayWebView.Controllers
             //string b = StatusDesc;
             if (StatusCode == "I0000" && StatusDesc == "SUCCESS")
             {
-                return RedirectToAction("CreditCardChoose", "HotaiPayCtbc", new { irent_access_token = AToken });
+                return RedirectToAction("CreditCardChoose", "HotaiPayCtbc", new { irent_access_token = Session["irent_access_token"].ToString() });
                 //return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
             }
             else

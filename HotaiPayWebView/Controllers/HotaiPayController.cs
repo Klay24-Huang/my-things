@@ -37,32 +37,46 @@ namespace HotaiPayWebView.Controllers
         #region 登入頁面
         public ActionResult Login()
         {
-            if (!string.IsNullOrEmpty(Request.QueryString["phone"]))
-            {
-                ViewBag.phone = Request.QueryString["phone"].Trim();
-                Session["phone"] = Request.QueryString["phone"].Trim();
+            Dictionary<string, string> decryptDic = new Dictionary<string, string>();
+            if (!Request.QueryString["p"].IsNullOrWhiteSpace())
+                decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+            if (decryptDic.Count == 0) {
+
+                ViewBag.Alert = "iRent帳號過期，請重新登入";
+                return View();
             }
 
-            if (!string.IsNullOrEmpty(Request.QueryString["irent_access_token"]))
+            if (!string.IsNullOrEmpty(decryptDic["phone"]))
+            {
+                ViewBag.phone = decryptDic["phone"].Trim();
+                Session["phone"] = decryptDic["phone"].Trim();
+            }
+
+            if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
             {
                 string IDNO = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 string errCode = "";
-                var flag = HPServices.GetIDNOFromToken(Request.QueryString["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
+
+                var flag = HPServices.GetIDNOFromToken(decryptDic["irent_access_token"].Trim(), LogID, ref IDNO, ref lstError, ref errCode);
+
                 if (flag)
                 {
-                    Session["irent_access_token"] = Request.QueryString["irent_access_token"].Trim();
+                    Session["irent_access_token"] = decryptDic["irent_access_token"].Trim();
                     Session["id"] = IDNO;
+                    return View();
                 }
                 else
                 {
                     ViewBag.Alert = errorDic[errCode];
                     return View();
                 }
-
             }
-
-            return View();
+            else
+            {
+                ViewBag.Alert = "iRent帳號過期，請重新登入";
+                return View();
+            }
             //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
         }
 
@@ -746,16 +760,23 @@ namespace HotaiPayWebView.Controllers
         #region 已是和泰會員
         public ActionResult AlreadyMember()
         {
-            string accessToken = "";
-            accessToken = Request.QueryString["irent_access_token"];
-            if (string.IsNullOrWhiteSpace(accessToken))
+            string encryptStr = Request.QueryString["p"] != null ? (Request.QueryString["p"].Trim()): "";
+            if (!string.IsNullOrWhiteSpace(encryptStr))
             {
-                return RedirectToAction("Login");
+                var decryptDic = HPServices.QueryStringDecryption(encryptStr);
+                if (!string.IsNullOrWhiteSpace(decryptDic["irent_access_token"]))
+                {
+                    ViewData["Token"] = decryptDic["irent_access_token"];
+                    return View();
+                }
+                else
+                {
+                    return RedirectToAction("MemberFail");
+                }
             }
             else
             {
-                ViewData["Token"] = accessToken.Trim();
-                return View();
+                return RedirectToAction("MemberFail");
             }
         }
         #endregion
@@ -771,10 +792,6 @@ namespace HotaiPayWebView.Controllers
             if (!string.IsNullOrWhiteSpace(token))
             {
                 flag = HPServices.GetIDNOFromToken(token, 0, ref IDNO, ref lstError, ref errCode);
-            }
-            else
-            {
-                flag = false; //導登入頁
             }
 
             if (flag)
@@ -796,6 +813,13 @@ namespace HotaiPayWebView.Controllers
 
         #region 成功解綁頁面
         public ActionResult UnbindSuccess()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 和泰會員進入失敗
+        public ActionResult MemberFail()
         {
             return View();
         }
