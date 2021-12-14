@@ -109,7 +109,9 @@ namespace HotaiPayWebView.Controllers
         var input = new IFN_HotaiAddCard()
             {
                 IDNO = Session["id"].ToString(),
-                RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                //RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+               
                 //RedirectURL = "https://www.irentcar.com.tw",
                 insUser = "TangWeiChi",
                 LogID = 0,
@@ -155,7 +157,8 @@ namespace HotaiPayWebView.Controllers
                     Birthday = inn.Birthday,//"19910804"
                     IDNO = inn.CTBCIDNO,//"A121563290"
                     CTBCIDNO = inn.CTBCIDNO,//"A121563290"
-                    RedirectURL = ConfigurationManager.AppSettings["redirectURL"] + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                    //RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
+                    RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
                     //RedirectURL = "https://www.irentcar.com.tw",
                     insUser = "TangWeiChi",
                     LogID = 0,
@@ -219,6 +222,10 @@ namespace HotaiPayWebView.Controllers
         public ActionResult BindNewCard(string irent_access_token)
         {
             //string a = irent_access_token;
+
+            @ViewBag.reURL = Session["redirectURL"].ToString();
+
+
             return View();
         }
         #endregion
@@ -243,13 +250,18 @@ namespace HotaiPayWebView.Controllers
             long LogID = 65471;
             var decryptDic = new Dictionary<string, string>() ;
 
-            //若網址列有irent_access_token
-            if (TempData["irent_access_token"]!=null)
-            {
-                irent_access_token = TempData["irent_access_token"].ToString().Trim();
+            ////若網址列有irent_access_token
+            //if (TempData["irent_access_token"]!=null)
+            //{
+            //    irent_access_token = TempData["irent_access_token"].ToString().Trim();
+            //}
+            if (Session["p"] != null) {
+                decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
+                irent_access_token = decryptDic["irent_access_token"].Trim();
             }
             //若有p加密字串
-            else if (Request.QueryString["p"].Trim().Length > 0) {
+            else if (Request.QueryString["p"].Trim().Length > 0)
+            {
                 //進行解密
                 decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
                 irent_access_token = decryptDic["irent_access_token"].Trim();
@@ -291,7 +303,9 @@ namespace HotaiPayWebView.Controllers
             else if (nowDomain.IndexOf("localhost:44330/") != -1) {
                 redirectURL = this.localURL;
             }
+            Session["redirectURL"] = redirectURL;
             @ViewBag.reURL = redirectURL;
+
 
             //和泰Token失效
             if (errCode == "ERR941")
@@ -367,9 +381,9 @@ namespace HotaiPayWebView.Controllers
         {
             //string a = StatusCode;
             //string b = StatusDesc;
-            if (StatusCode == "I0000" && StatusDesc == "SUCCESS")
+            if ( StatusDesc == "Success")
             {
-                return RedirectToAction("CreditCardChoose", "HotaiPayCtbc", new { irent_access_token = Session["irent_access_token"].ToString() });
+                return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = Session["irent_access_token"].ToString() });
                 //return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
             }
             else
