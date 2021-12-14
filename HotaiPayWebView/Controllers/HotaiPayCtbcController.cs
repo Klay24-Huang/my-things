@@ -15,13 +15,13 @@ using Domain.SP.Output.Common;
 using WebCommon;
 using NLog;
 using Domain.SP.Input.Hotai;
+using Newtonsoft.Json;
 
 namespace HotaiPayWebView.Controllers
 {
     public class HotaiPayCtbcController : Controller
     {
-
-        private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         //private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
         private static string MEMIDNO = "";
@@ -155,7 +155,9 @@ namespace HotaiPayWebView.Controllers
                     PRGName = "InsPersonInfo"
                 };
                 string errCode = "";
+                logger.Info($"tanginput : {JsonConvert.SerializeObject(input)}");
                 flag = addcard.DoFastAddCard(input, ref output, ref errCode);
+                logger.Info($"tangerror : {errCode}");
                 if (flag)
                 {
                     vm = output;
@@ -164,6 +166,7 @@ namespace HotaiPayWebView.Controllers
                 else
                 {
                     vm.succ = false;
+                    //vm.gotoUrl = errCode;
                     ViewData["ERROR"] = "ERROR";
                     return View();
                 }

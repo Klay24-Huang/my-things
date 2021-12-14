@@ -133,7 +133,7 @@ namespace HotaiPayWebView.Controllers
                                 flag = true;//唐寫死，等和泰開通安康防火牆再弄
                                 if (flag)
                                 {
-                                    Session["oneID"] = getOneID.memberSeq;
+                                    Session["oneID"] = "";//getOneID.memberSeq;//唐寫死，等和泰開通安康防火牆再弄
 
                                     errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, apioutput.access_token, apioutput.refresh_token);
                                     if (errCode == "0000")
