@@ -168,6 +168,8 @@ namespace HotaiPayWebView.Controllers
                 logger.Info($"tanginput : {JsonConvert.SerializeObject(input)}");
                 flag = addcard.DoFastAddCard(input, ref output, ref errCode);
                 logger.Info($"tangerror : {errCode}");
+                logger.Info($"tangerror2 : {JsonConvert.SerializeObject(output)}");
+                logger.Info($"tangerror3 : {flag}");
                 if (flag)
                 {
                     vm = output;
@@ -371,17 +373,19 @@ namespace HotaiPayWebView.Controllers
                 return View("NoCreditCard", irent_access_token);
             }
             if (flag)
-                return Redirect("/HotaiPayCtbc/SuccessBind");
+                return Redirect("/irweb/HotaiPayCtbc/SuccessBind");
             else
-                return Redirect("/HotaiPayCtbc/BindCardFailed");
+                return Redirect("/irweb/HotaiPayCtbc/BindCardFailed");
         }
         #endregion
 
         public ActionResult BindResult(string StatusCode, string StatusDesc)
         {
+            logger.Info($"tanginput : {StatusCode}");
+            logger.Info($"tanginput : {StatusDesc}");
             //string a = StatusCode;
             //string b = StatusDesc;
-            if ( StatusDesc == "Success")
+            if (StatusDesc.ToUpper() == "SUCCESS")
             {
                 return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = Session["irent_access_token"].ToString() });
                 //return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
