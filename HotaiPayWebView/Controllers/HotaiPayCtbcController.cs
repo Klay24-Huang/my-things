@@ -332,8 +332,10 @@ namespace HotaiPayWebView.Controllers
                 sp_input.PRGName = "CreditcardChoose";
                 logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
-                if (!flag)
-                    logger.Error($"HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗IDNO={IDNO} ERRCODE= {errCode}" );
+                if (!flag) {
+                    logger.Error($"HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗IDNO={IDNO} ERRCODE= {errCode}");
+                    ViewBag.Alert = "fail to get update database"; 
+                }
             }
             else {
                 return View("NoCreditCard", irent_access_token);
