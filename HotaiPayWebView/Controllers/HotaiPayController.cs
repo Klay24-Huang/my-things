@@ -730,20 +730,7 @@ namespace HotaiPayWebView.Controllers
         {
             return RedirectToAction("/Login", new { p = Session["p"]} );
         }
-        //public ActionResult BindCardFailed2(string mode)
-        //{
-        //    if (mode == "1")
-        //    {
-        //        return View();
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
-        //    }
-        //    //return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
-        //}
         #endregion
-
 
         #region 個人資料填寫
         public ActionResult PersonalInformation()
@@ -751,7 +738,6 @@ namespace HotaiPayWebView.Controllers
             return View();
         }
         #endregion
-
 
         #region 綁定成功
         public ActionResult SuccessBind()
@@ -841,7 +827,6 @@ namespace HotaiPayWebView.Controllers
         }
 
         #endregion
-
 
         #region 註冊成功
         public ActionResult RegisterSuccess()
