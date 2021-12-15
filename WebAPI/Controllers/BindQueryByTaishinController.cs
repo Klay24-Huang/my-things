@@ -95,7 +95,7 @@ namespace WebAPI.Controllers
                 PartOfGetCreditCardList wsInput = new PartOfGetCreditCardList()
                 {
                     ApiVer = ApiVer,
-                    ApposId = oldTaishinAPPOS,
+                    ApposId = TaishinAPPOS,
                     RequestParams = new GetCreditCardListRequestParamasData()
                     {
                         MemberId = IDNO,

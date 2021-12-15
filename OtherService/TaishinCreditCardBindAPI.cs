@@ -230,7 +230,7 @@ namespace OtherService
         public bool DoGetCreditCardList_ori(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
             string checksum = GenerateSign(ori);
 
             WebAPIInput_GetCreditCardList Input = new WebAPIInput_GetCreditCardList()
@@ -448,7 +448,7 @@ namespace OtherService
         public bool DoDeleteCreditCardAuth(PartOfDeleteCreditCardAuth wsInput, ref string errCode, ref WebAPIOutput_DeleteCreditCardAuth output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);//解綁鎖定在舊商代
             string checksum = GenerateSign(ori);
 
             WebAPIInput_DeleteCreditCardAuth Input = new WebAPIInput_DeleteCreditCardAuth()
@@ -1281,10 +1281,10 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
-            request.KeepAlive = true;
-            //request.KeepAlive = false;
-            //SetHeaderValue(request.Headers, "Connection", "close");
-            //request.Timeout = 78000;
+            //request.KeepAlive = true;
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 40000;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
             //{
