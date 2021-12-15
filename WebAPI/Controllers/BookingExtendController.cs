@@ -197,6 +197,27 @@ namespace WebAPI.Controllers
 
             }
             #endregion
+            #region 延長用車前檢核
+            if (flag)
+            {
+                SPInput_BookingExtend spExtend = new SPInput_BookingExtend()
+                {
+                    OrderNo = tmpOrder,
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID,
+                    SD = SD,
+                    ED = StopTime,
+                    CarNo = spOut.CarNo
+                };
+                SPOutput_Base spOutExtend = new SPOutput_Base();
+                spName = "usp_BeforeBookingExtend";
+                SQLHelper<SPInput_BookingExtend, SPOutput_Base> sqlHelpCheck = new SQLHelper<SPInput_BookingExtend, SPOutput_Base>(connetStr);
+                flag = sqlHelpCheck.ExecuteSPNonQuery(spName, spExtend, ref spOutExtend, ref lstError);
+                baseVerify.checkSQLResult(ref flag, ref spOutExtend, ref lstError, ref errCode);
+            }
+
+            #endregion
             #region 預授權機制
             if (flag)
             {
