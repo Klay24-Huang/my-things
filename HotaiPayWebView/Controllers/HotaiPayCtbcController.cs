@@ -66,7 +66,8 @@ namespace HotaiPayWebView.Controllers
             string irent_access_token = "";
             HotaipayService HPServices = new HotaipayService();
             var decryptDic = new Dictionary<string, string>();
-            decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
+            if(Session["p"] != null)
+                decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
             irent_access_token = decryptDic["irent_access_token"].Trim();
 
             bool flag;
@@ -269,12 +270,16 @@ namespace HotaiPayWebView.Controllers
                 irent_access_token = decryptDic["irent_access_token"].Trim();
             }
             //若有p加密字串
-            else if (Request.QueryString["p"].Trim().Length > 0)
+            else if (Request.QueryString["p"] != null && Request.QueryString["p"].Trim().Length > 0)
             {
                 //進行解密
                 decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
                 irent_access_token = decryptDic["irent_access_token"].Trim();
             }
+            else {
+                return View("Login","HotaiPay");
+            }
+
 
             //以上面獲得的Token取IDNO
             flag = GetIDNOFromToken(irent_access_token, LogID, ref IDNO, ref errList);
