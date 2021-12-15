@@ -74,8 +74,8 @@
 
     function goCTBCBindCard() {
         //跳轉畫面
-        document.location.href = "/irweb/HotaiPayCtbc/InsPersonInfo";
-        //window.location.href = '@Url.Action("InsPersonInfo", "HotaiPayCtbc")';
+        document.location.href = "@ViewBag.reURL" +"HotaiPayCtbc/InsPersonInfo";
+        @*window.location.href = '@Url.Action("InsPersonInfo", "HotaiPayCtbc")';*@
     }
 
     function goOtherBindCard() {
