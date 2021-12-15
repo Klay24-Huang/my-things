@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.WebAPI.Input.Hotai.Payment
+namespace Domain.WebAPI.Input.Hotai.Payment.Param
 {
-    public class WebAPIInput_GetCreditCards : WebAPIInput_PaymentBase
+    public class Body_GetCard
     {
         public bool Bin { get; set; } = true;
     }
