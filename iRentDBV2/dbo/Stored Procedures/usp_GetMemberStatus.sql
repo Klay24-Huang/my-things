@@ -23,6 +23,8 @@
 			 20211105 UPD BY YEH REASON:增加預授權條款狀態
 			 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
 			 20211117 UPD BY YEH REASON:調整條款狀態判斷條件
+			 20211201 ADD BY ADAM REASON.增加客服voip判斷，用和泰特殊身分判斷
+			 20211214 UPD BY YEH REASON:和泰綁定加入isCancel判斷
 * Example  : 
 ***********************************************************************************************/
 
@@ -251,7 +253,8 @@ BEGIN TRY
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
 										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
 				,AuthStatus			= ISNULL((SELECT 'N' FROM #MemberCMK WHERE VerType='Auth' AND Version<>''),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態	20211117 UPD BY YEH REASON:調整條款狀態判斷條件
-				,BindHotai			= ISNULL((IIF(E.OneID <> '', 'Y', 'N')), 'N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
+				,BindHotai			= IIF((ISNULL(E.OneID,'') <> '' AND ISNULL(E.isCancel,0) <> 1),'Y','N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態		20211214 UPD BY YEH REASON:和泰綁定加入isCancel判斷
+				,IsHIMS				= IIF(A.SPECSTATUS = '04', 'Y', 'N')			--20211201 ADD BY ADAM REASON.增加客服voip判斷，用和泰特殊身分判斷
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
@@ -379,7 +382,8 @@ BEGIN TRY
 										   WHEN @NowTime < R.NextTime AND @HasNoticeMsg='Y' AND R.CHKTime < @NOTIFYTIME THEN 'Y'
 										   ELSE 'N' END	--20210917 ADD BY ADAM REASON.是否有推播判斷
 				,AuthStatus			= ISNULL((SELECT 'N' FROM #MemberCMK WHERE VerType='Auth' AND Version<>''),'Y')	-- 20211105 UPD BY YEH REASON:增加預授權條款狀態	20211117 UPD BY YEH REASON:調整條款狀態判斷條件
-				,BindHotai			= ISNULL((IIF(F.OneID <> '', 'Y', 'N')), 'N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態
+				,BindHotai			= IIF((ISNULL(E.OneID,'') <> '' AND ISNULL(E.isCancel,0) <> 1),'Y','N')	-- 20211115 UPD BY YEH REASON:增加和泰OneID綁定狀態		20211214 UPD BY YEH REASON:和泰綁定加入isCancel判斷
+				,IsHIMS				= IIF(A.SPECSTATUS = '04', 'Y', 'N')			--20211201 ADD BY ADAM REASON.增加客服voip判斷，用和泰特殊身分判斷
 			FROM TB_MemberData A WITH(NOLOCK)
 			LEFT JOIN TB_BookingStatusOfUser B WITH(NOLOCK) ON A.MEMIDNO=B.IDNO
 			LEFT JOIN TB_Credentials C WITH(NOLOCK) ON A.MEMIDNO=C.IDNO
