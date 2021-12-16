@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="144px" height="119px" viewBox="0 0 144 119" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 3</title>
+    <defs>
+        <filter x="-29.1%" y="-27.1%" width="158.2%" height="154.2%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="3.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-29.1%" y="-27.5%" width="158.2%" height="155.1%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="3.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="graphic/popup/skip_info" transform="translate(-47.000000, 5.000000)">
+            <g id="Group-3" transform="translate(61.934001, 10.562753)">
+                <g id="Group" filter="url(#filter-1)" transform="translate(34.565999, 35.937247) rotate(16.000000) translate(-34.565999, -35.937247) translate(7.065999, 6.437247)">
+                    <rect id="Rectangle" fill="#FFFFFF" x="0" y="0" width="55" height="58.0912941" rx="4.47620076"></rect>
+                    <rect id="Rectangle" fill-opacity="0.25" fill="#CED4DE" x="5.48894118" y="18.2964706" width="42.9967059" height="8.23341176" rx="1.82964706"></rect>
+                    <rect id="Rectangle" fill-opacity="0.25" fill="#CED4DE" x="5.48894118" y="5.48894118" width="42.9967059" height="8.23341176" rx="1.82964706"></rect>
+                    <rect id="Rectangle" fill-opacity="0.25" fill="#CED4DE" x="5.48894118" y="31.104" width="42.9967059" height="8.23341176" rx="1.82964706"></rect>
+                    <rect id="Rectangle备份" fill-opacity="0.25" fill="#CED4DE" x="5" y="44" width="42.9967059" height="8.23341176" rx="1.82964706"></rect>
+                </g>
+                <g id="Group" filter="url(#filter-2)" transform="translate(64.463791, 54.494539) rotate(-13.000000) translate(-64.463791, -54.494539) translate(36.963791, 25.448892)">
+                    <rect id="Rectangle" fill="#FFFFFF" x="0" y="0" width="55" height="58.0912941" rx="4.47620076"></rect>
+                    <rect id="Rectangle" fill-opacity="0.15" fill="#1DA6D0" x="5.48894118" y="18.2964706" width="42.9967059" height="8.23341176" rx="1.82964706"></rect>
+                    <rect id="Rectangle" fill="#1DA6D0" x="5.48894118" y="5.48894118" width="42.9967059" height="8.23341176" rx="1.82964706"></rect>
+                    <rect id="Rectangle" fill-opacity="0.15" fill="#1DA6D0" x="5.48894118" y="31.104" width="42.9967059" height="8.23341176" rx="1.82964706"></rect>
+                    <rect id="Rectangle" fill-opacity="0.25" fill="#CED4DE" x="5.48894118" y="46.9609412" width="43" height="6.09882353" rx="1.82964706"></rect>
+                </g>
+                <g id="Group-2" transform="translate(86.065999, 24.437247)">
+                    <circle id="Combined-Shape" fill="#D7000F" cx="24" cy="18" r="18"></circle>
+                    <path d="M6.89442719,26.7888544 L10,33 L10,33 L2,33 L5.10557281,26.7888544 C5.35256206,26.2948759 5.9532351,26.0946515 6.4472136,26.3416408 C6.640741,26.4384045 6.79766349,26.595327 6.89442719,26.7888544 Z" id="Triangle" fill="#D7000F" transform="translate(6.000000, 29.000000) rotate(-120.000000) translate(-6.000000, -29.000000) "></path>
+                    <g id="编组-4" transform="translate(22.000000, 10.000000)" fill="#FFFFFF">
+                        <path d="M2.04558664,0 C2.87224783,-1.51855196e-16 3.54238913,0.670141298 3.54238913,1.49680248 C3.54238913,1.52537856 3.54157079,1.55394879 3.53993512,1.58247802 L3.05723904,10.0016395 C3.02511023,10.5620287 2.56130943,11 2,11 C1.43996374,11 0.978448079,10.5605644 0.951014324,10.0012005 L0.538155952,1.58317383 C0.497324841,0.75064285 1.13912439,0.0426429856 1.97165538,0.00181187415 C1.99628063,0.000604139369 2.02093179,4.52902353e-18 2.04558664,0 Z" id="Rectangle"></path>
+                        <circle id="Oval" cx="2" cy="14.5" r="1.5"></circle>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

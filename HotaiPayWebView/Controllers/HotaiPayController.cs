@@ -72,7 +72,13 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    ViewBag.Alert = errorDic[errCode];
+                    if (errorDic[errCode].Contains("帳號"))
+                        ViewBag.PhoneAlert = errorDic[errCode];
+                    else if (errorDic[errCode].Contains("密碼"))
+                        ViewBag.PwdAlert = errorDic[errCode];
+                    else
+                        ViewBag.PwdAlert = errorDic[errCode];
+
                     return View();
                 }
             }
@@ -490,7 +496,8 @@ namespace HotaiPayWebView.Controllers
         {
             ViewBag.Phone = Session["Phone"];
             ViewBag.OtpCode = Session["OtpCode"];
-            ViewBag.Alert = Session["Alert"];
+            ViewBag.PhoneAlert = Session["AlertPhone"];
+            ViewBag.OtpAlert = Session["AlertOtp"];
             return View();
         }
 
@@ -509,12 +516,13 @@ namespace HotaiPayWebView.Controllers
 
             if (checkSignUpOutput.isSignup)
             {
-                Session["Alert"] = "此帳號已被註冊";
+                Session["AlertPhone"] = "此帳號已被註冊";
                 return RedirectToAction("RegisterStep1");
             }
             else
             {
-                Session["Alert"] = "";
+                ViewBag.PhoneAlert = "";
+                ViewBag.OtpAlert = ""; 
                 WebAPIInput_SendSmsOtp getSMSOTP = new WebAPIInput_SendSmsOtp
                 {
                     mobilePhone = phone,
@@ -530,7 +538,7 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    Session["Alert"] = errorDic[errCode];
+                    Session["AlertOtp"] = errorDic[errCode];
 
                     return Redirect("RegisterStep1");
                 }
@@ -561,8 +569,9 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
-                }
+                    ViewBag.Alert = "驗證碼錯誤，請重新輸入。";
+                    return View();
+                } 
             }
             catch (Exception e)
             {

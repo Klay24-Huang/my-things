@@ -160,6 +160,21 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="images\alert-popup.svg" />
+    <Content Include="images\eye-regular.svg" />
+    <Content Include="images\eye-slash-regular.svg" />
+    <Content Include="images\fail-face-icon.svg" />
+    <Content Include="images\Group 2 2.png" />
+    <Content Include="images\Group 2.png" />
+    <Content Include="images\hotai-logo.svg" />
+    <Content Include="images\icon\credit_pay_card.svg" />
+    <Content Include="images\icon\credit_pay_JCB.svg" />
+    <Content Include="images\icon\credit_pay_MasterCard.svg" />
+    <Content Include="images\icon\credit_pay_VISA.svg" />
+    <Content Include="images\icon\ctbcbank.svg" />
+    <Content Include="images\icon\more.svg" />
+    <Content Include="images\success&amp;fail-face-icon.png" />
+    <Content Include="images\success-face-icon.svg" />
     <Content Include="irweb\images\alert-popup.svg" />
     <Content Include="irweb\images\eye-regular.svg" />
     <Content Include="irweb\images\eye-slash-regular.svg" />
@@ -181,6 +196,10 @@
     <Content Include="irweb\images\graphic\.DS_Store" />
     <Content Include="irweb\images\graphic\popup\.DS_Store" />
     <Content Include="irweb\images\icon\.DS_Store" />
+    <Content Include="images\.DS_Store" />
+    <Content Include="images\graphic\.DS_Store" />
+    <Content Include="images\graphic\popup\.DS_Store" />
+    <Content Include="images\icon\.DS_Store" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
