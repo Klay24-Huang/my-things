@@ -43,6 +43,7 @@
                     <input type="text" class="form-control input-light" id="phone" name="phone" placeholder="0912345678" value="@ViewBag.Phone">
                 </div>
                 <button type="submit" class="btn btn-blue-small mb-2">發送驗證碼</button>
+                <p id="pwdHint" style="color:red;">@ViewBag.PhoneAlert</p>
             </form>
         </div>
         
@@ -53,7 +54,7 @@
             <div class="mt-4">
 
                 <input type="text" id="otpCode" class="form-control input-light" name="otpCode" placeholder="輸入驗證碼" value="@ViewBag.OtpCode" required>
-                <p id="pwdHint" style="color:red;">@ViewBag.Alert</p>
+                <p id="pwdHint" style="color:red;">@ViewBag.OtpAlert</p>
             </div>
         </div>
         <div class="footer-btn-box footer-btn-margin">
