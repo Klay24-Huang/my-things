@@ -646,25 +646,26 @@ namespace HotaiPayWebView.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SetSignUpProfile(SignUpProfile signUpProfile)
         {
-            bool flag = false;
-            string errCode = "";
-            ViewBag.CustID = signUpProfile.CustID.Trim();
-            ViewBag.Name = signUpProfile.Name.Trim();
-            ViewBag.Birthday = signUpProfile.Birth.Trim();
-            ViewBag.Email = signUpProfile.Email.Trim();
-
-            if (signUpProfile.Sex.Trim() == "male")
-            {
-                ViewBag.MaleCheck = true;
-                ViewBag.FemaleCheck = false;
-            }
-            else
-            {
-                ViewBag.MaleCheck = false;
-                ViewBag.FemaleCheck = true;
-            }
             if (ModelState.IsValid)
             {
+                bool flag = false;
+                string errCode = "";
+                ViewBag.CustID = signUpProfile.CustID.Trim();
+                ViewBag.Name = signUpProfile.Name.Trim();
+                ViewBag.Birthday = signUpProfile.Birth.Trim();
+                ViewBag.Email = signUpProfile.Email.Trim();
+
+                if (signUpProfile.Sex.Trim() == "male")
+                {
+                    ViewBag.MaleCheck = true;
+                    ViewBag.FemaleCheck = false;
+                }
+                else
+                {
+                    ViewBag.MaleCheck = false;
+                    ViewBag.FemaleCheck = true;
+                }
+
 
                 if (!CheckROCID(signUpProfile.CustID.Trim()))
                 {
