@@ -143,23 +143,24 @@ namespace WebAPI.Controllers
                     }
                 }
 
+                // 20211216 UPD BY YEH REASON:副總說拿掉預授權
                 //處理逾時
-                foreach (var timeoutObj in timeoutList)
-                {
-                    var insertFlag = false;
+                //foreach (var timeoutObj in timeoutList)
+                //{
+                //    var insertFlag = false;
 
-                    timeoutObj.pre_final_Price = GetPrepaidAmount(timeoutObj.order_number, PrepaidDays, timeoutObj.stop_time);
-                    SPInput_OrderAuth input = SetOrderAuthObj(timeoutObj, funName, AuthGateCount);
-                   
-                    insertFlag = commonService.InsertOrderAuth(input, ref errCode,ref lstError);
-                    if (!insertFlag)
-                    {
-                        string errString = SetErrorStringForLog("InsertOrderAuth", lstError, timeoutObj);
-                           
-                        logger.Trace(errString);
-                        baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
-                    }
-                }
+                //    timeoutObj.pre_final_Price = GetPrepaidAmount(timeoutObj.order_number, PrepaidDays, timeoutObj.stop_time);
+                //    SPInput_OrderAuth input = SetOrderAuthObj(timeoutObj, funName, AuthGateCount);
+
+                //    insertFlag = commonService.InsertOrderAuth(input, ref errCode,ref lstError);
+                //    if (!insertFlag)
+                //    {
+                //        string errString = SetErrorStringForLog("InsertOrderAuth", lstError, timeoutObj);
+
+                //        logger.Trace(errString);
+                //        baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
+                //    }
+                //}
 
                 errCode = "000000";
             }
