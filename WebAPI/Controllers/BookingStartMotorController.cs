@@ -291,16 +291,14 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     //20210325 ADD BY ADAM REASON.車機指令優化
-                    if (isDebug == "0") // isDebug = 1，不送車機指令
-                    {
-                        #region 開啟電源
+                    #region 開啟電源
                     if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
                         if (flag)
                         {
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
-                            input = new WSInput_Base<Params>()
+                            WSInput_Base<Params> input = new WSInput_Base<Params>()
                             {
                                 command = true,
                                 method = CommandType,
@@ -315,8 +313,9 @@ namespace WebAPI.Controllers
                                 flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                             }
                         }
-                        #endregion
-                        #region 設定租約
+                    }
+                    #endregion
+                    #region 設定租約
                     if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
                         if (flag)
@@ -352,13 +351,13 @@ namespace WebAPI.Controllers
                                         outputApi.BLEDEVICEID = ble.BLE_Device;
                                         outputApi.BLEDEVICEPWD = ble.BLE_PWD;
                                     }
-                                    }
+
                                 }
                             }
                         }
-                        #endregion
+                        
                     }
-
+                    #endregion
                     #region 20210514 開啟電源後須紀錄電量 20210521 改為設定完租約再記錄電量
                     if (flag)
                     {
