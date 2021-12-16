@@ -56,7 +56,7 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SPOutput_GetBookingStartTime spOut = null;
             OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
-
+            var trace = new TraceCom();
             string Contentjson = "";
             bool isGuest = true;
 
@@ -67,11 +67,10 @@ namespace WebAPI.Controllers
             DateTime EndTime = new DateTime();      //預計還車時間
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
-            {
+            {                
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BookingExtend>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
@@ -216,7 +215,6 @@ namespace WebAPI.Controllers
                 flag = sqlHelpCheck.ExecuteSPNonQuery(spName, spExtend, ref spOutExtend, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOutExtend, ref lstError, ref errCode);
             }
-
             #endregion
             #region 預授權機制
             if (flag)
@@ -228,7 +226,6 @@ namespace WebAPI.Controllers
                 int preAuthAmt = 0;
                 if (orderInfo != null && (orderInfo.ProjType == 0 || orderInfo.ProjType == 3) && !notHandle.Contains(orderInfo.ProjID) && orderInfo.DoPreAuth == 1)
                 {
-                    var trace = new TraceCom();
                     trace.traceAdd("apiIn", value);
 
                     #region 計算預授權金
@@ -383,10 +380,7 @@ namespace WebAPI.Controllers
                     }
                     #endregion
 
-                    trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                    trace.OrderNo = tmpOrder;
-                    var carRepo = new CarRentRepo();
-                    carRepo.AddTraceLog(51, funName, trace, flag);
+
                 }
             }
             #endregion
@@ -408,8 +402,18 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_BookingExtend, SPOutput_Base> sqlHelpCheck = new SQLHelper<SPInput_BookingExtend, SPOutput_Base>(connetStr);
                 flag = sqlHelpCheck.ExecuteSPNonQuery(spName, spExtend, ref spOutExtend, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOutExtend, ref lstError, ref errCode);
+
+                trace.traceAdd("usp_BookingExtend", new { flag, errCode, spExtend, spOutExtend });
+                trace.FlowList.Add("延長用車");
+             
             }
             #endregion
+            
+            trace.traceAdd("TraceFinal", new { errCode, errMsg });
+            trace.OrderNo = tmpOrder;
+            var carRepo = new CarRentRepo();
+            carRepo.AddTraceLog(51, funName, trace, flag);
+            
             #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)

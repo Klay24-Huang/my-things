@@ -6,7 +6,7 @@
 * 程式功能 : 延長用車
 * 作    者 : 
 * 撰寫日期 : 20200924 ADD BY Eric
-* 修改日期 : 20211215 UPD BY AMBER REASON:延長用車跟檢核拆開
+* 修改日期 : 
 * Example  : 
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_BookingExtend]
@@ -61,32 +61,32 @@ SET @Token=ISNULL (@Token,'');
 SET @tmpCount=0;
 
 BEGIN TRY
-	--IF @Token='' OR @IDNO='' OR @OrderNo=0
-	--BEGIN
-	--	SET @Error=1;
-	--	SET @ErrorCode='ERR900'
-	--END
+	IF @Token='' OR @IDNO='' OR @OrderNo=0
+	BEGIN
+		SET @Error=1;
+		SET @ErrorCode='ERR900'
+	END
 		 
 	--0.再次檢核token
-	--IF @Error=0
-	--BEGIN
-	--	SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
-	--	IF @hasData=0
-	--	BEGIN
-	--		SET @Error=1;
-	--		SET @ErrorCode='ERR101';
-	--	END
-	--	ELSE
-	--	BEGIN
-	--		SET @hasData=0;
-	--		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
-	--		IF @hasData=0
-	--		BEGIN
-	--			SET @Error=1;
-	--			SET @ErrorCode='ERR101';
-	--		END
-	--	END
-	--END
+	IF @Error=0
+	BEGIN
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		IF @hasData=0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR101';
+		END
+		ELSE
+		BEGIN
+			SET @hasData=0;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+			IF @hasData=0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR101';
+			END
+		END
+	END
 
 	--先取得資料
 	IF @Error=0
@@ -102,70 +102,70 @@ BEGIN TRY
 		WHERE order_number=@OrderNo;
 	END
 
-	--IF @Error=0
-	--BEGIN
-	--	--延長時間最少要一小時
-	--	DECLARE @DiffMinute int;
-	--	SET @DiffMinute = DATEDIFF(MINUTE,@SD,@ED);
+	IF @Error=0
+	BEGIN
+		--延長時間最少要一小時
+		DECLARE @DiffMinute int;
+		SET @DiffMinute = DATEDIFF(MINUTE,@SD,@ED);
 		
-	--	IF @DiffMinute < 60
-	--	BEGIN
-	--		SET @Error=1;
-	--		SET @ErrorCode='ERR237';
-	--	END
+		IF @DiffMinute < 60
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR237';
+		END
 
-	--	IF @Error=0
-	--	BEGIN
-	--		----檢查延長時間是否有卡到其他訂單
-	--		--SELECT @tmpCount=COUNT(IDNO) FROM TB_OrderMain WITH(NOLOCK)
-	--		--WHERE (CarNo=@CarNo AND order_number<>@OrderNo AND (cancel_status=0 and car_mgt_status=0))AND  
-	--		--(
-	--		--	(start_time between @SD AND @ED) 
-	--		--	OR (stop_time between @SD AND @ED)
-	--		--	OR (@SD BETWEEN start_time AND stop_time)
-	--		--	OR (@ED BETWEEN start_time AND stop_time)
-	--		--	OR (DATEADD(MINUTE,-30,@SD) between start_time AND stop_time)
-	--		--	OR (DATEADD(MINUTE,30,@ED) between start_time AND stop_time)
-	--		--);
-	--		--IF @tmpCount>0
-	--		--BEGIN
-	--		--	SET @Error=1;
-	--		--	SET @ErrorCode='ERR181';
-	--		--END
+		IF @Error=0
+		BEGIN
+			----檢查延長時間是否有卡到其他訂單
+			--SELECT @tmpCount=COUNT(IDNO) FROM TB_OrderMain WITH(NOLOCK)
+			--WHERE (CarNo=@CarNo AND order_number<>@OrderNo AND (cancel_status=0 and car_mgt_status=0))AND  
+			--(
+			--	(start_time between @SD AND @ED) 
+			--	OR (stop_time between @SD AND @ED)
+			--	OR (@SD BETWEEN start_time AND stop_time)
+			--	OR (@ED BETWEEN start_time AND stop_time)
+			--	OR (DATEADD(MINUTE,-30,@SD) between start_time AND stop_time)
+			--	OR (DATEADD(MINUTE,30,@ED) between start_time AND stop_time)
+			--);
+			--IF @tmpCount>0
+			--BEGIN
+			--	SET @Error=1;
+			--	SET @ErrorCode='ERR181';
+			--END
 
-	--		SELECT top 1 @NextStartTime=ISNULL(start_time,'') FROM TB_OrderMain WITH(NOLOCK) 
-	--		WHERE CarNo=@CarNo AND order_number<>@OrderNo AND (cancel_status=0 and car_mgt_status=0)
-	--		AND start_time >= @SD
-	--		order by start_time
+			SELECT top 1 @NextStartTime=ISNULL(start_time,'') FROM TB_OrderMain WITH(NOLOCK) 
+			WHERE CarNo=@CarNo AND order_number<>@OrderNo AND (cancel_status=0 and car_mgt_status=0)
+			AND start_time >= @SD
+			order by start_time
 
-	--		IF @NextStartTime <> ''
-	--		BEGIN
-	--			DECLARE @tempStartTime DATETIME;
-	--			SET @tempStartTime = DATEADD(MINUTE,-30,@NextStartTime);
-	--			IF @ED > @tempStartTime
-	--			BEGIN
-	--				SET @Error=1;
-	--				SET @ErrorCode='ERR181';
-	--			END
-	--		END
-	--	END
+			IF @NextStartTime <> ''
+			BEGIN
+				DECLARE @tempStartTime DATETIME;
+				SET @tempStartTime = DATEADD(MINUTE,-30,@NextStartTime);
+				IF @ED > @tempStartTime
+				BEGIN
+					SET @Error=1;
+					SET @ErrorCode='ERR181';
+				END
+			END
+		END
 		
-	--	IF @Error=0
-	--	BEGIN
-	--		--延長用車時間重疊到之後的預約用車時間
-	--		SET @tmpCount=0;
-	--		SELECT @tmpCount=COUNT(IDNO) FROM TB_OrderMain  WITH(NOLOCK)
-	--		WHERE IDNO=@IDNO AND order_number<>@OrderNo 
-	--		AND (car_mgt_status<4 AND cancel_status=0)
-	--		AND (start_time between @SD AND @ED) 
-	--		AND (ProjType <> 4 AND ProjType=@ProjType); 
-	--		IF @tmpCount>0
-	--		BEGIN
-	--			SET @Error=1;
-	--			SET @ErrorCode='ERR182';
-	--		END
-	--	END
-	--END
+		IF @Error=0
+		BEGIN
+			--延長用車時間重疊到之後的預約用車時間
+			SET @tmpCount=0;
+			SELECT @tmpCount=COUNT(IDNO) FROM TB_OrderMain  WITH(NOLOCK)
+			WHERE IDNO=@IDNO AND order_number<>@OrderNo 
+			AND (car_mgt_status<4 AND cancel_status=0)
+			AND (start_time between @SD AND @ED) 
+			AND (ProjType <> 4 AND ProjType=@ProjType); 
+			IF @tmpCount>0
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR182';
+			END
+		END
+	END
 
 	--開始做延長
 	IF @Error=0
