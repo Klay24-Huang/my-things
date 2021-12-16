@@ -65,7 +65,6 @@ namespace OtherService.Common
         {
             SQLHelper<SPInput_InsTradeForClose, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_InsTradeForClose, SPOutput_Base>(connetStr);
             SPOutput_Base spOut = new SPOutput_Base();
-            //20211214 ADD BY ADAM REASON.有增加參數，故多增加版本對應
             string SPName = "usp_InsTradeForClose_I01_V20211214";//new ObjType().GetSPName(ObjType.SPType.InsTrade);
             flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
             if (flag)
