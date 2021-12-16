@@ -147,7 +147,7 @@ namespace WebAPI.Controllers
                         //flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
                         //flag = Credit.DoCreditRefund(OrderAuthList[i].order_number, OrderAuthList[i].returnAmt, "批次退款", OrderAuthList[i].CardToken, OrderAuthList[i].transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
                         //20210114 ADD BY ADAM REASON.修正退款程式有多增加IDNO的欄位
-                        flag = Credit.DoCreditRefund(OrderAuthList[i].order_number, IDNO, OrderAuthList[i].returnAmt, "批次退款", OrderAuthList[i].CardToken, OrderAuthList[i].transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
+                        flag = Credit.DoCreditRefund(OrderAuthList[i].order_number, OrderAuthList[i].IDNO, OrderAuthList[i].returnAmt, "批次退款", OrderAuthList[i].CardToken, OrderAuthList[i].transaction_no, ref WSRefundOutput, ref errCode, ref errMsg);
                     }
                     //logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(WSAuthOutput));
 
