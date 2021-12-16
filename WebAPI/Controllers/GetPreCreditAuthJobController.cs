@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private CommonFunc baseVerify { get; set; }
 
-        [HttpGet]
+        [HttpPost]
         public Dictionary<string, object> DoJob(Dictionary<string, object> value)
         {
             logger.Trace("Init");

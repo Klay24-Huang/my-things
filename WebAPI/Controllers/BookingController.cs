@@ -431,7 +431,7 @@ namespace WebAPI.Controllers
                     else if (ProjType == 3)
                     {
                         canAuth = true;
-                        int triaHour = 6;  //路邊預收6小時授權金
+                        int triaHour = 1;  //2021/12/16 因企劃臨時要求路邊只預收1小時授權金
                         estimateData.ED = SDate.AddHours(triaHour);
                     }
                     EstimateDetail estimateDetail;
