@@ -1,10 +1,3 @@
-/****** Object:  StoredProcedure [dbo].[usp_BeforeBookingExtend]    Script Date: 2021/12/15 下午 04:58:08 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 /***********************************************************************************************
 * Server   : sqyhi03az.database.windows.net
 * Database : IRENT_V2
@@ -124,23 +117,6 @@ BEGIN TRY
 
 		IF @Error=0
 		BEGIN
-			----檢查延長時間是否有卡到其他訂單
-			--SELECT @tmpCount=COUNT(IDNO) FROM TB_OrderMain WITH(NOLOCK)
-			--WHERE (CarNo=@CarNo AND order_number<>@OrderNo AND (cancel_status=0 and car_mgt_status=0))AND  
-			--(
-			--	(start_time between @SD AND @ED) 
-			--	OR (stop_time between @SD AND @ED)
-			--	OR (@SD BETWEEN start_time AND stop_time)
-			--	OR (@ED BETWEEN start_time AND stop_time)
-			--	OR (DATEADD(MINUTE,-30,@SD) between start_time AND stop_time)
-			--	OR (DATEADD(MINUTE,30,@ED) between start_time AND stop_time)
-			--);
-			--IF @tmpCount>0
-			--BEGIN
-			--	SET @Error=1;
-			--	SET @ErrorCode='ERR181';
-			--END
-
 			SELECT top 1 @NextStartTime=ISNULL(start_time,'') FROM TB_OrderMain WITH(NOLOCK) 
 			WHERE CarNo=@CarNo AND order_number<>@OrderNo AND (cancel_status=0 and car_mgt_status=0)
 			AND start_time >= @SD
@@ -175,65 +151,6 @@ BEGIN TRY
 		END
 	END
 
-	----開始做延長
-	--IF @Error=0
-	--BEGIN
-	--	BEGIN TRAN
-
-	--	INSERT TB_OrderExtendHistory (order_number,StopTime,ExtendStopTime,booking_status)
-	--	SELECT @OrderNo,stop_time,@ED,booking_status
-	--	FROM TB_OrderMain
-	--	WITH(NOLOCK) WHERE order_number=@OrderNo
-
-	--	IF @NowTime>@tmpED
-	--	BEGIN
-	--		--超過預計還車時間才延長用車，則要記錄逾時時間
-	--		IF @tmpFineTime=''
-	--		BEGIN
-	--			SET @Descript=N'使用者操作【延長用車】逾時';
-
-	--			UPDATE TB_OrderMain 
-	--			SET stop_time=@ED,
-	--				booking_status=3,
-	--				fine_Time=@tmpED 
-	--			WHERE order_number=@OrderNo 
-	--			AND booking_status<4 
-	--			AND (car_mgt_status>=4 AND car_mgt_status<15) 
-	--			AND cancel_status<3
-					
-	--			INSERT INTO TB_OrderHistory(OrderNum,booking_status,car_mgt_status,cancel_status,Descript)
-	--			SELECT @OrderNo,booking_status,car_mgt_status,cancel_status,@Descript FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo;
-	--		END
-	--		ELSE
-	--		BEGIN
-	--			UPDATE TB_OrderMain 
-	--			SET stop_time=@ED,
-	--				booking_status=3
-	--			WHERE order_number=@OrderNo 
-	--			AND booking_status<4 
-	--			AND (car_mgt_status>=4 AND car_mgt_status<15) 
-	--			AND cancel_status<3
-
-	--			INSERT INTO TB_OrderHistory(OrderNum,booking_status,car_mgt_status,cancel_status,Descript)
-	--			SELECT @OrderNo,booking_status,car_mgt_status,cancel_status,@Descript FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo;
-	--		END
-	--	END
-	--	ELSE
-	--	BEGIN
-	--		UPDATE TB_OrderMain 
-	--		SET stop_time=@ED,
-	--			booking_status=3 
-	--		WHERE order_number=@OrderNo 
-	--		AND booking_status<4 
-	--		AND (car_mgt_status>=4 AND car_mgt_status<15)
-	--		AND cancel_status<3
-
-	--		INSERT INTO TB_OrderHistory(OrderNum,booking_status,car_mgt_status,cancel_status,Descript)
-	--		SELECT @OrderNo,booking_status,car_mgt_status,cancel_status,@Descript FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo;
-	--	END
-	--	COMMIT TRAN;
-	--END
-
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
@@ -260,5 +177,6 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BeforeBookingExtend';
+
 
 
