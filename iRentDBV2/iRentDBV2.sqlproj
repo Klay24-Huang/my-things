@@ -606,6 +606,7 @@
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthReservationList_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_UpdateOrderAuthList_U02.sql" />
     <Build Include="dbo\Stored Procedures\usp_SendReturnCarControl_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_BeforeBookingExtend.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
