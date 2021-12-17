@@ -60,9 +60,16 @@ namespace HotaiPayWebView.Controllers
         //}
 
         //[HttpGet] //沒寫也會判定成get?!
-        public ActionResult CreditCardChoose(string irent_access_token)//參數來源可以抓URL的QUERYSTRING和VIEW的
+        public ActionResult CreditCardChoose()//string irent_access_token，參數來源可以抓URL的QUERYSTRING和VIEW的
         {
-            //List<CreditCardChoose> lstData = new HotaiPayCtbcRepository(connetStr).GetCreditCarLists("C221120413");
+            //不抓QUERYSTRING改抓Session
+            string irent_access_token = "";
+            HotaipayService HPServices = new HotaipayService();
+            var decryptDic = new Dictionary<string, string>();
+            if(Session["p"] != null)
+                decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
+            irent_access_token = decryptDic["irent_access_token"].Trim();
+
             bool flag;
             HotaipayService getlist = new HotaipayService();
             IFN_QueryCardList input = new IFN_QueryCardList();
@@ -106,12 +113,12 @@ namespace HotaiPayWebView.Controllers
             HotaipayService hotaipayService = new HotaipayService();
 
 
-        var input = new IFN_HotaiAddCard()
+            var input = new IFN_HotaiAddCard()
             {
                 IDNO = Session["id"].ToString(),
                 //RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
                 RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-               
+
                 //RedirectURL = "https://www.irentcar.com.tw",
                 insUser = "TangWeiChi",
                 LogID = 0,
@@ -155,7 +162,7 @@ namespace HotaiPayWebView.Controllers
                 IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard()
                 {
                     Birthday = inn.Birthday,//"19910804"
-                    IDNO = inn.CTBCIDNO,//"A121563290"
+                    IDNO = Session["id"].ToString(),//inn.CTBCIDNO,//"A121563290"
                     CTBCIDNO = inn.CTBCIDNO,//"A121563290"
                     //RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
                     RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
@@ -250,25 +257,30 @@ namespace HotaiPayWebView.Controllers
             List<ErrorInfo> errList = new List<ErrorInfo>();
             string IDNO = "";
             long LogID = 65471;
-            var decryptDic = new Dictionary<string, string>() ;
+            var decryptDic = new Dictionary<string, string>();
 
             ////若網址列有irent_access_token
             //if (TempData["irent_access_token"]!=null)
             //{
             //    irent_access_token = TempData["irent_access_token"].ToString().Trim();
             //}
-            if (Session["p"] != null) {
+            if (Session["p"] != null)
+            {
                 decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
                 irent_access_token = decryptDic["irent_access_token"].Trim();
             }
             //若有p加密字串
-            else if (Request.QueryString["p"].Trim().Length > 0)
+            else if (Request.QueryString["p"] != null && Request.QueryString["p"].Trim().Length > 0)
             {
                 //進行解密
                 decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
                 irent_access_token = decryptDic["irent_access_token"].Trim();
             }
-            
+            else {
+                return View("Login","HotaiPay");
+            }
+
+
             //以上面獲得的Token取IDNO
             flag = GetIDNOFromToken(irent_access_token, LogID, ref IDNO, ref errList);
 
@@ -296,13 +308,16 @@ namespace HotaiPayWebView.Controllers
 
             var redirectURL = "";
             var nowDomain = Request.Url.AbsoluteUri;
-            if (nowDomain.IndexOf("hieasyrent.hotaimotor.com.tw") != -1) {
+            if (nowDomain.IndexOf("hieasyrent.hotaimotor.com.tw") != -1)
+            {
                 redirectURL = this.redirectURL;
             }
-            else if (nowDomain.IndexOf("www.irentcar.com.tw") != -1) {
+            else if (nowDomain.IndexOf("www.irentcar.com.tw") != -1)
+            {
                 redirectURL = this.iRentCarURL;
             }
-            else if (nowDomain.IndexOf("localhost:44330/") != -1) {
+            else if (nowDomain.IndexOf("localhost:44330/") != -1)
+            {
                 redirectURL = this.localURL;
             }
             Session["redirectURL"] = redirectURL;
@@ -364,12 +379,14 @@ namespace HotaiPayWebView.Controllers
                 sp_input.PRGName = "CreditcardChoose";
                 logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
-                if (!flag) {
+                if (!flag)
+                {
                     logger.Error($"HotaiPayCtbc.CreditcardChoose.sp_SetDefaultCard 設定預設卡失敗IDNO={IDNO} ERRCODE= {errCode}");
-                    ViewBag.Alert = "fail to get update database"; 
+                    ViewBag.Alert = "fail to get update database";
                 }
             }
-            else {
+            else
+            {
                 return View("NoCreditCard", irent_access_token);
             }
             if (flag)
@@ -387,7 +404,7 @@ namespace HotaiPayWebView.Controllers
             //string b = StatusDesc;
             if (StatusDesc.ToUpper() == "SUCCESS")
             {
-                return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = Session["irent_access_token"].ToString() });
+                return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { p = Session["p"] }); //irent_access_token = Session["irent_access_token"].ToString()
                 //return RedirectToAction("NoCreditCard", "HotaiPayCtbc", new { irent_access_token = AT });
             }
             else

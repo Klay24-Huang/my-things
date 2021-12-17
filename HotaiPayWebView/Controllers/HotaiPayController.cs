@@ -72,7 +72,13 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    ViewBag.Alert = errorDic[errCode];
+                    if (errorDic[errCode].Contains("帳號"))
+                        ViewBag.PhoneAlert = errorDic[errCode];
+                    else if (errorDic[errCode].Contains("密碼"))
+                        ViewBag.PwdAlert = errorDic[errCode];
+                    else
+                        ViewBag.PwdAlert = errorDic[errCode];
+
                     return View();
                 }
             }
@@ -490,7 +496,8 @@ namespace HotaiPayWebView.Controllers
         {
             ViewBag.Phone = Session["Phone"];
             ViewBag.OtpCode = Session["OtpCode"];
-            ViewBag.Alert = Session["Alert"];
+            ViewBag.PhoneAlert = Session["AlertPhone"];
+            ViewBag.OtpAlert = Session["AlertOtp"];
             return View();
         }
 
@@ -509,12 +516,13 @@ namespace HotaiPayWebView.Controllers
 
             if (checkSignUpOutput.isSignup)
             {
-                Session["Alert"] = "此帳號已被註冊";
+                Session["AlertPhone"] = "此帳號已被註冊";
                 return RedirectToAction("RegisterStep1");
             }
             else
             {
-                Session["Alert"] = "";
+                ViewBag.PhoneAlert = "";
+                ViewBag.OtpAlert = ""; 
                 WebAPIInput_SendSmsOtp getSMSOTP = new WebAPIInput_SendSmsOtp
                 {
                     mobilePhone = phone,
@@ -530,7 +538,7 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    Session["Alert"] = errorDic[errCode];
+                    Session["AlertOtp"] = errorDic[errCode];
 
                     return Redirect("RegisterStep1");
                 }
@@ -561,8 +569,9 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep2" });
-                }
+                    ViewBag.Alert = "驗證碼錯誤，請重新輸入。";
+                    return View();
+                } 
             }
             catch (Exception e)
             {
@@ -646,25 +655,26 @@ namespace HotaiPayWebView.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SetSignUpProfile(SignUpProfile signUpProfile)
         {
-            bool flag = false;
-            string errCode = "";
-            ViewBag.CustID = signUpProfile.CustID.Trim();
-            ViewBag.Name = signUpProfile.Name.Trim();
-            ViewBag.Birthday = signUpProfile.Birth.Trim();
-            ViewBag.Email = signUpProfile.Email.Trim();
-
-            if (signUpProfile.Sex.Trim() == "male")
-            {
-                ViewBag.MaleCheck = true;
-                ViewBag.FemaleCheck = false;
-            }
-            else
-            {
-                ViewBag.MaleCheck = false;
-                ViewBag.FemaleCheck = true;
-            }
             if (ModelState.IsValid)
             {
+                bool flag = false;
+                string errCode = "";
+                ViewBag.CustID = signUpProfile.CustID.Trim();
+                ViewBag.Name = signUpProfile.Name.Trim();
+                ViewBag.Birthday = signUpProfile.Birth.Trim();
+                ViewBag.Email = signUpProfile.Email.Trim();
+
+                if (signUpProfile.Sex.Trim() == "male")
+                {
+                    ViewBag.MaleCheck = true;
+                    ViewBag.FemaleCheck = false;
+                }
+                else
+                {
+                    ViewBag.MaleCheck = false;
+                    ViewBag.FemaleCheck = true;
+                }
+
 
                 if (!CheckROCID(signUpProfile.CustID.Trim()))
                 {
@@ -730,20 +740,7 @@ namespace HotaiPayWebView.Controllers
         {
             return RedirectToAction("/Login", new { p = Session["p"]} );
         }
-        //public ActionResult BindCardFailed2(string mode)
-        //{
-        //    if (mode == "1")
-        //    {
-        //        return View();
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
-        //    }
-        //    //return RedirectToAction("/Login", new { irent_access_token = Session["irent_access_token"], phone = Session["phone"] });
-        //}
         #endregion
-
 
         #region 個人資料填寫
         public ActionResult PersonalInformation()
@@ -751,7 +748,6 @@ namespace HotaiPayWebView.Controllers
             return View();
         }
         #endregion
-
 
         #region 綁定成功
         public ActionResult SuccessBind()
@@ -841,7 +837,6 @@ namespace HotaiPayWebView.Controllers
         }
 
         #endregion
-
 
         #region 註冊成功
         public ActionResult RegisterSuccess()

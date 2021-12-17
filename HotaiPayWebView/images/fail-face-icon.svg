@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="147px" height="133px" viewBox="0 0 147 133" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 2</title>
+    <defs>
+        <filter x="-30.7%" y="-35.6%" width="161.4%" height="171.3%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="6.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="1.4-註冊_和泰會員" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="登入失敗" transform="translate(-114.000000, -151.000000)">
+            <g id="Group-2" filter="url(#filter-1)" transform="translate(137.000000, 174.000000)">
+                <circle id="Combined-Shape" fill="#FFFFFF" cx="57.5" cy="43.5" r="43.5"></circle>
+                <g id="Group-3" opacity="0.503777" transform="translate(36.000000, 27.000000)">
+                    <rect id="Rectangle" fill="#D7000F" x="0" y="0" width="7.33333333" height="14.5374337" rx="1.92834783"></rect>
+                    <rect id="Rectangle" fill="#D7000F" x="36.6666667" y="0" width="7.33333333" height="14.5374337" rx="1.92834783"></rect>
+                    <rect id="Rectangle" stroke="#D7000F" stroke-width="1.936" x="15.896164" y="19.0731707" width="11.712963" height="14.9268293" rx="3.52"></rect>
+                </g>
+                <path d="M15.3651268,62.3850139 L24.6555617,80.8544343 L24.6555617,80.8544343 L3.80288695,80.8071055 L13.0050799,62.3882301 C13.3309005,61.7360759 14.1237057,61.4715302 14.7758598,61.7973508 C15.0305095,61.9245755 15.2372086,62.1307119 15.3651268,62.3850139 Z" id="Triangle" fill="#FFFFFF" transform="translate(14.229224, 70.443590) rotate(-120.000000) translate(-14.229224, -70.443590) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

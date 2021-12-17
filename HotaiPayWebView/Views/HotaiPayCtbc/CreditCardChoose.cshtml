@@ -45,10 +45,10 @@
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
-                                   value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
+                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
-                                <img src="../images/icon/credit_pay_JCB.svg" alt="">
+                                <img src="../../irweb/images/icon/credit_pay_JCB.svg" alt="">
                                 信用卡
                             </div>
                             <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
@@ -67,10 +67,10 @@
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
-                                   value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
+                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
-                                <img src="../images/icon/credit_pay_MasterCard.svg" alt="">
+                                <img src="../../irweb/images/icon/credit_pay_MasterCard.svg" alt="">
                                 信用卡
                             </div>
                             <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
@@ -88,10 +88,10 @@
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
-                                   value=@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken />
+                                   value=@MemberOneID |@CardType|@BankDesc|@CardNumber|@CardToken />
 
                             <div class="credit-style mr-2">
-                                <img src="../images/icon/credit_pay_VISA.svg" alt="">
+                                <img src="../../irweb/images/icon/credit_pay_VISA.svg" alt="">
                                 信用卡
                             </div>
                             <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
@@ -102,7 +102,7 @@
             }
 
             <div class="buttonBox text-center mb-2 d-none d-sm-block desktop-margin-top">
-                <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
+                <a class="text-blue" onclick="goAddNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
             </div>
             <div class="buttonBox d-none d-sm-block">
                 <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
@@ -115,10 +115,10 @@
 
         <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
             <div class="buttonBox mb-2">
-                <a class="text-blue" onclick="getHerfAddreess_ToBindNewCard()">＋ 新增信用卡</a>
+                <a class="text-blue" onclick="goAddNewCard()">＋ 新增信用卡</a>
             </div>
             <div class="buttonBox">
-                <button type="submit" class="btn btn-blue"  style="max-width: 414px;" id="agree-btn">
+                <button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">
                     選擇預設信用卡
                 </button>
             </div>
@@ -129,18 +129,11 @@
 </html>
 
 <script>
-    windows.onload() = function () {
-        var selected = document.querySelector('input[name="CreditCardList"]:checked').value;
-        if (selected == null || selected == "") {
-            document.getElementById("agree-btn").disabled = ture;
-            alert("no card to show");
-        }
-    };
-
-    function getHerfAddreess_ToBindNewCard() {
-        window.location.href = "@ViewBag.reURL"+"HotaiPayCtbc/BindNewCard";
-
+    //點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
+    function goAddNewCard() {
+    /*document.location.href = "/HotaiPayCtbc/BindNewCard/"*/
+        var URL =  "@ViewBag.reURL"+"HotaiPayCtbc/BindNewCard/";
+        window.location.href = URL;
     }
-
 
 </script>
