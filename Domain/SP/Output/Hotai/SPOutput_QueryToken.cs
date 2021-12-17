@@ -12,5 +12,6 @@ namespace Domain.SP.Output.Hotai
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
         public string OneID { get; set; }
+        public int IsCancel { get; set; }
     }
 }

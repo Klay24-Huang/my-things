@@ -61,6 +61,11 @@ namespace OtherService
             flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
             logger.Info($"DoQueryCardList |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
 
+            if (hotaiToken.IsCancel == 1)
+            {
+                flag = false;
+                errCode = "ERR953";
+            }
 
             //2.向中信取得卡清單
             WebAPIOutput_GetCreditCards cardsOptput = new WebAPIOutput_GetCreditCards();
@@ -129,9 +134,11 @@ namespace OtherService
                 output.CreditCards = creditCards;
             }
             //5.整理後回傳
-            if (output.CreditCards?.Count() == 0)
+            if (flag && output.CreditCards?.Count() == 0)
+            {
                 flag = false;
-
+                errCode = "ERR991";
+            }
             logger.Info($"DoQueryCardList | Final | Result:{ flag } ; errCode:{errCode} | Output:{JsonConvert.SerializeObject(output)}");
             return flag;
         }
@@ -159,10 +166,8 @@ namespace OtherService
             if (flag)
             {
                 card = hotaiCards.CreditCards.Find(p => p.IsDefault == 1);
-                
 
                 flag = (card == null) ? false : true;
-
             }
 
             return flag;
@@ -229,6 +234,7 @@ namespace OtherService
                     output.OneID = SPOut.OneID;
                     output.AccessToken = SPOut.AccessToken;
                     output.RefreshToken = SPOut.RefreshToken;
+                    output.IsCancel = SPOut.IsCancel;
                 }
                 else if (HttpStatusCode == 401) //Token 過期
                 {
@@ -257,6 +263,7 @@ namespace OtherService
                             output.OneID = SPOut.OneID;
                             output.AccessToken = outputToken.access_token;
                             output.RefreshToken = outputToken.refresh_token;
+                            output.IsCancel = SPOut.IsCancel;
                         }
                     }
                 }
@@ -280,14 +287,12 @@ namespace OtherService
             SPInput_QueryToken spInput = new SPInput_QueryToken()
             {
                 IDNO = IDNO,
-
             };
             string spName = "usp_HotaiToken_Q01";
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SPOutput_QueryToken spOutput = new SPOutput_QueryToken();
             SQLHelper<SPInput_QueryToken, SPOutput_QueryToken> sqlHelp = new SQLHelper<SPInput_QueryToken, SPOutput_QueryToken>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
-
             if (flag)
             {
                 if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
