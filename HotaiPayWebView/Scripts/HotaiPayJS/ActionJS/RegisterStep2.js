@@ -1,17 +1,19 @@
 ﻿window.onload = function () {
-    const input = document.getElementById('confirmPwd');
-    const nextStep = document.getElementById('nextStep');
+    let inputConfirm = document.getElementById("confirmPwd");
+    let nextStep1 = document.getElementById('nextStep1');
+    let nextStep2 = document.getElementById('nextStep2');
 
-    input.addEventListener('input', updateValue);
+    inputConfirm.addEventListener('input', updateValue);
 
     function updateValue(e) {
-        nextStep.disabled = false;
-        nextStep.className = 'btn btn-blue mb-2';
+        nextStep1.disabled = false;
+        nextStep1.className = 'btn btn-blue mb-2';
+        nextStep2.disabled = false;
+        nextStep2.className = 'btn btn-blue mb-2';
     }
 
     //獲取元素（兩種方式都可以）
     let inputPwd = document.getElementById("demo_input");
-    let inputConfirm = document.getElementById("confirmPwd");
     let imgsPwd = document.getElementById("eyes");
     //下面是一個判斷每次點選的效果
     let flagPwd = 0;

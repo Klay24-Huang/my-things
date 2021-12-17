@@ -78,6 +78,12 @@
             }  
         })
 
+        document.getElementById("redbtn").onfocus = function () {
+            
+            if (!document.getElementById("inlineCheckbox1").checked) {
+                swal("您尚未同意會員相關條款喔!", "按下OK回到上一頁!", "warning");
+            }
+        }
     </script>
 
 </body>

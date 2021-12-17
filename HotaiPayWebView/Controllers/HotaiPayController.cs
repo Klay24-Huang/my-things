@@ -186,7 +186,12 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    ViewBag.Alert = errorDic[errCode];
+                    if (errorDic[errCode].Contains("帳號"))
+                        ViewBag.PhoneAlert = errorDic[errCode];
+                    else if (errorDic[errCode].Contains("密碼"))
+                        ViewBag.PwdAlert = errorDic[errCode];
+                    else
+                        ViewBag.PwdAlert = errorDic[errCode];
                     return View();
                 }
                 return RedirectToRoute(new { controller = "HotaiPay", action = "AlreadyMember" });
@@ -534,6 +539,7 @@ namespace HotaiPayWebView.Controllers
                 flag = hotaiAPI.DoSendSmsOtp(getSMSOTP, ref getSMSOTPoutput, ref errCode);
                 if (flag)
                 {
+                    Session["AlertPhone"] = "已成功發送驗證碼，請留意手機簡訊";
                     return Redirect("RegisterStep1");
                 }
                 else
