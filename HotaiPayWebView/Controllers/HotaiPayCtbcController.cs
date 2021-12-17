@@ -172,11 +172,11 @@ namespace HotaiPayWebView.Controllers
                     PRGName = "InsPersonInfo"
                 };
                 string errCode = "";
-                logger.Info($"tanginput : {JsonConvert.SerializeObject(input)}");
+                //logger.Info($"tanginput : {JsonConvert.SerializeObject(input)}");
                 flag = addcard.DoFastAddCard(input, ref output, ref errCode);
-                logger.Info($"tangerror : {errCode}");
-                logger.Info($"tangerror2 : {JsonConvert.SerializeObject(output)}");
-                logger.Info($"tangerror3 : {flag}");
+                //logger.Info($"tangerror : {errCode}");
+                //logger.Info($"tangerror2 : {JsonConvert.SerializeObject(output)}");
+                //logger.Info($"tangerror3 : {flag}");
                 if (flag)
                 {
                     vm = output;

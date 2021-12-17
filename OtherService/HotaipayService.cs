@@ -287,14 +287,12 @@ namespace OtherService
             SPInput_QueryToken spInput = new SPInput_QueryToken()
             {
                 IDNO = IDNO,
-
             };
             string spName = "usp_HotaiToken_Q01";
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SPOutput_QueryToken spOutput = new SPOutput_QueryToken();
             SQLHelper<SPInput_QueryToken, SPOutput_QueryToken> sqlHelp = new SQLHelper<SPInput_QueryToken, SPOutput_QueryToken>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
-
             if (flag)
             {
                 if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
