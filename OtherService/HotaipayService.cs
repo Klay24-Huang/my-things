@@ -14,6 +14,7 @@ using Domain.WebAPI.output.Hotai.Member;
 using Domain.WebAPI.output.Hotai.Payment;
 using Newtonsoft.Json;
 using NLog;
+using OtherService.Common;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -25,7 +26,7 @@ namespace OtherService
     public class HotaipayService
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRentT"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"]?.ToString()??"";
         private static ConfigManager configManager = new ConfigManager("hotaipayment");
         private string merID = configManager.GetKey("CTBCMerID");
@@ -60,6 +61,11 @@ namespace OtherService
             flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
             logger.Info($"DoQueryCardList |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
 
+            if (hotaiToken.IsCancel == 1)
+            {
+                flag = false;
+                errCode = "ERR953";
+            }
 
             //2.向中信取得卡清單
             WebAPIOutput_GetCreditCards cardsOptput = new WebAPIOutput_GetCreditCards();
@@ -89,7 +95,8 @@ namespace OtherService
                     var originalCard = cardsOptput.HotaiCards.FirstOrDefault();
 
                     SPInput_SetDefaultCard sp_setCardInput =
-                        new SPInput_SetDefaultCard {
+                        new SPInput_SetDefaultCard
+                        {
                             IDNO = input.IDNO,
                             OneID = originalCard.MemberOneID,
                             CardNo = originalCard.CardNoMask,
@@ -113,7 +120,7 @@ namespace OtherService
                 var hasDefault = creditCards.FindIndex(p => p.IsDefault == 1) == -1 ? false : true;
                 if (!hasDefault)
                 {
-                    flag = sp_HotaiDefaultCardUnbind(
+                    var unbindFlag = sp_HotaiDefaultCardUnbind(
                             new SPInput_HotaiDefaultCardUnbind
                             {
                                 IDNO = input.IDNO,
@@ -127,9 +134,11 @@ namespace OtherService
                 output.CreditCards = creditCards;
             }
             //5.整理後回傳
-            if (output.CreditCards?.Count() == 0)
+            if (flag && output.CreditCards?.Count() == 0)
+            {
                 flag = false;
-
+                errCode = "ERR991";
+            }
             logger.Info($"DoQueryCardList | Final | Result:{ flag } ; errCode:{errCode} | Output:{JsonConvert.SerializeObject(output)}");
             return flag;
         }
@@ -157,10 +166,8 @@ namespace OtherService
             if (flag)
             {
                 card = hotaiCards.CreditCards.Find(p => p.IsDefault == 1);
-                
 
-                 flag = (card == null) ? false : true;
-
+                flag = (card == null) ? false : true;
             }
 
             return flag;
@@ -186,7 +193,7 @@ namespace OtherService
                 PRGName = input.PRGName,
                 insUser = input.insUser
             };
-            if(flag)
+            if (flag)
             {
                 flag = DoQueryCardList(objGetCards, ref hotaiCards, ref errCode);
             }
@@ -227,6 +234,7 @@ namespace OtherService
                     output.OneID = SPOut.OneID;
                     output.AccessToken = SPOut.AccessToken;
                     output.RefreshToken = SPOut.RefreshToken;
+                    output.IsCancel = SPOut.IsCancel;
                 }
                 else if (HttpStatusCode == 401) //Token 過期
                 {
@@ -255,6 +263,7 @@ namespace OtherService
                             output.OneID = SPOut.OneID;
                             output.AccessToken = outputToken.access_token;
                             output.RefreshToken = outputToken.refresh_token;
+                            output.IsCancel = SPOut.IsCancel;
                         }
                     }
                 }
@@ -278,14 +287,12 @@ namespace OtherService
             SPInput_QueryToken spInput = new SPInput_QueryToken()
             {
                 IDNO = IDNO,
-
             };
             string spName = "usp_HotaiToken_Q01";
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             SPOutput_QueryToken spOutput = new SPOutput_QueryToken();
             SQLHelper<SPInput_QueryToken, SPOutput_QueryToken> sqlHelp = new SQLHelper<SPInput_QueryToken, SPOutput_QueryToken>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
-
             if (flag)
             {
                 if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
@@ -485,13 +492,13 @@ namespace OtherService
         /// <param name="output"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoAddCard(IFN_HotaiAddCard input,ref OFN_HotaiAddCard output, ref string errCode)
+        public bool DoAddCard(IFN_HotaiAddCard input, ref OFN_HotaiAddCard output, ref string errCode)
         {
             logger.Info($"DoAddCard | start | INPUT : {JsonConvert.SerializeObject(input)}");
             bool flag = true;
             HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
             output.postData = new HotaiResReqJsonPwd();
-            
+
             //1.取得會員Token
             HotaiToken hotaiToken = new HotaiToken();
             flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
@@ -514,7 +521,7 @@ namespace OtherService
             }
            
 
-            if(flag)
+            if (flag)
             {
                 output.postData = apiOutput?.PostData;
                 output.gotoUrl = apiOutput.GotoUrl;
@@ -572,73 +579,223 @@ namespace OtherService
 
             return flag;
         }
-        
+
         /// <summary>
         /// 請求授權
         /// </summary>
         /// <param name="input"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool DoReqPaymentAuth(IFN_HotaiPaymentAuth input, ref string errCode)
+        public bool DoReqPaymentAuth(IFN_HotaiPaymentAuth input, ref OFN_HotaiPaymentAuth output, ref string errCode)
         {
             logger.Info($"DoReqPaymentAuth | start | INPUT : {JsonConvert.SerializeObject(input)}");
             var flag = true;
-           
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+
+            var spStep4Input = new SP_Input_HotaiTranStep4
+            {
+                LogID = input.LogID,
+                CardType = 0,
+                OrderNo = input.OrderNo,
+                ChkClose = (input.AutoClose == 1) ? 1 : 0,
+                ProName = input.PRGName,
+                UserID = (input.insUser == input.PRGName) ? "" : ((input.insUser.Length > 20) ? input.insUser.Substring(0, 20) : input.insUser),
+                AuthType = input.AuthType,
+                MerchantMemberID = input.IDNO,
+                process_date = DateTime.Now,
+            };
+
             //1.取得會員Token
             HotaiToken hotaiToken = new HotaiToken();
             flag = DoQueryToken(input.IDNO, input.PRGName, ref hotaiToken, ref errCode);
             logger.Info($"DoReqPaymentAuth |Get AccessToken | Result:{ flag } ; errCode:{errCode} | IDNO :{input.IDNO} ; 會員Token : {JsonConvert.SerializeObject(hotaiToken)}");
 
             HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
+
             if (flag)
             {
-                //寫入SPInput_InsTradeForClose
-                //new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);
+                var WebAPI = new PayInfoForCredit();
+                var temPayTypeInfo = WebAPI.GetPayTypeInfo(input.PayType);
 
-
-                var apiInput = new WebAPIInput_CreditCardPay()
+                var spStep1Input = new SP_Input_HotaiTranStep1
                 {
-                    AccessToken = hotaiToken.AccessToken,
+                    LogID = input.LogID,
+                    amount = input.Amount,
+                    OrderNo = input.OrderNo,
+                    MemberID = input.IDNO,
+                    AuthType = input.AuthType,
+                    AutoClose = input.AutoClose,
                     CardToken = input.CardToken,
-                    MerID = merID,
-                    TerMinnalID = terMinnalID,
-                    Lidm = input.Transaction_no,
-                    PurchAmt = input.Amount,
-                    TxType = "0",
-                    AutoCap = "1",
-                    RedirectUrl = "",
-                    //OrderDesc = "",
-                    //Pid = "",
-                    //Birthday = "",
-                    //Customize = "",
-                    //MerchantName = "",
-                    //NumberOfPay = 0,
-                    //PromoCode = "",
-                    //ProdCode = ""
+                    CreditType = input.PayType,
+                    PrgName = input.PRGName,
+                    PrgUser = input.insUser,
+                    MerchantTradeNoLeft = string.Format("{0}{1}"
+                       , temPayTypeInfo.FrontPart.Equals("OrderNo") ? input.OrderNo.ToString() : input.IDNO
+                       , temPayTypeInfo.PaySuff
+                       )
+
                 };
-                var apiOutput = new WebAPIOutput_CreditCardPay();
 
-                flag = PaymentAPI.CreaditCardPay(apiInput,ref apiOutput);
-
-                if(flag)
+                var insStep1 = InsHotaiTranStep1(spStep1Input, ref flag, ref errCode, ref lstError);
+                logger.Info($"DoReqPaymentAuth | insStep1 | Result:{ flag } ; errCode:{errCode} ; MerchantTradeNo :{insStep1.MerchantTradeNo} ; lstError : {JsonConvert.SerializeObject(lstError)}");
+                var encpyptOutput = new WebAPIOutput_CreditCardPayEncrypt();
+                if (flag)
                 {
-                   
-                    var decryptInput = new WebAPIInput_DecryptCTBCHtml()
+                    input.Transaction_no = insStep1?.MerchantTradeNo ?? "";
+                    flag = string.IsNullOrEmpty(input.Transaction_no) ? false : true;
+                }
+
+                if (flag)
+                {
+                    logger.Info("DoReqPaymentAuth | insStep2 | Begin");
+                    spStep4Input.MerchantTradeNo = input.Transaction_no;
+                    spStep4Input.PretStep = 1;
+                    var encpyptInput = new WebAPIInput_CreditCardPayEncpypt()
                     {
                         AccessToken = hotaiToken.AccessToken,
-                        PageText = apiOutput.PageText
-
+                        CardToken = input.CardToken,
+                        MerID = merID,
+                        TerMinnalID = terMinnalID,
+                        Lidm = input.Transaction_no,
+                        PurchAmt = input.Amount,
+                        TxType = "0",
+                        AutoCap = "0",
+                        RedirectUrl = "",
+                        PromoCode = input.PromoCode,
                     };
-                    var decryptOut = new WebAPIOutput_DecryptCTBCHtml();
-                    flag = PaymentAPI.DecryptCTBCHtml(decryptInput,ref decryptOut);
 
-                    var s = decryptOut.FullString;
+                    flag = PaymentAPI.CreaditCardPayEncpypt(encpyptInput, ref encpyptOutput);
+                    logger.Info($"DoReqPaymentAuth | insStep2 | CreaditCardPayEncpypt | Result:{ flag } ; encpyptOutput : {JsonConvert.SerializeObject(encpyptOutput)}");
+
+                    if (flag)
+                    {
+                        var spStep2Input = new SP_Input_HotaiTranStep2
+                        {
+                            LogID = input.LogID,
+                            MerchantTradeNo = input.Transaction_no,
+                            reqjsonpwd = encpyptOutput.PostData.reqjsonpwd,
+                            PrgName = input.PRGName,
+                            PrgUser = input.insUser,
+                        };
+
+                        InsHotaiTranStep2(spStep2Input, ref flag, ref errCode, ref lstError);
+
+                        logger.Info($"DoReqPaymentAuth | insStep1 | InsHotaiTran | Result:{ flag } ; errCode:{errCode} ; lstError : {JsonConvert.SerializeObject(lstError)}");
+                    }
+                    else
+                    {
+                        spStep4Input.IsSuccess = -3;
+                        spStep4Input.RetMsg = "授權加密失敗";
+                    }
+
+                    var apiOutput = new WebAPIOutput_CreditCardPay();
+
+                    
+                    if (flag)
+                    {
+                        logger.Info("DoReqPaymentAuth | insStep3 | Begin");
+                        spStep4Input.PretStep = 2;
+                        var apiInput = new WebAPIInput_CreditCardPay
+                        {
+                            PostData = encpyptOutput.PostData
+                        };
+                        flag = PaymentAPI.CreaditCardPay(apiInput, ref apiOutput);
+                        logger.Info($"DoReqPaymentAuth | insStep3 | CreaditCardPay | Result:{ flag } ; encpyptOutput : {JsonConvert.SerializeObject(encpyptOutput)}");
+
+                        if (flag)
+                        {
+                            var spStep3Input = new SP_Input_HotaiTranStep3
+                            {
+                                LogID = input.LogID,
+                                MerchantTradeNo = input.Transaction_no,
+                                PageTitle = apiOutput.PageTitle,
+                                PageContent = apiOutput.PageText,
+                                PrgName = input.PRGName,
+                                PrgUser = input.insUser,
+                            };
+
+                            InsHotaiTranStep3(spStep3Input, ref flag, ref errCode, ref lstError);
+                            logger.Info($"DoReqPaymentAuth | insStep3 | InsHotaiTran | Result:{ flag } ; errCode:{errCode} ; lstError : {JsonConvert.SerializeObject(lstError)}");
+
+                        }
+                        else
+                        {
+                            //中信授權連線異常
+                            spStep4Input.IsSuccess = -2;
+                            spStep4Input.RetCode = apiOutput.ErrorCode;
+                            spStep4Input.RetMsg = apiOutput.ErrorMessage;
+                        }
+                    }
+                    if (flag)
+                    {
+                        logger.Info("DoReqPaymentAuth | insStep4 | Begin");
+                        spStep4Input.PretStep = 3;
+                        var decryptInput = new WebAPIInput_DecryptCTBCHtml()
+                        {
+                            AccessToken = hotaiToken.AccessToken,
+                            PageText = apiOutput.PageText
+
+                        };
+                        var decryptOut = new WebAPIOutput_DecryptCTBCHtml();
+                        flag = PaymentAPI.DecryptCTBCHtml(decryptInput, ref decryptOut);
+                        logger.Info($"DoReqPaymentAuth | insStep4 | DecryptCTBCHtml | Result:{ flag } ; encpyptOutput : {JsonConvert.SerializeObject(decryptOut)}");
+                        
+                        if (!flag & decryptOut.ErrorCode != "000000")
+                        {
+                            //和泰解析異常
+                            spStep4Input.IsSuccess = -3;
+                            spStep4Input.RetCode = decryptOut.ErrorCode;
+                            spStep4Input.RetMsg = decryptOut.ErrorMessage;
+                        }
+                        else
+                        {
+                            spStep4Input.AuthErrcode = decryptOut.Errcode;
+                            spStep4Input.MemberID = decryptOut.MemberID;
+                            spStep4Input.MerchantID = decryptOut.MerchantID;
+                            spStep4Input.MerID = decryptOut.MerID;
+                            spStep4Input.RequestNo = decryptOut.RequestNo;
+                            spStep4Input.AuthStatus = decryptOut.Status;
+                            spStep4Input.AuthStatusCode = decryptOut.StatusCode;
+                            spStep4Input.AuthStatusDesc = decryptOut.StatusDesc;
+                            spStep4Input.RetCode = flag ? "1000" : decryptOut.StatusCode;
+                            spStep4Input.RetMsg = flag ? "交易成功" : decryptOut.StatusDesc;
+
+                            //授權交易失敗
+                            spStep4Input.IsSuccess = -1;
+
+                            if (flag)
+                            {
+                                spStep4Input.IsSuccess = 1;
+                                spStep4Input.AuthAmt = decryptOut.AuthAmt;
+                                spStep4Input.AuthCode = decryptOut.AuthCode;
+                                spStep4Input.Authrrpid = decryptOut.Authrrpid;
+                                spStep4Input.CardNumber = decryptOut.CardNumber;
+                                spStep4Input.Last4digitPAN = decryptOut.Last4digitPAN;
+                                spStep4Input.NumberOPay = decryptOut.NumberOPay;
+                                spStep4Input.TermSeq = decryptOut.TermSeq;
+                                spStep4Input.RetrRef = decryptOut?.RetrRef ?? "";
+                                spStep4Input.Xid = decryptOut.Xid;
+
+                            }
+                        }
+
+                    }
+                    var resultFlag = true;
+                    InsHotaiTranStep4(spStep4Input, ref resultFlag, ref errCode, ref lstError);
                 }
             }
+            output.RtnCode = spStep4Input?.RetCode ?? "";
+            output.AuthCode = spStep4Input?.RetCode?? "";
+            output.AuthMessage = spStep4Input?.RetMsg ?? "";
+            output.CardNo = spStep4Input?.CardNumber ?? "";
+            output.BankTradeNo = spStep4Input?.Xid ?? "";
+            output.Transaction_no = input?.Transaction_no ?? "";
+            output.PreStep = spStep4Input.PretStep;
+
             return flag;
         }
 
-        private HotaiCardInfo setHotaiCardInfo(HotaiCardInfoOriginal input,string defaultCardToken)
+        private HotaiCardInfo setHotaiCardInfo(HotaiCardInfoOriginal input, string defaultCardToken)
         {
             return new HotaiCardInfo
             {
@@ -681,7 +838,7 @@ namespace OtherService
 
             CTBCPosAPI posAPI = new CTBCPosAPI();
 
-            var flag = posAPI.QueryCTBCTransaction(input,out output);
+            var flag = posAPI.QueryCTBCTransaction(input, out output);
 
             return flag;
         }
@@ -713,6 +870,103 @@ namespace OtherService
             }
             return flag;
         }
+
+
+        public SPOutput_HotaiTranStep1 InsHotaiTranStep1(SP_Input_HotaiTranStep1 input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SP_Input_HotaiTranStep1, SPOutput_HotaiTranStep1> SqlHelper = new SQLHelper<SP_Input_HotaiTranStep1, SPOutput_HotaiTranStep1>(connetStr);
+            SPOutput_HotaiTranStep1 spOut = new SPOutput_HotaiTranStep1();
+            string SPName = "usp_HotaiTranStep1_I01";//new ObjType().GetSPName(ObjType.SPType.InsTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+
+            if (flag)
+            {
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return spOut;
+        }
+
+        public void InsHotaiTranStep2(SP_Input_HotaiTranStep2 input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SP_Input_HotaiTranStep2, SPOutput_Base> SqlHelper = new SQLHelper<SP_Input_HotaiTranStep2, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = "usp_HotaiTranStep2_U01";//new ObjType().GetSPName(ObjType.SPType.InsTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if(flag)
+            {
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+        }
+
+        public void InsHotaiTranStep3(SP_Input_HotaiTranStep3 input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SP_Input_HotaiTranStep3, SPOutput_Base> SqlHelper = new SQLHelper<SP_Input_HotaiTranStep3, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = "usp_HotaiTranStep3_U01";//new ObjType().GetSPName(ObjType.SPType.InsTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if(flag)
+            {
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+        }
+
+        public void InsHotaiTranStep4(SP_Input_HotaiTranStep4 input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SP_Input_HotaiTranStep4, SPOutput_Base> SqlHelper = new SQLHelper<SP_Input_HotaiTranStep4, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = "usp_HotaiTranStep4_U01";//new ObjType().GetSPName(ObjType.SPType.InsTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+        }
+
 
         /// <summary>
         /// 驗證SP回傳值
@@ -749,6 +1003,39 @@ namespace OtherService
                     errCode = lstError[0].ErrorCode;
                 }
             }
+        }
+
+        /// <summary>
+        /// AES解密
+        /// </summary>
+        public Dictionary<string,string> QueryStringDecryption(string encrypStr)
+        {
+            Dictionary<string, string> resultDic = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(encrypStr))
+            {
+                //base64解碼
+                string KEY = configManager.GetKey("AESKEY").Trim();
+                string IV = configManager.GetKey("AESIV").Trim();
+                string ReqParam = AESEncrypt.DecryptAES128(encrypStr, KEY, IV);
+
+                if (ReqParam != "")
+                { 
+                    var parms = ReqParam.Split(new char[] { '&' }).ToList();
+                    foreach(var param in parms)
+                    {
+                        var resultQStr = param.Split(new char[] { '=' }).ToList();
+                        if (resultQStr.Count==2)
+                            resultDic.Add(resultQStr[0], resultQStr[1]);
+                            
+                    }
+                }
+
+                return resultDic;
+            }
+            else
+                return new Dictionary<string, string>();
+
+            
         }
     }
 }

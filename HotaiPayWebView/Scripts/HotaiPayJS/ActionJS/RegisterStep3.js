@@ -1,55 +1,34 @@
-﻿import { data } from "jquery";
-
-window.onload = function () {
-     
-    var VuePage = new Vue({
-        el: '#VuePage'
-        , data: function () {
-            var data = {
-                form: {}
-            };
-            return data;
-        }
-        , methods: {
-            // 獲取驗證碼按鈕
-            SetSignUpProfile: function () {
-                var self = this;
-                var inputJson = dataJson[];
-                dataJson["name"] = self.form.Name;
-                dataJson["email"] = self.form.Email;
-                dataJson["birthday"] = self.form.Birth;
-                var sexSirCheck = document.getElementById("sex_sir");
-                var sexLadyCheck = document.getElementById("sex_lady");
-                if (sexSirCheck.checked == true) {
-                    dataJson["sex"] = "M";
-                } else if (sexLadyCheck.checked == true) {
-                    dataJson["sex"] = "F";
-                }
-                dataJson["id"] = self.form.CustID;
-                
-                // 組合表單資料
-                var postData = {};
-                postData['phone'] = self.form.Phone;
-                // 使用 jQuery Ajax 傳送至後端
-                $.ajax({
-                    url: 'SetSignUpProfile',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: JSON.stringify(dataJson),
-                    success: function (datas) {
-                        if (datas.ErrMsg) {
-                            alert(datas.ErrMsg);
-                            return;
-                        }
-                        alert(datas.ResultMsg);
-                    },
-                    error: function (err) {
-                        $('#ErrorMsg').html(err.responseText);
-                        $('#ErrorAlert').modal('toggle');
-                    },
-                });
-
-            }
+﻿window.onload = function () {
+    let flag = 0;
+    $(":checkbox").click(function () {
+        var e = document.getElementById("redbtn");
+        if (flag === 0) {
+            e.disabled = false;
+            flag = 1;
+        } else {
+            e.disabled = true;
+            flag = 0
         }
     })
+
+    function checkSubmit(ctl, event) {
+        event.preventDefault();
+        swal({
+            title: "",
+            text: "身分證字號、生日與會員服務與權益相關，請確實填寫，完成註冊後不可自行更改。",
+            imageUrl: '../images/alert-popup.svg',
+            showCancelButton: true,
+            cancelButtonText: "取消",
+            cancelButtonClass: "btn-outline-gray-small",
+            confirmButtonClass: 'btn-blue-small',
+            confirmButtonText: '完成註冊'
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $("#ProfileForm").submit();
+            } else {
+                swal("Cancelled", "You have Cancelled Form Submission!", "error");
+            }
+        }
+        );
+    };
 }

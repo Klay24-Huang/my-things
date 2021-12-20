@@ -37,10 +37,11 @@ namespace HotaiPayWebView.Controllers
             var vm = new UmekoTestViewModel();
             HotaipayService hotaipayService = new HotaipayService();
 
+
             IFN_QueryCardList ifnInput = new IFN_QueryCardList
             {
                 LogID = 0,
-                IDNO = "C221120413",
+                IDNO = "F128697972",
                 PRGName = "testPage",
                 insUser = "umeko"
             };
@@ -123,15 +124,18 @@ namespace HotaiPayWebView.Controllers
                 AuthType = 1,
                 AutoClose = 0,
                 IDNO = "C221120413",
-                OrderNo = 999999,
-                Transaction_no = ivm.OrderID
+                OrderNo = int.Parse(ivm.OrderID),
+                //Transaction_no = ivm.OrderID,
+                //insUser = "umeko",
+                //LogID = 0,
+                //PRGName = "Test"
             };
-            //var output = new OFN_HotaiFastAddCard();
+            var output = new OFN_HotaiPaymentAuth();
             string errCode = "";
-            var flag = hotaipayService.DoReqPaymentAuth(input,ref errCode);
+            var flag = hotaipayService.DoReqPaymentAuth(input, ref output, ref errCode);
             
 
-            return Json(flag);
+            return Json(output);
         }
         [HttpPost]
         public JsonResult inquiry(UmekoTestViewModel ivm)
@@ -140,6 +144,8 @@ namespace HotaiPayWebView.Controllers
 
             WebAPIInput_InquiryByLidm input = new WebAPIInput_InquiryByLidm();
             string errCode = "";
+            input.OrderID = ivm.OrderID;
+
             var flag = hotaipayService.DoQueryCTBCTransaction(input,out var output, ref errCode);
 
             return Json(output);

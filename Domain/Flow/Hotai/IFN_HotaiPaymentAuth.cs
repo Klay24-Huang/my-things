@@ -18,7 +18,10 @@ namespace Domain.Flow.Hotai
         /// 付費金額
         /// </summary>
         public int Amount { get; set; }
-
+        /// <summary>
+        /// 行銷活動代碼（中信提供）(非必要欄位，請請固定填"")
+        /// </summary>
+        public string PromoCode { get; set; }
 
         //以下為IRent需要欄位
 
@@ -43,7 +46,11 @@ namespace Domain.Flow.Hotai
         /// </summary>
         public int AuthType { get; set; }
 
-        public string PaySuff { get; set; }
+        //public string PaySuff { get; set; }
+
+        public int Step { get; set; }
+
+
 
     }
 }

@@ -683,7 +683,6 @@ namespace OtherService
             string api = SingleEntry;
             var requestUrl = $"{BaseUrl}{api}";
             string error = "";
-
             try
             {
                 var header = SetRequestHeader(access_token);
@@ -693,7 +692,6 @@ namespace OtherService
                 var resinfo = SetRequestBody(body, API, Action);
 
                 string content = JsonConvert.SerializeObject(resinfo);
-
                 logger.Info($"Post Body:{content}");
 
                 var result = ApiPost.DoApiPostJson(requestUrl, content, Method, header);
@@ -768,7 +766,6 @@ namespace OtherService
                 {
                     content = JsonConvert.SerializeObject(Body);
                 }
-
                 logger.Info($"Post Body:{content}");
 
                 var result = ApiPost.DoApiPostJson(requestUrl, content, Method, header);

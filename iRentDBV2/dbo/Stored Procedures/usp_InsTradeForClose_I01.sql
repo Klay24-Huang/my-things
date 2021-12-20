@@ -4,9 +4,9 @@
 * Database : IRENT_V2
 * 程式名稱 : usp_InsTradeForClose_I01
 * 系    統 : IRENT
-* 程式功能 : 錢包付款，寫入錢包扣款紀錄
+* 程式功能 : 信用卡授權交易表寫入
 * 作    者 : Umeko
-* 撰寫日期 : 20210922
+* 撰寫日期 : 20211026
 * 修改日期 :
 Example :
 ***********************************************************************************************/
@@ -72,8 +72,8 @@ SET @amount          =ISNULL(@amount          ,0);
 		  --0.再次檢核token
 		 IF @Error=0
 		 BEGIN
-			INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken,AutoClose)
-			VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken,@AutoClose);
+			INSERT INTO TB_Trade(OrderNo,MerchantTradeNo,CreditType,amount,MerchantMemberID,CardToken,AutoClose,AuthType)
+			VALUES(@OrderNo,@MerchantTradeNo,@CreditType,@amount,@MemberID,@CardToken,@AutoClose,@AuthType);
 			--@AuthType
 
 		 END

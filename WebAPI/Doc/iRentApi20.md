@@ -16,7 +16,7 @@
 - [CheckAppVersion 檢查APP版本](#CheckAppVersion)
 
 會員相關
-- [GiftTransferCheck 會員轉贈對象查詢](#GiftTransferCheck)
+
 - [GetMemberStatus 取得會員狀態](#GetMemberStatus)
 - [GetMemberScore 取得會員積分](#GetMemberScore)
 - [SetMemberScoreDetail 修改會員積分明細](#SetMemberScoreDetail)
@@ -24,6 +24,8 @@
 - [SetMemberCMK 更新會員條款](#SetMemberCMK)
 - [TransWebMemCMK 拋轉官網會員同意資料](#TransWebMemCMK)
 - [GetMemberRedPoint 取得會員紅點通知](#GetMemberRedPoint)
+- [GiftTransferCheck 會員轉贈對象查詢](#GiftTransferCheck)
+- [MemberUnbind 會員解綁](#MemberUnbind)
 
 首頁地圖相關
 
@@ -272,6 +274,8 @@
 20211118 查詢綁卡跟錢包(CreditAndWalletQuery)新增和泰PAY相關欄位
 
 20211201 錢包儲值-設定資訊(GetWalletStoredMoneySet) 調整StoreType參數
+
+20211209 新增會員解綁(MemberUnbind)
 
 # API位置
 
@@ -1340,6 +1344,60 @@
     }
 }
 ```
+
+## MemberUnbind 會員解綁
+
+### [/api/MemberUnbind/]
+
+- 20211209發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* Input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明                       |  型態  | 範例    |
+| ------------ | ------------------------------ | :----: | ------- |
+| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
+| ErrorCode    | 錯誤碼                         | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
+| ErrorMessage | 錯誤訊息                       | string | Success |
+| Data         | 資料物件                       | object |         |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                                     | 說明 |
+| -------- | ------------------------------------------------------------ | ---- |
+| ERR986   | 您尚未完成還車，請完成還車後再刪除iRent會員。                |      |
+| ERR987   | 您尚有預約中的訂單，請取消訂單後再刪除iRent會員。            |      |
+| ERR988   | 您有未繳費用尚未完成繳納，請先至「未繳費用」中進行繳費後再刪除iRent會員。 |      |
+| ERR989   | 您的錢包尚有餘額，請完成退款手續後再刪除iRent會員。          |      |
+| ERR990   | 您近期有用車合約，為便於您繳付可能產生的費用(如停車費,Etag)，請於還車的三個月後再刪除iRent會員。 |      |
 
 # 首頁地圖相關
 
@@ -8084,7 +8142,7 @@
 
 | 參數名稱 | 參數說明                           | 必要 | 型態 | 範例 |
 | -------- | ---------------------------------- | ---- | :--: | ---- |
-| PayMode  | 支付方式<br>0:信用卡<br>1:和雲錢包 | Y    | int  | 0    |
+| PayMode  | 支付方式<br>0:信用卡<br>1:和雲錢包<br>4:Hotaipay | Y    | int  | 0    |
 
 * input範例
 

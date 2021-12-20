@@ -47,7 +47,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.7.12\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.7.13\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -135,7 +135,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper\HtmlOutputExtensions.cs" />
+    <Compile Include="Models\ConfirmPwd.cs" />
     <Compile Include="Models\CreditCardChoose.cs" />
+    <Compile Include="Models\Login.cs" />
+    <Compile Include="Models\SignUpProfile.cs" />
     <Compile Include="Models\TangViewModel.cs" />
     <Compile Include="Models\UmekoTestViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -172,12 +175,34 @@
     <Content Include="images\icon\more.svg" />
     <Content Include="images\success&amp;fail-face-icon.png" />
     <Content Include="images\success-face-icon.svg" />
+    <Content Include="irweb\images\alert-popup.svg" />
+    <Content Include="irweb\images\eye-regular.svg" />
+    <Content Include="irweb\images\eye-slash-regular.svg" />
+    <Content Include="irweb\images\fail-face-icon.svg" />
+    <Content Include="irweb\images\Group 2 2.png" />
+    <Content Include="irweb\images\Group 2.png" />
+    <Content Include="irweb\images\hotai-logo.svg" />
+    <Content Include="irweb\images\icon\credit_pay_card.svg" />
+    <Content Include="irweb\images\icon\credit_pay_JCB.svg" />
+    <Content Include="irweb\images\icon\credit_pay_MasterCard.svg" />
+    <Content Include="irweb\images\icon\credit_pay_VISA.svg" />
+    <Content Include="irweb\images\icon\ctbcbank.svg" />
+    <Content Include="irweb\images\icon\more.svg" />
+    <Content Include="irweb\images\success&amp;fail-face-icon.png" />
+    <Content Include="irweb\images\success-face-icon.svg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="irweb\images\.DS_Store" />
+    <Content Include="irweb\images\graphic\.DS_Store" />
+    <Content Include="irweb\images\graphic\popup\.DS_Store" />
+    <Content Include="irweb\images\icon\.DS_Store" />
     <Content Include="images\.DS_Store" />
     <Content Include="images\graphic\.DS_Store" />
     <Content Include="images\graphic\popup\.DS_Store" />
     <Content Include="images\icon\.DS_Store" />
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\Login.js" />
     <Content Include="Scripts\HotaiPayJS\ActionJS\RegisterStep1.js" />
@@ -234,9 +259,11 @@
     <Content Include="Views\HotaiPay\MembershipTerms1.cshtml" />
     <Content Include="Views\HotaiPay\MembershipTerms2.cshtml" />
     <Content Include="Views\HotaiPayCtbc\unUse\CreditCardChoose.cshtml" />
-    <Content Include="Views\HotaiPayCtbc\ChooseNewCard.cshtml" />
+    <Content Include="Views\HotaiPayCtbc\unUse\ChooseNewCard.cshtml" />
     <Content Include="Views\HotaiPayCtbc\InsPersonInfo.cshtml" />
     <Content Include="Views\HotaiPayCtbc\SuccessBind.cshtml" />
+    <Content Include="Views\HotaiPay\BindCardFailed2.cshtml" />
+    <Content Include="Views\HotaiPay\MemberFail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

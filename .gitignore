@@ -311,3 +311,4 @@ WebAPI/Properties/ServiceDependencies/iRentV2-Taishin-Api2 - Web Deploy/profile.
 /WebAPI/App_Data/Logs
 /HotaiPayWebView/App_Data/Logs
 /RelayAPI/App_Data/Logs
+/Web/App_Data/Logs

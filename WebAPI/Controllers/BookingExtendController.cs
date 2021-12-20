@@ -307,7 +307,6 @@ namespace WebAPI.Controllers
             //            #region 授權結果
             //            if (authFlag)
             //            {
-
             //                #region 寫入預授權
             //                SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
             //                {
@@ -324,7 +323,6 @@ namespace WebAPI.Controllers
             //                    Status = 2
             //                };
             //                commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
-
             //                trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
             //                trace.FlowList.Add("寫入預授權");
             //                #endregion

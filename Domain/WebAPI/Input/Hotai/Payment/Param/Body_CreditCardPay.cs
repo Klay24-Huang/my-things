@@ -8,9 +8,9 @@ namespace Domain.WebAPI.Input.Hotai.Payment
     {
         public int TokenID { get; set; }
         
-        //public string MerID { get; set; }
+        public string MerID { get; set; }
 
-        //public string TerMinnalID { get; set; }
+        public string TerMinnalID { get; set; }
 
         public string Lidm { get; set; }
 

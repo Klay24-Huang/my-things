@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="154px" height="147px" viewBox="0 0 154 147" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 2</title>
+    <defs>
+        <filter x="-34.8%" y="-36.8%" width="170.6%" height="173.7%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="7.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-35.6%" y="-59.1%" width="171.1%" height="218.2%" filterUnits="objectBoundingBox" id="filter-2">
+            <feGaussianBlur stdDeviation="2" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <filter x="-35.6%" y="-59.1%" width="171.1%" height="218.2%" filterUnits="objectBoundingBox" id="filter-3">
+            <feGaussianBlur stdDeviation="2" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+    </defs>
+    <g id="1.4-註冊_和泰會員" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="登入後進行下一步綁卡1" transform="translate(-111.000000, -148.000000)">
+            <g id="Group-2" filter="url(#filter-1)" transform="translate(137.485928, 174.000000)">
+                <circle id="Combined-Shape" fill="#FFFFFF" cx="54.5140717" cy="46" r="46"></circle>
+                <g id="Group-3" transform="translate(14.514072, 34.000000)">
+                    <rect id="Rectangle" fill="#1DA6D0" x="17.71875" y="0" width="7.39565217" height="14.8310502" rx="2.19130435"></rect>
+                    <rect id="Rectangle" fill="#1DA6D0" x="54.6970109" y="0" width="7.39565217" height="14.8310502" rx="2.19130435"></rect>
+                    <ellipse id="Oval" fill="#F3BDBD" opacity="0.4" filter="url(#filter-2)" cx="72.5625" cy="21.1504313" rx="8.4375" ry="5.0761035"></ellipse>
+                    <ellipse id="Oval" fill="#F3BDBD" opacity="0.4" filter="url(#filter-3)" cx="8.4375" cy="21.1504313" rx="8.4375" ry="5.0761035"></ellipse>
+                    <path d="M49.0056949,29 C48.6028853,29 48.196295,28.8702493 47.8443521,28.6019761 C45.4653006,26.7814462 42.6542255,25.8205603 39.7125466,25.8205603 C36.9186562,25.8205603 34.2227186,26.6959204 31.9189362,28.3505156 C31.0074591,29.0058479 29.7694724,28.750367 29.1532287,27.7810747 C28.5383597,26.8128788 28.7775709,25.4952698 29.689048,24.8413995 C32.6547855,22.71093 36.1212855,21.5844749 39.7125466,21.5844749 C43.4931831,21.5844749 47.1098775,22.822406 50.1711621,25.162304 C51.063736,25.8465104 51.2665156,27.1699673 50.6234637,28.1191574 C50.2354329,28.6948118 49.6246882,29 49.0056949,29 Z" id="Fill-5" fill="#1DA6D0" transform="translate(39.905707, 25.292237) scale(1, -1) translate(-39.905707, -25.292237) "></path>
+                </g>
+                <path d="M15.6060927,73.2565912 L24.4266904,90.8977865 L24.4266904,90.8977865 L4.10221346,90.8977865 L12.9228111,73.2565912 C13.293295,72.5156234 14.1943046,72.2152869 14.9352723,72.5857708 C15.2255634,72.7309163 15.4609472,72.9663001 15.6060927,73.2565912 Z" id="Triangle" fill="#FFFFFF" transform="translate(14.264452, 80.735548) rotate(-128.000000) translate(-14.264452, -80.735548) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

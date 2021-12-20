@@ -24,7 +24,7 @@
     <div class="container text-center relative" style="max-width: 414px;">
 
         <div class="image-box mt-8">
-            <img src="~/images/success-face-icon.svg" alt="">
+            <img src="../images/success-face-icon.svg" alt="">
         </div>
 
         <div class="text-box">
@@ -33,13 +33,16 @@
                 才可以使用和泰Pay進行預約哦！
             </p>
         </div>
+        <div class="buttonBox d-none d-sm-block desktop-margin-top">
+            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;"  onclick="javascript: location.href = '../HotaiPayCtbc/NoCreditCard'">進行信用卡綁定 </button>
 
+        </div>
     </div>
 
  
-    <div class="footer-btn-box footer-btn-margin">
+    <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
         <div class="buttonBox">
-            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;"  onclick="javascript: location.href = '../HotaiPayCtbc/NoCreditCard?irent_access_token=@ViewBag.HotaiAccessToken'">進行信用卡綁定 </button>
+            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;"  onclick="javascript: location.href = '../HotaiPayCtbc/NoCreditCard'">進行信用卡綁定 </button>
         </div>
     </div>
 
@@ -52,6 +55,6 @@
     //點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
     function goBindNewCard() {
 
-        document.location.href = "/HotaiPayCtbc/NoCreditCard";
+        document.location.href = "irweb/HotaiPayCtbc/NoCreditCard";
     }
 </script>

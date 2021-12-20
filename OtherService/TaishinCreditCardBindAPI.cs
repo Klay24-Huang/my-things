@@ -820,8 +820,8 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-
-            var orderInfo = GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
             int creditType = orderInfo.creditType;
             Int64 tmpOrder = orderInfo.OrderNo;
             string tmp = orderInfo.OrderString;
@@ -911,8 +911,8 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-
-            var orderInfo = GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
             int creditType = orderInfo.creditType;
             Int64 tmpOrder = orderInfo.OrderNo;
             //string tmp = orderInfo.OrderString;
@@ -1021,7 +1021,8 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-            var orderInfo = GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
             int creditType = orderInfo.creditType;
             Int64 tmpOrder = orderInfo.OrderNo;
 
@@ -1377,7 +1378,8 @@ namespace OtherService
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
 
                 #region 更新刷卡結果
-                var orderInfo = GetOrderInfoFromMerchantTradeNo(input.RequestParams.MerchantTradeNo);
+                var payInfoApi = new PayInfoForCredit();
+                var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(input.RequestParams.MerchantTradeNo);
                 int creditType = orderInfo.creditType;
                 Int64 tmpOrder = orderInfo.OrderNo;
 

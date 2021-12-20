@@ -1,4 +1,5 @@
 ﻿
+
 /***********************************************************************************************
 * Server   : sqyhi03az.database.windows.net
 * Database : IRENT_V2
@@ -8,7 +9,7 @@
 * 作    者 : Umeko
 * 撰寫日期 : 20211101
 * 修改日期 : 
-
+--20211207 ADD BY ADAM REASON.取預授權啟用日設定
 * Example  : 
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetPreCreditAuthList_Q01]
@@ -46,10 +47,14 @@ SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
 BEGIN TRY
 
-Declare @PreOrderAuth as table ( order_number bigint,IDNO varchar(10),booking_date datetime,start_time datetime,stop_time datetime,Seqno bigint, pre_final_Price int,AuthType int,status int)
+Declare @PreOrderAuth as table ( order_number bigint,IDNO varchar(10),booking_date datetime,start_time datetime,stop_time datetime,Seqno bigint, pre_final_Price int,AuthType int,status int,CardType int)
+
+--20211207 ADD BY ADAM REASON.取預授權啟用日設定
+DECLARE @PreAuthStartDate VARCHAR(10)
+SELECT @PreAuthStartDate=MapCode FROM TB_Code WITH(NOLOCK) WHERE CodeId=35 AND Sort=1 AND UseFlag=1 
 
 --預約訂單 6小時前
-Insert into @PreOrderAuth (order_number,IDNO,booking_date,start_time,stop_time,Seqno,status,pre_final_Price,AuthType)
+Insert into @PreOrderAuth (order_number,IDNO,booking_date,start_time,stop_time,Seqno,status,pre_final_Price,AuthType,CardType)
 Select main.order_number,main.IDNO,booking_date,start_time,stop_time,Amount.Seqno,Amount.status,Amount.final_price  pre_final_price
 --,start_time a_start_time, booking_date a_booking_date,stop_time a_stop_time
 --,Convert(varchar(10),start_time,111) getCarDate,DateAdd(day,-2,DateAdd(hour,20,Convert(varchar(10),start_time,111))) BookingNDaysAgo
@@ -57,11 +62,13 @@ Select main.order_number,main.IDNO,booking_date,start_time,stop_time,Amount.Seqn
 --,DateAdd(hour,6,dbo.GET_TWDATE()) 
 --,DateAdd(hour,-2,dbo.GET_TWDATE())  TimeOver
 --,datediff(hour,stop_time,dbo.GET_TWDATE()) OverTimes
-, 1 AuthType
+, 1 AuthType, 0 CardType
 From TB_OrderMain main with(nolock)
 Join TB_OrderAuthAmount Amount with(nolock) On main.order_number = Amount.order_number
 Where main.booking_status = 0 And car_mgt_status = 0 And cancel_status = 0 And  Amount.Status = 0
 And start_time > DateAdd(hour,@NHour,dbo.GET_TWDATE()) 
+--20211207 ADD BY ADAM REASON.取預授權啟用日設定
+AND main.booking_date > CAST(@PreAuthStartDate AS DATETIME)
 
 --Select * From @PreOrderAuth
 
@@ -73,7 +80,7 @@ From TB_OrderAuthAmount A
 Where Exists(Select 1 From @PreOrderAuth Where Seqno = A.Seqno) And Status = 0
 
 --逾時訂單
-Insert into @PreOrderAuth (order_number,IDNO,booking_date,start_time,stop_time,Seqno,status,pre_final_Price,AuthType)
+Insert into @PreOrderAuth (order_number,IDNO,booking_date,start_time,stop_time,Seqno,status,pre_final_Price,AuthType,CardType)
 Select main.order_number,main.IDNO,booking_date,start_time,stop_time,0 Seqno,0 status,0  pre_final_price
 --,start_time a_start_time, booking_date a_booking_date,stop_time a_stop_time
 --,Convert(varchar(10),start_time,111) getCarDate,DateAdd(day,-2,DateAdd(hour,20,Convert(varchar(10),start_time,111))) BookingNDaysAgo
@@ -81,12 +88,25 @@ Select main.order_number,main.IDNO,booking_date,start_time,stop_time,0 Seqno,0 s
 --,DateAdd(hour,-2,dbo.GET_TWDATE())  TimeOver
 --,datediff(hour,stop_time,dbo.GET_TWDATE()) OverTimes
 , 5 AuthType
+, 0 CardType
 From TB_OrderMain main 
 Where car_mgt_status >=4 And car_mgt_status <16 And booking_status < 5 And cancel_status = 0 And ProjType in (0,3)
 --And Exists(Select 1 From TB_OrderAuthAmount Amount with(nolock) Where Amount.order_number = main.order_number And Amount.AuthType = 1)
 And Not Exists(Select 1 From TB_OrderAuth OrderAuth  with(nolock) Where order_number = main.order_number  And OrderAuth.AuthType = 5)
 And start_time >= '2021/01/01'
 And stop_time < DateAdd(hour,-2,dbo.GET_TWDATE()) 
+--20211207 ADD BY ADAM REASON.取預授權啟用日設定
+AND main.booking_date > CAST(@PreAuthStartDate AS DATETIME)
+
+Select MEMIDNO,PayMode into #DefaultCardList
+From TB_MemberData with(nolock)
+Where MEMIDNO in (Select IDNO From @PreOrderAuth)
+
+Update @PreOrderAuth
+Set CardType = Case When b.PayMode = 0 Then 1 Else 0 End
+From @PreOrderAuth a Left Join #DefaultCardList b On  a.IDNO = b.MEMIDNO
+
+Drop table #DefaultCardList
 
 Select * From @PreOrderAuth
 

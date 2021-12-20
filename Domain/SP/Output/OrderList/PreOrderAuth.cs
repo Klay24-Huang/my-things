@@ -31,6 +31,10 @@ namespace Domain.SP.Output.OrderList
         public int AuthType { get; set; }
 
         public int status { get; set; }
+        /// <summary>
+        /// 預設卡片類型 0:和泰Pay 1:台新
+        /// </summary>
+        public int CardType { get; set; }
 
 
     }

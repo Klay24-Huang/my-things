@@ -56,7 +56,7 @@
                 <a class="text-blue">「隱私權條款」</a>
             </label>
         </div>
-        <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn">同意</button>
+        <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn" disabled>同意</button>
     </div>
     }
 
@@ -69,19 +69,26 @@
 
 
     <script>
+        let flag = 0;
         $(":checkbox").click(function () {
             var e = document.getElementById("redbtn");
-            var flag = 0;
             if (flag === 0) {
-                $("#redbtn").toggleClass("checked-active");
-                e.removeAttribute("disabled");
+                e.className = "btn btn-blue mb-2";
+                e.disabled = false;
                 flag = 1;
             } else {
-                $("#redbtn").toggleClass("btn btn-disable-gray mb-2");
-                e.setAttribute('disabled', 'disabled');
+                e.className = "btn btn-disable-gray mb-2";
+                e.disabled = true;
                 flag = 0
             }
         })
+
+        document.getElementById("redbtn").onfocus = function () {
+
+            if (!document.getElementById("inlineCheckbox1").checked) {
+                swal("您尚未同意會員相關條款喔!", "按下OK回到上一頁!", "warning");
+            }
+        }
     </script>
 
 </body>
