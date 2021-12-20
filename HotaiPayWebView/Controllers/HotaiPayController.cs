@@ -22,6 +22,7 @@ using Domain.TB.Hotai;
 using Domain.SP.Input.Hotai;
 using Microsoft.Ajax.Utilities;
 using HotaiPayWebView.Models;
+using Newtonsoft.Json;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -33,6 +34,7 @@ namespace HotaiPayWebView.Controllers
         private static HashAlgorithmHelper helper = new HashAlgorithmHelper();
         private static HotaipayService HPServices = new HotaipayService();
         private static long LogID = 666;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         #region 登入頁面
         public ActionResult Login()
@@ -94,6 +96,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult Login(Login loginVale)
         {
+            //logger.Info($"tanglogin : {JsonConvert.SerializeObject(loginVale)}");
             if (Session["id"] == null)
             {
                 ViewBag.Alert = "iRent帳號過期，請重新登入。";
