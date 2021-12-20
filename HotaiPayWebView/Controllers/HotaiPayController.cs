@@ -495,7 +495,6 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
-
         #region 註冊驗證步驟一:手機驗證
         public ActionResult RegisterStep1()
         {
@@ -658,7 +657,6 @@ namespace HotaiPayWebView.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult SetSignUpProfile(SignUpProfile signUpProfile)
         {
             if (ModelState.IsValid)

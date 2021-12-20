@@ -22,7 +22,6 @@
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員登入</h6></header>
     @{Html.EnableClientValidation(); }
     @{Html.BeginForm("Login", "HotaiPay", FormMethod.Post); }
-    @Html.AntiForgeryToken()
     <div class="container text-center" style="max-width: 414px;">
         <!-- 提示文字＋圖-->
         <div class="web-img mt-8">
