@@ -32,5 +32,17 @@ namespace Domain.SP.Input.OrderAuth
         /// 金流訂單編號
         /// </summary>
         public string MerchantTradeNo { get; set; }
+        /// <summary>
+        /// 信用卡號 20211218 add by adam
+        /// </summary>
+        public string CardNumber { get; set; }
+        /// <summary>
+        /// 授權碼 20211218 add by adam
+        /// </summary>
+        public string AuthIdResp { get; set; }
+        /// <summary>
+        /// 授權金額 20211218 add by adam
+        /// </summary>
+        public int AuthAmt { get; set; }
     }
 }

@@ -149,7 +149,7 @@ namespace WebAPI.Controllers
                         {
                             flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
                         }
-                        logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(WSAuthOutput));
+                        //logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(WSAuthOutput));
 
                         SPInput_OrderNYList_I01 UpdateOrderAuthList = new SPInput_OrderNYList_I01()
                         {
@@ -159,6 +159,10 @@ namespace WebAPI.Controllers
                             AuthMessage = WSAuthOutput.ResponseParams.ResultMessage,
                             transaction_no = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo,
                             MerchantTradeNo = PayInput.transaction_no,
+                            //20211218 ADD BY ADAM
+                            CardNumber = WSAuthOutput.ResponseParams.ResultData.CardNumber,
+                            AuthIdResp = WSAuthOutput.ResponseParams.ResultData.AuthIdResp,
+                            AuthAmt = Amount
                         };
                         //故意寫錯的
                         //SPInput_OrderNYList_I01 UpdateOrderAuthList = new SPInput_OrderNYList_I01()
@@ -212,7 +216,7 @@ namespace WebAPI.Controllers
                             }
                         }
 
-                        if (flag && INVNO != "")
+                        if (INVNO != "")
                         {
                             SPInput_OrderNYList_U01 UpdOrderNYList = new SPInput_OrderNYList_U01()
                             {
