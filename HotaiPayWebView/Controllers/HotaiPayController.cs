@@ -157,7 +157,7 @@ namespace HotaiPayWebView.Controllers
                             {
                                 WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
                                 flag = hotaiAPI.DoGetMobilePhoneToOneID(loginVale.Phone, ref getOneID, ref errCode);
-                                flag = true;//唐寫死，等和泰開通安康防火牆再弄
+                                //flag = true;//唐寫死，等和泰開通安康防火牆再弄
                                 if (flag)
                                 {
                                     Session["oneID"] = "";//getOneID.memberSeq;//唐寫死，等和泰開通安康防火牆再弄
@@ -166,7 +166,6 @@ namespace HotaiPayWebView.Controllers
                                     if (errCode == "0000")
                                     {
                                         TempData["irent_access_token"] = Session["irent_access_token"];
-
                                         return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "NoCreditCard" });
                                         //以下取得信用卡列表流程
                                     }
@@ -175,7 +174,6 @@ namespace HotaiPayWebView.Controllers
                                         //return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                                         return RedirectToAction("BindCardFailed",new { });
                                     }
-
                                 }
                                 else
                                 {

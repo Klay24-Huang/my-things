@@ -8,14 +8,22 @@ namespace Domain.WebAPI.output.CTBCPOS
 {
     public class WebAPIOutput_CTBCBase
     {
-        public int Status { get; set; }
+        /// <summary>
+        /// 回覆物件狀態
+        /// </summary>
+        public int ret { get; set; } = -1;
+        
+        /// <summary>
+        /// 請款狀態
+        /// </summary>
+        public int Status { get; set; } = -1;
 
-        public string ErrCode { get; set; }
+        public string ErrCode { get; set; } = "";
 
         /// <summary>
         /// 中信後台的交易識別碼
         /// </summary>
-        public string XID { get; set; }
+        public string XID { get; set; } = "";
 
         /// <summary>
         /// 交易幣別代碼
@@ -30,48 +38,48 @@ namespace Domain.WebAPI.output.CTBCPOS
         /// <summary>
         /// 授權交易之代碼
         /// </summary>
-        public string AuthRRPID { get; set; }
+        public string AuthRRPID { get; set; } = "";
 
 
         /// <summary>
         /// 交易授權碼
         /// </summary>
-        public string AuthCode { get; set; }
+        public string AuthCode { get; set; } = "";
 
         /// <summary>
         /// 調閱編號
         /// </summary>
-        public string RetrRef { get; set; }
+        public string RetrRef { get; set; } = "";
 
         /// <summary>
         /// 調閱序號
         /// </summary>
-        public int TermSeq { get; set; }
+        public int TermSeq { get; set; } = 0;
 
         /// <summary>
         /// 訊息規格版本
         /// </summary>
-        public string Version { get; set; }
+        public string Version { get; set; } = "";
 
         /// <summary>
         /// 版本修訂日期
         /// </summary>
-        public string Revision { get; set; }
+        public string Revision { get; set; } = "";
 
         /// <summary>
         /// 錯誤訊息
         /// </summary>
-        public string ErrorDesc { get; set; }
+        public string ErrorDesc { get; set; } = "";
 
         /// <summary>
         /// 批次ID
         /// </summary>
-        public int BatchId { get; set; }
+        public int BatchId { get; set; } = 0;
 
         /// <summary>
         /// 批次序號
         /// </summary>
-        public int BatchSeq { get; set; }
+        public int BatchSeq { get; set; } = 0;
 
 
         /// <summary>
