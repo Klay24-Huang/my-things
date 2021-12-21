@@ -686,6 +686,7 @@
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CardFbinding.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CreditCardDecrypt.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CreditCardPay.cs" />
+    <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_GetCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_AddCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_CreditCardPayEncpypt.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_DecryptCTBCHtml.cs" />
