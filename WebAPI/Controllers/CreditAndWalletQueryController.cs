@@ -129,54 +129,54 @@ namespace WebAPI.Controllers
             #endregion
             #region 台新錢包(MARK)
             // 錢包先點掉，防火牆不通，先不取資料
-            //if (flag)
-            //{
-            //    #region 取個人資料
-            //    string SPName = new ObjType().GetSPName(ObjType.SPType.GetWalletInfo);
-            //    SPInput_GetWalletInfo SPInput = new SPInput_GetWalletInfo()
-            //    {
-            //        IDNO = IDNO,
-            //        LogID = LogID,
-            //        Token = Access_Token
-            //    };
-            //    SPOutput_GetWalletInfo SPOutput = new SPOutput_GetWalletInfo();
-            //    SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo> sqlHelp = new SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo>(connetStr);
-            //    flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
-            //    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-            //    #endregion
-            //    TaishinWallet WalletAPI = new TaishinWallet();
-            //    DateTime NowTime = DateTime.UtcNow;
-            //    string guid = Guid.NewGuid().ToString().Replace("-", "");
-            //    int nowCount = 1;
-            //    WebAPI_GetAccountStatus walletStatus = new WebAPI_GetAccountStatus()
-            //    {
-            //        AccountId = SPOutput.WalletAccountID,
-            //        ApiVersion = "0.1.01",
-            //        GUID = guid,
-            //        MerchantId = MerchantId,
-            //        POSId = "",
-            //        SourceFrom = "9",
-            //        StoreId = "",
-            //        StoreName = ""
-            //    };
-            //    var body = JsonConvert.SerializeObject(walletStatus);
-            //    WebAPIOutput_GetAccountStatus statusOutput = null;
-            //    string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            //    string SignCode = WalletAPI.GenerateSignCode(MerchantId, utcTimeStamp, body, APIKey);
+            if (flag)
+            {
+                #region 取個人資料
+                string SPName = new ObjType().GetSPName(ObjType.SPType.GetWalletInfo);
+                SPInput_GetWalletInfo SPInput = new SPInput_GetWalletInfo()
+                {
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    Token = Access_Token
+                };
+                SPOutput_GetWalletInfo SPOutput = new SPOutput_GetWalletInfo();
+                SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo> sqlHelp = new SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                #endregion
+                TaishinWallet WalletAPI = new TaishinWallet();
+                DateTime NowTime = DateTime.UtcNow;
+                string guid = Guid.NewGuid().ToString().Replace("-", "");
+                int nowCount = 1;
+                WebAPI_GetAccountStatus walletStatus = new WebAPI_GetAccountStatus()
+                {
+                    AccountId = SPOutput.WalletAccountID,
+                    ApiVersion = "0.1.01",
+                    GUID = guid,
+                    MerchantId = MerchantId,
+                    POSId = "",
+                    SourceFrom = "9",
+                    StoreId = "",
+                    StoreName = ""
+                };
+                var body = JsonConvert.SerializeObject(walletStatus);
+                WebAPIOutput_GetAccountStatus statusOutput = null;
+                string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                string SignCode = WalletAPI.GenerateSignCode(MerchantId, utcTimeStamp, body, APIKey);
 
-            //    flag = WalletAPI.DoGetAccountStatus(walletStatus, MerchantId, utcTimeStamp, SignCode, ref errCode, ref statusOutput);
-            //    if (flag)
-            //    {
-            //        if (statusOutput.ReturnCode == "0000")
-            //        {
-            //            apiOutput.TotalAmount = statusOutput.Result.Amount;
-            //        }
-            //        if (statusOutput.Result.Status == "2")
-            //        {
-            //            apiOutput.HasWallet = 1;
-            //        }
-            //    }
-            //}
+                flag = WalletAPI.DoGetAccountStatus(walletStatus, MerchantId, utcTimeStamp, SignCode, ref errCode, ref statusOutput);
+                if (flag)
+                {
+                    if (statusOutput.ReturnCode == "0000")
+                    {
+                        apiOutput.TotalAmount = statusOutput.Result.Amount;
+                    }
+                    if (statusOutput.Result.Status == "2")
+                    {
+                        apiOutput.HasWallet = 1;
+                    }
+                }
+            }
             #endregion
             #region 和泰PAY
             if (flag)
