@@ -13,9 +13,9 @@ namespace Domain.WebAPI.Input.CTBCPOS
     {
 
         /// <summary>
-        /// 授權金額
+        /// 請款金額
         /// </summary>
-        public int AuthAmt { get; set; } = 0;
+        public int CapAmt { get; set; } = 0;
 
     }
 }

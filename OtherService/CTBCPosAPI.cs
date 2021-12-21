@@ -21,7 +21,7 @@ namespace OtherService
         private string macKey = configManager.GetKey("MacKey");
         private string merID = configManager.GetKey("CTBCMerID");
 
-        public bool QueryCTBCTransaction(WebAPIInput_InquiryByLidm input,out WebAPIOutput_InquiryByLidm output)
+        public bool QueryCTBCTransaction(WebAPIInput_InquiryByLidm input, out WebAPIOutput_InquiryByLidm output)
         {
             var flag = true;
             output = new WebAPIOutput_InquiryByLidm();
@@ -31,10 +31,10 @@ namespace OtherService
             InquiryByLidm.MacKey = macKey;
             InquiryByLidm.ServerUrl = url;
             InquiryByLidm.TimeOut = 120;//Default 30 sec
-            
+
 
             if (flag)
-            { 
+            {
                 inquiry.MerID = imerID;
                 inquiry.Currency = "901";//台幣
                 inquiry.OrderNo = input.OrderID;
@@ -42,12 +42,12 @@ namespace OtherService
                 int ret = inquiry.Action();
 
                 //268435457
-                if (ret==0)
+                if (ret == 0)
                 {
                     output.QueryCode = inquiry.QueryCode;
                     output.OrderNo = inquiry.OrderNo;
                     output.QueryError = inquiry.QueryError;
-                    
+
                     output.XID = inquiry.XID;
                     output.AuthCode = inquiry.AuthCode;
                     output.TermSeq = inquiry.TermSeq;
@@ -68,7 +68,7 @@ namespace OtherService
         /// <param name="input"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoCTBCAuthRev(WebAPIInput_AuthRev input, out WebAPIOutput_AuthRev output) 
+        public bool DoCTBCAuthRev(WebAPIInput_AuthRev input, out WebAPIOutput_AuthRev output)
         {
             var flag = true;
             output = new WebAPIOutput_AuthRev();
@@ -79,6 +79,8 @@ namespace OtherService
                 Reversal authrev = new Reversal();
                 Reversal.ServerUrl = url;
                 Reversal.MacKey = macKey;
+                Reversal.TimeOut = 120;//Default 30 sec
+
                 authrev.MerID = imerID;
                 authrev.XID = input.XID;
                 authrev.AuthRRPID = input.AuthRRPID;
@@ -87,7 +89,7 @@ namespace OtherService
                 authrev.PurchAmt = input.PurchAmt; //原交易銷貨金額
                 authrev.AuthNewAmt = 0;            //更正的授權金額
                 int ret = authrev.Action();
-
+                output.ret = ret;
                 if (ret == 0)
                 {
                     output.Status = authrev.Status;
@@ -106,6 +108,9 @@ namespace OtherService
                     output.BatchClose = authrev.BatchClose;
                     output.ErrorDesc = authrev.ErrorDesc;
                 }
+
+                logger.Trace($"CTBC return result:{ret} AuthRev obj {JsonConvert.SerializeObject(authrev)} ");
+
             }
 
 
@@ -118,7 +123,7 @@ namespace OtherService
         /// <param name="input"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoCTBCCap(WebAPIInput_Cap input, out WebAPIOutput_Cap output) 
+        public bool DoCTBCCap(WebAPIInput_Cap input, out WebAPIOutput_Cap output)
         {
             var flag = true;
             output = new WebAPIOutput_Cap();
@@ -127,15 +132,19 @@ namespace OtherService
             if (flag)
             {
                 Cap cap = new Cap();
+                Cap.ServerUrl = url;
+                Cap.MacKey = macKey;
+                Cap.TimeOut = 120;//Default 30 sec
+                
                 cap.MerID = imerID;
                 cap.XID = input.XID;
                 cap.AuthRRPID = input.AuthRRPID;
                 cap.AuthCode = input.AuthCode;
                 cap.TermSeq = input.TermSeq;
-                cap.PurchAmt = input.AuthAmt;
-                cap.CapAmt = input.AuthAmt;
+                cap.PurchAmt = input.PurchAmt;
+                cap.CapAmt = input.CapAmt;
                 int ret = cap.Action();
-
+                output.ret = ret;
                 if (ret == 0)
                 {
                     output.Status = cap.Status;
@@ -156,7 +165,9 @@ namespace OtherService
                     output.BatchClose = cap.BatchClose;
                     output.ErrorDesc = cap.ErrorDesc;
                 }
-            }         
+
+                logger.Trace($"CTBC return result:{ret} Cap obj {JsonConvert.SerializeObject(cap)} ");
+            }
             return flag;
         }
 
@@ -175,6 +186,10 @@ namespace OtherService
             if (flag)
             {
                 CapRev caprev = new CapRev();
+                CapRev.ServerUrl = url;
+                CapRev.MacKey = macKey;
+                CapRev.TimeOut = 120;//Default 30 sec
+
                 caprev.MerID = imerID;
                 caprev.XID = input.XID;
                 caprev.AuthRRPID = input.AuthRRPID;
@@ -184,7 +199,7 @@ namespace OtherService
                 caprev.BatchId = input.BatchId;
                 caprev.BatchSeq = input.BatchSeq;
                 int ret = caprev.Action();
-
+                output.ret = ret;
                 if (ret == 0)
                 {
                     output.Status = caprev.Status;
@@ -204,6 +219,8 @@ namespace OtherService
                     output.BatchClose = caprev.BatchClose;
                     output.ErrorDesc = caprev.ErrorDesc;
                 }
+
+                logger.Trace($"CTBC return result:{ret} CapRev obj {JsonConvert.SerializeObject(caprev)} ");
             }
             return flag;
         }
@@ -229,8 +246,8 @@ namespace OtherService
 
                 refund.MerID = imerID;
                 refund.XID = input.XID;
-                refund.BatchId = 12;
-                refund.BatchSeq = 13;
+                refund.BatchId = input.CapBatchId;
+                refund.BatchSeq = input.CapBatchSeq;
                 refund.Currency = input.Currency;
                 refund.Exponent = input.Exponent;
                 refund.AuthRRPID = input.AuthRRPID;
@@ -240,7 +257,7 @@ namespace OtherService
                 refund.CapBatchId = input.CapBatchId;
                 refund.CapBatchSeq = input.CapBatchSeq;
                 int ret = refund.Action();
-
+                output.ret = ret;
                 if (ret == 0)
                 {
                     output.Status = refund.Status;
@@ -257,6 +274,8 @@ namespace OtherService
                     output.BatchClose = refund.BatchClose;
                     output.ErrorDesc = refund.ErrorDesc;
                 }
+
+                logger.Trace($"CTBC return result:{ret} Refund obj {JsonConvert.SerializeObject(refund)} ");
             }
             return flag;
         }
@@ -267,7 +286,7 @@ namespace OtherService
         /// <param name="input"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoCTBCRefundRev(WebAPIInput_RefundRev input, out WebAPIOutput_RefundRev output) 
+        public bool DoCTBCRefundRev(WebAPIInput_RefundRev input, out WebAPIOutput_RefundRev output)
         {
             var flag = true;
             output = new WebAPIOutput_RefundRev();
@@ -276,6 +295,10 @@ namespace OtherService
             if (flag)
             {
                 RefundRev refundrev = new RefundRev();
+                RefundRev.ServerUrl = url;
+                RefundRev.MacKey = macKey;
+                RefundRev.TimeOut = 120;//Default 30 sec
+
                 refundrev.MerID = imerID;
                 refundrev.XID = input.XID;
                 refundrev.AuthRRPID = input.AuthRRPID;
@@ -284,7 +307,7 @@ namespace OtherService
                 refundrev.BatchId = input.BatchId;
                 refundrev.BatchSeq = input.BatchSeq;
                 int ret = refundrev.Action();
-
+                output.ret = ret;
                 if (ret == 0)
                 {
                     output.Status = refundrev.Status;
@@ -301,6 +324,8 @@ namespace OtherService
                     output.BatchClose = refundrev.BatchClose;
                     output.ErrorDesc = refundrev.ErrorDesc;
                 }
+
+                logger.Trace($"CTBC return result:{ret} RefundRev obj {JsonConvert.SerializeObject(refundrev)} ");
             }
             return flag;
         }

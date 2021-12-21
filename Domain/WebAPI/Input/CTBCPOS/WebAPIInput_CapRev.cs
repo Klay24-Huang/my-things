@@ -13,12 +13,12 @@ namespace Domain.WebAPI.Input.CTBCPOS
     {
 
         /// <summary>
-        /// 批次ID
+        /// 請款批次ID(TB_HotaiTransaction CapBatchId)
         /// </summary>
         public int BatchId { get; set; }
 
         /// <summary>
-        /// 批次序號
+        /// 請款批次序號(TB_HotaiTransaction CapBatchSeq)
         /// </summary>
         public int BatchSeq { get; set; }
     }
