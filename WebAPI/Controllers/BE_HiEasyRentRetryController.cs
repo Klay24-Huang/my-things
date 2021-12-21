@@ -399,6 +399,43 @@ namespace WebAPI.Controllers
                                     PORDNO = ""
                                 };
                             }
+
+                            #region 20211221 安心服務轉短租
+                            //增加安心服務查詢
+                            string spName3 = "usp_BE_GetReturnCarControl_Q02";
+                            SPOutput_Base spOut3 = new SPOutput_Base();
+                            List<BE_SavePassenger> SavePassengerList = new List<BE_SavePassenger>();
+                            DataSet ds2 = new DataSet();
+                            SQLHelper<SPInput_BE_GetReturnCarControl, SPOutput_Base> sqlHelp3 = new SQLHelper<SPInput_BE_GetReturnCarControl, SPOutput_Base>(connetStr);
+                            flag = sqlHelp3.ExeuteSP(spName3, spInput2, ref spOut3, ref SavePassengerList, ref ds2, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, spOut3.Error, spOut3.ErrorCode, ref lstError, ref errCode);
+
+                            if (flag && SavePassengerList.Count>0)
+                            {
+                                input.tbSavePassenger = new SavePassenger[SavePassengerList.Count];
+
+                                for (int z = 0; z < SavePassengerList.Count; z++)
+                                {
+                                    input.tbSavePassenger[z] = new SavePassenger()
+                                    {
+                                        MEMIDNO = SavePassengerList[z].MEMIDNO,
+                                        MEMCNAME = SavePassengerList[z].MEMCNAME,
+                                        InsurancePerHours = SavePassengerList[z].InsurancePerHours
+                                    };
+                                }
+                            }
+                            else
+                            {
+                                input.tbSavePassenger = new SavePassenger[1];
+                                input.tbSavePassenger[0] = new SavePassenger()
+                                {
+                                    MEMIDNO = "",
+                                    MEMCNAME = "",
+                                    InsurancePerHours = 0
+                                };
+                            }
+                            #endregion
+
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);
                             if (flag)
