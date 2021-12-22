@@ -27,7 +27,7 @@ namespace OtherService
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string isDebug = ConfigurationManager.AppSettings["isDebug"]?.ToString()??"";
+        private string CTBCTestCard = ConfigurationManager.AppSettings["CTBCTestCard"]?.ToString()??"";
         private static ConfigManager configManager = new ConfigManager("hotaipayment");
         private string merID = configManager.GetKey("CTBCMerID");
         private string terMinnalID = configManager.GetKey("CTBCTerminalID");
@@ -45,7 +45,7 @@ namespace OtherService
             bool flag = true;
             HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
             output.CreditCards = new List<HotaiCardInfo>();
-            if (isDebug == "1")
+            if (CTBCTestCard == "1")
             {
                 logger.Info($"DoQueryCardList |Get AccessToken | 進入測試模式");
 
