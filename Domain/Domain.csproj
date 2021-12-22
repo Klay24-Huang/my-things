@@ -898,6 +898,7 @@
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_ECRefund.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetPaymentInfo.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_RelayPost.cs" />
     <Compile Include="WebAPI\output\IRentAPIOutput_Generic.cs" />
     <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_InquiryByLidm.cs" />
   </ItemGroup>

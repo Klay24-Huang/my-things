@@ -174,6 +174,10 @@ namespace WebAPI.Controllers
                     {
                         if (ProjType == 3)
                         {
+                            //路邊調整取車時間APP僅有十進位顯示故去除後面尾數，以免影響預授權判斷
+                            int diff = SDate.Minute % 10;
+                            string timeString = diff > 0 ? SDate.AddMinutes(10 - diff).ToString("yyyy/MM/dd HH:mm") : SDate.ToString("yyyy/MM/dd HH:mm");
+                            DateTime.TryParse(timeString, out SDate);
                             //20201212 ADD BY ADAM REASON.路邊改預設一天
                             EDate = SDate.AddDays(1);
                         }
@@ -431,7 +435,7 @@ namespace WebAPI.Controllers
                     else if (ProjType == 3)
                     {
                         canAuth = true;
-                        int triaHour = 6;  //路邊預收6小時授權金
+                        int triaHour = 1;  //2021/12/16 因企劃臨時要求路邊只預收1小時授權金
                         estimateData.ED = SDate.AddHours(triaHour);
                     }
                     EstimateDetail estimateDetail;
@@ -511,7 +515,7 @@ namespace WebAPI.Controllers
                                 Title = "取授權成功通知",
                                 imageurl = "",
                                 url = "",
-                                Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}以末四碼{cardNo}信用卡預約取授權成功，金額 {preAuthAmt}，謝謝!"
+                                Message = $"已於{DateTime.Now.ToString("MM/dd HH:mm")}以末四碼{cardNo}信用卡預約取授權成功，金額 {preAuthAmt}，謝謝!"
 
                             };
                             commonService.sp_InsPersonNotification(input_Notification, ref error);

@@ -356,7 +356,7 @@ namespace WebAPI.Models.BillFunc
         public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins,
             double dayMaxHour, List<Holiday> lstHoliday, List<MonthlyRentData> mOri, int Discount, double FreeMins = 0
             )
-        { 
+        {
             if (SD == null || ED == null || SD > ED)
                 throw new Exception("SD,ED錯誤");
 
@@ -661,7 +661,7 @@ namespace WebAPI.Models.BillFunc
             )
         {
             CarRentInfo re = new CarRentInfo();
-            double dre = 0;
+            double dre = 0; // 租金
             List<MonthlyRentData> mFinal = new List<MonthlyRentData>(); //剩餘月租點數
             List<string> norDates = new List<string>()  //一般平假日
             {
@@ -700,10 +700,10 @@ namespace WebAPI.Models.BillFunc
 
             dayPayList = H24FDateSet(dayPayList, dayMaxMins, fDayMaxMins);  //縮減首日及mark首日200=>199
 
-            // 20211209 UPD BY YEH REASON:這段減免會有引發後續計算問題
+            // 20211213 UPD BY YEH REASON:免費分鐘數減免打開
             // 免費分鐘數減免
-            //if (FreeMins > 0 && dayPayList != null && dayPayList.Count() > 0)
-            //    dayPayList = befMinsFree(FreeMins, dayPayList);
+            if (FreeMins > 0 && dayPayList != null && dayPayList.Count() > 0)
+                dayPayList = befMinsFree(FreeMins, dayPayList);
 
             var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();   //一般時段
             var dpList = new List<DayPayMins>();//剩餘有分鐘數的
@@ -740,12 +740,13 @@ namespace WebAPI.Models.BillFunc
             if (norList != null && norList.Count() > 0)
                 re.DiscRentInMins = Convert.ToInt32(norList.Select(x => x.xMins).Sum());    // 可折抵時數=使用分鐘數
 
+            // 20211213 UPD BY YEH REASON:因應免費分鐘數減免打開，這段不使用
             // 這裡處理減掉免費分鐘數
             // 原因是dayPayList的xMins(使用分鐘數)不能扣掉免費分鐘數，如扣掉的話，計算租金的地方會再把低銷的分鐘扣掉，就會少了低消時數的租金
             // 計算租金是用使用分鐘數去計算租金，後續計算折抵時才把免費分鐘數拿來折抵，此做法為目前沒時間調整整段邏輯的變通處理方法
-            if (re.DiscRentInMins >= Convert.ToInt32(FreeMins))     // 可折抵時數 > 免費分鐘數
-                re.DiscRentInMins = re.DiscRentInMins - Convert.ToInt32(FreeMins);  // 可折抵時數 = 可折抵時數 - 免費分鐘數
-            nowDisc = nowDisc + Convert.ToInt32(FreeMins);  // 折抵時數 = 折抵時數 + 免費分鐘數
+            //if (re.DiscRentInMins >= Convert.ToInt32(FreeMins))     // 可折抵時數 > 免費分鐘數
+            //    re.DiscRentInMins = re.DiscRentInMins - Convert.ToInt32(FreeMins);  // 可折抵時數 = 可折抵時數 - 免費分鐘數
+            //nowDisc = nowDisc + Convert.ToInt32(FreeMins);  // 折抵時數 = 折抵時數 + 免費分鐘數
 
             double wDisc = 0; //平日折扣
             double hDisc = 0; //假日則扣  
@@ -769,12 +770,12 @@ namespace WebAPI.Models.BillFunc
                         if (m_list != null && mList.Count() > 0)
                             m_list.ForEach(x => x.dayGroupId = "mon_" + m.MonthlyRentId.ToString());
 
-                        var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice, ref m_list, m_disc, m_wType, m_hType, fDayMaxMins, fDayMaxPrice);
+                        var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice, ref m_list, m_disc, m_wType, m_hType, fDayMaxMins, fDayMaxPrice, FreeMins);
                         if (mre != null)
                         {
-                            dre += mre.Item3;
-                            m_wDisc += mre.Item1;
-                            m_hDisc += mre.Item2;
+                            dre += mre.Item3;       // 租金
+                            m_wDisc += mre.Item1;   // 月租平日折扣
+                            m_hDisc += mre.Item2;   // 月租假日則扣
                             m.MotoTotalHours -= Convert.ToSingle(mre.Item1 + mre.Item2);
                         }
 
@@ -801,7 +802,7 @@ namespace WebAPI.Models.BillFunc
                     foreach (var gID in gIDs)
                     {
                         var gList = norList.Where(x => x.dayGroupId == gID).OrderBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
-                        var gre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, ref gList, 0, eumDateType.wDay.ToString(), eumDateType.hDay.ToString(), fDayMaxMins, fDayMaxPrice);
+                        var gre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, ref gList, 0, eumDateType.wDay.ToString(), eumDateType.hDay.ToString(), fDayMaxMins, fDayMaxPrice, FreeMins);
                         if (gre != null)
                         {
                             dre += gre.Item3;
@@ -832,17 +833,17 @@ namespace WebAPI.Models.BillFunc
                     {
                         if (x.useBaseMins == 0)
                         {
-                            if (useDisc >= dayBaseMins)
+                            if (useDisc >= dayBaseMins) // 使用折抵 >= 基本分鐘數
                             {
-                                if (dayBasePrice > (dayBaseMins * x.xRate))//首6分鐘少1元":10-(1.5*6) = 1
-                                    dre -= (dayBasePrice - (dayBaseMins * x.xRate));
+                                if (dayBasePrice > (dayBaseMins * x.xRate))//首6分鐘少1元":10-(1.5*6) = 1    // 基本消費 >  (基本分鐘 * 每分鐘金額)
+                                    dre -= (dayBasePrice - (dayBaseMins * x.xRate));    // 租金 = 租金 - 基本消費 - (基本分鐘 * 每分鐘金額)
                                 else
-                                    dre += (dayBaseMins * x.xRate) - dayBasePrice;
-                                x.useBaseMins += dayBaseMins;
+                                    //dre += (dayBaseMins * x.xRate) - dayBasePrice;      // 租金 = 租金 + (基本分鐘 * 每分鐘金額) - 基本消費
+                                    x.useBaseMins += dayBaseMins;
                             }
                             else
                             {
-                                var f01_over6 = x.xMins - dayBaseMins;
+                                var f01_over6 = x.xMins - dayBaseMins;  // 使用分鐘 - 基本分鐘
                                 if (f01_over6 > 0)
                                     useDisc = useDisc > f01_over6 ? f01_over6 : useDisc;
                             }
@@ -877,10 +878,12 @@ namespace WebAPI.Models.BillFunc
                 re.AfterDiscRentInMins = Convert.ToInt32(xre.Select(x => x.xMins).Sum());
             }
 
-            re.useDisc = Convert.ToInt32(wDisc + hDisc);//使用一般折扣點數
-            re.useDisc = re.useDisc - Convert.ToInt32(FreeMins);    // 這裡將免費分鐘數扣掉，使用者才會看到正確的折抵數字
+            re.useDisc = Convert.ToInt32(wDisc + hDisc);    //使用一般折扣點數
+            // 20211213 UPD BY YEH REASON:因應免費分鐘數減免打開，這段不使用
+            //if (re.useDisc >= Convert.ToInt32(FreeMins))
+            //    re.useDisc = re.useDisc - Convert.ToInt32(FreeMins);    // 這裡將免費分鐘數扣掉，使用者才會看到正確的折抵數字
 
-            re.useMonthDisc = m_wDisc + m_hDisc;//使用月租折扣點數
+            re.useMonthDisc = m_wDisc + m_hDisc;    //使用月租折扣點數
 
             if (mOri != null && mOri.Count() > 0)//剩餘月租點數
                 re.lastMonthDisc = mOri.Select(x => x.MotoTotalHours).Sum() - (m_wDisc + m_hDisc);
@@ -1229,26 +1232,27 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-
+        
         /// <summary>
         /// 機車租金計算(月租平日折扣,月租假日折扣,折扣後金額,月租平日剩餘分,月租假日剩餘分,月租折扣後剩餘分鐘,使用一般折扣點數)
         /// </summary>
         /// <param name="priceNmin">平日價格(分)</param>
         /// <param name="priceHmin">假日價格(分)</param>
         /// <param name="dayBaseMins">基本分鐘數</param>
-        /// <param name="dayBasePrice">基消</param>
-        /// <param name="Discount">折扣</param>
+        /// <param name="dayBasePrice">基本消費</param>
         /// <param name="norList">日期及使用分列表</param>
-        /// <param name="Discount">折扣點數</param>
+        /// <param name="Discount">折扣分鐘</param>
         /// <param name="wDateType">平日日期註記</param>
         /// <param name="hDateType">假日日期註記</param>
         /// <param name="fDayMaxMins">首日最大計費分鐘</param>
         /// <param name="fDayMaxPrice">首日最大計費金額</param>
+        /// <param name="FreeMinute">免費分鐘</param>
+        /// <returns></returns>
         /// <mark>2020-12-21 eason</mark>
         public Tuple<double, double, double, double, double, double, double> MotoRentDiscComp(
             double priceNmin, double priceHmin, double dayBaseMins, double dayBasePrice,
             ref List<DayPayMins> norList, double Discount,
-            string wDateType, string hDateType,double fDayMaxMins,double fDayMaxPrice
+            string wDateType, string hDateType, double fDayMaxMins, double fDayMaxPrice, double FreeMinute = 0
             )
         {
             #region 變數宣告
@@ -1278,18 +1282,18 @@ namespace WebAPI.Models.BillFunc
                 //費率回存
                 norList.ForEach(x =>
                 {
-                    if (x.DateType == eumDateType.wDay.ToString())
+                    if (x.DateType == eumDateType.wDay.ToString())  // 平日
                         x.xRate = priceNmin;
-                    else if (x.DateType == eumDateType.hDay.ToString())
+                    else if (x.DateType == eumDateType.hDay.ToString()) // 假日
                         x.xRate = priceHmin;
                 });
 
-                norMins = norList.Select(x => x.xMins).Sum();//一般時段總租用分鐘
-                nowDisc = nowDisc > norMins ? norMins : nowDisc;//自動縮減              
+                norMins = norList.Select(x => x.xMins).Sum();       //一般時段總租用分鐘
+                nowDisc = nowDisc > norMins ? norMins : nowDisc;    //自動縮減              
 
                 if (fList != null && fList.Count() > 0)
                 {
-                    var fd = MotoF24HDiscCompute(priceNmin, priceHmin, dayBaseMins, dayBasePrice, fDayMaxPrice, nowDisc, ref fList, wDateType, hDateType, fDayMaxMins);
+                    var fd = MotoF24HDiscCompute(priceNmin, priceHmin, dayBaseMins, dayBasePrice, fDayMaxPrice, nowDisc, ref fList, wDateType, hDateType, fDayMaxMins, FreeMinute);
                     if (fd != null)
                     {
                         wLastMins += fd.Item4;
@@ -3255,16 +3259,18 @@ namespace WebAPI.Models.BillFunc
         /// <param name="priceNmin">平日價格(分)</param>
         /// <param name="priceHmin">假日價格(分)</param>
         /// <param name="dayBaseMins">基本分鐘數</param>
-        /// <param name="dayBasePrice">基消</param>
+        /// <param name="dayBasePrice">基本消費</param>
+        /// <param name="dayMaxPrice">單日上限金額</param>
         /// <param name="Discount">折扣</param>
         /// <param name="fList">首日列表</param>
         /// <param name="wDateType">平日DateType</param>
         /// <param name="hDateType">假日DateType</param>
+        /// <param name="fDayMaxMins">單日上限分鐘</param>
+        /// <param name="FreeMinute">免費分鐘</param>
         /// <returns></returns>
-        /// <mark>2020-12-14 eason</mark>
         public Tuple<double, double, double, double, double> MotoF24HDiscCompute(
-            double priceNmin, double priceHmin, double dayBaseMins,double dayBasePrice, double dayMaxPrice, double Discount,
-            ref List<DayPayMins> fList,string wDateType,string hDateType,double fDayMaxMins
+            double priceNmin, double priceHmin, double dayBaseMins, double dayBasePrice, double dayMaxPrice, double Discount,
+            ref List<DayPayMins> fList, string wDateType, string hDateType, double fDayMaxMins, double FreeMinute = 0
             )
         {
             string funNm = "MotoF24HDiscCompute : ";
@@ -3311,7 +3317,16 @@ namespace WebAPI.Models.BillFunc
                 if (FdateType == sAll)
                 {
                     var useDisc01 = tmpUseDisc > fdate.xMins ? fdate.xMins : tmpUseDisc;    //折扣自動縮減
-                    var f01_over6 = fdate.xMins > dayBaseMins ? (fdate.xMins - dayBaseMins) : 0;    //超過基本分鐘的部分                    
+                    double f01_over6 = 0;    //超過基本分鐘的部分
+
+                    if (FreeMinute == 0)  // 免費分鐘數等於0，才計算超過基本分鐘的部分
+                    {
+                        f01_over6 = fdate.xMins > dayBaseMins ? (fdate.xMins - dayBaseMins) : 0;
+                    }
+                    else
+                    {
+                        f01_over6 = fdate.xMins;
+                    }
 
                     //使用6分內不可折抵
                     //if (Mins < 6)
@@ -3322,15 +3337,18 @@ namespace WebAPI.Models.BillFunc
                         if (useDisc01 == 0)
                         {
                             wLastMins += fdate.xMins;
-                            f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;
+                            if (FreeMinute == 0)
+                                f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
+                            else
+                                f24Pay += fdate.xMins * priceNmin + dayBasePrice;   // 租金 = 使用分鐘數 * 每分鐘價格 + 基本消費
                         }
                         else
                         {
-                            if (useDisc01 >= dayBaseMins)
+                            if (useDisc01 >= dayBaseMins)   // 折抵分鐘數 >= 基本分鐘數
                             {
-                                wLastMins += (fdate.xMins - useDisc01);
-                                f24Pay += (fdate.xMins - useDisc01) * priceNmin;
-                                fdate.xMins -= useDisc01;
+                                wLastMins += (fdate.xMins - useDisc01); // 折扣後平日剩餘分鐘 = 使用分鐘數 - 折抵分鐘數
+                                f24Pay += (fdate.xMins - useDisc01) * priceNmin;    // 租金 = (使用分鐘數-折抵分鐘數) * 每分鐘價格
+                                fdate.xMins -= useDisc01;   // 使用分鐘數 = 使用分鐘數 - 折抵分鐘數
                                 fdate.useBaseMins = dayBaseMins;
                             }
                             else
@@ -3339,7 +3357,9 @@ namespace WebAPI.Models.BillFunc
                                 if (f01_over6 > 0)
                                 {
                                     useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
-                                    f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceNmin;
+                                    //f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceNmin;
+                                    // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
+                                    f24Pay += dayBasePrice + (fdate.xMins - useDisc01) * priceNmin;
                                     wLastMins += (fdate.xMins - useDisc01);
                                     fdate.xMins -= useDisc01;
                                 }

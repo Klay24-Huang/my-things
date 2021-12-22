@@ -211,133 +211,133 @@ namespace WebAPI.Controllers
                     lstCardList = new CarCardCommonRepository(connetStr).GetCardListByCustom(IDNO, ref lstCarError);
                 }
 
-                #region 預授權機制
-                if (flag)
-                {
+                #region 預授權機制 2021/12/16 因企劃拿掉預授權
+                //if (flag)
+                //{
 
-                    int preAuthAmt = 0;
-                    CommonService commonService = new CommonService();
-                    SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
-                    string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
-                    //1.路邊 2.預授權不處理專案(長租客服月結E077)
-                    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID) && orderData.DoPreAuth == 1)
-                    {
-                        var trace = new TraceCom();
-                        trace.traceAdd("apiIn", value);
+                //    int preAuthAmt = 0;
+                //    CommonService commonService = new CommonService();
+                //    SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
+                //    string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
+                //    //1.路邊 2.預授權不處理專案(長租客服月結E077)
+                //    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID) && orderData.DoPreAuth == 1)
+                //    {
+                //        var trace = new TraceCom();
+                //        trace.traceAdd("apiIn", value);
 
-                        #region 計算預授權金
-                        DateTime.TryParse(apiInput.ED, out StopTime);
-                        //有調整還車時間
-                        if (DateTime.Compare(StopTime, orderData.ED) > 0)
-                        {
-                            EstimateData estimateData = new EstimateData()
-                            {
-                                ProjID = orderData.ProjID,
-                                SD = orderData.SD,
-                                ED = StopTime,
-                                CarNo = orderData.CarNo,
-                                CarTypeGroupCode = orderData.CarTypeGroupCode,
-                                WeekdayPrice = orderData.PRICE,
-                                HoildayPrice = orderData.PRICE_H,
-                                Insurance = apiInput.Insurance,
-                                InsurancePerHours = orderData.InsurancePerHours,
-                                ProjType = orderData.ProjType
-                            };
-                            EstimateDetail estimateDetail;
-                            commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
-                            preAuthAmt = estimateDetail.estimateAmt - orderData.PreAuthAmt;
+                //        #region 計算預授權金
+                //        DateTime.TryParse(apiInput.ED, out StopTime);
+                //        //有調整還車時間
+                //        if (DateTime.Compare(StopTime, orderData.ED) > 0)
+                //        {
+                //            EstimateData estimateData = new EstimateData()
+                //            {
+                //                ProjID = orderData.ProjID,
+                //                SD = orderData.SD,
+                //                ED = StopTime,
+                //                CarNo = orderData.CarNo,
+                //                CarTypeGroupCode = orderData.CarTypeGroupCode,
+                //                WeekdayPrice = orderData.PRICE,
+                //                HoildayPrice = orderData.PRICE_H,
+                //                Insurance = apiInput.Insurance,
+                //                InsurancePerHours = orderData.InsurancePerHours,
+                //                ProjType = orderData.ProjType
+                //            };
+                //            EstimateDetail estimateDetail;
+                //            commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
+                //            preAuthAmt = estimateDetail.estimateAmt - orderData.PreAuthAmt;
 
-                            trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt });
-                            trace.FlowList.Add("計算預授權金");
-                        }
-                        #endregion
-                        #region 後續流程
-                        if (preAuthAmt > 0)
-                        {
-                            CreditAuthComm creditAuthComm = new CreditAuthComm();
-                            var AuthInput = new IFN_CreditAuthRequest
-                            {
-                                CheckoutMode = 4,
-                                OrderNo = tmpOrder,
-                                IDNO = IDNO,
-                                Amount = preAuthAmt,
-                                PayType = 0,
-                                autoClose = 0,
-                                funName = funName,
-                                insUser = funName,
-                                AuthType = 3
-                            };
-                            try
-                            {
-                                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                            }
-                            catch (Exception ex)
-                            {
-                                flag = false;
-                                trace.BaseMsg = ex.Message;
-                            }
+                //            trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt });
+                //            trace.FlowList.Add("計算預授權金");
+                //        }
+                //        #endregion
+                //        #region 後續流程
+                //        if (preAuthAmt > 0)
+                //        {
+                //            CreditAuthComm creditAuthComm = new CreditAuthComm();
+                //            var AuthInput = new IFN_CreditAuthRequest
+                //            {
+                //                CheckoutMode = 4,
+                //                OrderNo = tmpOrder,
+                //                IDNO = IDNO,
+                //                Amount = preAuthAmt,
+                //                PayType = 0,
+                //                autoClose = 0,
+                //                funName = funName,
+                //                insUser = funName,
+                //                AuthType = 3
+                //            };
+                //            try
+                //            {
+                //                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                //            }
+                //            catch (Exception ex)
+                //            {
+                //                flag = false;
+                //                trace.BaseMsg = ex.Message;
+                //            }
 
-                            trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
-                            trace.FlowList.Add("刷卡授權");
-                            if (!flag)
-                            {
-                                errCode = "ERR603";
-                            }
+                //            trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
+                //            trace.FlowList.Add("刷卡授權");
+                //            if (!flag)
+                //            {
+                //                errCode = "ERR603";
+                //            }
 
-                            #region 授權成功動作
-                            if (flag)
-                            {
-                                #region 寫入預授權
+                //            #region 授權成功動作
+                //            if (flag)
+                //            {
+                //                #region 寫入預授權
 
-                                SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
-                                {
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    Token = Access_Token,
-                                    AuthType = 3,
-                                    CardType = 1,
-                                    final_price = preAuthAmt,
-                                    OrderNo = tmpOrder,
-                                    PRGName = funName,
-                                    MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
-                                    BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
-                                    Status = 2
-                                };
-                                commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
-                                trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
-                                trace.FlowList.Add("寫入預授權");
-                                #endregion
-                                #region 新增推播訊息
-                                string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0);
-                                SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
-                                {
-                                    OrderNo = Convert.ToInt32(tmpOrder),
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    NType = 19,
-                                    STime = DateTime.Now.AddSeconds(10),
-                                    Title = "取授權成功通知",
-                                    imageurl = "",
-                                    url = "",
-                                    Message = $"已於{DateTime.Now.ToString("MM/dd hh:mm")}以末四碼{cardNo}信用卡延長預計還車時間取授權成功，金額 {preAuthAmt}，謝謝!"
+                //                SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
+                //                {
+                //                    IDNO = IDNO,
+                //                    LogID = LogID,
+                //                    Token = Access_Token,
+                //                    AuthType = 3,
+                //                    CardType = 1,
+                //                    final_price = preAuthAmt,
+                //                    OrderNo = tmpOrder,
+                //                    PRGName = funName,
+                //                    MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                //                    BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
+                //                    Status = 2
+                //                };
+                //                commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
+                //                trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
+                //                trace.FlowList.Add("寫入預授權");
+                //                #endregion
+                //                #region 新增推播訊息
+                //                string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0);
+                //                SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
+                //                {
+                //                    OrderNo = Convert.ToInt32(tmpOrder),
+                //                    IDNO = IDNO,
+                //                    LogID = LogID,
+                //                    NType = 19,
+                //                    STime = DateTime.Now.AddSeconds(10),
+                //                    Title = "取授權成功通知",
+                //                    imageurl = "",
+                //                    url = "",
+                //                    Message = $"已於{DateTime.Now.ToString("MM/dd HH:mm")}以末四碼{cardNo}信用卡延長預計還車時間取授權成功，金額 {preAuthAmt}，謝謝!"
 
-                                };
-                                commonService.sp_InsPersonNotification(input_Notification, ref error);
-                                trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
-                                trace.FlowList.Add("新增推播訊息");
-                                #endregion
-                            }
-                            #endregion
-                        }
-                        #endregion
+                //                };
+                //                commonService.sp_InsPersonNotification(input_Notification, ref error);
+                //                trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
+                //                trace.FlowList.Add("新增推播訊息");
+                //                #endregion
+                //            }
+                //            #endregion
+                //        }
+                //        #endregion
 
 
-                        trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                        trace.OrderNo = tmpOrder;
-                        var carRepo = new CarRentRepo();
-                        carRepo.AddTraceLog(50, funName, trace, flag);
-                    }
-                }
+                //        trace.traceAdd("TraceFinal", new { errCode, errMsg });
+                //        trace.OrderNo = tmpOrder;
+                //        var carRepo = new CarRentRepo();
+                //        carRepo.AddTraceLog(50, funName, trace, flag);
+                //    }
+                //}
                 #endregion
             }
 
