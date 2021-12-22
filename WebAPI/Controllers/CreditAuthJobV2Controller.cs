@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
@@ -156,7 +157,9 @@ namespace WebAPI.Controllers
 
                             payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                             logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(AuthOutput));
-                            UpdateOrderAuthList.AuthFlg = payStatus ? 1 : -1;
+                            List<string> exCodeList = new List<string>{ "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
+
+                            UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p=>p== errCode) ?-9:- 1);
                             UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode;
                             UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage;
                             UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no;

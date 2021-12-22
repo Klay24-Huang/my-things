@@ -1042,6 +1042,11 @@ namespace OtherService
 
             new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);
 
+            if(!flag && errCode == "000000")
+            {
+                errCode = lstError?.Count > 0 ? lstError.FirstOrDefault()?.ErrorCode : "ER00B";
+            }
+
             if (flag)
             {
                 output = DoCreditCardAuthSendForClose(Input, AutoClosed, AuthType, funName, InsUser).Result;
@@ -1055,6 +1060,7 @@ namespace OtherService
                 else
                 {
                     flag = false;
+                    errCode = output.RtnCode == "0" ? "ER00B" : errCode;
                 }
             }
 

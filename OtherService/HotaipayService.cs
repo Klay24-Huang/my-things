@@ -686,7 +686,10 @@ namespace OtherService
                     else
                     {
                         spStep4Input.IsSuccess = -3;
-                        spStep4Input.RetMsg = "授權加密失敗";
+                        //spStep4Input.RetMsg = "授權加密失敗";
+                        spStep4Input.RetCode = encpyptOutput.ErrorCode;
+                        spStep4Input.RetMsg = encpyptOutput.ErrorMessage ?? "授權加密失敗";
+                        errCode = encpyptOutput.ErrorCode;
                     }
 
                     var apiOutput = new WebAPIOutput_CreditCardPay();
@@ -725,6 +728,7 @@ namespace OtherService
                             spStep4Input.IsSuccess = -2;
                             spStep4Input.RetCode = apiOutput.ErrorCode;
                             spStep4Input.RetMsg = apiOutput.ErrorMessage;
+                            errCode = apiOutput.ErrorCode;
                         }
                     }
                     if (flag)
@@ -741,12 +745,14 @@ namespace OtherService
                         flag = PaymentAPI.DecryptCTBCHtml(decryptInput, ref decryptOut);
                         logger.Info($"DoReqPaymentAuth | insStep4 | DecryptCTBCHtml | Result:{ flag } ; encpyptOutput : {JsonConvert.SerializeObject(decryptOut)}");
                         
-                        if (!flag & decryptOut.ErrorCode != "000000")
+                       
+                        if (!flag && decryptOut.ErrorCode != "000000")
                         {
                             //和泰解析異常
                             spStep4Input.IsSuccess = -3;
                             spStep4Input.RetCode = decryptOut.ErrorCode;
                             spStep4Input.RetMsg = decryptOut.ErrorMessage;
+                            errCode = decryptOut.ErrorCode;
                         }
                         else
                         {
@@ -785,7 +791,7 @@ namespace OtherService
                     InsHotaiTranStep4(spStep4Input, ref resultFlag, ref errCode, ref lstError);
                 }
             }
-            output.RtnCode = spStep4Input?.RetCode ?? "";
+            output.RtnCode = spStep4Input?.RetCode ?? "0";
             output.AuthCode = spStep4Input?.RetCode?? "";
             output.AuthMessage = spStep4Input?.RetMsg ?? "";
             output.CardNo = spStep4Input?.CardNumber ?? "";
