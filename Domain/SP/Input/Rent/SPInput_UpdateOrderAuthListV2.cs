@@ -19,11 +19,11 @@ namespace Domain.SP.Input.Rent
         /// <summary>
         /// 授權回傳代碼
         /// </summary>
-		public string AuthCode { get; set; }
+		public string AuthCode { get; set; } = "";
         /// <summary>
         /// 授權回傳訊息
         /// </summary>
-        public string AuthMessage { get; set; }
+        public string AuthMessage { get; set; } = "";
         /// <summary>
         /// 訂單編號
         /// </summary>
@@ -31,7 +31,7 @@ namespace Domain.SP.Input.Rent
         /// <summary>
         /// 授權交易編號
         /// </summary>
-        public string transaction_no { get; set; }
+        public string transaction_no { get; set; } = "";
         /// <summary>
         /// 授權類型
         /// </summary>
@@ -55,7 +55,7 @@ namespace Domain.SP.Input.Rent
         /// <summary>
         /// 信用卡號
         /// </summary>
-        public string CardNumber { get; set; }
+        public string CardNumber { get; set; } = "";
         /// <summary>
         /// 執行程式名稱
         /// </summary>
