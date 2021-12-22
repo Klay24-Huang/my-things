@@ -125,7 +125,7 @@ namespace WebAPI.Controllers
         {
             string errCode = "000000";
 
-            var dbHotaiPay = input.PayModeList.Find(p => p.PayMode == 4);
+            var dbHotaiPay = input?.PayModeList.Find(p => p.PayMode == 4);
             if (dbHotaiPay == null)
                 return input;
 

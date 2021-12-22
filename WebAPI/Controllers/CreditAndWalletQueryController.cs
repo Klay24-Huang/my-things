@@ -193,14 +193,16 @@ namespace WebAPI.Controllers
                     PRGName = funName,
                     insUser = IDNO
                 };
+                string hotaiErrorCode = "";
+                var HotaiFlag = HotaipayService.DoQueryCardList(objQueryCards, ref HotaiCards, ref hotaiErrorCode);
 
-                var HotaiFlag = HotaipayService.DoQueryCardList(objQueryCards, ref HotaiCards, ref errCode);
                 flag = HotaiFlag;
                 if (flag)
                 {
                     if (HotaiCards.CreditCards != null && HotaiCards.CreditCards.Count > 0)
                     {
                         var DefaultCard = HotaiCards.CreditCards.Find(x => x.IsDefault == 1);
+
                         apiOutput.HasHotaiPay = (DefaultCard != null) ? 1 : 0;
                         apiOutput.HotaiListObj = HotaiCards.CreditCards;
                     }
