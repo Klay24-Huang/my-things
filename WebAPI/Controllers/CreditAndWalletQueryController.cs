@@ -131,58 +131,58 @@ namespace WebAPI.Controllers
                 ds.Dispose();
             }
             #endregion
-            #region 台新錢包(MARK)
-            // 錢包先點掉，防火牆不通，先不取資料
-            if (flag)
-            {
-                #region 取個人資料
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetWalletInfo);
-                SPInput_GetWalletInfo SPInput = new SPInput_GetWalletInfo()
-                {
-                    IDNO = IDNO,
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_GetWalletInfo SPOutput = new SPOutput_GetWalletInfo();
-                SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo> sqlHelp = new SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
-                baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
-                #endregion
-                TaishinWallet WalletAPI = new TaishinWallet();
-                DateTime NowTime = DateTime.UtcNow;
-                string guid = Guid.NewGuid().ToString().Replace("-", "");
-                int nowCount = 1;
-                WebAPI_GetAccountStatus walletStatus = new WebAPI_GetAccountStatus()
-                {
-                    AccountId = SPOutput.WalletAccountID,
-                    ApiVersion = "0.1.01",
-                    GUID = guid,
-                    MerchantId = MerchantId,
-                    POSId = "",
-                    SourceFrom = "9",
-                    StoreId = "",
-                    StoreName = ""
-                };
-                var body = JsonConvert.SerializeObject(walletStatus);
-                WebAPIOutput_GetAccountStatus statusOutput = null;
-                string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-                string SignCode = WalletAPI.GenerateSignCode(MerchantId, utcTimeStamp, body, APIKey);
+            //#region 台新錢包(MARK)
+            //// 錢包先點掉，防火牆不通，先不取資料
+            //if (flag)
+            //{
+            //    #region 取個人資料
+            //    string SPName = new ObjType().GetSPName(ObjType.SPType.GetWalletInfo);
+            //    SPInput_GetWalletInfo SPInput = new SPInput_GetWalletInfo()
+            //    {
+            //        IDNO = IDNO,
+            //        LogID = LogID,
+            //        Token = Access_Token
+            //    };
+            //    SPOutput_GetWalletInfo SPOutput = new SPOutput_GetWalletInfo();
+            //    SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo> sqlHelp = new SQLHelper<SPInput_GetWalletInfo, SPOutput_GetWalletInfo>(connetStr);
+            //    flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+            //    baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+            //    #endregion
+            //    TaishinWallet WalletAPI = new TaishinWallet();
+            //    DateTime NowTime = DateTime.UtcNow;
+            //    string guid = Guid.NewGuid().ToString().Replace("-", "");
+            //    int nowCount = 1;
+            //    WebAPI_GetAccountStatus walletStatus = new WebAPI_GetAccountStatus()
+            //    {
+            //        AccountId = SPOutput.WalletAccountID,
+            //        ApiVersion = "0.1.01",
+            //        GUID = guid,
+            //        MerchantId = MerchantId,
+            //        POSId = "",
+            //        SourceFrom = "9",
+            //        StoreId = "",
+            //        StoreName = ""
+            //    };
+            //    var body = JsonConvert.SerializeObject(walletStatus);
+            //    WebAPIOutput_GetAccountStatus statusOutput = null;
+            //    string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            //    string SignCode = WalletAPI.GenerateSignCode(MerchantId, utcTimeStamp, body, APIKey);
 
-                flag = WalletAPI.DoGetAccountStatus(walletStatus, MerchantId, utcTimeStamp, SignCode, ref errCode, ref statusOutput);
-                if (flag)
-                {
-                    if (statusOutput.ReturnCode == "0000")
-                    {
-                        apiOutput.TotalAmount = statusOutput.Result.Amount;
-                    }
-                    if (statusOutput.Result.Status == "2")
-                    {
-                        apiOutput.HasWallet = 1;
-                    }
-                    TSB_WalletBalance = statusOutput.Result.Amount;
-                }
-            }
-            #endregion
+            //    flag = WalletAPI.DoGetAccountStatus(walletStatus, MerchantId, utcTimeStamp, SignCode, ref errCode, ref statusOutput);
+            //    if (flag)
+            //    {
+            //        if (statusOutput.ReturnCode == "0000")
+            //        {
+            //            apiOutput.TotalAmount = statusOutput.Result.Amount;
+            //        }
+            //        if (statusOutput.Result.Status == "2")
+            //        {
+            //            apiOutput.HasWallet = 1;
+            //        }
+            //        TSB_WalletBalance = statusOutput.Result.Amount;
+            //    }
+            //}
+            //#endregion
             #region 和泰PAY
             if (flag)
             {
@@ -231,14 +231,14 @@ namespace WebAPI.Controllers
                 {
                     apiOutput.PayMode = spOut.PayMode;
                     apiOutput.HasWallet = spOut.WalletStatus == "2" ? 1 : 0;
-                    //apiOutput.TotalAmount = spOut.WalletAmout; //20211221 UPD BY YANKEY REASON:改抓台新紀錄的餘額
-                    apiOutput.TotalAmount = TSB_WalletBalance;
+                    apiOutput.TotalAmount = spOut.WalletAmout; 
+                    //apiOutput.TotalAmount = TSB_WalletBalance;//20211221 UPD BY YANKEY REASON:改抓台新紀錄的餘額
                     apiOutput.MEMSENDCD = spOut.MEMSENDCD;
                     apiOutput.UNIMNO = spOut.UNIMNO;
                     apiOutput.CARRIERID = spOut.CARRIERID;
                     apiOutput.NPOBAN = spOut.NPOBAN;
                     apiOutput.AutoStored = spOut.AutoStored;
-                    logger.Trace($"\n\tIDNO = {IDNO} \n\t HasWallet = {apiOutput.HasWallet} \n\t TSB_WalletBalance = {TSB_WalletBalance}\n\t spOut.WalletAmout ={spOut.WalletAmout}");
+                    //logger.Trace($"\n\tIDNO = {IDNO} \n\t HasWallet = {apiOutput.HasWallet} \n\t TSB_WalletBalance = {TSB_WalletBalance}\n\t spOut.WalletAmout ={spOut.WalletAmout}");
                 }
             }
             #endregion
