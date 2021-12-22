@@ -119,7 +119,7 @@ namespace OtherService
 
                 }
                 var hasDefault = creditCards.FindIndex(p => p.IsDefault == 1) == -1 ? false : true;
-                if (!hasDefault)
+                if (!hasDefault && dbDefaultCard.HotaiCardID != 0)
                 {
                     var unbindFlag = sp_HotaiDefaultCardUnbind(
                             new SPInput_HotaiDefaultCardUnbind
