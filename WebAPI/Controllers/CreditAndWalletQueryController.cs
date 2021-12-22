@@ -22,14 +22,17 @@ using WebCommon;
 using WebAPI.Utils;
 using Domain.Flow.Hotai;
 using Domain.TB.Hotai;
+using NLog;
 
 namespace WebAPI.Controllers
 {
+
     /// <summary>
     /// 查詢綁卡及錢包
     /// </summary>
     public class CreditAndWalletQueryController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string ApiVer = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
@@ -49,6 +52,7 @@ namespace WebAPI.Controllers
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "CreditAndWalletQueryController";
+            int TSB_WalletBalance = 0;
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_CreditAndWalletQuery apiInput = null;
@@ -127,8 +131,8 @@ namespace WebAPI.Controllers
                 ds.Dispose();
             }
             #endregion
-            #region 台新錢包(MARK)
-            // 錢包先點掉，防火牆不通，先不取資料
+            //#region 台新錢包(MARK)
+            //// 錢包先點掉，防火牆不通，先不取資料
             //if (flag)
             //{
             //    #region 取個人資料
@@ -175,9 +179,10 @@ namespace WebAPI.Controllers
             //        {
             //            apiOutput.HasWallet = 1;
             //        }
+            //        TSB_WalletBalance = statusOutput.Result.Amount;
             //    }
             //}
-            #endregion
+            //#endregion
             #region 和泰PAY
             if (flag)
             {
@@ -227,12 +232,14 @@ namespace WebAPI.Controllers
                 {
                     apiOutput.PayMode = spOut.PayMode;
                     apiOutput.HasWallet = spOut.WalletStatus == "2" ? 1 : 0;
-                    apiOutput.TotalAmount = spOut.WalletAmout;
+                    apiOutput.TotalAmount = spOut.WalletAmout; 
+                    //apiOutput.TotalAmount = TSB_WalletBalance;//20211221 UPD BY YANKEY REASON:改抓台新紀錄的餘額
                     apiOutput.MEMSENDCD = spOut.MEMSENDCD;
                     apiOutput.UNIMNO = spOut.UNIMNO;
                     apiOutput.CARRIERID = spOut.CARRIERID;
                     apiOutput.NPOBAN = spOut.NPOBAN;
                     apiOutput.AutoStored = spOut.AutoStored;
+                    //logger.Trace($"\n\tIDNO = {IDNO} \n\t HasWallet = {apiOutput.HasWallet} \n\t TSB_WalletBalance = {TSB_WalletBalance}\n\t spOut.WalletAmout ={spOut.WalletAmout}");
                 }
             }
             #endregion
