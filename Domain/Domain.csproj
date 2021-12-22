@@ -757,6 +757,7 @@
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdateBenefitsAndPrivacyVersion.cs" />
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdateMemberProfile.cs" />
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdatePassword.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_RelayPost.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
     <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_RefundRev.cs" />

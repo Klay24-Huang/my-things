@@ -756,61 +756,70 @@ namespace WebAPI.Controllers
                                     else
                                     {
                                         WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-                                    var payStatus = false;
-                                    var AuthOutput = new OFN_CreditAuthResult();
-                                    var creditAuthComm = new CreditAuthComm();
-                                    var AuthInput = new IFN_CreditAuthRequest
+                                        var payStatus = false;
+                                        var AuthOutput = new OFN_CreditAuthResult();
+                                        var creditAuthComm = new CreditAuthComm();
+                                        var AuthInput = new IFN_CreditAuthRequest
+                                        {
+                                            CheckoutMode = 0,
+                                            OrderNo = PayInput.OrderNo,
+                                            IDNO = PayInput.IDNO,
+                                            Amount = Amount,
+                                            PayType = 3,
+                                            autoClose = 1,
+                                            funName = funName,
+                                            insUser = funName,
+                                            AuthType = 6
+                                        };
+
+                                        payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                                        trace.traceAdd("CardTrade", new { apiInput, PayInput, AuthInput, AuthOutput, Amount, errCode });
+                                        flag = payStatus;
+                                        //WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+
+                                        //flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
+
+                                        //trace.traceAdd("TaishinCardTrade", new { apiInput, PayInput, WSAuthOutput, Amount, errCode });
+
+                                        //string RTNCODE = "";
+                                        //string RESULTCODE = "";
+                                        //try
+                                        //{
+                                        //    RTNCODE = WSAuthOutput.RtnCode == null ? "" : WSAuthOutput.RtnCode;
+                                        //    RESULTCODE = WSAuthOutput.ResponseParams.ResultCode == null ? "" : WSAuthOutput.ResponseParams.ResultCode;
+                                        //}
+                                        //catch (Exception ex)
+                                        //{ }
+                                        if (flag)
+                                        {
+                                            MerchantTradeNo = AuthOutput?.Transaction_no ?? "";
+                                            TaishinTradeNo = AuthOutput?.BankTradeNo ?? "";
+                                            RTNCODE = "1000";
+                                            RESULTCODE = "1000";
+
+                                        }
+                                    }
+                                    if (RTNCODE == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
                                     {
-                                        CheckoutMode = 0,
-                                        OrderNo = PayInput.OrderNo,
-                                        IDNO = PayInput.IDNO,
-                                        Amount = Amount,
-                                        PayType = 3,
-                                        autoClose = 1,
-                                        funName = funName,
-                                        insUser = funName,
-                                        AuthType = 6
-                                    };
-
-                                    payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                                    trace.traceAdd("CardTrade", new { apiInput, PayInput, AuthInput, AuthOutput, Amount, errCode });
-
-                                    //WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-
-                                    //flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
-
-                                    //trace.traceAdd("TaishinCardTrade", new { apiInput, PayInput, WSAuthOutput, Amount, errCode });
-
-                                    //string RTNCODE = "";
-                                    //string RESULTCODE = "";
-                                    //try
-                                    //{
-                                    //    RTNCODE = WSAuthOutput.RtnCode == null ? "" : WSAuthOutput.RtnCode;
-                                    //    RESULTCODE = WSAuthOutput.ResponseParams.ResultCode == null ? "" : WSAuthOutput.ResponseParams.ResultCode;
-                                    //}
-                                    //catch (Exception ex)
-                                    //{ }
-
-                                    if (payStatus)   //20210106 ADD BY ADAM REASON.有成功才呼叫
-                                    {
-                                        spInput_PayBack.MerchantTradeNo = AuthOutput?.Transaction_no ?? "";
-                                        spInput_PayBack.TaishinTradeNo = AuthOutput?.BankTradeNo ?? "";
+                                        spInput_PayBack.MerchantTradeNo = MerchantTradeNo;
+                                        spInput_PayBack.TaishinTradeNo = MerchantTradeNo;
                                         flag = DonePayBack(spInput_PayBack, ref errCode, ref lstError);//欠款繳交
 
                                         trace.traceAdd("DonePayBack", new { spInput_PayBack, errCode, lstError });
                                     }
 
-                                    if (flag && payStatus)  //20210106 ADD BY ADAM REASON.有成功才呼叫
+
+                                    if (flag && RTNCODE == "1000" && RESULTCODE == "1000")  //20210106 ADD BY ADAM REASON.有成功才呼叫
                                     {
                                         HiEasyRentAPI webAPI = new HiEasyRentAPI();
 
                                         //最後再NPR340沖銷
                                         WebAPIInput_NPR340Save wsInput = null;
                                         WebAPIOutput_NPR340Save wsOutput = new WebAPIOutput_NPR340Save();
-                                        string MerchantTradeNo = "";
-                                        string ServiceTradeNo = AuthOutput?.BankTradeNo ?? "";
-                                        string AuthCode = AuthOutput?.AuthIdResp ?? "0000";
-                                        string CardNo = AuthOutput?.CardNo ?? "XXXX-XXXX-XXXX-XXXX";
+                                        //string MerchantTradeNo = "";
+                                        string ServiceTradeNo = TaishinTradeNo;
+                                        //string AuthCode = AuthOutput?.AuthIdResp ?? "0000";
+                                        //string CardNo = AuthOutput?.CardNo ?? "XXXX-XXXX-XXXX-XXXX";
 
                                         wsInput = new WebAPIInput_NPR340Save()
                                         {
