@@ -27,9 +27,9 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 中信請款排程
+    /// 查詢中信訂單狀態
     /// </summary>
-    public class CTBCCapJobController : ApiController
+    public class CTBCInquiryController : ApiController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
         private CommonFunc baseVerify { get; set; }
 
         [HttpPost]
-        public Dictionary<string, object> DoCTBCCapJob()
+        public Dictionary<string, object> DoCTBCInquiry()
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -46,14 +46,14 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "CTBCCapJobController";
+            string funName = "CTBCInquiryController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
             NullOutput apiOutput = new NullOutput();
             Token token = null;
             baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            List<SPOutput_CTBCCapList> capList = null;
+            List<WebAPIInput_InquiryByLidm> inquiryList = null;
             CTBCPosAPI posAPI = new CTBCPosAPI();
             #endregion
             //寫入API Log
@@ -63,57 +63,42 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                //取得請款清單
-                capList = GetCTBCCapList(funName, ref flag, ref lstError, ref errCode);
+                inquiryList = GetCTBCQueryList(funName, ref flag, ref lstError, ref errCode);
             }
 
             if (flag)
             {
-                foreach (var cap in capList)
+                foreach (var inquiry in inquiryList)
                 {
                     try
                     {
-                        WebAPIInput_Cap capInput = new WebAPIInput_Cap()
+                        WebAPIInput_InquiryByLidm quiryInput = new WebAPIInput_InquiryByLidm()
                         {
-                            XID = cap.XID,
-                            AuthRRPID = cap.Authrrpid,
-                            AuthCode = cap.AuthCode,
-                            PurchAmt = cap.AuthAmt,
-                            CapAmt = cap.CloseAmout,
-                            RetrRef = cap.RetrRef,
-                            TermSeq = cap.TermSeq
+                            OrderID= inquiry.OrderID
                         };
 
-                        WebAPIOutput_Cap capOutput = new WebAPIOutput_Cap();
-                        flag = posAPI.DoCTBCCap(capInput, out capOutput);
+                        WebAPIOutput_InquiryByLidm quiryOutput = new WebAPIOutput_InquiryByLidm();
+                        flag = posAPI.QueryCTBCTransaction(quiryInput, out quiryOutput);
 
-                        logger.Trace($"capInput obj {JsonConvert.SerializeObject(capInput)} ");
-                        logger.Trace($"capOutput obj {JsonConvert.SerializeObject(capOutput)} ");
 
                         if (flag)
                         {
-                            SP_Input_CTBCCap spInput = new SP_Input_CTBCCap()
+                            SP_Input_CTBCInquiry spInput = new SP_Input_CTBCInquiry()
                             {
                                 PRGName = funName,
-                                CapAmt = capOutput.CapAmt,
-                                CapBatchId = capOutput.BatchId,
-                                CapBatchSeq = capOutput.BatchSeq,
-                                CapStatus = capOutput.ret != 0 ? capOutput.ret : capOutput.Status,
-                                CapErrCode = capOutput.ErrCode,
-                                CapErrorDesc = capOutput.ErrorDesc,
-                                Xid = capInput.XID,
-                                IsSuccess = (capOutput.ret == 0 && capOutput.Status == 0) ? 1 : 0
+                                BatchId = quiryOutput.BatchId,
+                                BatchSeq = quiryOutput.BatchSeq,
+                                Xid = quiryOutput.XID,
+                                CurrentState=quiryOutput.CurrentState
                             };
 
-                            flag = UpdateCTBCCapStatus(spInput, ref lstError, ref errCode);
+                            flag = UpdateCTBCQueryStatus(spInput, ref lstError, ref errCode);
                         }
                     }
                     catch (Exception ex)
                     {
-                        logger.Error("CTBCCapListloop Error:" + ex.Message);
-                    }
-
-             
+                        logger.Error("CTBCQueryListloop Error:" + ex.Message);
+                    }             
                 }
 
             }
@@ -130,17 +115,17 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        //取得請款清單
-        private List<SPOutput_CTBCCapList> GetCTBCCapList(string funName, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
+        //取得查詢訂單清單
+        private List<WebAPIInput_InquiryByLidm> GetCTBCQueryList(string funName, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
-            var capList = new List<SPOutput_CTBCCapList>();
+            var capList = new List<WebAPIInput_InquiryByLidm>();
 
             SP_Input_CTBCCapBase spInput = new SP_Input_CTBCCapBase()
             {
                 PRGName = funName
             };
 
-            string SPName = "usp_CTBCCap_Q01";
+            string SPName = "usp_CTBCInquiry_Q01";
             SPOutput_Base spOutBase = new SPOutput_Base();
             SQLHelper<SP_Input_CTBCCapBase, SPOutput_Base> sqlHelpQuery = new SQLHelper<SP_Input_CTBCCapBase, SPOutput_Base>(connetStr);
 
@@ -159,12 +144,12 @@ namespace WebAPI.Controllers
             return capList;
         }
 
-        //更新請款狀態
-        private bool UpdateCTBCCapStatus(SP_Input_CTBCCap input, ref List<ErrorInfo> lstError, ref string errCode)
+        //更新訂單狀態
+        private bool UpdateCTBCQueryStatus(SP_Input_CTBCInquiry input, ref List<ErrorInfo> lstError, ref string errCode)
         {
-            string SPName = "usp_CTBCCap_U01";
+            string SPName = "usp_CTBCInquiry_U01";
             SPOutput_Base spOut = new SPOutput_Base();
-            SQLHelper<SP_Input_CTBCCap, SPOutput_Base> SQLPayHelp = new SQLHelper<SP_Input_CTBCCap, SPOutput_Base>(connetStr);
+            SQLHelper<SP_Input_CTBCInquiry, SPOutput_Base> SQLPayHelp = new SQLHelper<SP_Input_CTBCInquiry, SPOutput_Base>(connetStr);
             var flag = SQLPayHelp.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
