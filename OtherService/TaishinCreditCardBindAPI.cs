@@ -1044,7 +1044,7 @@ namespace OtherService
 
             if(!flag && errCode == "000000")
             {
-                errCode = lstError?.Count > 0 ? lstError.FirstOrDefault()?.ErrorCode : "ER00B";
+                errCode = lstError?.Count > 0 ? lstError.FirstOrDefault()?.ErrorCode : "ERR913";
             }
 
             if (flag)
@@ -1060,7 +1060,7 @@ namespace OtherService
                 else
                 {
                     flag = false;
-                    errCode = output.RtnCode == "0" ? "ER00B" : errCode;
+                    errCode = output.RtnCode == "0" ? "ERR913" : errCode;
                 }
             }
 
