@@ -606,6 +606,7 @@
     <Compile Include="TB\FeedBackPIC.cs" />
     <Compile Include="TB\GetFeedBackKindData.cs" />
     <Compile Include="TB\GetFullProjectInfo.cs" />
+    <Compile Include="TB\GetMemberCMK.cs" />
     <Compile Include="TB\GetPolygonRawData.cs" />
     <Compile Include="TB\Holiday.cs" />
     <Compile Include="TB\Hotai\HotaiToken.cs" />
