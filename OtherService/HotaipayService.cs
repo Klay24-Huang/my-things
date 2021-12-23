@@ -633,8 +633,8 @@ namespace OtherService
                     MerchantTradeNoLeft = string.Format("{0}{1}"
                        , temPayTypeInfo.FrontPart.Equals("OrderNo") ? input.OrderNo.ToString() : input.IDNO
                        , temPayTypeInfo.PaySuff
-                       )
-
+                       ),
+                    MerchantID = merID,
                 };
 
                 var insStep1 = InsHotaiTranStep1(spStep1Input, ref flag, ref errCode, ref lstError);
