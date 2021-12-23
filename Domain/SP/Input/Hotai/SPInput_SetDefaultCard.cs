@@ -40,5 +40,10 @@ namespace Domain.SP.Input.Hotai
         /// 程式名稱
         /// </summary>
         public string PRGName { get; set; }
+
+        /// <summary>
+        /// 發卡銀行代碼
+        /// </summary>
+        public string BankCode { get; set; }
     }
 }

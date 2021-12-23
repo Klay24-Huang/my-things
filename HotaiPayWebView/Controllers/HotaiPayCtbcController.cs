@@ -369,6 +369,7 @@ namespace HotaiPayWebView.Controllers
                 string BankDesc = input[2];
                 string CardNumber = input[3];
                 string CardToken = input[4];
+                string BankCode = input[5];
 
                 var sp_input = new SPInput_SetDefaultCard();
                 sp_input.IDNO = IDNO;
@@ -378,6 +379,7 @@ namespace HotaiPayWebView.Controllers
                 sp_input.CardType = CardType;
                 sp_input.BankDesc = BankDesc;
                 sp_input.PRGName = "CreditcardChoose";
+                sp_input.BankCode = BankCode;
                 logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)

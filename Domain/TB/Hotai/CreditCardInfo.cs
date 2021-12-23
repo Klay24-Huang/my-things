@@ -34,6 +34,10 @@ namespace Domain.TB
         /// 是否為預設卡(0:否/1:是)
         /// </summary>
         public int IsDefault { get; set; }
+        /// <summary>
+        /// 銀行代碼
+        /// </summary>
+        public string BankCode { get; set; }
 
     }
 }
