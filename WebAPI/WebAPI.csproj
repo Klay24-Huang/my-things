@@ -232,6 +232,8 @@
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
+    <Compile Include="Controllers\CTBCInquiryController.cs" />
+    <Compile Include="Controllers\CTBCCapJobController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
     <Compile Include="Controllers\WalletWithdrowInvoiceController.cs" />

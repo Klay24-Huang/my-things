@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
@@ -57,7 +58,7 @@ namespace WebAPI.Controllers
 
         private CommonFunc baseVerify { get; set; }
 
-        [HttpGet]
+        [HttpPost]
         public Dictionary<string, object> DoCreditAuthJob(Dictionary<string, object> value)
         {
             logger.Trace("Init");
@@ -120,6 +121,18 @@ namespace WebAPI.Controllers
 
                 foreach (var OrderAuth in OrderAuthList)
                 {
+                    SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
+                    {
+                        authSeq = OrderAuth.authSeq,
+                        OrderNo = OrderAuth.order_number,
+                        AuthType = OrderAuth.AuthType,
+                        isRetry = OrderAuth.isRetry,
+                        IDNO = OrderAuth.IDNO,
+                        AutoClosed = OrderAuth.AutoClosed,
+                        final_price = OrderAuth.final_price,
+                        ProName = "CreditAuthJobV2",
+                    };
+
                     try
                     {
 
@@ -139,31 +152,43 @@ namespace WebAPI.Controllers
                                 autoClose = OrderAuth.AutoClosed,
                                 funName = funName,
                                 insUser = funName,
-                                AuthType =OrderAuth.AuthType
+                                AuthType = OrderAuth.AuthType
                             };
 
                             payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                             logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(AuthOutput));
+                            List<string> exCodeList = new List<string>{ "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
+
+                            UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p=>p== errCode) ?-9:- 1);
+                            UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode;
+                            UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage;
+                            UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no;
+                            UpdateOrderAuthList.CardNumber = AuthOutput.CardNo;
                         }
-
-                        SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
+                        else
                         {
-                            authSeq = OrderAuth.authSeq,
-                            AuthFlg = payStatus ? 1 : -1,
-                            AuthCode = AuthOutput.AuthCode,
-                            AuthMessage = AuthOutput.AuthMessage,
-                            OrderNo = OrderAuth.order_number,
-                            transaction_no = AuthOutput.Transaction_no,
-                            AuthType = OrderAuth.AuthType,
-                            isRetry = OrderAuth.isRetry,
-                            IDNO = OrderAuth.IDNO,
-                            AutoClosed = OrderAuth.AutoClosed,
-                            final_price = OrderAuth.final_price,
-                            ProName = "CreditAuthJobV2",
-                            CardNumber = AuthOutput.CardNo,
-                        };
+                            UpdateOrderAuthList.AuthFlg = 1;
+                            UpdateOrderAuthList.AuthCode = "1000";
+                            UpdateOrderAuthList.AuthMessage = "金額為0免刷卡";
+                        }
+                        
 
-                        var updateFlag = UpdateOrdarAuthStatus(UpdateOrderAuthList, ref lstError, ref errCode);
+                        //SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
+                        //{
+                        //    authSeq = OrderAuth.authSeq,
+                        //    AuthFlg = payStatus ? 1 : -1,
+                        //    AuthCode = AuthOutput.AuthCode,
+                        //    AuthMessage = AuthOutput.AuthMessage,
+                        //    OrderNo = OrderAuth.order_number,
+                        //    transaction_no = AuthOutput.Transaction_no,
+                        //    AuthType = OrderAuth.AuthType,
+                        //    isRetry = OrderAuth.isRetry,
+                        //    IDNO = OrderAuth.IDNO,
+                        //    AutoClosed = OrderAuth.AutoClosed,
+                        //    final_price = OrderAuth.final_price,
+                        //    ProName = "CreditAuthJobV2",
+                        //    CardNumber = AuthOutput.CardNo,
+                        //};
 
                         //if(payStatus == false && OrderAuth.AuthType == 1 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace( OrderAuth.Mobile))
                         //{
@@ -175,6 +200,29 @@ namespace WebAPI.Controllers
                     catch (Exception ex)
                     {
                         logger.Error($"authSeq:{OrderAuth.authSeq}-- OrderAuthListloop Error:{ex.Message}");
+                        UpdateOrderAuthList.AuthFlg = -9;
+                        UpdateOrderAuthList.AuthMessage = ex.Message;
+
+                        //SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
+                        //{
+                        //    authSeq = OrderAuth.authSeq,
+                        //    AuthFlg = -9,
+                        //    AuthCode = "",
+                        //    AuthMessage = "",
+                        //    OrderNo = OrderAuth.order_number,
+                        //    transaction_no = "",
+                        //    AuthType = OrderAuth.AuthType,
+                        //    isRetry = OrderAuth.isRetry,
+                        //    IDNO = OrderAuth.IDNO,
+                        //    AutoClosed = OrderAuth.AutoClosed,
+                        //    final_price = OrderAuth.final_price,
+                        //    ProName = "CreditAuthJobV2",
+                        //    CardNumber = "",
+                        //};
+                    }
+                    finally
+                    {
+                        var updateFlag = UpdateOrdarAuthStatus(UpdateOrderAuthList, ref lstError, ref errCode);
                     }
                 }
             }

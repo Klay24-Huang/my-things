@@ -22,6 +22,7 @@ using Domain.TB.Hotai;
 using Domain.SP.Input.Hotai;
 using Microsoft.Ajax.Utilities;
 using HotaiPayWebView.Models;
+using Newtonsoft.Json;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -33,6 +34,7 @@ namespace HotaiPayWebView.Controllers
         private static HashAlgorithmHelper helper = new HashAlgorithmHelper();
         private static HotaipayService HPServices = new HotaipayService();
         private static long LogID = 666;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         #region 登入頁面
         public ActionResult Login()
@@ -94,6 +96,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult Login(Login loginVale)
         {
+            //logger.Info($"tanglogin : {JsonConvert.SerializeObject(loginVale)}");
             if (Session["id"] == null)
             {
                 ViewBag.Alert = "iRent帳號過期，請重新登入。";
@@ -154,7 +157,7 @@ namespace HotaiPayWebView.Controllers
                             {
                                 WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
                                 flag = hotaiAPI.DoGetMobilePhoneToOneID(loginVale.Phone, ref getOneID, ref errCode);
-                                flag = true;//唐寫死，等和泰開通安康防火牆再弄
+                                //flag = true;//唐寫死，等和泰開通安康防火牆再弄
                                 if (flag)
                                 {
                                     Session["oneID"] = "";//getOneID.memberSeq;//唐寫死，等和泰開通安康防火牆再弄
@@ -163,7 +166,6 @@ namespace HotaiPayWebView.Controllers
                                     if (errCode == "0000")
                                     {
                                         TempData["irent_access_token"] = Session["irent_access_token"];
-
                                         return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "NoCreditCard" });
                                         //以下取得信用卡列表流程
                                     }
@@ -172,7 +174,6 @@ namespace HotaiPayWebView.Controllers
                                         //return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                                         return RedirectToAction("BindCardFailed",new { });
                                     }
-
                                 }
                                 else
                                 {

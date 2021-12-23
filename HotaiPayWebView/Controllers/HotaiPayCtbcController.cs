@@ -155,7 +155,7 @@ namespace HotaiPayWebView.Controllers
                 HotaipayService addcard = new HotaipayService();
                 OFN_HotaiFastAddCard output = new OFN_HotaiFastAddCard();
 
-                OFN_HotaiFastAddCard vm = new OFN_HotaiFastAddCard();
+                //OFN_HotaiFastAddCard vm = new OFN_HotaiFastAddCard();
 
                 //IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
                 //input.Birthday = BIRTHDATE;
@@ -166,7 +166,6 @@ namespace HotaiPayWebView.Controllers
                     CTBCIDNO = inn.CTBCIDNO,//"A121563290"
                     //RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
                     RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-                    //RedirectURL = "https://www.irentcar.com.tw",
                     insUser = "TangWeiChi",
                     LogID = 0,
                     PRGName = "InsPersonInfo"
@@ -179,14 +178,16 @@ namespace HotaiPayWebView.Controllers
                 //logger.Info($"tangerror3 : {flag}");
                 if (flag)
                 {
-                    vm = output;
-                    return Json(vm);
+                    //vm = output;               
+                    //return Json(vm);
+                    return Json(output);
                 }
                 else
                 {
-                    vm.succ = false;
+                    //vm.succ = false;
+                    output.succ = false;
                     //vm.gotoUrl = errCode;
-                    ViewData["ERROR"] = "ERROR";
+                    //ViewData["ERROR"] = "ERROR";
                     return View();
                 }
             }
@@ -368,6 +369,7 @@ namespace HotaiPayWebView.Controllers
                 string BankDesc = input[2];
                 string CardNumber = input[3];
                 string CardToken = input[4];
+                string BankCode = input[5];
 
                 var sp_input = new SPInput_SetDefaultCard();
                 sp_input.IDNO = IDNO;
@@ -377,6 +379,7 @@ namespace HotaiPayWebView.Controllers
                 sp_input.CardType = CardType;
                 sp_input.BankDesc = BankDesc;
                 sp_input.PRGName = "CreditcardChoose";
+                sp_input.BankCode = BankCode;
                 logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
@@ -390,9 +393,9 @@ namespace HotaiPayWebView.Controllers
                 return View("NoCreditCard", irent_access_token);
             }
             if (flag)
-                return Redirect("/irweb/HotaiPayCtbc/SuccessBind");
+                return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "SuccessBind" });//return Redirect("/irweb/HotaiPayCtbc/SuccessBind");
             else
-                return Redirect("/irweb/HotaiPayCtbc/BindCardFailed");
+                return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "BindCardFailed" }); //return Redirect("/irweb/HotaiPayCtbc/BindCardFailed");
         }
         #endregion
 

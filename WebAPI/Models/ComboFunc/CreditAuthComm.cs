@@ -346,30 +346,32 @@ namespace WebAPI.Models.ComboFunc
                 WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                 flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, IDNO, autoClose, funName, insUser, ref errCode, ref WSAuthOutput, AuthInput.AuthType);
                 logger.Trace("DoCreditCardAuth:" + JsonConvert.SerializeObject(WSAuthOutput));
-
-                if (WSAuthOutput.RtnCode != "1000")
-                {
-                    flag = false;
-                    errCode = "ERR197";
+                if(flag)
+                { 
+                    if (WSAuthOutput.RtnCode != "1000")
+                    {
+                        flag = false;
+                        errCode = "ERR197";
+                    }
+                    //修正錯誤偵測
+                    if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams?.ResultCode != "1000")
+                    {
+                        flag = false;
+                        errCode = "ERR197";
+                    }
                 }
-                //修正錯誤偵測
-                if (WSAuthOutput.RtnCode == "1000" && WSAuthOutput.ResponseParams?.ResultCode != "1000")
-                {
-                    flag = false;
-                    errCode = "ERR197";
-                }
-
 
                 AuthOutput.AuthCode = 
-                    (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultCode : WSAuthOutput.RtnCode;
+                    (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultCode : WSAuthOutput.RtnCode??"";
                 AuthOutput.AuthMessage = 
-                    (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultMessage: WSAuthOutput.RtnMessage;
+                    (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultMessage: WSAuthOutput.RtnMessage??"";
 
                 AuthOutput.CardType = CardType;
                 AuthOutput.CheckoutMode = CheckoutMode;
                 AuthOutput.Transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
                 AuthOutput.BankTradeNo = WSAuthOutput?.ResponseParams?.ResultData?.ServiceTradeNo??"";
                 AuthOutput.CardNo = WSAuthOutput?.ResponseParams?.ResultData?.CardNumber?? FindCardResult.cardNumber;
+                AuthOutput.AuthIdResp = WSAuthOutput?.ResponseParams?.ResultData?.AuthIdResp ?? "0000";
             }
             
             return flag;
@@ -553,10 +555,13 @@ namespace WebAPI.Models.ComboFunc
                 logger.Trace("DoHotaiAuth:" + JsonConvert.SerializeObject(WSAuthOutput));
             }
 
-            if (WSAuthOutput.RtnCode != "1000")
+            if (flag)
             {   
-                flag = false;
-                errCode = "ERR197";
+                if (WSAuthOutput.RtnCode != "1000")
+                { 
+                    flag = false;
+                    errCode = "ERR197";
+                }
             }
            
             AuthOutput.CardType = cardType;
