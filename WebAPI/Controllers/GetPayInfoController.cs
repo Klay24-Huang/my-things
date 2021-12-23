@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
 {
     public class GetPayInfoController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private readonly string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
         public Dictionary<string, object> DoGetPayInfo(Dictionary<string, object> value)
@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
             HttpContext httpContext = HttpContext.Current;
             var objOutput = new Dictionary<string, object>();    //輸出
             string Access_Token = "";
-            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
+            string Access_Token_string = httpContext.Request.Headers["Authorization"] ?? ""; //Bearer 
             bool flag = true;
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
@@ -139,6 +139,7 @@ namespace WebAPI.Controllers
                 input.PayModeList.Remove(dbHotaiPay);
                 dbHotaiPay.HasBind = 1;
                 dbHotaiPay.PayInfo = HotaiDefaultCard.CardNumber;
+                dbHotaiPay.NotBindMsg = "";
                 input.PayModeList.Add(dbHotaiPay);
 
                 var dbCreditPay = input.PayModeList.Find(p => p.PayMode == 0);

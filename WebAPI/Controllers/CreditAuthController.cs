@@ -757,38 +757,49 @@ namespace WebAPI.Controllers
                                     else
                                     {
                                         WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
-
-                                        flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
-
-                                        trace.traceAdd("TaishinCardTrade", new { apiInput, PayInput, WSAuthOutput, Amount, errCode });
-
-                                        try
+                                        var payStatus = false;
+                                        var AuthOutput = new OFN_CreditAuthResult();
+                                        var creditAuthComm = new CreditAuthComm();
+                                        var AuthInput = new IFN_CreditAuthRequest
                                         {
-                                            RTNCODE = WSAuthOutput.RtnCode == null ? "" : WSAuthOutput.RtnCode;
-                                            RESULTCODE = WSAuthOutput.ResponseParams.ResultCode == null ? "" : WSAuthOutput.ResponseParams.ResultCode;
-                                            payCD = "1";
-                                        }
-                                        catch (Exception ex)
-                                        { }
+                                            CheckoutMode = 0,
+                                            OrderNo = PayInput.OrderNo,
+                                            IDNO = PayInput.IDNO,
+                                            Amount = Amount,
+                                            PayType = 3,
+                                            autoClose = 1,
+                                            funName = funName,
+                                            insUser = funName,
+                                            AuthType = 6
+                                        };
 
-                                        if (RTNCODE == "1000")
+                                        payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                                        trace.traceAdd("CardTrade", new { apiInput, PayInput, AuthInput, AuthOutput, Amount, errCode });
+                                        flag = payStatus;
+                                        //WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
+
+                                        //flag = TaishinCardTrade(apiInput, ref PayInput, ref WSAuthOutput, ref Amount, ref errCode);
+
+                                        //trace.traceAdd("TaishinCardTrade", new { apiInput, PayInput, WSAuthOutput, Amount, errCode });
+
+                                        //string RTNCODE = "";
+                                        //string RESULTCODE = "";
+                                        //try
+                                        //{
+                                        //    RTNCODE = WSAuthOutput.RtnCode == null ? "" : WSAuthOutput.RtnCode;
+                                        //    RESULTCODE = WSAuthOutput.ResponseParams.ResultCode == null ? "" : WSAuthOutput.ResponseParams.ResultCode;
+                                        //}
+                                        //catch (Exception ex)
+                                        //{ }
+                                        if (flag)
                                         {
-                                            MerchantTradeNo = WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo == null
-                                                                ? ""
-                                                                : WSAuthOutput.ResponseParams.ResultData.MerchantTradeNo;
-                                            TaishinTradeNo = WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo == null
-                                                                ? ""
-                                                                : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo;
-                                            AuthCode = WSAuthOutput.ResponseParams == null
-                                                        ? "0000"
-                                                        : WSAuthOutput.ResponseParams.ResultData.AuthIdResp;
+                                            MerchantTradeNo = AuthOutput?.Transaction_no ?? "";
+                                            TaishinTradeNo = AuthOutput?.BankTradeNo ?? "";
+                                            RTNCODE = "1000";
+                                            RESULTCODE = "1000";
 
-                                            CardNo = WSAuthOutput.ResponseParams == null
-                                                        ? "XXXX-XXXX-XXXX-XXXX"
-                                                        : WSAuthOutput.ResponseParams.ResultData.CardNumber;
                                         }
                                     }
-
                                     if (RTNCODE == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
                                     {
                                         spInput_PayBack.MerchantTradeNo = MerchantTradeNo;
@@ -798,18 +809,18 @@ namespace WebAPI.Controllers
                                         trace.traceAdd("DonePayBack", new { spInput_PayBack, errCode, lstError });
                                     }
 
-                                    if (flag)  //20210106 ADD BY ADAM REASON.有成功才呼叫
+
+                                    if (flag && RTNCODE == "1000" && RESULTCODE == "1000")  //20210106 ADD BY ADAM REASON.有成功才呼叫
                                     {
                                         HiEasyRentAPI webAPI = new HiEasyRentAPI();
 
                                         //最後再NPR340沖銷
                                         WebAPIInput_NPR340Save wsInput = null;
                                         WebAPIOutput_NPR340Save wsOutput = new WebAPIOutput_NPR340Save();
-                                        // string MerchantTradeNo = "";
-                                        //string ServiceTradeNo = WSAuthOutput.ResponseParams == null ? "" : WSAuthOutput.ResponseParams.ResultData.ServiceTradeNo; //
+                                        //string MerchantTradeNo = "";
                                         string ServiceTradeNo = TaishinTradeNo;
-                                        //string AuthCode = WSAuthOutput.ResponseParams == null ? "0000" : WSAuthOutput.ResponseParams.ResultData.AuthIdResp;   //
-                                        //string CardNo = WSAuthOutput.ResponseParams == null ? "XXXX-XXXX-XXXX-XXXX" : WSAuthOutput.ResponseParams.ResultData.CardNumber;
+                                        //string AuthCode = AuthOutput?.AuthIdResp ?? "0000";
+                                        //string CardNo = AuthOutput?.CardNo ?? "XXXX-XXXX-XXXX-XXXX";
 
                                         wsInput = new WebAPIInput_NPR340Save()
                                         {

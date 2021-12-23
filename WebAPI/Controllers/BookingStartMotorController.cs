@@ -291,14 +291,14 @@ namespace WebAPI.Controllers
                     }
                     #endregion
                     //20210325 ADD BY ADAM REASON.車機指令優化
-                    #region 開啟電源
                     if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
+                        #region 開啟電源
                         if (flag)
                         {
                             CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
                             CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
-                            WSInput_Base<Params> input = new WSInput_Base<Params>()
+                            WSInput_Base<Params> PowerOnInput = new WSInput_Base<Params>()
                             {
                                 command = true,
                                 method = CommandType,
@@ -306,18 +306,15 @@ namespace WebAPI.Controllers
                                 _params = new Params()
                             };
                             method = CommandType;
-                            requestId = input.requestId;
-                            flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                            requestId = PowerOnInput.requestId;
+                            flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, PowerOnInput, LogID);
                             if (flag)
                             {
                                 flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                             }
                         }
-                    }
-                    #endregion
-                    #region 設定租約
-                    if (isDebug == "0") // isDebug = 1，不送車機指令
-                    {
+                        #endregion
+                        #region 設定租約
                         if (flag)
                         {
                             //租約再下租約應該沒關係

@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
                 ds.Dispose();
             }
             #endregion
-            //#region 台新錢包(MARK)
+            #region 台新錢包(MARK)
             //// 錢包先點掉，防火牆不通，先不取資料
             //if (flag)
             //{
@@ -182,7 +182,7 @@ namespace WebAPI.Controllers
             //        TSB_WalletBalance = statusOutput.Result.Amount;
             //    }
             //}
-            //#endregion
+            #endregion
             #region 和泰PAY
             if (flag)
             {
@@ -196,8 +196,7 @@ namespace WebAPI.Controllers
                 string hotaiErrorCode = "";
                 var HotaiFlag = HotaipayService.DoQueryCardList(objQueryCards, ref HotaiCards, ref hotaiErrorCode);
 
-                flag = HotaiFlag;
-                if (flag)
+                if (HotaiFlag)
                 {
                     if (HotaiCards.CreditCards != null && HotaiCards.CreditCards.Count > 0)
                     {
@@ -211,6 +210,11 @@ namespace WebAPI.Controllers
                         apiOutput.HasHotaiPay = 0;
                         apiOutput.HotaiListObj = new List<HotaiCardInfo>();
                     }
+                }
+                else
+                {
+                    apiOutput.HasHotaiPay = 0;
+                    apiOutput.HotaiListObj = new List<HotaiCardInfo>();
                 }
             }
             #endregion
