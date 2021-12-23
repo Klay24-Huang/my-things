@@ -120,17 +120,22 @@ namespace OtherService
 
                 }
                 var hasDefault = creditCards.FindIndex(p => p.IsDefault == 1) == -1 ? false : true;
+                logger.Info($"DoQueryCardList | hasDefault | Result:{ hasDefault } ; dbDefaultCard:{dbDefaultCard.HotaiCardID}");
                 if (!hasDefault && dbDefaultCard.HotaiCardID != 0)
                 {
-                    var unbindFlag = sp_HotaiDefaultCardUnbind(
-                            new SPInput_HotaiDefaultCardUnbind
-                            {
-                                IDNO = input.IDNO,
-                                HotaiCardID = dbDefaultCard.HotaiCardID,
-                                LogID = input.LogID,
-                                U_FuncName = input.PRGName,
-                                U_USERID = "Sys"
-                            }, ref errCode);
+                    var sp_UnbindInput = new SPInput_HotaiDefaultCardUnbind
+                    {
+                        IDNO = input.IDNO,
+                        HotaiCardID = dbDefaultCard.HotaiCardID,
+                        LogID = input.LogID,
+                        U_FuncName = input.PRGName,
+                        U_USERID = "Sys"
+                    };
+
+
+                    var unbindFlag = sp_HotaiDefaultCardUnbind(sp_UnbindInput, ref errCode);
+
+                    logger.Info($"DoQueryCardList | HotaiDefaultCardUnbind | Result:{ unbindFlag } ; errCode:{errCode} | sp_setCardInput:{JsonConvert.SerializeObject(sp_UnbindInput)}");
                 }
 
                 output.CreditCards = creditCards;
