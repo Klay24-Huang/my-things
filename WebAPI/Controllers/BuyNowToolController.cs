@@ -450,7 +450,6 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region TB
-                flag = true;
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -648,7 +647,7 @@ namespace WebAPI.Controllers
                                     MonProjID = apiInput.MonProjID,
                                     MonProPeriod = apiInput.MonProPeriod,
                                     ShortDays = apiInput.ShortDays,
-                                    NowPeriod = 1,  //寫死第一期
+                                    NowPeriod = nowPeriod,  
                                     PayTypeId = (Int64)apiInput.PayTypeId,
                                     InvoTypeId = InvoTypeId,
                                     InvoiceType = InvData.InvocieType,
