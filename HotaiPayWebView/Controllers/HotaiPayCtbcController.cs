@@ -395,7 +395,7 @@ namespace HotaiPayWebView.Controllers
             if (flag)
                 return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "SuccessBind" });//return Redirect("/irweb/HotaiPayCtbc/SuccessBind");
             else
-                return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "BindCardFailed" }); //return Redirect("/irweb/HotaiPayCtbc/BindCardFailed");
+                return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" }); //return Redirect("/irweb/HotaiPayCtbc/BindCardFailed");
         }
         #endregion
 
