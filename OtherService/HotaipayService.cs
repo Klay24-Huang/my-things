@@ -104,7 +104,8 @@ namespace OtherService
                             CardToken = originalCard.Id.ToString(),
                             CardType = originalCard.CardType,
                             BankDesc = originalCard.BankDesc,
-                            PRGName = input.PRGName
+                            PRGName = input.PRGName,
+                            BankCode = originalCard.BinInfo?.Code+"" ?? "",
                         };
 
                     //寫入預設卡片
@@ -812,8 +813,8 @@ namespace OtherService
                 BankDesc = input.BankDesc,
                 CardNumber = input.CardNoMask,
                 IsDefault = input.Id.ToString().Equals(defaultCardToken) ? 1 : 0,
-                MemberOneID = input.MemberOneID
-
+                MemberOneID = input.MemberOneID,
+                BankCode = input.BinInfo?.Code + "" ?? "",
             };
         }
 
@@ -833,7 +834,8 @@ namespace OtherService
                 BankDesc = "國外卡",
                 CardNumber = "****-****-****-5278",
                 IsDefault = 1,
-                MemberOneID = "0064fb4f-8250-4690-954b-2ba94862606b"
+                MemberOneID = "0064fb4f-8250-4690-954b-2ba94862606b",
+                BankCode = "822222"
             });
             return creditCards;
         }
