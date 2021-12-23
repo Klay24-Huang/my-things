@@ -141,6 +141,8 @@ namespace WebAPI.Controllers
                     var walletInfo = walletService.CheckStoreAmtLimit(apiInput.StoreMoney, IDNO, LogID, Access_Token, ref errCode);
                     flag = walletInfo.flag;
                     spOutput = walletInfo.Info;
+                    trace.traceAdd("CheckStoreAmtLimit", new { flag, spOutput, errCode });
+                    trace.FlowList.Add("儲值金額限制檢核");
                 }
                 #endregion
                 #region 信用卡授權
@@ -160,7 +162,9 @@ namespace WebAPI.Controllers
                     };
                     CreditAuthComm creditAuthComm = new CreditAuthComm();
                     flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                }               
+                    trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
+                    trace.FlowList.Add("刷卡授權");
+                }
                 #endregion
                 #region 台新錢包儲值
                 if (flag)
@@ -197,7 +201,7 @@ namespace WebAPI.Controllers
                     string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
                     string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
                     flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-                    
+
                     trace.traceAdd("DoStoreValueCreateAccount", new { wallet, MerchantId, utcTimeStamp, SignCode, output, errCode });
                     trace.FlowList.Add("錢包儲值");
 
@@ -227,14 +231,14 @@ namespace WebAPI.Controllers
                             Message = output.Message
                         };
                         var success = wsp.sp_InsTaishinStoredMoneyError(spInput, ref errCode);
-                        
+
                         trace.traceAdd("InsTaishinStoredMoneyErrorLog", new { spInput, success, errCode });
                         trace.FlowList.Add("寫入開戶儲值錯誤LOG");
                         #endregion
 
                         errCode = "ERR918"; //Api呼叫失敗
                         errMsg = output.Message;
-                    }                   
+                    }
                 }
                 #endregion
                 #region 寫入錢包
@@ -269,7 +273,7 @@ namespace WebAPI.Controllers
                         LastTransId = output.Result.TransId,
                         TaishinNO = string.IsNullOrWhiteSpace(AuthOutput.BankTradeNo) ? "" : AuthOutput.BankTradeNo,
                         TradeType = TradeType,
-                        TradeKey= cardNo,
+                        TradeKey = cardNo,
                         PRGName = funName,
                         Mode = Mode,
                         InputSource = 1,
@@ -290,8 +294,8 @@ namespace WebAPI.Controllers
                         StoreMoney = apiInput.StoreMoney
                     };
                 }
-              
-            
+
+
                 #endregion
             }
             catch (Exception ex)
