@@ -353,6 +353,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult CreditcardChoose(FormCollection form)
         {
+            logger.Info($"CreditcardChoose | Init | form : {JsonConvert.SerializeObject(form)}");
             string IDNO = "";
             if (Session["id"].ToString() != null)
                 IDNO = Session["id"].ToString();
@@ -402,8 +403,8 @@ namespace HotaiPayWebView.Controllers
 
         public ActionResult BindResult(string StatusCode, string StatusDesc)
         {
-            logger.Info($"tanginput : {StatusCode}");
-            logger.Info($"tanginput : {StatusDesc}");
+            logger.Info($"tanginput | BindResult | StatusCode : {StatusCode} | StatusDesc : {StatusDesc}");
+            
             //string a = StatusCode;
             //string b = StatusDesc;
             if (StatusDesc.ToUpper() == "SUCCESS")
