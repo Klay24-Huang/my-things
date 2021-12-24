@@ -363,6 +363,7 @@ namespace HotaiPayWebView.Controllers
             string thatCardValue = form["CreditCardList"].Trim();
             if (thatCardValue != "")
             {
+                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nthatCardValue={thatCardValue}");
                 string[] input = thatCardValue.Split('|');
                 string MemberOneID = input[0];
                 string CardType = input[1];
@@ -380,7 +381,7 @@ namespace HotaiPayWebView.Controllers
                 sp_input.BankDesc = BankDesc;
                 sp_input.PRGName = "CreditcardChoose";
                 sp_input.BankCode = BankCode;
-                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
+                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc}\nBankCode={BankCode} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
                 {
