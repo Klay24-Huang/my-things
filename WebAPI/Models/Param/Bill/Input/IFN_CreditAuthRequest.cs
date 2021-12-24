@@ -24,7 +24,7 @@ namespace WebAPI.Models.Param.Bill.Input
         /// </summary>
         public int Amount { get; set; }
         /// <summary>
-        /// 付費項目(0 租金,1 罰金(沒在用),2 eTag(沒在用),3 補繳,4 訂閱,5 訂閱,6 春節訂金,7 錢包)
+        /// 付費項目(0 租金,1 罰金(沒在用),2 eTag(沒在用),3 補繳,4 訂閱,5 訂閱,6 春節訂金,7 錢包,8 主動取款,99 訂閱制)
         /// </summary>
         public int PayType { get; set; }
         /// <summary>
@@ -40,7 +40,7 @@ namespace WebAPI.Models.Param.Bill.Input
         /// </summary>
         public string insUser { get; set; }
         /// <summary>
-        /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車)
+        /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款)
         /// </summary>
         public int AuthType { get; set; }
     }
