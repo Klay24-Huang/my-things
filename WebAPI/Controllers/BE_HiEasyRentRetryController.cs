@@ -348,17 +348,34 @@ namespace WebAPI.Controllers
                                     //最後一筆處理ETAG
                                     if (obj.eTag > 0 && z == ReturnControlList.Count -1)
                                     {
-                                        //input.tbPaymentDetail = new PaymentDetail[2];
-                                        input.tbPaymentDetail[z] = new PaymentDetail()
+                                        //先確認當下是否能處理
+                                        if (ReturnControlList[z].CloseAmout > obj.eTag)
                                         {
-                                            //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                            PAYAMT = (ReturnControlList[z].CloseAmout- obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                            PAYTYPE = "1",
-                                            PAYMENTTYPE = "1",
-                                            PAYMEMO = "租金",
-                                            //PORDNO = obj.REMARK
-                                            PORDNO = ReturnControlList[z].REMARK
-                                        };
+                                            //input.tbPaymentDetail = new PaymentDetail[2];
+                                            input.tbPaymentDetail[z] = new PaymentDetail()
+                                            {
+                                                //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                                PAYAMT = (ReturnControlList[z].CloseAmout - obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                                PAYTYPE = "1",
+                                                PAYMENTTYPE = "1",
+                                                PAYMEMO = "租金",
+                                                //PORDNO = obj.REMARK
+                                                PORDNO = ReturnControlList[z].REMARK
+                                            };
+                                        }
+                                        else
+                                        {
+                                            int k = z;
+                                            while(k >= 0)
+                                            {
+                                                if (ReturnControlList[k].CloseAmout > obj.eTag)
+                                                {
+                                                    input.tbPaymentDetail[k].PAYAMT = (ReturnControlList[k].CloseAmout - obj.eTag).ToString();
+                                                    break;
+                                                }
+                                                k--;
+                                            }
+                                        }
                                         //input.tbPaymentDetail[1] = new PaymentDetail()
                                         input.tbPaymentDetail[z+1] = new PaymentDetail()
                                         {
