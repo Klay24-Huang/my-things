@@ -6,10 +6,11 @@
 * 程式功能 : 寫入台新開戶儲值錯誤紀錄檔
 * 作    者 : AMBER
 * 撰寫日期 : 20211018
+* 修改日期 : 20211224 UPD BY AMBER 新增input參數
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_WalletStoredByCredit_I01]
-    @ID                     VARCHAR(10),  --證件號碼
+    @IDNO                   VARCHAR(10),  --身分證
 	@MemberId               VARCHAR(20),  --商店會員編號
 	@Name                   NVARCHAR(10), --會員姓名
 	@PhoneNo                VARCHAR(10),  --手機號碼
@@ -23,10 +24,14 @@ CREATE PROCEDURE [dbo].[usp_WalletStoredByCredit_I01]
 	@SourceFrom				VARCHAR(1),   --交易來源
 	@StoreValueReleaseDate	VARCHAR(8),   --履保起日(YYYYMMDD)交易來源=B實體禮物卡轉存時，此欄位才需帶值
 	@GiftCardBarCode		VARCHAR(16),  --禮物卡條碼
-	@PRGID                  VARCHAR(10),  --回傳代碼
-	@ReturnCode             VARCHAR(4),   --程式代號
+	@PRGName                VARCHAR(50),  --程式名稱
+	@ReturnCode             VARCHAR(4),   --回傳代碼
 	@Message                NVARCHAR(200),  --回傳訊息
 	@ExceptionData          NVARCHAR(500),  --回傳異常錯誤訊息
+	@TradeType              VARCHAR(50),    --交易類別名稱 對應(TB_WalletCodeTable:CodeGroup)
+	@MerchantTradeNo        VARCHAR(30),    --特店訂單編號
+    @BankTradeNo            VARCHAR(50),    --銀行交易編號
+    @CardNumber             VARCHAR(20),    --信用卡號
 	@LogID					BIGINT,
 	@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
 	@ErrorMsg  				NVARCHAR(100)	OUTPUT,	--回傳錯誤訊息
@@ -37,7 +42,6 @@ AS
 DECLARE @Error INT
 DECLARE @IsSystem TINYINT = 1
 DECLARE @ErrorType TINYINT = 4
-DECLARE @hasData INT
 DECLARE @FunName VARCHAR(50) = 'usp_WalletStoredByCredit_I01'
 DECLARE @NowTime DATETIME =[dbo].[GET_TWDATE]()
 
@@ -47,14 +51,19 @@ SET	@ErrorCode  = '0000'
 SET	@ErrorMsg   = 'SUCCESS'	
 SET	@SQLExceptionCode = ''		
 SET	@SQLExceptionMsg = ''
-SET @hasData=0
-SET @ID       =ISNULL (@ID,'');
+SET @IDNO =ISNULL (@IDNO,'');
+SET @LogID=ISNULL (@LogID,0);
 	
-BEGIN TRY 	
-
+BEGIN TRY 	   
    BEGIN
-	  INSERT INTO TB_TaishinWalletStoreValueErrorLog(ID,MemberId,[Name],PhoneNo,Email,AccountType,CreateType,AmountType,Amount,Bonus,BonusExpiredate,SourceFrom,StoreValueReleaseDate,GiftCardBarCode,ProcessStatus,ReturnCode,[Message],ExceptionData,MKTime,MKUser,MKPRGID,UPDTime,UPDUser,UPDPRGID) 
-      VALUES(@ID,@MemberId,@Name,@PhoneNo,@Email,@AccountType,@CreateType,@AmountType,@Amount,@Bonus,@BonusExpiredate,@SourceFrom,@StoreValueReleaseDate,@GiftCardBarCode,0,@ReturnCode,@Message,@ExceptionData,@NowTime,@PRGID,@PRGID,@NowTime,@PRGID,@PRGID);
+      IF @Amount=0 OR @BankTradeNo=''
+	  BEGIN
+	    SET @Error=1
+		SET @ErrorCode='ERR900'
+	  END
+      IF NOT EXISTS (SELECT 1 FROM TB_TaishinWalletStoreValueErrorLog WHERE BankTradeNo=@BankTradeNo)
+	  INSERT INTO TB_TaishinWalletStoreValueErrorLog(ID,MemberId,[Name],PhoneNo,Email,AccountType,CreateType,AmountType,Amount,Bonus,BonusExpiredate,SourceFrom,StoreValueReleaseDate,GiftCardBarCode,ProcessStatus,ReturnCode,[Message],ExceptionData,MKTime,MKUser,MKPRGID,UPDTime,UPDUser,UPDPRGID,TradeType,MerchantTradeNo,BankTradeNo,CardNumber) 
+      VALUES(@IDNO,@MemberId,@Name,@PhoneNo,@Email,@AccountType,@CreateType,@AmountType,@Amount,@Bonus,@BonusExpiredate,@SourceFrom,@StoreValueReleaseDate,@GiftCardBarCode,0,@ReturnCode,@Message,@ExceptionData,@NowTime,@PRGName,@PRGName,@NowTime,@PRGName,@PRGName,@TradeType,@MerchantTradeNo,@BankTradeNo,@CardNumber);
    END
 
  IF @Error=1
@@ -82,3 +91,5 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_WalletStoredByCredit_I01';
+
+
