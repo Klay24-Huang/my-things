@@ -14,7 +14,7 @@ namespace Domain.SP.Input.Wallet
         /// <summary>
         /// 會員身份證
         /// </summary>
-        public string ID { get; set; } = "";
+        public string IDNO { get; set; } = "";
       
         /// <summary>
         /// 商店會員編號，最長20碼
@@ -107,7 +107,7 @@ namespace Domain.SP.Input.Wallet
         /// <summary>
         /// 程式代號
         /// </summary>
-        public string PRGID { get; set; } = "";
+        public string PRGName { get; set; } = "";
 
         /// <summary>
         /// 回傳代碼
@@ -123,5 +123,25 @@ namespace Domain.SP.Input.Wallet
         /// 回傳異常錯誤訊息
         /// </summary>
         public string ExceptionData { get; set; } = "";
+
+        /// <summary>
+        /// 交易類別名稱 對應(TB_WalletCodeTable:CodeGroup)
+        /// </summary>
+        public string TradeType { get; set; } = "";
+
+        /// <summary>
+        /// 特店訂單編號
+        /// </summary>
+        public string MerchantTradeNo { get; set; } = "";
+
+        /// <summary>
+        /// 銀行交易編號
+        /// </summary>
+        public string BankTradeNo { get; set; } = "";
+
+        /// <summary>
+        /// 信用卡號
+        /// </summary>
+        public string CardNumber { get; set; } = "";
     }
 }
