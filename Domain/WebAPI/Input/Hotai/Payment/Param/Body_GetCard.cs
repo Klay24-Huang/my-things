@@ -8,6 +8,6 @@ namespace Domain.WebAPI.Input.Hotai.Payment.Param
 {
     public class Body_GetCard
     {
-        public bool Bin { get; set; } = true;
+        public string Bin { get; set; }
     }
 }

@@ -42,10 +42,11 @@
                         var CardToken = A_output.CardToken;
                         bool IsDefault = A_output.IsDefault == 1 ? true : false;
                         var MemberOneID = A_output.MemberOneID;
+                        var BankCode = A_output.BankCode;//822XXX
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
-                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken" />
+                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken|@BankCode" />
 
                             <div class="credit-style mr-2">
                                 <img src="../../irweb/images/icon/credit_pay_JCB.svg" alt="">
@@ -64,10 +65,11 @@
                         var CardToken = A_output.CardToken;
                         bool IsDefault = A_output.IsDefault == 1 ? true : false;
                         var MemberOneID = A_output.MemberOneID;
+                        var BankCode = A_output.BankCode;//822XXX
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
-                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken" />
+                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken|@BankCode" />
 
                             <div class="credit-style mr-2">
                                 <img src="../../irweb/images/icon/credit_pay_MasterCard.svg" alt="">
@@ -85,10 +87,11 @@
                         var CardToken = A_output.CardToken;//1850
                         bool IsDefault = A_output.IsDefault == 1 ? true : false;
                         var MemberOneID = A_output.MemberOneID;//112bd64b..........af980
+                        var BankCode = A_output.BankCode;//822XXX
 
                         <div class="credit-card-box mb-4">
                             <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
-                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken" />
+                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken|@BankCode" />
 
                             <div class="credit-style mr-2">
                                 <img src="../../irweb/images/icon/credit_pay_VISA.svg" alt="">

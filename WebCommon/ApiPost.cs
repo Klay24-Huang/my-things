@@ -80,7 +80,7 @@ namespace WebCommon
                     valueTuple.Message = ex.Message;
                 }
 
-                valueTuple.Data = default(TResponse);
+                valueTuple.Data = default;
             }
             finally
             {
@@ -282,7 +282,6 @@ namespace WebCommon
 
         private static string ObjToFormData<T>(T input)
         {
-            string s = "";
             StringBuilder sb = new StringBuilder();
 
             foreach (var t in input.GetType().GetProperties())

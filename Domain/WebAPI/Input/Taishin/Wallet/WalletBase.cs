@@ -30,6 +30,7 @@ namespace Domain.WebAPI.Input.Taishin.Wallet
         public string POSId { get; set; } = "";
         /// <summary>
         /// 商店代碼，預設帶""
+        /// <para>1:錢包儲值</para>
         /// </summary>
         public string StoreId { get; set; } = "";
         /// <summary>

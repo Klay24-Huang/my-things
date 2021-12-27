@@ -150,6 +150,12 @@ namespace OtherService
 			{
 				reqjsonpwd = apiResult.Data?.Data?.reqjsonpwd ?? "";
 			}
+			else
+            {
+				output.ErrorCode = apiResult.ErrCode;
+				output.ErrorMessage = apiResult.Message;
+
+			}
 			if(string.IsNullOrWhiteSpace(reqjsonpwd))
             {
 				apiResult.Succ = false;
@@ -281,6 +287,7 @@ namespace OtherService
 
 			valueTuple.Succ = result.Succ;
 			valueTuple.ErrCode = result.ErrCode;
+			valueTuple.Message = result.Message;
 
 			logger.Info($"response Info -- {JsonConvert.SerializeObject(result)}");
 			if (result.Succ)

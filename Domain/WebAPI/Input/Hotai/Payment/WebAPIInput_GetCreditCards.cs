@@ -8,6 +8,6 @@ namespace Domain.WebAPI.Input.Hotai.Payment
 {
     public class WebAPIInput_GetCreditCards : WebAPIInput_PaymentBase
     {
-        public bool Bin { get; set; } = true;
+        public string Bin { get; set; } = "true";
     }
 }

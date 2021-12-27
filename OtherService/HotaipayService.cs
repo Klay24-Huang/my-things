@@ -27,10 +27,11 @@ namespace OtherService
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string isDebug = ConfigurationManager.AppSettings["isDebug"]?.ToString()??"";
+       // private string CTBCTestCard = ConfigurationManager.AppSettings["CTBCTestCard"]?.ToString()??"";
         private static ConfigManager configManager = new ConfigManager("hotaipayment");
         private string merID = configManager.GetKey("CTBCMerID");
         private string terMinnalID = configManager.GetKey("CTBCTerminalID");
+        private string CTBCTestCard = configManager.GetKey("CTBCTestCard");
         HotaiMemberAPI hotaiMemberAPI = new HotaiMemberAPI();
         /// <summary>
         /// 取得和泰卡片清單
@@ -45,7 +46,7 @@ namespace OtherService
             bool flag = true;
             HotaiPaymentAPI PaymentAPI = new HotaiPaymentAPI();
             output.CreditCards = new List<HotaiCardInfo>();
-            if (isDebug == "1")
+            if (CTBCTestCard == "1")
             {
                 logger.Info($"DoQueryCardList |Get AccessToken | 進入測試模式");
 
@@ -103,7 +104,8 @@ namespace OtherService
                             CardToken = originalCard.Id.ToString(),
                             CardType = originalCard.CardType,
                             BankDesc = originalCard.BankDesc,
-                            PRGName = input.PRGName
+                            PRGName = input.PRGName,
+                            BankCode = originalCard.BinInfo?.Code+"" ?? "",
                         };
 
                     //寫入預設卡片
@@ -118,17 +120,22 @@ namespace OtherService
 
                 }
                 var hasDefault = creditCards.FindIndex(p => p.IsDefault == 1) == -1 ? false : true;
-                if (!hasDefault)
+                logger.Info($"DoQueryCardList | hasDefault | Result:{ hasDefault } ; dbDefaultCard:{dbDefaultCard.HotaiCardID}");
+                if (!hasDefault && dbDefaultCard.HotaiCardID != 0)
                 {
-                    var unbindFlag = sp_HotaiDefaultCardUnbind(
-                            new SPInput_HotaiDefaultCardUnbind
-                            {
-                                IDNO = input.IDNO,
-                                HotaiCardID = dbDefaultCard.HotaiCardID,
-                                LogID = input.LogID,
-                                U_FuncName = input.PRGName,
-                                U_USERID = "Sys"
-                            }, ref errCode);
+                    var sp_UnbindInput = new SPInput_HotaiDefaultCardUnbind
+                    {
+                        IDNO = input.IDNO,
+                        HotaiCardID = dbDefaultCard.HotaiCardID,
+                        LogID = input.LogID,
+                        U_FuncName = input.PRGName,
+                        U_USERID = "Sys"
+                    };
+
+
+                    var unbindFlag = sp_HotaiDefaultCardUnbind(sp_UnbindInput, ref errCode);
+
+                    logger.Info($"DoQueryCardList | HotaiDefaultCardUnbind | Result:{ unbindFlag } ; errCode:{errCode} | sp_setCardInput:{JsonConvert.SerializeObject(sp_UnbindInput)}");
                 }
 
                 output.CreditCards = creditCards;
@@ -632,8 +639,8 @@ namespace OtherService
                     MerchantTradeNoLeft = string.Format("{0}{1}"
                        , temPayTypeInfo.FrontPart.Equals("OrderNo") ? input.OrderNo.ToString() : input.IDNO
                        , temPayTypeInfo.PaySuff
-                       )
-
+                       ),
+                    MerchantID = merID,
                 };
 
                 var insStep1 = InsHotaiTranStep1(spStep1Input, ref flag, ref errCode, ref lstError);
@@ -685,7 +692,10 @@ namespace OtherService
                     else
                     {
                         spStep4Input.IsSuccess = -3;
-                        spStep4Input.RetMsg = "授權加密失敗";
+                        //spStep4Input.RetMsg = "授權加密失敗";
+                        spStep4Input.RetCode = encpyptOutput.ErrorCode;
+                        spStep4Input.RetMsg = encpyptOutput.ErrorMessage ?? "授權加密失敗";
+                        errCode = encpyptOutput.ErrorCode;
                     }
 
                     var apiOutput = new WebAPIOutput_CreditCardPay();
@@ -724,6 +734,7 @@ namespace OtherService
                             spStep4Input.IsSuccess = -2;
                             spStep4Input.RetCode = apiOutput.ErrorCode;
                             spStep4Input.RetMsg = apiOutput.ErrorMessage;
+                            errCode = apiOutput.ErrorCode;
                         }
                     }
                     if (flag)
@@ -740,12 +751,14 @@ namespace OtherService
                         flag = PaymentAPI.DecryptCTBCHtml(decryptInput, ref decryptOut);
                         logger.Info($"DoReqPaymentAuth | insStep4 | DecryptCTBCHtml | Result:{ flag } ; encpyptOutput : {JsonConvert.SerializeObject(decryptOut)}");
                         
-                        if (!flag & decryptOut.ErrorCode != "000000")
+                       
+                        if (!flag && decryptOut.ErrorCode != "000000")
                         {
                             //和泰解析異常
                             spStep4Input.IsSuccess = -3;
                             spStep4Input.RetCode = decryptOut.ErrorCode;
                             spStep4Input.RetMsg = decryptOut.ErrorMessage;
+                            errCode = decryptOut.ErrorCode;
                         }
                         else
                         {
@@ -784,7 +797,7 @@ namespace OtherService
                     InsHotaiTranStep4(spStep4Input, ref resultFlag, ref errCode, ref lstError);
                 }
             }
-            output.RtnCode = spStep4Input?.RetCode ?? "";
+            output.RtnCode = spStep4Input?.RetCode ?? "0";
             output.AuthCode = spStep4Input?.RetCode?? "";
             output.AuthMessage = spStep4Input?.RetMsg ?? "";
             output.CardNo = spStep4Input?.CardNumber ?? "";
@@ -805,8 +818,8 @@ namespace OtherService
                 BankDesc = input.BankDesc,
                 CardNumber = input.CardNoMask,
                 IsDefault = input.Id.ToString().Equals(defaultCardToken) ? 1 : 0,
-                MemberOneID = input.MemberOneID
-
+                MemberOneID = input.MemberOneID,
+                BankCode = input.BinInfo?.Code + "" ?? "",
             };
         }
 
@@ -826,7 +839,8 @@ namespace OtherService
                 BankDesc = "國外卡",
                 CardNumber = "****-****-****-5278",
                 IsDefault = 1,
-                MemberOneID = "0064fb4f-8250-4690-954b-2ba94862606b"
+                MemberOneID = "0064fb4f-8250-4690-954b-2ba94862606b",
+                BankCode = "822222"
             });
             return creditCards;
         }

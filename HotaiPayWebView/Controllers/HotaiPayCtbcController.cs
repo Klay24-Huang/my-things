@@ -353,6 +353,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult CreditcardChoose(FormCollection form)
         {
+            logger.Info($"CreditcardChoose | Init | form : {JsonConvert.SerializeObject(form)}");
             string IDNO = "";
             if (Session["id"].ToString() != null)
                 IDNO = Session["id"].ToString();
@@ -363,12 +364,14 @@ namespace HotaiPayWebView.Controllers
             string thatCardValue = form["CreditCardList"].Trim();
             if (thatCardValue != "")
             {
+                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nthatCardValue={thatCardValue}");
                 string[] input = thatCardValue.Split('|');
                 string MemberOneID = input[0];
                 string CardType = input[1];
                 string BankDesc = input[2];
                 string CardNumber = input[3];
                 string CardToken = input[4];
+                string BankCode = input[5];
 
                 var sp_input = new SPInput_SetDefaultCard();
                 sp_input.IDNO = IDNO;
@@ -378,7 +381,8 @@ namespace HotaiPayWebView.Controllers
                 sp_input.CardType = CardType;
                 sp_input.BankDesc = BankDesc;
                 sp_input.PRGName = "CreditcardChoose";
-                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc} ");
+                sp_input.BankCode = BankCode;
+                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc}\nBankCode={BankCode} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
                 {
@@ -393,14 +397,14 @@ namespace HotaiPayWebView.Controllers
             if (flag)
                 return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "SuccessBind" });//return Redirect("/irweb/HotaiPayCtbc/SuccessBind");
             else
-                return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "BindCardFailed" }); //return Redirect("/irweb/HotaiPayCtbc/BindCardFailed");
+                return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" }); //return Redirect("/irweb/HotaiPayCtbc/BindCardFailed");
         }
         #endregion
 
         public ActionResult BindResult(string StatusCode, string StatusDesc)
         {
-            logger.Info($"tanginput : {StatusCode}");
-            logger.Info($"tanginput : {StatusDesc}");
+            logger.Info($"tanginput | BindResult | StatusCode : {StatusCode} | StatusDesc : {StatusDesc}");
+            
             //string a = StatusCode;
             //string b = StatusDesc;
             if (StatusDesc.ToUpper() == "SUCCESS")

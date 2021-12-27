@@ -59,6 +59,7 @@
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiFastAddCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiPaymentAuth.cs" />
+    <Compile Include="SP\Input\Hotai\SP_Input_CTBCInquiry.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCap.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCapBase.cs" />
     <Compile Include="SP\Input\Hotai\SPInput_HotaiDefaultCardUnbind.cs" />
@@ -71,9 +72,11 @@
     <Compile Include="SP\Input\Hotai\SP_Input_HotaiTranStep4.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletStoredErrorHandle.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_CTBCCapList.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiTranStep1.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_GetWalletStoredErrorList.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />
     <Compile Include="TB\Hotai\HotaiCardInfo.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCardList.cs" />
@@ -686,6 +689,7 @@
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CardFbinding.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CreditCardDecrypt.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_CreditCardPay.cs" />
+    <Compile Include="WebAPI\Input\Hotai\Payment\Param\Body_GetCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_AddCard.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_CreditCardPayEncpypt.cs" />
     <Compile Include="WebAPI\Input\Hotai\Payment\WebAPIInput_DecryptCTBCHtml.cs" />
@@ -755,6 +759,7 @@
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdateBenefitsAndPrivacyVersion.cs" />
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdateMemberProfile.cs" />
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdatePassword.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_RelayPost.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
     <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_RefundRev.cs" />
@@ -896,6 +901,7 @@
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_ECRefund.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetPaymentInfo.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_RelayPost.cs" />
     <Compile Include="WebAPI\output\IRentAPIOutput_Generic.cs" />
     <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_InquiryByLidm.cs" />
   </ItemGroup>

@@ -47,7 +47,8 @@ namespace OtherService
                     output.QueryCode = inquiry.QueryCode;
                     output.OrderNo = inquiry.OrderNo;
                     output.QueryError = inquiry.QueryError;
-
+                    output.BatchId = inquiry.BatchId;
+                    output.BatchSeq = inquiry.BatchSeq;
                     output.XID = inquiry.XID;
                     output.AuthCode = inquiry.AuthCode;
                     output.TermSeq = inquiry.TermSeq;

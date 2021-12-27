@@ -19,5 +19,10 @@ namespace Domain.SP.Input.Hotai
         public string MerchantTradeNoLeft { get; set; }
         public string PrgName { get; set; }
         public string PrgUser { get; set; }
+
+        /// <summary>
+        /// 廠商代碼(金流單位提供)
+        /// </summary>
+        public string MerchantID { get; set; }
     }
 }
