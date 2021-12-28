@@ -15,7 +15,12 @@ namespace Domain.SP.Input.Wallet
         /// 會員身份證
         /// </summary>
         public string IDNO { get; set; } = "";
-      
+
+        /// <summary>
+        /// IDNO是否為舊式居留證(0:否 1:是)
+        /// </summary>
+        public int IsForeign { get; set; } = 0;
+
         /// <summary>
         /// 商店會員編號，最長20碼
         /// </summary>

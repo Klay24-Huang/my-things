@@ -40,6 +40,7 @@ namespace WebAPI.Controllers
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private readonly string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private readonly string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+        private readonly string ApiVersion = ConfigurationManager.AppSettings["TaishinWalletApiVersion"].ToString();
         private readonly string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private CommonFunc BaseVerify { get; set; }
         /// <summary>
@@ -87,19 +88,19 @@ namespace WebAPI.Controllers
                             DateTime NowTime = DateTime.Now;
                             var wallet = new WebAPI_CreateAccountAndStoredMoney()
                             {
-                                ApiVersion = "0.1.01",
+                                ApiVersion = ApiVersion,
                                 GUID = Guid.NewGuid().ToString().Replace("-", ""),
                                 MerchantId = MerchantId,
                                 POSId = "",
                                 StoreId = "1",
                                 StoreName = "",
                                 StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
-                                StoreTransId = string.Format("{0}{1}", item.IDNO, NowTime.ToString("MMddHHmmss")),
+                                StoreTransId = string.Format("{0}{1}", item.ID, NowTime.ToString("MMddHHmmss")),
                                 MemberId = item.MemberId,
                                 Name = item.Name,
                                 PhoneNo = item.PhoneNo,
                                 Email = item.Email,
-                                ID = item.IDNO,
+                                ID = item.IsForeign == 1 ? "" : item.ID,
                                 AccountType = item.AccountType,
                                 AmountType = item.AmountType,
                                 CreateType = item.CreateType,
@@ -123,7 +124,7 @@ namespace WebAPI.Controllers
                             string cardNo = item.CardNumber.Substring((item.CardNumber.Length - 5) > 0 ? item.CardNumber.Length - 5 : 0);
                             SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
                             {
-                                IDNO = output.Result.ID,
+                                IDNO = item.ID,
                                 WalletMemberID = output.Result.MemberId,
                                 WalletAccountID = output.Result.AccountId,
                                 Status = Convert.ToInt32(output.Result.Status),
@@ -155,7 +156,8 @@ namespace WebAPI.Controllers
                             ProcessStatus = flag ? 1 : 2,
                             ReturnCode = output?.ReturnCode ?? "",
                             ExceptionData = output?.ExceptionData ?? "",
-                            Message = output?.Message ?? ""
+                            Message = output?.Message ?? "",
+                            PRGName = funName
                         };
                         flag = UpdWalletStoredErrorLog(input, ref lstError, ref errCode);
                         #endregion

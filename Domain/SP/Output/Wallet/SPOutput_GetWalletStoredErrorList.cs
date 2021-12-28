@@ -20,7 +20,12 @@ namespace Domain.SP.Output.Wallet
         /// <summary>
         /// 會員身份證
         /// </summary>
-        public string IDNO { get; set; } = "";
+        public string ID { get; set; } = "";
+
+        /// <summary>
+        /// IDNO是否為舊式居留證(0:否 1:是)
+        /// </summary>
+        public int IsForeign { get; set; } = 0;
 
         /// <summary>
         /// 商店會員編號，最長20碼
@@ -110,10 +115,6 @@ namespace Domain.SP.Output.Wallet
         /// </summary>
         public string GiftCardBarCode { get; set; } = "";
 
-        /// <summary>
-        /// 程式代號
-        /// </summary>
-        public string PRGName { get; set; } = "";
 
         /// <summary>
         /// 回傳代碼
