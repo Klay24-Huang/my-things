@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
     {
         private readonly string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private readonly string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
-
+        private readonly string ApiVersion = ConfigurationManager.AppSettings["TaishinWalletApiVersion"].ToString();
 
         /// <summary>
         /// 錢包儲值-信用卡
@@ -169,24 +169,24 @@ namespace WebAPI.Controllers
                 #region 台新錢包儲值
                 if (flag)
                 {
-                    switch (apiInput.StoreType)
+                    switch (AuthOutput.CardType)
                     {
                         case 0:
-                            TradeType = "Store_Credit";
+                            TradeType = "Store_HotaiPay";
                             break;
                         case 4:
-                            TradeType = "Store_HotaiPay";
+                        default:
+                            TradeType = "Store_Credit";
                             break;
                     }
 
 
                     DateTime NowTime = DateTime.Now;
-                    string guid = Guid.NewGuid().ToString().Replace("-", "");
                     int nowCount = 1;
                     WebAPI_CreateAccountAndStoredMoney wallet = new WebAPI_CreateAccountAndStoredMoney()
                     {
-                        ApiVersion = "0.1.01",
-                        GUID = guid,
+                        ApiVersion = ApiVersion,
+                        GUID = Guid.NewGuid().ToString().Replace("-", ""),
                         MerchantId = MerchantId,
                         POSId = "",
                         StoreId = "1",//用此欄位區分訂閱制履保或錢包儲值紀錄
@@ -275,7 +275,7 @@ namespace WebAPI.Controllers
                         LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
                         LastStoreTransId = output.Result.StoreTransId,
                         LastTransId = output.Result.TransId,
-                        TaishinNO = AuthOutput?.BankTradeNo??"",
+                        TaishinNO = AuthOutput?.BankTradeNo ?? "",
                         TradeType = TradeType,
                         TradeKey = cardNo,
                         PRGName = funName,

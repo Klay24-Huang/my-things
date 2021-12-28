@@ -40,6 +40,7 @@ namespace WebAPI.Controllers
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private readonly string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private readonly string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+        private readonly string ApiVersion = ConfigurationManager.AppSettings["TaishinWalletApiVersion"].ToString();
         private readonly string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private CommonFunc BaseVerify { get; set; }
         /// <summary>
@@ -87,7 +88,7 @@ namespace WebAPI.Controllers
                             DateTime NowTime = DateTime.Now;
                             var wallet = new WebAPI_CreateAccountAndStoredMoney()
                             {
-                                ApiVersion = "0.1.01",
+                                ApiVersion = ApiVersion,
                                 GUID = Guid.NewGuid().ToString().Replace("-", ""),
                                 MerchantId = MerchantId,
                                 POSId = "",
@@ -151,11 +152,12 @@ namespace WebAPI.Controllers
                         #region 更新儲值錯誤LOG
                         SPInput_WalletStoredErrorHandle input = new SPInput_WalletStoredErrorHandle()
                         {
-                            Seqno = item.SEQNO,
+                            Seqno = item.SEQNO,                          
                             ProcessStatus = flag ? 1 : 2,
                             ReturnCode = output?.ReturnCode ?? "",
                             ExceptionData = output?.ExceptionData ?? "",
-                            Message = output?.Message ?? ""
+                            Message = output?.Message ?? "",
+                            PRGName = funName
                         };
                         flag = UpdWalletStoredErrorLog(input, ref lstError, ref errCode);
                         #endregion
