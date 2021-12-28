@@ -95,12 +95,12 @@ namespace WebAPI.Controllers
                                 StoreId = "1",
                                 StoreName = "",
                                 StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
-                                StoreTransId = string.Format("{0}{1}", item.IDNO, NowTime.ToString("MMddHHmmss")),
+                                StoreTransId = string.Format("{0}{1}", item.ID, NowTime.ToString("MMddHHmmss")),
                                 MemberId = item.MemberId,
                                 Name = item.Name,
                                 PhoneNo = item.PhoneNo,
                                 Email = item.Email,
-                                ID = item.IDNO,
+                                ID = item.IsForeign == 1 ? "" : item.ID,
                                 AccountType = item.AccountType,
                                 AmountType = item.AmountType,
                                 CreateType = item.CreateType,
@@ -124,7 +124,7 @@ namespace WebAPI.Controllers
                             string cardNo = item.CardNumber.Substring((item.CardNumber.Length - 5) > 0 ? item.CardNumber.Length - 5 : 0);
                             SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
                             {
-                                IDNO = output.Result.ID,
+                                IDNO = item.ID,
                                 WalletMemberID = output.Result.MemberId,
                                 WalletAccountID = output.Result.AccountId,
                                 Status = Convert.ToInt32(output.Result.Status),
@@ -152,7 +152,7 @@ namespace WebAPI.Controllers
                         #region 更新儲值錯誤LOG
                         SPInput_WalletStoredErrorHandle input = new SPInput_WalletStoredErrorHandle()
                         {
-                            Seqno = item.SEQNO,                          
+                            Seqno = item.SEQNO,
                             ProcessStatus = flag ? 1 : 2,
                             ReturnCode = output?.ReturnCode ?? "",
                             ExceptionData = output?.ExceptionData ?? "",

@@ -197,7 +197,7 @@ namespace WebAPI.Controllers
                         Name = spOutput.Name,
                         PhoneNo = spOutput.PhoneNo,
                         Email = spOutput.Email,
-                        ID = IDNO,
+                        ID = baseVerify.regexStr(IDNO, CommonFunc.CheckType.FIDNO) ? "" : IDNO, //舊式居留證丟儲值會回證件格式不符，故不丟
                         AccountType = "2",
                         AmountType = "2",
                         CreateType = "1",
@@ -221,7 +221,8 @@ namespace WebAPI.Controllers
                         #region 寫入開戶儲值錯誤LOG
                         SPInput_InsTaishinStoredMoneyError spInput = new SPInput_InsTaishinStoredMoneyError()
                         {
-                            IDNO = wallet.ID,
+                            IDNO = IDNO,
+                            IsForeign = baseVerify.regexStr(IDNO, CommonFunc.CheckType.FIDNO) ? 1 : 0,
                             MemberId = wallet.MemberId,
                             Name = wallet.Name,
                             PhoneNo = wallet.PhoneNo,
@@ -260,10 +261,10 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     string formatString = "yyyyMMddHHmmss";
-                    string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);
+                    string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);       
                     SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
                     {
-                        IDNO = output.Result.ID,
+                        IDNO = IDNO,
                         WalletMemberID = output.Result.MemberId,
                         WalletAccountID = output.Result.AccountId,
                         Status = Convert.ToInt32(output.Result.Status),
