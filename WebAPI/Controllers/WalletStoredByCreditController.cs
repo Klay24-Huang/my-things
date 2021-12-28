@@ -107,11 +107,12 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR900";
                     }
-                    else if (apiInput.StoreMoney > 0 && apiInput.StoreMoney < 100)
-                    {
-                        flag = false;
-                        errCode = "ERR284";
-                    }
+                    //拿掉儲值下限判斷，由前端檢核
+                    //else if (apiInput.StoreMoney > 0 && apiInput.StoreMoney < 100)
+                    //{
+                    //    flag = false;
+                    //    errCode = "ERR284";
+                    //}
                     else if (apiInput.StoreMoney > 50000)
                     {
                         flag = false;
@@ -160,13 +161,24 @@ namespace WebAPI.Controllers
                         insUser = funName,
                         AuthType = 9
                     };
-                    CreditAuthComm creditAuthComm = new CreditAuthComm();
-                    flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                   
+                    try
+                    {
+                        CreditAuthComm creditAuthComm = new CreditAuthComm();
+                        flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                    }
+                    catch (Exception ex)
+                    {
+                        flag = false;
+                        errCode = "ERR197";
+                        trace.BaseMsg = ex.Message;
+                    }
+
                     trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
                     trace.FlowList.Add("刷卡授權");
                 }
                 #endregion
-                #region 台新錢包儲值
+                #region 台新錢包儲值失敗
                 if (flag)
                 {
                     switch (AuthOutput.CardType)
@@ -194,9 +206,12 @@ namespace WebAPI.Controllers
                         StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
                         StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
                         MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
-                        Name = spOutput.Name,
-                        PhoneNo = spOutput.PhoneNo,
-                        Email = spOutput.Email,
+                        //Name = spOutput.Name,       
+                        //PhoneNo = spOutput.PhoneNo, 
+                        //Email = spOutput.Email,     
+                        Name = "",       //非必填不帶值
+                        PhoneNo = "",    //非必填不帶值
+                        Email = "",      //非必填不帶值
                         ID = baseVerify.regexStr(IDNO, CommonFunc.CheckType.FIDNO) ? "" : IDNO, //舊式居留證丟儲值會回證件格式不符，故不丟
                         AccountType = "2",
                         AmountType = "2",
@@ -211,7 +226,15 @@ namespace WebAPI.Controllers
                     TaishinWallet WalletAPI = new TaishinWallet();
                     string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
                     string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
-                    flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+                    try
+                    {
+                        flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+                    }
+                    catch (Exception ex)
+                    {
+                        flag = false;
+                        trace.BaseMsg = ex.Message;
+                    }
 
                     trace.traceAdd("DoStoreValueCreateAccount", new { flag, wallet, output, errCode });
                     trace.FlowList.Add("錢包儲值");
