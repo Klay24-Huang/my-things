@@ -227,5 +227,9 @@ namespace Domain.TB.BackEnd
         /// 關帳金額
         /// </summary>
         public int CloseAmout { get; set; }
+        /// <summary>
+        /// 商代代碼
+        /// </summary>
+        public string MerchantID { get; set; }
     }
 }
