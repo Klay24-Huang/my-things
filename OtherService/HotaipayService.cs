@@ -245,6 +245,7 @@ namespace OtherService
                 }
                 else if (HttpStatusCode == 401) //Token 過期
                 {
+                    errCode = "";
                     WebAPIInput_RefreshToken sp_refreshTokenInput = new WebAPIInput_RefreshToken()
                     {
                         access_token = SPOut.AccessToken,

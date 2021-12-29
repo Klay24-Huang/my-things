@@ -28,6 +28,10 @@ namespace WebAPI.Controllers
     {
 
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //補上hotaipay CONFIG
+        private static ConfigManager configManager = new ConfigManager("hotaipayment");
+        private string merID = configManager.GetKey("CTBCMerID");
+
         /// <summary>
         /// 【後台】短租補傳
         /// </summary>
@@ -348,17 +352,35 @@ namespace WebAPI.Controllers
                                     //最後一筆處理ETAG
                                     if (obj.eTag > 0 && z == ReturnControlList.Count -1)
                                     {
-                                        //input.tbPaymentDetail = new PaymentDetail[2];
-                                        input.tbPaymentDetail[z] = new PaymentDetail()
+                                        //先確認當下是否能處理
+                                        if (ReturnControlList[z].CloseAmout > obj.eTag)
                                         {
-                                            //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                            PAYAMT = (ReturnControlList[z].CloseAmout- obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                            PAYTYPE = "1",
-                                            PAYMENTTYPE = "1",
-                                            PAYMEMO = "租金",
-                                            //PORDNO = obj.REMARK
-                                            PORDNO = ReturnControlList[z].REMARK
-                                        };
+                                            //input.tbPaymentDetail = new PaymentDetail[2];
+                                            input.tbPaymentDetail[z] = new PaymentDetail()
+                                            {
+                                                //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                                PAYAMT = (ReturnControlList[z].CloseAmout - obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                                PAYTYPE = "1",
+                                                PAYMENTTYPE = "1",
+                                                PAYMEMO = "租金",
+                                                //PORDNO = obj.REMARK
+                                                PORDNO = ReturnControlList[z].REMARK,
+                                                OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
+                                            };
+                                        }
+                                        else
+                                        {
+                                            int k = z;
+                                            while(k >= 0)
+                                            {
+                                                if (ReturnControlList[k].CloseAmout > obj.eTag)
+                                                {
+                                                    input.tbPaymentDetail[k].PAYAMT = (ReturnControlList[k].CloseAmout - obj.eTag).ToString();
+                                                    break;
+                                                }
+                                                k--;
+                                            }
+                                        }
                                         //input.tbPaymentDetail[1] = new PaymentDetail()
                                         input.tbPaymentDetail[z+1] = new PaymentDetail()
                                         {
@@ -367,7 +389,8 @@ namespace WebAPI.Controllers
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "eTag",
                                             //PORDNO = obj.REMARK
-                                            PORDNO = ReturnControlList[z].REMARK
+                                            PORDNO = ReturnControlList[z].REMARK,
+                                            OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }
                                     else
@@ -381,7 +404,8 @@ namespace WebAPI.Controllers
                                             PAYTYPE = "1",
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "租金",
-                                            PORDNO = ReturnControlList[z].REMARK
+                                            PORDNO = ReturnControlList[z].REMARK,
+                                            OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }
                                 }
@@ -396,7 +420,8 @@ namespace WebAPI.Controllers
                                     PAYTYPE = "",
                                     PAYMENTTYPE = "",
                                     PAYMEMO = "",
-                                    PORDNO = ""
+                                    PORDNO = "",
+                                    OPERATOR = 0        //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                 };
                             }
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
@@ -497,6 +522,18 @@ namespace WebAPI.Controllers
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;
 
+        }
+
+        private int GetOperator(string MerchantID)
+        {
+            //目前 台新0 中信1
+            int Result = 0;
+            if (MerchantID == merID)
+            {
+                Result = 1;
+            }
+
+            return Result;
         }
 
     }

@@ -657,9 +657,11 @@ html {
     width: 100%;
 padding: 0 24px 24px 24px;
 
-} 
+}
 
-
+.height-box {
+    height: 300px;
+}
 
 
 /* 置底btn css */

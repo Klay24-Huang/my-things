@@ -398,7 +398,7 @@ namespace WebAPI.Controllers
                                             LastStoreTransId = output.Result.StoreTransId,
                                             LastTransId = output.Result.TransId,
                                             TaishinNO = output.Result.TransId,
-                                            OrderNo = apiInput.OrderNo.Substring(1),
+                                            OrderNo = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder) ? tmpOrder : 0 ,
                                             TradeType = "Store_Return",
                                             PRGName = "84",
                                             Mode = 4,

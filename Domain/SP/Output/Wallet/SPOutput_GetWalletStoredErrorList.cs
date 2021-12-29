@@ -4,17 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.SP.Input.Wallet
+namespace Domain.SP.Output.Wallet
 {
+
     /// <summary>
-    /// 台新錢包開戶及儲值錯誤紀錄檔
+    /// 錢包儲值錯誤清單
     /// </summary>
-    public class SPInput_InsTaishinStoredMoneyError : SPInput_Base
+    public class SPOutput_GetWalletStoredErrorList
     {
+        /// <summary>
+        /// 流水號
+        /// </summary>
+        public int SEQNO { get; set; } 
+
         /// <summary>
         /// 會員身份證
         /// </summary>
-        public string IDNO { get; set; } = "";
+        public string ID { get; set; } = "";
 
         /// <summary>
         /// IDNO是否為舊式居留證(0:否 1:是)
@@ -109,10 +115,6 @@ namespace Domain.SP.Input.Wallet
         /// </summary>
         public string GiftCardBarCode { get; set; } = "";
 
-        /// <summary>
-        /// 程式代號
-        /// </summary>
-        public string PRGName { get; set; } = "";
 
         /// <summary>
         /// 回傳代碼

@@ -277,6 +277,8 @@
 
 20211209 新增會員解綁(MemberUnbind)
 
+20211228 錢包儲值-信用卡(WalletStoredByCredit)移除錯誤代碼
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -3030,17 +3032,31 @@
 | Insurance | 是否加購安心服務 |  Y   |  int   | 1           |
 | MonId     | 選擇的訂閱制月租 |  Y   |  int   | 123456      |
 
-* input範例
+* input範例(同站)
 
 ```
 {
-	"ProjID": "P735",
+	"ProjID": "R220",
 	"CarNo": "",
-    "CarType": "COROLLA CROSS",
-	"SDate": "2021-05-11 10:30:00",
-    "EDate": "2021-05-11 11:30:00",
-    "Insurance": 0,
-    "MonId": 1234
+	"CarType": "ALTIS",
+	"SDate": "2021-12-28 10:50:00",
+	"EDate": "2021-12-28 11:50:00",
+	"Insurance": 0,
+	"MonId": 0
+}
+```
+
+* input範例(路邊)
+
+```
+{
+	"ProjID": "R221",
+	"CarNo": "RCR-6795",
+	"CarType": "",
+	"SDate": "2021-12-28 10:50:00",
+	"EDate": "2021-12-29 10:50:00",
+	"Insurance": 0,
+	"MonId": 0
 }
 ```
 
@@ -4439,6 +4455,8 @@
 | TransferPrice                | 轉乘費用                   |  int   | 0                   |
 | InsurancePurePrice           | 安心服務                   |  int   | 0                   |
 | InsuranceExtPrice            | 安心服務延長費用           |  int   | 0                   |
+| PreAmount                    | 預授權金額                 |  int   | 0                   |
+| DiffAmount                   | 差額                       |  int   | 0                   |
 
 * CarRent資料物件說明
 
@@ -4513,36 +4531,38 @@
         "ReturnOrderPrice": 0,
         "FineOrderPrice": 0,
         "Rent": {
-            "CarNo": "RBJ-9397",
-            "BookingStartDate": "2021-09-06 13:21:00",
-            "BookingEndDate": "2021-09-06 14:30:00",
-            "RentalDate": "2021-09-06 13:27:00",
+            "CarNo": "RCN-0278",
+            "BookingStartDate": "2021-12-29 10:02:00",
+            "BookingEndDate": "2021-12-29 11:30:00",
+            "RentalDate": "2021-12-29 10:05:00",
             "RentalTimeInterval": "60",
-            "RedeemingTimeInterval": "565",
-            "RedeemingTimeCarInterval": "565",
+            "RedeemingTimeInterval": "0",
+            "RedeemingTimeCarInterval": "0",
             "RedeemingTimeMotorInterval": "0",
             "ActualRedeemableTimeInterval": "60",
             "RemainRentalTimeInterval": "60",
             "UseMonthlyTimeInterval": "0",
             "UseNorTimeInterval": "0",
             "RentBasicPrice": 0,
-            "CarRental": 125,
+            "CarRental": 110,
             "MileageRent": 0,
             "ETAGRental": 0,
             "OvertimeRental": 0,
-            "TotalRental": 125,
+            "TotalRental": 110,
             "ParkingFee": 0,
             "TransferPrice": 0,
             "InsurancePurePrice": 0,
-            "InsuranceExtPrice": 0
+            "InsuranceExtPrice": 0,
+            "PreAmount": 170,
+            "DiffAmount": -60
         },
         "CarRent": {
             "HourOfOneDay": 10,
-            "HoildayPrice": 1980,
-            "WorkdayPrice": 1250,
-            "HoildayOfHourPrice": 198,
-            "WorkdayOfHourPrice": 125,
-            "MilUnit": 3.1
+            "HoildayPrice": 1680,
+            "WorkdayPrice": 1100,
+            "HoildayOfHourPrice": 168,
+            "WorkdayOfHourPrice": 110,
+            "MilUnit": 3.0
         },
         "MotorRent": {
             "BaseMinutes": 0,
@@ -7702,12 +7722,10 @@
 | -------- | -------------------------- | ---------------------------------------- |
 | ERR730   | 查詢綁定卡號失敗           | 查詢綁定卡號失敗                         |
 | ERR197   | 刷卡授權失敗，請洽發卡銀行 | 刷卡授權發生錯誤                         |
-| ERR284   | 儲值金額不得低於下限       | 儲值金額不得低於100元                    |
 | ERR285   | 儲值金額超過上限           | 儲值金額不得大於5萬元                    |
 | ERR282   | 錢包金額超過上限           | 錢包現存餘額上限為5萬元(包括受贈)        |
 | ERR280   | 金流超過上限               | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
 | ERR918   | Api呼叫失敗                | 呼叫台新錢包儲值發生失敗                 |
-| ERR286   | 寫入錢包紀錄發生失敗       | 寫入錢包紀錄發生失敗                     |
 
 ## WalletStoreVisualAccount 錢包儲值-虛擬帳號
 
