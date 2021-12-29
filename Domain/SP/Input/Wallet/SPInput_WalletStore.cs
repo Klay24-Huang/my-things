@@ -110,7 +110,7 @@ namespace Domain.SP.Input.Wallet
         /// <summary>
         /// 訂單編號(合約退款用)
         /// </summary>
-        public string OrderNo { set; get; }
+        public long OrderNo { set; get; }
 
         /// <summary>
         /// APP上是否顯示：0:隱藏,1:顯示
