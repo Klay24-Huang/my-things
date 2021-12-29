@@ -80,92 +80,93 @@ namespace WebAPI.Controllers
             {
                 foreach (var item in errList)
                 {
-                    try
+                    #region 台新錢包儲值
+                    if (flag)
                     {
-                        #region 台新錢包儲值
-                        if (flag)
+                        DateTime NowTime = DateTime.Now;
+                        var wallet = new WebAPI_CreateAccountAndStoredMoney()
                         {
-                            DateTime NowTime = DateTime.Now;
-                            var wallet = new WebAPI_CreateAccountAndStoredMoney()
-                            {
-                                ApiVersion = ApiVersion,
-                                GUID = Guid.NewGuid().ToString().Replace("-", ""),
-                                MerchantId = MerchantId,
-                                POSId = "",
-                                StoreId = "1",
-                                StoreName = "",
-                                StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
-                                StoreTransId = string.Format("{0}{1}", item.ID, NowTime.ToString("MMddHHmmss")),
-                                MemberId = item.MemberId,
-                                Name = item.Name,
-                                PhoneNo = item.PhoneNo,
-                                Email = item.Email,
-                                ID = item.IsForeign == 1 ? "" : item.ID,
-                                AccountType = item.AccountType,
-                                AmountType = item.AmountType,
-                                CreateType = item.CreateType,
-                                Amount = item.Amount,
-                                Bonus = item.Bonus,
-                                BonusExpiredate = item.BonusExpiredate,
-                                SourceFrom = item.SourceFrom
-                            };
+                            ApiVersion = ApiVersion,
+                            GUID = Guid.NewGuid().ToString().Replace("-", ""),
+                            MerchantId = MerchantId,
+                            POSId = "",
+                            StoreId = "1",
+                            StoreName = "",
+                            StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
+                            StoreTransId = string.Format("{0}{1}", item.ID, NowTime.ToString("MMddHHmmss")),
+                            MemberId = item.MemberId,
+                            Name = item.Name,
+                            PhoneNo = item.PhoneNo,
+                            Email = item.Email,
+                            ID = item.IsForeign == 1 ? "" : item.ID,
+                            AccountType = item.AccountType,
+                            AmountType = item.AmountType,
+                            CreateType = item.CreateType,
+                            Amount = item.Amount,
+                            Bonus = item.Bonus,
+                            BonusExpiredate = item.BonusExpiredate,
+                            SourceFrom = item.SourceFrom
+                        };
 
-                            var body = JsonConvert.SerializeObject(wallet);
-                            TaishinWallet WalletAPI = new TaishinWallet();
-                            string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-                            string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                        var body = JsonConvert.SerializeObject(wallet);
+                        TaishinWallet WalletAPI = new TaishinWallet();
+                        string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                        string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                        try
+                        {
                             flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
                         }
-                        #endregion
-                        #region 寫入錢包
-                        if (flag)
+                        catch (Exception ex)
                         {
-                            string formatString = "yyyyMMddHHmmss";
-                            string cardNo = item.CardNumber.Substring((item.CardNumber.Length - 5) > 0 ? item.CardNumber.Length - 5 : 0);
-                            SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
-                            {
-                                IDNO = item.ID,
-                                WalletMemberID = output.Result.MemberId,
-                                WalletAccountID = output.Result.AccountId,
-                                Status = Convert.ToInt32(output.Result.Status),
-                                Email = output.Result.Email,
-                                PhoneNo = output.Result.PhoneNo,
-                                StoreAmount = item.Amount,
-                                WalletBalance = output.Result.Amount,
-                                CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
-                                LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
-                                LastStoreTransId = output.Result.StoreTransId,
-                                LastTransId = output.Result.TransId,
-                                TaishinNO = item.BankTradeNo,
-                                TradeType = item.TradeType,
-                                TradeKey = cardNo,
-                                PRGName = funName,
-                                Mode = 1,
-                                InputSource = 2,
-                                LogID = LogID
-                            };
-
-                            flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);
-
+                            flag = false;
+                            logger.Error("WalletStoredErrorListloop Error:" + ex.Message);
                         }
-                        #endregion
-                        #region 更新儲值錯誤LOG
-                        SPInput_WalletStoredErrorHandle input = new SPInput_WalletStoredErrorHandle()
-                        {
-                            Seqno = item.SEQNO,
-                            ProcessStatus = flag ? 1 : 2,
-                            ReturnCode = output?.ReturnCode ?? "",
-                            ExceptionData = output?.ExceptionData ?? "",
-                            Message = output?.Message ?? "",
-                            PRGName = funName
-                        };
-                        flag = UpdWalletStoredErrorLog(input, ref lstError, ref errCode);
-                        #endregion
                     }
-                    catch (Exception ex)
+                    #endregion
+                    #region 寫入錢包
+                    if (flag)
                     {
-                        logger.Error("WalletStoredErrorListloop Error:" + ex.Message);
+                        string formatString = "yyyyMMddHHmmss";
+                        string cardNo = item.CardNumber.Substring((item.CardNumber.Length - 5) > 0 ? item.CardNumber.Length - 5 : 0);
+                        SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
+                        {
+                            IDNO = item.ID,
+                            WalletMemberID = output.Result.MemberId,
+                            WalletAccountID = output.Result.AccountId,
+                            Status = Convert.ToInt32(output.Result.Status),
+                            Email = output.Result.Email,
+                            PhoneNo = output.Result.PhoneNo,
+                            StoreAmount = item.Amount,
+                            WalletBalance = output.Result.Amount,
+                            CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
+                            LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
+                            LastStoreTransId = output.Result.StoreTransId,
+                            LastTransId = output.Result.TransId,
+                            TaishinNO = item.BankTradeNo,
+                            TradeType = item.TradeType,
+                            TradeKey = cardNo,
+                            PRGName = funName,
+                            Mode = 1,
+                            InputSource = 2,
+                            LogID = LogID
+                        };
+
+                        flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);
                     }
+                    #endregion
+                    #region 更新儲值錯誤LOG
+                    SPInput_WalletStoredErrorHandle input = new SPInput_WalletStoredErrorHandle()
+                    {
+                        Seqno = item.SEQNO,
+                        ProcessStatus = flag ? 1 : 2,
+                        ReturnCode = output?.ReturnCode ?? "",
+                        ExceptionData = output?.ExceptionData ?? "",
+                        Message = output?.Message ?? "",
+                        PRGName = funName
+                    };
+                    flag = UpdWalletStoredErrorLog(input, ref lstError, ref errCode);
+                    #endregion
+
                 }
             }
             #endregion

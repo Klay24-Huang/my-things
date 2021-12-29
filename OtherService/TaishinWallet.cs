@@ -97,7 +97,7 @@ namespace OtherService
             bool flag = true;
 
             output = DoStoreValueCreateAccountSend(wsInput, ClientId,utcTimeStamp,SignCode).Result;
-            logger.Trace(output);
+            logger.Trace(" DoStoreValueCreateAccountSend : " + JsonConvert.SerializeObject(output));
             if (output.ReturnCode == "0000" || output.ReturnCode=="M000" )
             {
                 //if (output.Data == null)
@@ -131,11 +131,10 @@ namespace OtherService
                     AccountingStatus = "0",
                     GiftCardBarCode = wsInput.GiftCardBarCode
                 };
-
-                logger.Trace(spInput);
-
+        
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new TaishinWalletLog().InsStoreValueCreateAccountLog(spInput, ref flag, ref errCode, ref lstError);
+                logger.Trace(" InsStoreValueCreateAccountLog : " + JsonConvert.SerializeObject(spInput));
             }
             else
             {

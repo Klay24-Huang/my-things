@@ -27,47 +27,46 @@ namespace OtherService
     /// </summary>
     public class HotaiMemberAPI
     {
-        private static ConfigManager configManager = new ConfigManager("hotaipayment");
-        private string FrontEndURL = configManager.GetKey("HotaiMemberFrontEndURL");
-        private string SingleEntry = configManager.GetKey("HotaiMemberSingleEntry");
-        private string BackEndURL = configManager.GetKey("HotaiMemberBackEndURL");
-        private string AppId = configManager.GetKey("HotaiAppId");
-        private string AppVersion = configManager.GetKey("HotaiAppVersion");
-        private string ApiVersion = configManager.GetKey("HotaiApiVersion");
-        private string AppKey = configManager.GetKey("HotaiAppKey");
-        private string Key = configManager.GetKey("HotaiKey");
-        private string IV = configManager.GetKey("HotaiIV");
+        private static readonly ConfigManager configManager = new ConfigManager("hotaipayment");
+        private readonly string FrontEndURL = configManager.GetKey("HotaiMemberFrontEndURL");
+        private readonly string SingleEntry = configManager.GetKey("HotaiMemberSingleEntry");
+        private readonly string BackEndURL = configManager.GetKey("HotaiMemberBackEndURL");
+        private readonly string AppId = configManager.GetKey("HotaiAppId");
+        private readonly string AppVersion = configManager.GetKey("HotaiAppVersion");
+        private readonly string ApiVersion = configManager.GetKey("HotaiApiVersion");
+        private readonly string AppKey = configManager.GetKey("HotaiAppKey");
+        private readonly string Key = configManager.GetKey("HotaiKey");
+        private readonly string IV = configManager.GetKey("HotaiIV");
 
-        private string CheckSignupURL = "api/signup/check";                                                //註冊檢查  
-        private string SendSmsOtpURL = "api/otp/sms";                                                      //發送簡訊OTP
-        private string SmsOtpValidationURL = "api/otp/sms-validatation";                                   //簡訊 OTP 驗證
-        private string RefreshTokenURL = "api/token/refresh";                                              //更新 Token
-        private string SendEmailOtpURL = "api/otp/email";                                                  //發送 Email OTP
-        private string EmailOtpValidatationURL = "api/otp/email-validatation";                             //Email OTP 驗證
-        private string CheckTokenURL = "api/token/check";                                                  //檢查 Token
-        private string GetEmailURL = "api/otp/sms-email";                                                  //取得 Email
-        private string OtpValidatationURL = "api/otp/validatation";                                        //驗證會員資訊,取得 OTP 編號
-        private string SignOutURL = "api/signOut";                                                         //登出
-        private string SigninURL = "api/signin";                                                           //登入
-        private string SignupURL = "api/signup";                                                           //註冊
-        private string SignupProfileURL = "api/member/signup-profile";                                     //註冊個人資料(一般)
-        private string ResetPasswordURL = "api/member/reset-password";                                     //重設密碼
-        private string IsMissingMemberProfileURL = "api/member/missing-profile";                           //缺少個人資料
-        private string GetMemberProfileURL = "api/member/profile";                                         //取得個人資料
-        private string UpdateMemberProfileURL = "api/member/update-profile";                               //更新個人資料
-        private string ConfirmPasswordURL = "api/member/confirm-password";                                 //確認密碼
-        private string UpdateAccountURL = "api/member/update-account";                                     //修改帳號
-        private string UpdatePasswordURL = "api/member/update-password";                                   //修改密碼
-        private string CheckBenefitsAndPrivacyVersionURL = "api/member/check-benefits-privacy-version";    //檢查會員權益及隱私條款版本
-        private string UpdateBenefitsAndPrivacyVersionURL = "api/member/update-benefits-privacy-version";  //同意新款會員權益及隱私條款
-        private string GetPrivacyURL = "api/privacy";                                                      //取得會員權益及隱私條款
-        private string GroupAppsURL = "api/group-apps/";                                                   //集團服務
+        private readonly string CheckSignupURL = "api/signup/check";                                                //註冊檢查  
+        private readonly string SendSmsOtpURL = "api/otp/sms";                                                      //發送簡訊OTP
+        private readonly string SmsOtpValidationURL = "api/otp/sms-validatation";                                   //簡訊 OTP 驗證
+        private readonly string RefreshTokenURL = "api/token/refresh";                                              //更新 Token
+        private readonly string SendEmailOtpURL = "api/otp/email";                                                  //發送 Email OTP
+        private readonly string EmailOtpValidatationURL = "api/otp/email-validatation";                             //Email OTP 驗證
+        private readonly string CheckTokenURL = "api/token/check";                                                  //檢查 Token
+        private readonly string GetEmailURL = "api/otp/sms-email";                                                  //取得 Email
+        private readonly string OtpValidatationURL = "api/otp/validatation";                                        //驗證會員資訊,取得 OTP 編號
+        private readonly string SignOutURL = "api/signOut";                                                         //登出
+        private readonly string SigninURL = "api/signin";                                                           //登入
+        private readonly string SignupURL = "api/signup";                                                           //註冊
+        private readonly string SignupProfileURL = "api/member/signup-profile";                                     //註冊個人資料(一般)
+        private readonly string ResetPasswordURL = "api/member/reset-password";                                     //重設密碼
+        private readonly string IsMissingMemberProfileURL = "api/member/missing-profile";                           //缺少個人資料
+        private readonly string GetMemberProfileURL = "api/member/profile";                                         //取得個人資料
+        private readonly string UpdateMemberProfileURL = "api/member/update-profile";                               //更新個人資料
+        private readonly string ConfirmPasswordURL = "api/member/confirm-password";                                 //確認密碼
+        private readonly string UpdateAccountURL = "api/member/update-account";                                     //修改帳號
+        private readonly string UpdatePasswordURL = "api/member/update-password";                                   //修改密碼
+        private readonly string CheckBenefitsAndPrivacyVersionURL = "api/member/check-benefits-privacy-version";    //檢查會員權益及隱私條款版本
+        private readonly string UpdateBenefitsAndPrivacyVersionURL = "api/member/update-benefits-privacy-version";  //同意新款會員權益及隱私條款
+        private readonly string GetPrivacyURL = "api/privacy";                                                      //取得會員權益及隱私條款
+        private readonly string GroupAppsURL = "api/group-apps/";                                                   //集團服務
 
-        private string GetMobilePhoneToOneIDURL = "api/subsystem/member/MobilePhoneToOneID";               //【後台】使用手機取得會員 OneID
-        private string GetTownshipsURL = "api/subsystem/townships";                                        //【後台】行政區列表
-        private string GetPublicKeyURL = "api/subsystem/PublicKEY";                                        //【後台】取得公鑰    
-        private string GetValidKeyVersionURL = "api/subsystem/valid-key-version";                          //【後台】取得後台金鑰有效版本號    
-        protected static Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly string GetMobilePhoneToOneIDURL = "api/subsystem/member/MobilePhoneToOneID";               //【後台】使用手機取得會員 OneID
+        private readonly string GetTownshipsURL = "api/subsystem/townships";                                        //【後台】行政區列表
+        private readonly string GetPublicKeyURL = "api/subsystem/PublicKEY";                                        //【後台】取得公鑰    
+        private readonly string GetValidKeyVersionURL = "api/subsystem/valid-key-version";                          //【後台】取得後台金鑰有效版本號    
 
         /// <summary>
         /// 發送簡訊 OTP
@@ -692,11 +691,10 @@ namespace OtherService
                 var resinfo = SetRequestBody(body, API, Action);
 
                 string content = JsonConvert.SerializeObject(resinfo);
-                logger.Info($"Post Body:{content}");
 
                 var result = ApiPost.DoApiPostJson(requestUrl, content, Method, header);
 
-                valueTuple.Succ = result.ProtocolStatusCode == 200 ? true : false;
+                valueTuple.Succ = result.ProtocolStatusCode == 200;
 
                 var a = result.ResponseData == "" ? "" : DecryptAESHandle(result.ResponseData);
                 if (valueTuple.Succ)
@@ -732,7 +730,7 @@ namespace OtherService
             {
                 MKTime = DateTime.Now,
                 UPDTime = DateTime.Now,
-                WebAPIInput = JsonConvert.SerializeObject(Body),
+                WebAPIInput = Body == null ? access_token : JsonConvert.SerializeObject(Body),
                 WebAPIName = funName,
                 WebAPIOutput = JsonConvert.SerializeObject(valueTuple),
                 WebAPIURL = requestUrl
@@ -766,11 +764,10 @@ namespace OtherService
                 {
                     content = JsonConvert.SerializeObject(Body);
                 }
-                logger.Info($"Post Body:{content}");
 
                 var result = ApiPost.DoApiPostJson(requestUrl, content, Method, header);
 
-                valueTuple.Succ = result.ProtocolStatusCode == 200 ? true : false;
+                valueTuple.Succ = result.ProtocolStatusCode == 200;
 
                 if (valueTuple.Succ)
                 {
@@ -804,7 +801,7 @@ namespace OtherService
             {
                 MKTime = DateTime.Now,
                 UPDTime = DateTime.Now,
-                WebAPIInput = JsonConvert.SerializeObject(Body),
+                WebAPIInput = Body == null ? access_token : JsonConvert.SerializeObject(Body),
                 WebAPIName = funName,
                 WebAPIOutput = JsonConvert.SerializeObject(valueTuple),
                 WebAPIURL = requestUrl
@@ -857,15 +854,13 @@ namespace OtherService
 
         private string EncryptAESHandle(string source)
         {
-            string encrypt = "";
-            encrypt = AESEncrypt.EncryptAES128(source, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
+            string encrypt = AESEncrypt.EncryptAES128(source, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
             return encrypt;
         }
 
         private string DecryptAESHandle(string encryptData)
         {
-            string encrypt = "";
-            encrypt = AESEncrypt.DecryptAES128(encryptData, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
+            string encrypt = AESEncrypt.DecryptAES128(encryptData, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
             return encrypt;
         }
 
