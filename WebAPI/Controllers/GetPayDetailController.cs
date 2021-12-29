@@ -94,9 +94,9 @@ namespace WebAPI.Controllers
             var visMons = new List<MonthlyRentData>();//虛擬月租
 
             DateTime NowTime = DateTime.Now;
-            DateTime SD = new DateTime();
-            DateTime ED = new DateTime();
-            DateTime FED = new DateTime();
+            DateTime SD = new DateTime();   // 實際取車時間
+            DateTime ED = new DateTime();   // 預計還車時間(逾時為原始還車時間)
+            DateTime FED = new DateTime();  // 實際還車時間
             DateTime? FineDate = null;
             bool hasFine = false;   //是否逾時
             DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);    // 春節起日
@@ -126,6 +126,8 @@ namespace WebAPI.Controllers
             //int OrderPrice = 0;     //原始訂金
             //int UseOrderPrice = 0;  //使用訂金(4捨5入)
             string MonIds = "";     //短期月租Id可多筆
+
+            List<CodeData> ChineseNewYearList = new List<CodeData>();   // 春節專案列表
             #endregion
             #endregion
             try
@@ -329,25 +331,29 @@ namespace WebAPI.Controllers
                         }
                         #endregion
 
+                        #region 取得春節專案
+                        ChineseNewYearList = new CommonRepository(connetStr).GetCodeData("ChineseNewYear");
+                        var CNYList = ChineseNewYearList.Select(x => x.MapCode).ToList();
+                        #endregion
+
                         #region 路邊,機車春前特殊處理
-                        if (ProjType == 0 && !isSpring)
-                        {
+                        if (ProjType == 0 && !isSpring) // 同站 AND 非春節期間
+                        {   // 這段在做：預約是春節專案，但實際用車時間沒有落在春節期間，專案價格要取非春節專案的
                             var item = OrderDataLists[0];
-                            if (!string.IsNullOrWhiteSpace(item.ProjID) && item.ProjID.ToLower() == "r129" && !isSpring)
+                            if (CNYList.Count > 0 && CNYList.Contains(item.ProjID))
                             {
-                                DateTime sprSd = Convert.ToDateTime(SiteUV.strSpringSd);
                                 bool befSpring = false;
                                 if (hasFine)
-                                    befSpring = sprSd >= ED;
+                                    befSpring = sprSD >= ED;    // 春節起日 >= 原始還車時間
                                 else
-                                    befSpring = sprSd >= FED;
+                                    befSpring = sprSD >= FED;   // 春節起日 >= 實際還車時間
                                 if (befSpring)
                                 {
-                                    var xre = cr_sp.sp_GetEstimate("P735", item.CarTypeGroupCode, LogID, ref errMsg);
-                                    if (xre != null)
+                                    var NormalPrice = cr_sp.GetNormalProject(item.ProjID, item.CarTypeGroupCode, item.OrderNo, IDNO, SD, FED, item.ProjType, LogID, ref errMsg);
+                                    if (NormalPrice != null)
                                     {
-                                        OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE / 10));
-                                        OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H / 10));
+                                        OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(NormalPrice.PRICE / 10));
+                                        OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(NormalPrice.PRICE_H / 10));
                                     }
                                 }
                             }
@@ -425,13 +431,16 @@ namespace WebAPI.Controllers
                             var item = OrderDataLists[0];
                             var ibiz_vMon = new IBIZ_SpringInit()
                             {
-                                SD = vsd,
-                                ED = ved,
-                                //ProjID = item.ProjID,
+                                IDNO = IDNO,
+                                OrderNo = item.OrderNo,
+                                ProjID = item.ProjID,
                                 ProjType = item.ProjType,
                                 CarType = item.CarTypeGroupCode,
+                                SD = vsd,
+                                ED = ved,
                                 ProDisPRICE = ProjType == 4 ? item.MinuteOfPrice : item.PRICE,
-                                ProDisPRICE_H = ProjType == 4 ? item.MinuteOfPrice : item.PRICE_H
+                                ProDisPRICE_H = ProjType == 4 ? item.MinuteOfPrice : item.PRICE_H,
+                                LogID = LogID
                             };
                             var vmonRe = cr_com.GetVisualMonth(ibiz_vMon);
                             if (vmonRe != null)

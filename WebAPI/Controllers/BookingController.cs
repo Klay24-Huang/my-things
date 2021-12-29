@@ -321,14 +321,10 @@ namespace WebAPI.Controllers
 
                     #region 春節汽車
                     List<int> carProTypes = new List<int>() { 0, 3 };
-                    int proType = -1;
                     var isSpring = cr_com.isSpring(SDate, EDate);
-                    var sp_re = new CarRentSp().sp_GetEstimate(apiInput.ProjID, CarType, LogID, ref errMsg);
-                    if (sp_re != null)
-                        proType = sp_re.PROJTYPE;
-                    if (isSpring && carProTypes.Any(x => x == proType))
+                    if (isSpring && carProTypes.Any(x => x == ProjType))
                     {
-                        var xre = GetPriceBill(apiInput.ProjID, proType, apiInput.CarType, IDNO, LogID, lstHoliday, SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, funName);
+                        var xre = GetPriceBill(apiInput.ProjID, ProjType, apiInput.CarType, IDNO, LogID, lstHoliday, SDate, EDate, priceBase.PRICE, priceBase.PRICE_H, funName);
                         price = xre;
                     }
                     else
@@ -377,25 +373,7 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
             #endregion
-            #region 寫入訂單對應訂閱制月租
-            if (flag)
-            {
-                if (spOut != null && spOut.haveCar == 1
-                    && spOut.OrderNum > 0 && apiInput.MonId > 0
-                    && !string.IsNullOrWhiteSpace(IDNO) && LogID > 0)
-                {
-                    var sp_in = new SPInput_SetSubsBookingMonth()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        OrderNo = spOut.OrderNum,
-                        MonthlyRentId = apiInput.MonId
-                    };
-                    monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
-                    //不擋booking
-                }
-            }
-            #endregion
+           
             #region 預授權機制
             if (flag && spOut.haveCar == 1 && (ProjType == 0 || ProjType == 3))
             {
@@ -561,6 +539,24 @@ namespace WebAPI.Controllers
             //預約成功
             if (flag && spOut.haveCar == 1)
             {
+                #region 寫入訂單對應訂閱制月租
+                if (flag)
+                {
+                    if (apiInput.MonId > 0)
+                    {
+                        var sp_in = new SPInput_SetSubsBookingMonth()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            OrderNo = spOut.OrderNum,
+                            MonthlyRentId = apiInput.MonId
+                        };
+                        monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
+                        //不擋booking
+                    }
+                }
+                #endregion
+
                 #region 機車先送report now
                 //車機指令改善 機車先送report now
                 if (ProjType == 4)
@@ -592,8 +588,6 @@ namespace WebAPI.Controllers
                     }
                 }
                 #endregion
-
-
 
                 outputApi = new OAPI_Booking()
                 {
@@ -630,6 +624,17 @@ namespace WebAPI.Controllers
         /// <summary>
         /// 春節租金-汽車
         /// </summary>
+        /// <param name="ProjID">專案代碼</param>
+        /// <param name="ProjType">專案類型</param>
+        /// <param name="CarType">車型代碼</param>
+        /// <param name="IDNO">帳號</param>
+        /// <param name="LogID"></param>
+        /// <param name="lstHoliday">假日清單</param>
+        /// <param name="SD">預約起日</param>
+        /// <param name="ED">預約迄日</param>
+        /// <param name="Price">平日價</param>
+        /// <param name="PRICE_H">假日價</param>
+        /// <param name="funNm"></param>
         /// <returns></returns>
         private int GetPriceBill(string ProjID, int ProjType, string CarType, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, double Price, double PRICE_H, string funNm = "")
         {
@@ -637,16 +642,16 @@ namespace WebAPI.Controllers
             var cr_com = new CarRentCommon();
             var bizIn = new IBIZ_SpringInit()
             {
+                IDNO = IDNO,
                 ProjID = ProjID,
                 ProjType = ProjType,
                 CarType = CarType,
-                IDNO = IDNO,
-                LogID = LogID,
-                lstHoliday = lstHoliday,
                 SD = SD,
                 ED = ED,
                 ProDisPRICE = Price / 10,
-                ProDisPRICE_H = PRICE_H / 10
+                ProDisPRICE_H = PRICE_H / 10,
+                lstHoliday = lstHoliday,
+                LogID = LogID
             };
             var xre = cr_com.GetSpringInit(bizIn, connetStr, funNm);
             if (xre != null)

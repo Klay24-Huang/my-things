@@ -604,11 +604,10 @@ namespace WebAPI.Models.BillFunc
             var spRepo = new CarRentSp();
             string errMsg = "";
 
-            re.PRICE = sour.PRICE;
-            re.PRICE_H = sour.PRICE_H;
+            //re.PRICE = sour.PRICE;
+            //re.PRICE_H = sour.PRICE_H;
 
-            if (sour == null
-                || sour.ProjType == -1
+            if (sour == null || sour.ProjType == -1
                 // || string.IsNullOrWhiteSpace(sour.ProjID)
                 || string.IsNullOrWhiteSpace(sour.CarType)
                 || sour.SD == null || sour.ED == null || sour.SD > sour.ED)
@@ -636,11 +635,12 @@ namespace WebAPI.Models.BillFunc
                     HoildayRateForMoto = 0
                 };
                 re.VisMons.Add(visMon);
-                var xre = spRepo.sp_GetEstimate("P735", carType, 999999, ref errMsg);
-                if (xre != null)
+
+                var NormalPrice = spRepo.GetNormalProject(sour.ProjID, sour.CarType, sour.OrderNo, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.LogID, ref errMsg);
+                if (NormalPrice != null)
                 {
-                    re.PRICE = xre.PRICE / 10;
-                    re.PRICE_H = xre.PRICE_H / 10;
+                    re.PRICE = NormalPrice.PRICE / 10;
+                    re.PRICE_H = NormalPrice.PRICE_H / 10;
                 }
             }
             else if (projType == 3)
@@ -738,7 +738,7 @@ namespace WebAPI.Models.BillFunc
 
                 var xsour = objUti.Clone(sour);
                 if (sour.PRICE <= 0 || sour.PRICE_H <= 0)
-                {//一般平假日價格
+                {   //一般平假日價格
                     trace.FlowList.Add("一般平假日價格為0");
                     string errMsg = "";
 
@@ -746,8 +746,7 @@ namespace WebAPI.Models.BillFunc
                     {
                         if (sour.ProjType == 0)
                         {
-                            //P735暫時寫死
-                            var norPri = new CarRentSp().sp_GetEstimate("P735", sour.CarType, sour.LogID, ref errMsg);
+                            var norPri = new CarRentSp().GetNormalProject(sour.ProjID, sour.CarType, 0, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.LogID, ref errMsg);
                             if (norPri != null)
                             {
                                 trace.traceAdd(nameof(norPri), norPri);
@@ -769,7 +768,7 @@ namespace WebAPI.Models.BillFunc
                     }
                 }
                 if (sour.ProDisPRICE <= 0 || sour.ProDisPRICE_H < 0)
-                {//專案會升級春節虛擬月租
+                {   //專案會升級春節虛擬月租
                     trace.FlowList.Add("專案平假日價格為0");
                     if (isSpr)
                     {//春節專案平假日價格 
@@ -805,7 +804,7 @@ namespace WebAPI.Models.BillFunc
                 tlog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
                 tlog.FlowStep = trace.FlowStep();
                 tlog.TraceType = eumTraceType.fun;
-                carRepo.AddTraceLog(tlog);
+                //carRepo.AddTraceLog(tlog);
                 #endregion
 
                 return xGetSpringInit(xsour, conStr, funNM);
@@ -852,9 +851,8 @@ namespace WebAPI.Models.BillFunc
                 if (string.IsNullOrWhiteSpace(conStr))
                     throw new Exception("連線字串必填");
 
-                if (sour == null
-                    || sour.SD == null || sour.ED == null || sour.SD > sour.ED
-                    || string.IsNullOrWhiteSpace(sour.IDNO)
+                if (sour == null|| sour.SD == null || sour.ED == null || sour.SD > sour.ED
+                    //|| string.IsNullOrWhiteSpace(sour.IDNO)
                     )
                     throw new Exception("sour資料錯誤");
                 trace.FlowList.Add("sour檢核完成");
@@ -917,7 +915,7 @@ namespace WebAPI.Models.BillFunc
                 {
                     traceLog.TraceType = eumTraceType.mark;
                     traceLog.ApiMsg = JsonConvert.SerializeObject(trace.getObjs());
-                    carReo.AddTraceLog(traceLog);
+                    //carReo.AddTraceLog(traceLog);
                 }
                 #endregion
             }
@@ -940,9 +938,9 @@ namespace WebAPI.Models.BillFunc
                 throw new Exception("isSpring:SD,ED錯誤");
             DateTime vsd = Convert.ToDateTime(SiteUV.strSpringSd);
             DateTime ved = Convert.ToDateTime(SiteUV.strSpringEd);
-            if (ED > vsd && ED <= ved)
+            if (ED > vsd && ED <= ved)  // 還車時間 > 春節起日 AND 還車時間<= 春節迄日
                 return true;
-            else if (SD >= vsd && SD < ved)
+            else if (SD >= vsd && SD < ved) // 開始用車時間 >= 春節起日 && 開始用車時間 < 春節迄日
                 return true;
             return false;
         }
@@ -1260,6 +1258,50 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+
+        public GetFullProjectVM GetNormalProject(string ProjID, string CarType, Int64 OrderNo, string IDNO, DateTime SD, DateTime ED, int ProjType, long LogID, ref string errMsg)
+        {
+            var result = new GetFullProjectVM();
+            List<GetFullProjectVM> GetFullProjectVMs = new List<GetFullProjectVM>();
+
+            string SPName = "usp_GetEstimate_Q1";
+
+            object[] param = new object[8];
+            param[0] = ProjID;
+            param[1] = CarType;
+            param[2] = OrderNo;
+            param[3] = IDNO;
+            param[4] = SD;
+            param[5] = ED;
+            param[6] = ProjType;
+            param[7] = LogID;
+
+            DataSet ds1 = null;
+            string returnMessage = "";
+            string messageLevel = "";
+            string messageType = "";
+
+            ds1 = WebApiClient.SPRetB(ServerInfo.GetServerInfo(), SPName, param, ref returnMessage, ref messageLevel, ref messageType);
+
+            if (string.IsNullOrEmpty(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
+            {
+                if (ds1.Tables.Count == 2)
+                {
+                    GetFullProjectVMs = objUti.ConvertToList<GetFullProjectVM>(ds1.Tables[0]);
+                }
+
+                if (GetFullProjectVMs.Count > 0)
+                {
+                    result = GetFullProjectVMs.FirstOrDefault();
+                }
+            }
+            else
+            {
+                errMsg = returnMessage;
+            }
+
+            return result;
+        }
     }
     #endregion
     #region 欠費查詢
@@ -1366,23 +1408,32 @@ namespace WebAPI.Models.BillFunc
     #region 春節月租
     public class IBIZ_SpringInit
     {
+        /// <summary>
+        /// 帳號
+        /// </summary>
         public string IDNO { get; set; }
-        public long LogID { set; get; }
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public Int64 OrderNo { get; set; } = 0;
         /// <summary>
         /// 專案代碼
         /// </summary>
         public string ProjID { set; get; }
-        public int ProjType { get; set; } = -1;
+        /// <summary>
+        /// 專案類型
+        /// </summary>
+        public int ProjType { get; set; }
         /// <summary>
         /// 車型
         /// </summary>
         public string CarType { set; get; }
         /// <summary>
-        /// 預計取車時間
+        /// 取車時間
         /// </summary>
         public DateTime SD { set; get; }
         /// <summary>
-        /// 預計還車時間
+        /// 還車時間
         /// </summary>
         public DateTime ED { set; get; }
         /// <summary>
@@ -1405,6 +1456,10 @@ namespace WebAPI.Models.BillFunc
         /// 假日列表
         /// </summary>
         public List<Holiday> lstHoliday { get; set; } = new List<Holiday>();
+        /// <summary>
+        /// LogID
+        /// </summary>
+        public long LogID { set; get; }
     }
     public class OBIZ_SpringInit : IBIZ_SpringInit
     {

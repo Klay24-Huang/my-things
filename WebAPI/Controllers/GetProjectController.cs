@@ -617,7 +617,9 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 產出月租&Project虛擬卡片
-                if (flag && Score >= 60)    // 20210910 UPD BY YEH REASON:積分>=60才可使用訂閱制
+                bool isSpring = new CarRentCommon().isSpring(SDate, EDate); //是否為春節時段
+
+                if (flag && Score >= 60 && !isSpring)    // 20210910 UPD BY YEH REASON:積分>=60才可使用訂閱制
                 {
                     if (outputApi.GetProjectObj != null && outputApi.GetProjectObj.Count() > 0)
                     {
@@ -657,9 +659,9 @@ namespace WebAPI.Controllers
                                             newItem.MonthlyRentId = z.MonthlyRentId;
                                             newItem.WDRateForCar = z.WorkDayRateForCar;
                                             //newItem.HDRateForCar = z.HoildayRateForCar;
-                                        //newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
-                                        //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
-                                        newItem.HDRateForCar = y.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                            //newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                            //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
+                                            newItem.HDRateForCar = y.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
 
                                             newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                             newItem.HDRateForMoto = z.HoildayRateForMoto;
@@ -672,10 +674,10 @@ namespace WebAPI.Controllers
                                                 Price = y.WorkdayPerHour * 10,
                                                 PRICE_H = y.HolidayPerHour * 10,
                                             };
-                                        newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId)
-                                                    //20211025 ADD BY ADAM REASON.補上里程費跟安心服務計算
-                                                    + bill.CarMilageCompute(SDate, EDate, spList.First(a => a.CarType == y.CarType).MilageBase, Mildef, 20, new List<Holiday>())
-                                                    + ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, y.InsurancePerHour * 10, y.InsurancePerHour * 10, 10, lstHoliday) : 0);
+                                            newItem.Price = GetPriceBill(fn_in, IDNO, LogID, lstHoliday, SDate, EDate, MonId: z.MonthlyRentId)
+                                                        //20211025 ADD BY ADAM REASON.補上里程費跟安心服務計算
+                                                        + bill.CarMilageCompute(SDate, EDate, spList.First(a => a.CarType == y.CarType).MilageBase, Mildef, 20, new List<Holiday>())
+                                                        + ((apiInput.Insurance == 1) ? bill.CarRentCompute(SDate, EDate, y.InsurancePerHour * 10, y.InsurancePerHour * 10, 10, lstHoliday) : 0);
                                             #endregion
 
                                             newGetProjObj.ProjectObj.Add(newItem);
@@ -739,36 +741,44 @@ namespace WebAPI.Controllers
         #endregion
 
         #region 預估金額
+        /// <summary>
+        /// 預估金額
+        /// </summary>
+        /// <param name="spItem"></param>
+        /// <param name="IDNO">帳號</param>
+        /// <param name="LogID"></param>
+        /// <param name="lstHoliday"></param>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <param name="funNM"></param>
+        /// <param name="MonId"></param>
+        /// <returns></returns>
         private int GetPriceBill(SPOutput_GetStationCarTypeOfMutiStation spItem, string IDNO, long LogID, List<Holiday> lstHoliday, DateTime SD, DateTime ED, string funNM = "", Int64 MonId = 0)
         {
             int re = 0;
             var bill = new BillCommon();
             var cr_com = new CarRentCommon();
             var cr_sp = new CarRentSp();
-            int PriceBill = spItem.PriceBill;//先給sp值
+            int PriceBill = spItem.PriceBill;   //先給sp值
 
-            string errMsg = "";
-            var spre = cr_sp.sp_GetEstimate(spItem.PROJID, spItem.CarType, LogID, ref errMsg);
-            int projType = -1;
-            if (spre != null)
-                projType = spre.PROJTYPE;
+            int projType = spItem.PROJTYPE;
 
             bool isSpr = cr_com.isSpring(SD, ED);
             List<int> carProjTypes = new List<int>() { 0, 3 };
-            if (carProjTypes.Any(x => x == projType) && isSpr)
+            if (carProjTypes.Any(x => x == projType) && isSpr)  // 專案類型是汽車 且 春節期間
             {
                 var bizIn = new IBIZ_SpringInit()
                 {
+                    IDNO = IDNO,
                     ProjID = spItem.PROJID,
                     ProjType = projType,
                     CarType = spItem.CarType,
-                    IDNO = IDNO,
-                    LogID = LogID,
-                    lstHoliday = lstHoliday,
                     SD = SD,
                     ED = ED,
                     ProDisPRICE = Convert.ToDouble(spItem.Price) / 10,
-                    ProDisPRICE_H = Convert.ToDouble(spItem.PRICE_H) / 10
+                    ProDisPRICE_H = Convert.ToDouble(spItem.PRICE_H) / 10,
+                    lstHoliday = lstHoliday,
+                    LogID = LogID
                 };
                 var xre = cr_com.GetSpringInit(bizIn, connetStr, funNM);
                 if (xre != null)
