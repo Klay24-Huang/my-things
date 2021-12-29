@@ -46,7 +46,7 @@
                 <p id="pwdHint" style="color:red;">@ViewBag.PhoneAlert</p>
             </form>
         </div>
-        
+
     </div>
     @using (Html.BeginForm("CheckOtpCode", "HotaiPay", FormMethod.Post))
     {
@@ -57,6 +57,7 @@
                 <p id="pwdHint" style="color:red;">@ViewBag.OtpAlert</p>
             </div>
         </div>
+        <div class="height-box"></div>
         <div class="footer-btn-box footer-btn-margin">
             <div class="buttonBox">
                 <button type="submit" class="btn btn-disable-gray" id="nextStep">
@@ -65,9 +66,10 @@
                 <!-- 驗證碼輸入後class改為btn-blue -->
             </div>
         </div>
+
     }
-            <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-            <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
 </body>
 </html>
