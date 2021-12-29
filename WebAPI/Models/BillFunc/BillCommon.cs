@@ -1,12 +1,10 @@
 ﻿using Domain.SP.Input.Bill;
 using Domain.SP.Output.Bill;
 using Domain.TB;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Web;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Utils;
@@ -34,6 +32,7 @@ namespace WebAPI.Models.BillFunc
         public delegate double MinsProcess(double mins);//剩餘分轉計費分(未滿60)
         public delegate void DayMinsProcess(ref double wMins, ref double hMins);//當日分特殊邏輯
 
+        #region 計算時間
         /// <summary>
         /// 計算時間
         /// </summary>
@@ -65,7 +64,9 @@ namespace WebAPI.Models.BillFunc
                 Minutes = 0;
             }
         }
+        #endregion
 
+        #region 將折抵時數換算成天、時、分
         /// <summary>
         /// 將折抵時數換算成天、時、分
         /// </summary>
@@ -78,8 +79,10 @@ namespace WebAPI.Models.BillFunc
             Days = Convert.ToInt32(Math.Floor(Convert.ToDouble(point / 600)));
             Hours = Convert.ToInt32(Math.Floor(Convert.ToDouble(((point % 600) / 60))));
             Minutes = point - (Days * 600) - (Hours * 60);
-
         }
+        #endregion
+
+        #region 由總分鐘數換算天數、時數、分鐘數
         /// <summary>
         /// 由總分鐘數換算天數、時數、分鐘數
         /// </summary>
@@ -92,37 +95,10 @@ namespace WebAPI.Models.BillFunc
             Days = Convert.ToInt32(Math.Floor(Convert.ToDouble(TotalMinutes / 600)));
             Hours = Convert.ToInt32(Math.Floor(Convert.ToDouble(((TotalMinutes % 600) / 60))));
             Minutes = TotalMinutes - (Days * 600) - (Hours * 60);
-
         }
+        #endregion
 
-        /// <summary>
-        ///  計算以分計費金額(不分平假日)
-        /// </summary>
-        /// <param name="TotalMinutes"></param>
-        /// <param name="BaseMinutes"></param>
-        /// <param name="BasePrice"></param>
-        /// <param name="Price"></param>
-        /// <param name="PriceH"></param>
-        /// <param name="MaxPrice"></param>
-        /// <param name="TotalPrice"></param>
-        public void CalFinalPriceByMinutes(int TotalMinutes, int BaseMinutes, int BasePrice, float Price, float PriceH, int MaxPrice, ref int TotalPrice)
-        {
-            if (TotalMinutes > 0 && TotalMinutes <= BaseMinutes)   //如果時間大於0且小於基本時數，則以基本費計算
-            {
-                TotalPrice = BasePrice;
-            }
-            else if (TotalMinutes > 0)
-            {
-                int days = 0, hours = 0, mins = 0;
-                CalMinuteToDayHourMin(TotalMinutes - BaseMinutes, ref days, ref hours, ref mins); //取出天、時、分
-                TotalPrice = Convert.ToInt32(Math.Floor((MaxPrice * days) + (((Price * 60 * hours) < MaxPrice) ? (Price * 60 * hours) : MaxPrice) + (mins * Price))) + BaseMinutes;
-            }
-            else
-            {
-                TotalPrice = 0; //時數是0
-            }
-        }
-
+        #region 取出每公里n元
         /// <summary>
         /// 取出每公里n元
         /// </summary>
@@ -169,7 +145,9 @@ namespace WebAPI.Models.BillFunc
             }
             return MilageBase;
         }
+        #endregion
 
+        #region 計算租金
         /// <summary>
         /// 計算租金
         /// </summary>
@@ -227,7 +205,9 @@ namespace WebAPI.Models.BillFunc
             }
             return Convert.ToInt32(totalPay);
         }
+        #endregion
 
+        #region 租金試算
         /// <summary>
         /// 租金試算
         /// </summary>
@@ -326,18 +306,18 @@ namespace WebAPI.Models.BillFunc
                     {
                         totalPay += calPay(0, 1, Price, PriceH, SD.ToString("yyyyMMdd"), lstHoliday);
                     }
-
                 }
                 else
                 {
                     //大於十小時，小於1天
                     totalPay += calPay(totalMinutes, tHours, Price, PriceH, SD.ToString("yyyyMMdd"), lstHoliday);
                 }
-
             }
             return totalPay;
         }
+        #endregion
 
+        #region 區間租金計算
         /// <summary>
         /// 區間租金計算,可包含多月租,一般平假日,前n免費
         /// </summary>
@@ -615,28 +595,9 @@ namespace WebAPI.Models.BillFunc
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
             return re;
         }
-
-        #region 修正汽車基消
-        //public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour, List<Holiday> lstHoliday
-        //    , List<MonthlyRentData> mOri
-        //    , int Discount
-        //    )
-        //{
-        //    var re = new CarRentInfo();
-        //    if (SD == null || ED == null || SD < ED)
-        //        throw new Exception("SD, ED錯誤");
-
-        //    SD = SD.AddSeconds(SD.Second * -1);
-        //    ED = ED.AddSeconds(ED.Second * -1);
-        //    var mins = ED.Subtract(SD).TotalMinutes;
-
-        //    if(mins < 60)
-        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 60, dayMaxHour, lstHoliday, mOri, Discount);
-        //    else
-        //        return CarRentInCompute_ori(SD, ED, priceN, priceH, 0, dayMaxHour, lstHoliday, mOri, Discount);          
-        //}
         #endregion
 
+        #region 機車月租計算
         /// <summary>
         /// 機車月租計算,區分平假日,不分平假日
         /// </summary>
@@ -1232,7 +1193,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-        
+        #endregion
+
+        #region 機車租金計算
         /// <summary>
         /// 機車租金計算(月租平日折扣,月租假日折扣,折扣後金額,月租平日剩餘分,月租假日剩餘分,月租折扣後剩餘分鐘,使用一般折扣點數)
         /// </summary>
@@ -1360,7 +1323,9 @@ namespace WebAPI.Models.BillFunc
 
             return new Tuple<double, double, double, double, double, double, double>(wDisc, hDisc, norRentInPay, wLastMins, hLaseMins, AfterDiscRentInMins, useDisc);
         }
+        #endregion
 
+        #region 機車租金試算
         /// <summary>
         /// 機車租金試算
         /// </summary>
@@ -1426,7 +1391,9 @@ namespace WebAPI.Models.BillFunc
             re = Convert.ToInt32(Math.Round(fpay, 0, MidpointRounding.AwayFromZero));
             return re;
         }
+        #endregion
 
+        #region 租金試算
         /// <summary>
         /// 租金試算-新
         /// </summary>
@@ -1472,7 +1439,9 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
+        #endregion
 
+        #region 預估里程試算
         /// <summary>
         /// 預估里程試算
         /// </summary>
@@ -1500,7 +1469,9 @@ namespace WebAPI.Models.BillFunc
             }
             return MilagePrice;
         }
+        #endregion
 
+        #region 取得真實折扣分鐘
         /// <summary>
         /// 取得真實折扣分鐘,平日折扣分鐘,假日折扣分鐘
         /// </summary>
@@ -1559,7 +1530,9 @@ namespace WebAPI.Models.BillFunc
 
             return new Tuple<double, double, double>(payDisc, wDisc, hDisc);
         }
+        #endregion
 
+        #region 未逾時計費分鐘
         /// <summary>
         /// 未逾時計費分鐘by時間順序
         /// </summary>
@@ -1580,7 +1553,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 汽車每個DataType的List
         /// <summary>
         /// 汽車每個DataType的List,不含逾時
         /// </summary>
@@ -1596,7 +1571,9 @@ namespace WebAPI.Models.BillFunc
             var minsPro = new MinsProcess(GetCarPayMins);
             return GetTypeMins(SD, ED, baseMinutes, dayMaxMins, markDays, minsPro);
         }
+        #endregion
 
+        #region 機車全分類時間
         /// <summary>
         /// 機車全分類時間
         /// </summary>
@@ -1612,7 +1589,9 @@ namespace WebAPI.Models.BillFunc
             var minsPro = new MinsProcess(GetMotoPayMins);
             return GetTypeMins(SD, ED, baseMinutes, dayMaxMins, markDays, minsPro);
         }
+        #endregion
 
+        #region 所有DataType的List
         /// <summary>
         /// 所有DataType的List
         /// </summary>
@@ -1639,7 +1618,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 取得List中所有DateType的計費時間
         /// <summary>
         /// 取得List中所有DateType的計費時間
         /// </summary>
@@ -1765,7 +1746,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 依時間軸取得則扣點數
         /// <summary>
         /// 依時間軸取得則扣點數(平日點,假日點)
         /// </summary>
@@ -1825,7 +1808,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 取得單日時間軸轉註記日計費時數列表
         /// <summary>
         /// 取得單日時間軸轉註記日計費時數列表,不可大於24小時
         /// </summary>
@@ -1901,7 +1886,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 時間區段內平日計費分鐘總和,假日計費分鐘總和
         /// <summary>
         /// 時間區段內平日計費分鐘總和,假日計費分鐘總和
         /// </summary>
@@ -1953,7 +1940,9 @@ namespace WebAPI.Models.BillFunc
 
             return new Tuple<double, double>(n_allMins, h_allMins);
         }
+        #endregion
 
+        #region 汽車未超時
         /// <summary>
         /// 汽車未超時
         /// </summary>
@@ -1968,7 +1957,9 @@ namespace WebAPI.Models.BillFunc
             var minsPro = new MinsProcess(GetCarPayMins);
             return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);
         }
+        #endregion
 
+        #region 機車未超時
         /// <summary>
         /// 機車未超時
         /// </summary>
@@ -1983,7 +1974,9 @@ namespace WebAPI.Models.BillFunc
             var minsPro = new MinsProcess(GetMotoPayMins);
             return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro);
         }
+        #endregion
 
+        #region 汽車超時時間-計算用
         /// <summary>
         /// 汽車超時時間-計算用
         /// </summary>
@@ -2000,7 +1993,9 @@ namespace WebAPI.Models.BillFunc
             var dayPro = new DayMinsProcess(CarOverTimeMinsToPayMins);
             return GetRangeMins(SD, ED, baseMinutes, dayMaxMins, lstHoliday, minsPro, dayPro);
         }
+        #endregion
 
+        #region 汽車未滿1小時分鐘改為計費分鐘
         /// <summary>
         /// 汽車未滿1小時分鐘改為計費分鐘
         /// </summary>
@@ -2023,7 +2018,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 機車未滿1小時分鐘改為計費分鐘
         /// <summary>
         /// 機車未滿1小時分鐘改為計費分鐘
         /// </summary>
@@ -2041,7 +2038,9 @@ namespace WebAPI.Models.BillFunc
             //return re;
             return Mins;
         }
+        #endregion
 
+        #region 汽車逾時單日時間轉計費時間
         /// <summary>
         /// 汽車逾時單日時間轉計費時間
         /// </summary>
@@ -2056,7 +2055,9 @@ namespace WebAPI.Models.BillFunc
             if (hMins >= 360)
                 hMins = 600;
         }
+        #endregion
 
+        #region 24小時計費分鐘數
         /// <summary>
         /// 24小時計費分鐘數
         /// </summary>
@@ -2221,7 +2222,9 @@ namespace WebAPI.Models.BillFunc
 
             return new Tuple<double, double>(n_allMins, h_allMins);
         }
+        #endregion
 
+        #region 無用方法
         private void insSubScription(DateTime Date, DateTime StartDate, DateTime EndDate, bool isHoliday, double tmpHours, Int64 SubScriptionID, ref List<MonthlyRentData> UseMonthlyRentDatas)
         {
             if (isHoliday)
@@ -3028,6 +3031,7 @@ namespace WebAPI.Models.BillFunc
 
             }//end while
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -3097,6 +3101,9 @@ namespace WebAPI.Models.BillFunc
             }
             return flag;
         }
+        #endregion
+
+        #region 判斷是否屬於假日
         /// <summary>
         /// 判斷是否屬於假日
         /// </summary>
@@ -3121,6 +3128,9 @@ namespace WebAPI.Models.BillFunc
 
             return false;
         }
+        #endregion
+
+        #region 判斷某日期是否在日期區間內
         /// <summary> 
         /// 判斷某日期是否在日期區間內
         /// </summary> 
@@ -3132,6 +3142,9 @@ namespace WebAPI.Models.BillFunc
         {
             return dt_keyin.CompareTo(dt_start) >= 0 && dt_keyin.CompareTo(dt_end) <= 0;
         }
+        #endregion
+
+        #region 計算機車可折抵時數
         /// <summary>
         /// 計算機車可折抵時數
         /// </summary>
@@ -3158,7 +3171,9 @@ namespace WebAPI.Models.BillFunc
 
             return CanDiscountPoint;
         }
+        #endregion
 
+        #region 區間折扣計算
         /// <summary>
         /// 區間折扣計算
         /// </summary>
@@ -3216,7 +3231,9 @@ namespace WebAPI.Models.BillFunc
 
             return new Tuple<double, double, double>(wDisc, hDisc, DiscRentInMins);
         }
+        #endregion
 
+        #region 前n分鐘0元
         /// <summary>
         /// 前n分鐘0元
         /// </summary>
@@ -3252,7 +3269,9 @@ namespace WebAPI.Models.BillFunc
             else
                 return sour;
         }
+        #endregion
 
+        #region 首24H折扣後
         /// <summary>
         /// 首24H折扣後(平日折扣,假日折扣,折扣後金額,平日剩餘分,假日剩餘分)
         /// </summary>
@@ -3332,9 +3351,9 @@ namespace WebAPI.Models.BillFunc
                     //if (Mins < 6)
                     //    useDisc01 = 0;
 
-                    if (fdate.DateType == wDateType)
+                    if (fdate.DateType == wDateType)    // 平日
                     {
-                        if (useDisc01 == 0)
+                        if (useDisc01 == 0) // 折抵分鐘數 = 0
                         {
                             wLastMins += fdate.xMins;
                             if (FreeMinute == 0)
@@ -3375,20 +3394,23 @@ namespace WebAPI.Models.BillFunc
                             f1_wDisc += useDisc01;
                         }
                     }
-                    else if (fdate.DateType == hDateType)
+                    else if (fdate.DateType == hDateType)   // 假日
                     {
-                        if (useDisc01 == 0)
+                        if (useDisc01 == 0) // 折抵分鐘數 = 0
                         {
                             hLastMins += fdate.xMins;
-                            f24Pay += (fdate.xMins - dayBaseMins) * priceHmin + dayBasePrice;
+                            if (FreeMinute == 0)
+                                f24Pay += (fdate.xMins - dayBaseMins) * priceHmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
+                            else
+                                f24Pay += fdate.xMins * priceNmin + dayBasePrice;   // 租金 = 使用分鐘數 * 每分鐘價格 + 基本消費
                         }
                         else
                         {
-                            if (useDisc01 >= dayBaseMins)
+                            if (useDisc01 >= dayBaseMins)   // 折抵分鐘數 >= 基本分鐘數
                             {
-                                hLastMins += (fdate.xMins - useDisc01);
-                                f24Pay += (fdate.xMins - useDisc01) * priceHmin;
-                                fdate.xMins -= useDisc01;
+                                hLastMins += (fdate.xMins - useDisc01); // 折扣後平日剩餘分鐘 = 使用分鐘數 - 折抵分鐘數
+                                f24Pay += (fdate.xMins - useDisc01) * priceHmin;    // 租金 = (使用分鐘數-折抵分鐘數) * 每分鐘價格
+                                fdate.xMins -= useDisc01;   // 使用分鐘數 = 使用分鐘數 - 折抵分鐘數
                                 fdate.useBaseMins = dayBaseMins;
                             }
                             else
@@ -3396,8 +3418,9 @@ namespace WebAPI.Models.BillFunc
                                 if (f01_over6 > 0)
                                 {
                                     useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
-                                    //折扣小於基本分只能折扣超過基本分的部分
-                                    f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceHmin;
+                                    //f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceHmin;
+                                    // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
+                                    f24Pay += dayBasePrice + (fdate.xMins - useDisc01) * priceNmin;
                                     hLastMins += (fdate.xMins - useDisc01);
                                     fdate.xMins -= useDisc01;
                                 }
@@ -3557,7 +3580,9 @@ namespace WebAPI.Models.BillFunc
 
             return new Tuple<double, double, double, double, double>(f_wDisc, f_hDisc, f24Pay, wLastMins, hLastMins);
         }
+        #endregion
 
+        #region 取得區段內時間標記
         /// <summary>
         /// 取得區段內時間標記
         /// </summary>
@@ -3632,7 +3657,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 將指定時間類別給予GroupId及起訖
         /// <summary>
         /// 將指定時間類別給予GroupId及起訖
         /// </summary>
@@ -3682,7 +3709,9 @@ namespace WebAPI.Models.BillFunc
 
             return sour;
         }
+        #endregion
 
+        #region 首日分鐘轉指定分鐘
         /// <summary>
         /// 首日分鐘轉指定分鐘,如機車首日200轉199
         /// </summary>
@@ -3750,7 +3779,9 @@ namespace WebAPI.Models.BillFunc
 
             return sour;
         }
+        #endregion
 
+        #region 自動填入DateType
         /// <summary>
         /// 自動填入DateType,原本有DateType則不變更該筆
         /// </summary>
@@ -3791,7 +3822,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 自動填平常日
         /// <summary>
         /// 自動填平常日
         /// </summary>
@@ -3804,7 +3837,9 @@ namespace WebAPI.Models.BillFunc
         {
             return FillDateType(sd, ed, eumDateType.wDay.ToString(), sour);
         }
+        #endregion
 
+        #region DayPayMins轉Holiday
         /// <summary>
         /// DayPayMins轉Holiday
         /// </summary>
@@ -3826,7 +3861,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region Holiday轉DayPayMins自動加DateType
         /// <summary>
         /// Holiday轉DayPayMins自動加DateType
         /// </summary>
@@ -3848,7 +3885,9 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
+        #endregion
 
+        #region 無用
         public DayPayMins FromHoliday(Holiday sour)
         {
             DayPayMins re = new DayPayMins();
@@ -3872,7 +3911,9 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
 
+        #region 取得幾天幾小時幾分
         /// <summary>
         /// 取得幾天幾小時幾分
         /// </summary>
@@ -3981,8 +4022,10 @@ namespace WebAPI.Models.BillFunc
             }
             return new Tuple<double, double, double>(days, hours, mins);
         }
+        #endregion
     }
 
+    #region Model
     /// <summary>
     /// 汽車月租回傳
     /// </summary>
@@ -4121,4 +4164,5 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         m_hDay,
     }
+    #endregion
 }
