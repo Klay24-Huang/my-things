@@ -604,8 +604,7 @@ namespace WebAPI.Models.BillFunc
             var spRepo = new CarRentSp();
             string errMsg = "";
 
-            //re.PRICE = sour.PRICE;
-            //re.PRICE_H = sour.PRICE_H;
+            bool isSpring = new CarRentCommon().isSpring(sour.SD, sour.ED);
 
             if (sour == null || sour.ProjType == -1
                 // || string.IsNullOrWhiteSpace(sour.ProjID)
@@ -617,9 +616,9 @@ namespace WebAPI.Models.BillFunc
             //var projID = sour.ProjID;
             var carType = sour.CarType;
             if (projType == 0)
-            {
-                re.ProDisPRICE = sour.ProDisPRICE;
-                re.ProDisPRICE_H = sour.ProDisPRICE_H;
+            {   // 同站的邏輯比較單純，因為同站只要碰到活動(春節)時專案只會剩下活動專案，因此只要去撈出非活動專案時的價格
+                re.ProDisPRICE = sour.ProDisPRICE;      // 活動平日價
+                re.ProDisPRICE_H = sour.ProDisPRICE_H;  // 活動假日價
                 var visMon = new MonthlyRentData()
                 {
                     Mode = 0,
@@ -636,17 +635,68 @@ namespace WebAPI.Models.BillFunc
                 };
                 re.VisMons.Add(visMon);
 
-                var NormalPrice = spRepo.GetNormalProject(sour.ProjID, sour.CarType, sour.OrderNo, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.LogID, ref errMsg);
-                if (NormalPrice != null)
+                var ProjectList = spRepo.GetCarProject(sour.ProjID, sour.CarType, sour.OrderNo, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.CarNo, sour.LogID, ref errMsg);
+                var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();
+                if (Normal != null)
                 {
-                    re.PRICE = NormalPrice.PRICE / 10;
-                    re.PRICE_H = NormalPrice.PRICE_H / 10;
+                    re.PRICE = Normal.PRICE / 10;       // 非活動平日價
+                    re.PRICE_H = Normal.PRICE_H / 10;   // 非活動假日價
+                }
+                else
+                {   // 撈不到就給原專案的價格
+                    re.PRICE = sour.ProDisPRICE;        // 非活動平日價
+                    re.PRICE_H = sour.ProDisPRICE_H;    // 非活動假日價
                 }
             }
             else if (projType == 3)
-            {
-                re.ProDisPRICE = sour.ProDisPRICE;
-                re.ProDisPRICE_H = sour.ProDisPRICE_H;
+            {   // 路邊的邏輯會比較複雜，因為傳進來的專案不一定，因此要在此做判斷，將專案價格做調整
+                /*
+                 * 路邊會有預約迄日跨在活動區間 或 預約起日落在活動區間 兩種狀況
+                 * EX: 2022春節是 2022/01/29-2022/02/06
+                 * Case 1:預約是2022/01/28，用車至2022/01/30，因此計價就要拆成兩段，2022/01/28-2022/01/29(一般專案)，2022/01/29-2022/01/30(春節專案)
+                 *        這種狀況傳入的PorjID會是一般專案，就要去撈春節專案放到 活動平日價/活動假日價
+                 *        
+                 * Case 2:預約是2022/02/05，用車至2022/02/08，因此計價就要拆成兩段，2022/02/05-2022/02/06(一般專案)，2022/02/06-2022/02/08(春節專案)
+                 *        這種狀況傳入的PorjID會是春節專案，就要去撈一般專案放到 非活動平日價/非活動假日價
+                 */
+
+                var ProjectList = spRepo.GetCarProject(sour.ProjID, sour.CarType, sour.OrderNo, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.CarNo, sour.LogID, ref errMsg);
+                var Event = ProjectList.Where(x => x.Event == 1).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();     // 活動專案
+                var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();    // 一般專案
+
+                if (Event != null)
+                {
+                    if (Event.PROJID.Contains(sour.ProjID)) // 活動專案 包含 訂單專案，則要取非活動專案的價格
+                    {
+                        re.ProDisPRICE = sour.ProDisPRICE;       // 活動平日價
+                        re.ProDisPRICE_H = sour.ProDisPRICE_H;   // 活動假日價
+                        if (Normal != null)
+                        {
+                            re.PRICE = Normal.PRICE / 10;       // 非活動平日價
+                            re.PRICE_H = Normal.PRICE_H / 10;   // 非活動假日價
+                        }
+                        else
+                        {   // 撈不到就給原專案的價格
+                            re.PRICE = sour.ProDisPRICE;        // 非活動平日價
+                            re.PRICE_H = sour.ProDisPRICE_H;    // 非活動假日價
+                        }
+                    }
+                    else
+                    {   // 訂單專案 不是 活動專案，則要將活動專案的價格放到活動平日價/假日價，訂單專案的價格放到非活動專案的價格
+                        re.ProDisPRICE = Event.PRICE / 10;      // 活動平日價
+                        re.ProDisPRICE_H = Event.PRICE_H / 10;  // 活動假日價
+                        re.PRICE = sour.ProDisPRICE;            // 非活動平日價
+                        re.PRICE_H = sour.ProDisPRICE_H;        // 非活動假日價
+                    }
+                }
+                else
+                {
+                    re.ProDisPRICE = sour.ProDisPRICE;      // 活動平日價
+                    re.ProDisPRICE_H = sour.ProDisPRICE_H;  // 活動假日價
+                    re.PRICE = sour.ProDisPRICE;            // 非活動平日價
+                    re.PRICE_H = sour.ProDisPRICE_H;        // 非活動假日價
+                }
+
                 var visMon = new MonthlyRentData()
                 {
                     Mode = 0,
@@ -656,18 +706,12 @@ namespace WebAPI.Models.BillFunc
                     WorkDayHours = 0,
                     HolidayHours = 0,
                     MotoTotalHours = 0,
-                    WorkDayRateForCar = Convert.ToSingle(Math.Floor(sour.ProDisPRICE)),
-                    HoildayRateForCar = Convert.ToSingle(Math.Floor(sour.ProDisPRICE_H)),
+                    WorkDayRateForCar = Convert.ToSingle(Math.Floor(re.ProDisPRICE)),
+                    HoildayRateForCar = Convert.ToSingle(Math.Floor(re.ProDisPRICE_H)),
                     WorkDayRateForMoto = 0,
                     HoildayRateForMoto = 0
                 };
                 re.VisMons.Add(visMon);
-                var xre = spRepo.sp_GetEstimate("P621", carType, 999999, ref errMsg);
-                if (xre != null)
-                {
-                    re.PRICE = xre.PRICE / 10;
-                    re.PRICE_H = xre.PRICE_H / 10;
-                }
             }
             else if (projType == 4)
             {
@@ -688,12 +732,15 @@ namespace WebAPI.Models.BillFunc
                     HoildayRateForMoto = Convert.ToSingle(sour.ProDisPRICE_H)
                 };
                 re.VisMons.Add(visMon);
-                var xre = spRepo.sp_GetEstimate("P686", carType, 999999, ref errMsg);
-                if (xre != null)
-                {
-                    re.PRICE = xre.PRICE;
-                    re.PRICE_H = xre.PRICE_H;
-                }
+                // 20211230 UPD BY YEH REASON:機車已經漲價且沒有春節專案，因此不特別撈價格
+                //var xre = spRepo.sp_GetEstimate("P686", carType, 999999, ref errMsg);
+                //if (xre != null)
+                //{
+                //    re.PRICE = xre.PRICE;
+                //    re.PRICE_H = xre.PRICE_H;
+                //}
+                re.PRICE = sour.ProDisPRICE;
+                re.PRICE_H = sour.ProDisPRICE_H;
             }
 
             return re;
@@ -722,19 +769,15 @@ namespace WebAPI.Models.BillFunc
             if (!string.IsNullOrWhiteSpace(funNM))
                 trace.traceAdd(nameof(funNM), funNM);
 
-            bool isSpr = false;//是否為春節
             try
             {
-                if (sour == null || string.IsNullOrWhiteSpace(conStr))
-                    throw new Exception("sour, conStr不可為空");
-                if (sour.ProjType == -1)
-                    throw new Exception("ProjType必填");
-                if (sour.SD == null || sour.ED == null || sour.SD > sour.ED)
-                    throw new Exception("SD, ED錯誤");
-
-                trace.FlowList.Add("inpt驗證完成");
-                isSpr = isSpring(sour.SD, sour.ED);
-                trace.traceAdd(nameof(isSpr), isSpr);
+                //if (sour == null || string.IsNullOrWhiteSpace(conStr))
+                //    throw new Exception("sour, conStr不可為空");
+                //if (sour.ProjType == -1)
+                //    throw new Exception("ProjType必填");
+                //if (sour.SD == null || sour.ED == null || sour.SD > sour.ED)
+                //    throw new Exception("SD, ED錯誤");
+                //trace.FlowList.Add("inpt驗證完成");
 
                 var xsour = objUti.Clone(sour);
                 if (sour.PRICE <= 0 || sour.PRICE_H <= 0)
@@ -742,58 +785,69 @@ namespace WebAPI.Models.BillFunc
                     trace.FlowList.Add("一般平假日價格為0");
                     string errMsg = "";
 
-                    if (isSpr)
+                    if (sour.ProjType == 0)
                     {
-                        if (sour.ProjType == 0)
+                        var ProjectList = new CarRentSp().GetCarProject(sour.ProjID, sour.CarType, sour.OrderNo, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.CarNo, sour.LogID, ref errMsg);
+                        var Event = ProjectList.Where(x => x.Event == 1).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();     // 活動專案
+                        var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();    // 一般專案
+
+                        if (Event.PROJID.Contains(sour.ProjID))
                         {
-                            var norPri = new CarRentSp().GetNormalProject(sour.ProjID, sour.CarType, 0, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.LogID, ref errMsg);
-                            if (norPri != null)
+                            xsour.PRICE = Normal.PRICE / 10;
+                            xsour.PRICE_H = Normal.PRICE_H / 10;
+                        }
+                    }
+                    else if (sour.ProjType == 3)
+                    {
+                        var ProjectList = new CarRentSp().GetCarProject(sour.ProjID, sour.CarType, sour.OrderNo, sour.IDNO, sour.SD, sour.ED, sour.ProjType, sour.CarNo, sour.LogID, ref errMsg);
+                        var Event = ProjectList.Where(x => x.Event == 1).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();     // 活動專案
+                        var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();    // 一般專案
+
+                        if (Event.PROJID.Contains(sour.ProjID))
+                        {   // 所選專案 是 活動專案
+                            if (Normal != null)
                             {
-                                trace.traceAdd(nameof(norPri), norPri);
-                                xsour.PRICE = norPri.PRICE / 10;
-                                xsour.PRICE_H = norPri.PRICE_H / 10;
+                                xsour.PRICE = Normal.PRICE / 10;        // 非活動平日價 = 一般專案平日價
+                                xsour.PRICE_H = Normal.PRICE_H / 10;    // 非活動假日價 = 一般專案假日價
+                            }
+                            else
+                            {   // 撈不到就給原專案的價格
+                                xsour.PRICE = sour.ProDisPRICE;
+                                xsour.PRICE_H = sour.ProDisPRICE_H;
                             }
                         }
-                        else if (sour.ProjType == 3)
+                        else
                         {
-                            //P621暫時寫死
-                            var norPri = new CarRentSp().sp_GetEstimate("P621", sour.CarType, sour.LogID, ref errMsg);
-                            if (norPri != null)
-                            {
-                                trace.traceAdd(nameof(norPri), norPri);
-                                xsour.PRICE = norPri.PRICE / 10;
-                                xsour.PRICE_H = norPri.PRICE_H / 10;
-                            }
+                            xsour.PRICE = Normal.PRICE / 10;
+                            xsour.PRICE_H = Normal.PRICE_H / 10;
                         }
                     }
                 }
                 if (sour.ProDisPRICE <= 0 || sour.ProDisPRICE_H < 0)
                 {   //專案會升級春節虛擬月租
                     trace.FlowList.Add("專案平假日價格為0");
-                    if (isSpr)
-                    {//春節專案平假日價格 
-                        trace.FlowList.Add("春節期間");
-                        if (string.IsNullOrWhiteSpace(sour.CarType))
-                            throw new Exception("CarType必填");
-                        if (sour.ProjType == 0)
+                    //春節專案平假日價格 
+                    trace.FlowList.Add("春節期間");
+                    if (string.IsNullOrWhiteSpace(sour.CarType))
+                        throw new Exception("CarType必填");
+                    if (sour.ProjType == 0)
+                    {
+                        var xre = carRepo.GetFirstProDisc("R129", sour.CarType);
+                        if (xre != null)
                         {
-                            var xre = carRepo.GetFirstProDisc("R129", sour.CarType);
-                            if (xre != null)
-                            {
-                                trace.traceAdd(nameof(xre), xre);
-                                xsour.ProDisPRICE = xre.PRICE / 10;
-                                xsour.ProDisPRICE_H = xre.PRICE_H / 10;
-                            }
+                            trace.traceAdd(nameof(xre), xre);
+                            xsour.ProDisPRICE = xre.PRICE / 10;
+                            xsour.ProDisPRICE_H = xre.PRICE_H / 10;
                         }
-                        else if (sour.ProjType == 3)
+                    }
+                    else if (sour.ProjType == 3)
+                    {
+                        var xre = carRepo.GetFirstProDisc("R139", sour.CarType);
+                        if (xre != null)
                         {
-                            var xre = carRepo.GetFirstProDisc("R139", sour.CarType);
-                            if (xre != null)
-                            {
-                                trace.traceAdd(nameof(xre), xre);
-                                xsour.ProDisPRICE = xre.PRICE / 10;
-                                xsour.ProDisPRICE_H = xre.PRICE_H / 10;
-                            }
+                            trace.traceAdd(nameof(xre), xre);
+                            xsour.ProDisPRICE = xre.PRICE / 10;
+                            xsour.ProDisPRICE_H = xre.PRICE_H / 10;
                         }
                     }
                 }
@@ -1259,14 +1313,14 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
 
-        public GetFullProjectVM GetNormalProject(string ProjID, string CarType, Int64 OrderNo, string IDNO, DateTime SD, DateTime ED, int ProjType, long LogID, ref string errMsg)
+        public List<GetFullProjectVM> GetCarProject(string ProjID, string CarType, Int64 OrderNo, string IDNO, DateTime SD, DateTime ED, int ProjType,string CarNo, long LogID, ref string errMsg)
         {
-            var result = new GetFullProjectVM();
-            List<GetFullProjectVM> GetFullProjectVMs = new List<GetFullProjectVM>();
+            var result = new List<GetFullProjectVM>();
+            //List<GetFullProjectVM> GetFullProjectVMs = new List<GetFullProjectVM>();
 
             string SPName = "usp_GetEstimate_Q1";
 
-            object[] param = new object[8];
+            object[] param = new object[9];
             param[0] = ProjID;
             param[1] = CarType;
             param[2] = OrderNo;
@@ -1274,7 +1328,8 @@ namespace WebAPI.Models.BillFunc
             param[4] = SD;
             param[5] = ED;
             param[6] = ProjType;
-            param[7] = LogID;
+            param[7] = CarNo;
+            param[8] = LogID;
 
             DataSet ds1 = null;
             string returnMessage = "";
@@ -1287,12 +1342,7 @@ namespace WebAPI.Models.BillFunc
             {
                 if (ds1.Tables.Count == 2)
                 {
-                    GetFullProjectVMs = objUti.ConvertToList<GetFullProjectVM>(ds1.Tables[0]);
-                }
-
-                if (GetFullProjectVMs.Count > 0)
-                {
-                    result = GetFullProjectVMs.FirstOrDefault();
+                    result = objUti.ConvertToList<GetFullProjectVM>(ds1.Tables[0]);
                 }
             }
             else
@@ -1424,6 +1474,10 @@ namespace WebAPI.Models.BillFunc
         /// 專案類型
         /// </summary>
         public int ProjType { get; set; }
+        /// <summary>
+        /// 車號
+        /// </summary>
+        public string CarNo { get; set; }
         /// <summary>
         /// 車型
         /// </summary>

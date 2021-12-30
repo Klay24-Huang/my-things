@@ -209,13 +209,13 @@ namespace WebAPI.Controllers
                             bool isSpring = cr_com.isSpring(SDate, EDate);
                             if (proTypes.Any(x => x == ProjType) && isSpring)
                             {
-                                string carCode = "";
                                 //有跨到春節就會回傳春節專案,只針對同站 
                                 var bizIn = new IBIZ_SpringInit()
                                 {
                                     IDNO = IDNO,
                                     ProjID = apiInput.ProjID,
                                     ProjType = ProjType,
+                                    CarNo = apiInput.CarNo,
                                     CarType = apiInput.CarType,
                                     SD = SDate,
                                     ED = EDate,
@@ -225,24 +225,26 @@ namespace WebAPI.Controllers
                                     LogID = LogID
                                 };
 
-                                if (string.IsNullOrWhiteSpace(apiInput.CarType) && ProjType == 3)
-                                {//路邊projID一定是非春節(一般時段),春節期間仍然回傳非春節ProjID, 邏輯已確認過
-                                    if (!string.IsNullOrWhiteSpace(apiInput.CarNo))
-                                        carCode = CarRepo.GetCarTypeGroupCode(apiInput.CarNo);
-                                    else
-                                        throw new Exception("路邊CarNo為必填");
+                                //if (ProjType == 3)
+                                //{   //路邊projID一定是非春節(一般時段),春節期間仍然回傳非春節ProjID, 邏輯已確認過
+                                //    //if (!string.IsNullOrWhiteSpace(apiInput.CarNo))
+                                //    //    carCode = CarRepo.GetCarTypeGroupCode(apiInput.CarNo);
+                                //    //else
+                                //    //    throw new Exception("路邊CarNo為必填");
 
-                                    if (!string.IsNullOrWhiteSpace(carCode))
-                                    {
-                                        bizIn.CarType = carCode;
-                                        bizIn.PRICE = Convert.ToDouble(pr.PRICE) / 10;
-                                        bizIn.PRICE_H = Convert.ToDouble(pr.PRICE_H) / 10;
-                                        bizIn.ProDisPRICE = 0;
-                                        bizIn.ProDisPRICE_H = 0;
-                                    }
-                                    else
-                                        throw new Exception("無對應CarTypeGroupCoder");
-                                }
+                                //    string carCode = CarRepo.GetCarTypeGroupCode(apiInput.CarNo);
+
+                                //    if (!string.IsNullOrEmpty(carCode))
+                                //    {
+                                //        bizIn.CarType = carCode;
+                                //        //bizIn.PRICE = Convert.ToDouble(pr.PRICE) / 10;
+                                //        //bizIn.PRICE_H = Convert.ToDouble(pr.PRICE_H) / 10;
+                                //        //bizIn.ProDisPRICE = 0;
+                                //        //bizIn.ProDisPRICE_H = 0;
+                                //    }
+                                //    //else
+                                //    //    throw new Exception("無對應CarTypeGroupCoder");
+                                //}
 
                                 var xre = cr_com.GetSpringInit(bizIn, connetStr, funName);
                                 if (xre != null)

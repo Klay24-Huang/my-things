@@ -340,7 +340,7 @@ namespace WebAPI.Controllers
                         if (ProjType == 0 && !isSpring) // 同站 AND 非春節期間
                         {   // 這段在做：預約是春節專案，但實際用車時間沒有落在春節期間，專案價格要取非春節專案的
                             var item = OrderDataLists[0];
-                            if (CNYList.Count > 0 && CNYList.Contains(item.ProjID))
+                            if (CNYList.Count > 0 && CNYList.Contains(ProjID))
                             {
                                 bool befSpring = false;
                                 if (hasFine)
@@ -349,37 +349,37 @@ namespace WebAPI.Controllers
                                     befSpring = sprSD >= FED;   // 春節起日 >= 實際還車時間
                                 if (befSpring)
                                 {
-                                    var NormalPrice = cr_sp.GetNormalProject(item.ProjID, item.CarTypeGroupCode, item.OrderNo, IDNO, SD, FED, item.ProjType, LogID, ref errMsg);
-                                    if (NormalPrice != null)
-                                    {
-                                        OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(NormalPrice.PRICE / 10));
-                                        OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(NormalPrice.PRICE_H / 10));
-                                    }
+                                    //var NormalPrice = cr_sp.GetNormalProject(ProjID, item.CarTypeGroupCode, tmpOrder, IDNO, SD, FED, ProjType,item.CarNo, LogID, ref errMsg);
+                                    //if (NormalPrice != null)
+                                    //{
+                                    //    OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(NormalPrice.PRICE / 10));
+                                    //    OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(NormalPrice.PRICE_H / 10));
+                                    //}
                                 }
                             }
                         }
 
-                        if (isSpring && neverHasFine.Any(x => x == ProjType))
-                        {
-                            if (ProjType == 3)
-                            {
-                                var xre = cr_sp.sp_GetEstimate("R139", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
-                                if (xre != null)
-                                {
-                                    OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE / 10));
-                                    OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H / 10));
-                                }
-                            }
-                            else if (ProjType == 4)
-                            {
-                                var xre = cr_sp.sp_GetEstimate("R140", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
-                                if (xre != null)
-                                {
-                                    //機車目前不分平假日
-                                    OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(xre.PRICE);
-                                }
-                            }
-                        }
+                        //if (isSpring && neverHasFine.Any(x => x == ProjType))
+                        //{
+                        //    if (ProjType == 3)
+                        //    {
+                        //        var xre = cr_sp.sp_GetEstimate("R139", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                        //        if (xre != null)
+                        //        {
+                        //            OrderDataLists[0].PRICE = Convert.ToInt32(Math.Floor(xre.PRICE / 10));
+                        //            OrderDataLists[0].PRICE_H = Convert.ToInt32(Math.Floor(xre.PRICE_H / 10));
+                        //        }
+                        //    }
+                        //    else if (ProjType == 4)
+                        //    {
+                        //        var xre = cr_sp.sp_GetEstimate("R140", OrderDataLists[0].CarTypeGroupCode, LogID, ref errMsg);
+                        //        if (xre != null)
+                        //        {
+                        //            //機車目前不分平假日
+                        //            OrderDataLists[0].MinuteOfPrice = Convert.ToSingle(xre.PRICE);
+                        //        }
+                        //    }
+                        //}
                         #endregion
 
                         #region 計算非逾時及逾時時間
@@ -432,9 +432,9 @@ namespace WebAPI.Controllers
                             var ibiz_vMon = new IBIZ_SpringInit()
                             {
                                 IDNO = IDNO,
-                                OrderNo = item.OrderNo,
-                                ProjID = item.ProjID,
-                                ProjType = item.ProjType,
+                                OrderNo = tmpOrder,
+                                ProjID = ProjID,
+                                ProjType = ProjType,
                                 CarType = item.CarTypeGroupCode,
                                 SD = vsd,
                                 ED = ved,
