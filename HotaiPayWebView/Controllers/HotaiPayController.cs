@@ -743,7 +743,9 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult BindCardFailed(string mode)
         {
-            return RedirectToAction("/Login", new { p = Session["p"]} );
+            //return RedirectToAction("/Login", new { p = Session["p"]} );
+            //return RedirectToAction($"/Login?p={Session["p"]}");
+            return RedirectToAction("Login", "HotaiPay", new { p = Session["p"] });
         }
         #endregion
 
