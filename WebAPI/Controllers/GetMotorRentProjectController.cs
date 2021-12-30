@@ -291,19 +291,19 @@ namespace WebAPI.Controllers
 
                 #region for春節專案使用
                 //for春節專案使用，將原專案每日上限改為春節上限，並將春節專案移除
-                var Temp = lstTmpData.Where(x => x.ProjID == "R140").FirstOrDefault();
-                if (Temp != null)
-                {
-                    foreach (var tmp in lstTmpData)
-                    {
-                        if (tmp.ProjID != "R140")
-                        {
-                            tmp.MaxPrice = Temp.MaxPrice;
-                        }
-                    }
+                //var Temp = lstTmpData.Where(x => x.ProjID == "R140").FirstOrDefault();
+                //if (Temp != null)
+                //{
+                //    foreach (var tmp in lstTmpData)
+                //    {
+                //        if (tmp.ProjID != "R140")
+                //        {
+                //            tmp.MaxPrice = Temp.MaxPrice;
+                //        }
+                //    }
 
-                    lstTmpData.Remove(Temp);
-                }
+                //    lstTmpData.Remove(Temp);
+                //}
                 #endregion
 
                 outputApi = new OAPI_GetMotorProject()
@@ -312,7 +312,9 @@ namespace WebAPI.Controllers
                 };
 
                 #region 產出月租&Project虛擬卡片
-                if (flag && Score >= 60)    // 20210913 UPD BY YEH REASON:積分>=60才可使用訂閱制
+                bool isSpring = new CarRentCommon().isSpring(SDate, EDate); //是否為春節時段
+
+                if (flag && Score >= 60 && !isSpring)    // 20210913 UPD BY YEH REASON:積分>=60才可使用訂閱制
                 {
                     if (outputApi.GetMotorProjectObj != null && outputApi.GetMotorProjectObj.Count() > 0)
                     {
@@ -377,6 +379,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-
     }
 }
