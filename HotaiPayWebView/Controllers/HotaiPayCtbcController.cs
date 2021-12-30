@@ -309,7 +309,11 @@ namespace HotaiPayWebView.Controllers
 
             var redirectURL = "";
             var nowDomain = Request.Url.AbsoluteUri;
-            if (nowDomain.IndexOf("hieasyrent.hotaimotor.com.tw") != -1)
+            if (nowDomain.IndexOf("hotaictbc.irentcar.com.tw") != -1)
+            {
+                redirectURL = this.redirectURL;
+            }
+            else if (nowDomain.IndexOf("hieasyrent.hotaimotor.com.tw") != -1)
             {
                 redirectURL = this.redirectURL;
             }
