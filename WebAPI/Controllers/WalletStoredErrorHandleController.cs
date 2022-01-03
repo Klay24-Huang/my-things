@@ -81,47 +81,45 @@ namespace WebAPI.Controllers
                 foreach (var item in errList)
                 {
                     #region 台新錢包儲值
-                    if (flag)
+                    DateTime NowTime = DateTime.Now;
+                    var wallet = new WebAPI_CreateAccountAndStoredMoney()
                     {
-                        DateTime NowTime = DateTime.Now;
-                        var wallet = new WebAPI_CreateAccountAndStoredMoney()
-                        {
-                            ApiVersion = ApiVersion,
-                            GUID = Guid.NewGuid().ToString().Replace("-", ""),
-                            MerchantId = MerchantId,
-                            POSId = "",
-                            StoreId = "1",
-                            StoreName = "",
-                            StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
-                            StoreTransId = string.Format("{0}{1}", item.ID, NowTime.ToString("MMddHHmmss")),
-                            MemberId = item.MemberId,
-                            Name = item.Name,
-                            PhoneNo = item.PhoneNo,
-                            Email = item.Email,
-                            ID = item.IsForeign == 1 ? "" : item.ID,
-                            AccountType = item.AccountType,
-                            AmountType = item.AmountType,
-                            CreateType = item.CreateType,
-                            Amount = item.Amount,
-                            Bonus = item.Bonus,
-                            BonusExpiredate = item.BonusExpiredate,
-                            SourceFrom = item.SourceFrom
-                        };
+                        ApiVersion = ApiVersion,
+                        GUID = Guid.NewGuid().ToString().Replace("-", ""),
+                        MerchantId = MerchantId,
+                        POSId = "",
+                        StoreId = "1",
+                        StoreName = "",
+                        StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
+                        StoreTransId = string.Format("{0}{1}", item.ID, NowTime.ToString("MMddHHmmss")),
+                        MemberId = item.MemberId,
+                        Name = item.Name,
+                        PhoneNo = item.PhoneNo,
+                        Email = item.Email,
+                        ID = item.IsForeign == 1 ? "" : item.ID,
+                        AccountType = item.AccountType,
+                        AmountType = item.AmountType,
+                        CreateType = item.CreateType,
+                        Amount = item.Amount,
+                        Bonus = item.Bonus,
+                        BonusExpiredate = item.BonusExpiredate,
+                        SourceFrom = item.SourceFrom
+                    };
 
-                        var body = JsonConvert.SerializeObject(wallet);
-                        TaishinWallet WalletAPI = new TaishinWallet();
-                        string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-                        string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
-                        try
-                        {
-                            flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
-                        }
-                        catch (Exception ex)
-                        {
-                            flag = false;
-                            logger.Error("WalletStoredErrorListloop Error:" + ex.Message);
-                        }
+                    var body = JsonConvert.SerializeObject(wallet);
+                    TaishinWallet WalletAPI = new TaishinWallet();
+                    string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                    string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                    try
+                    {
+                        flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
                     }
+                    catch (Exception ex)
+                    {
+                        flag = false;
+                        logger.Error("WalletStoredErrorListloop Error:" + ex.Message);
+                    }
+
                     #endregion
                     #region 更新儲值錯誤LOG
                     SPInput_WalletStoredErrorHandle input = new SPInput_WalletStoredErrorHandle()
