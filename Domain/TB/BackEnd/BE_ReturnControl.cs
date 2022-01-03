@@ -231,5 +231,9 @@ namespace Domain.TB.BackEnd
         /// 商代代碼
         /// </summary>
         public string MerchantID { get; set; }
+        /// <summary>
+        /// 刷卡的訂單編號(專給中信使用)
+        /// </summary>
+        public string MerchantTradeNo { get; set; }
     }
 }
