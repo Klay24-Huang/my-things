@@ -49,9 +49,9 @@ namespace HotaiPayWebView.Controllers
 
             if (decryptDic.Count == 0) {
 
-                logger.Error($"p參數解密失敗，p={Request.QueryString["p"].Trim()}");
+                logger.Error($"p參數解密失敗，p={Request.QueryString["p"]}");
 
-                ViewBag.Alert = "iRent帳號過期，請重新登入";
+                ViewBag.PwdAlert = "iRent帳號過期，請重新登入";
                 return View();
             }
 
@@ -112,7 +112,7 @@ namespace HotaiPayWebView.Controllers
             if (Session["id"] == null)
             {
                 logger.Error("iRent帳號過期,Session[id] == null");
-                ViewBag.Alert = "iRent帳號過期，請重新登入。";
+                ViewBag.PwdAlert = "iRent帳號過期，請重新登入。";
                 return View("Login");
             }
             HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
@@ -199,7 +199,7 @@ namespace HotaiPayWebView.Controllers
                                         logger.Info("此OneID已有資料在資料表中: errCode=9527");
 
                                         ViewBag.phone = loginValue.Phone.Trim();
-                                        ViewBag.Alert = "此帳號已被註冊。";
+                                        ViewBag.PwdAlert = "此帳號已被註冊。";
                                         return View();
                                     }
                                     else
