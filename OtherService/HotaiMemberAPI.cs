@@ -801,7 +801,7 @@ namespace OtherService
             {
                 MKTime = DateTime.Now,
                 UPDTime = DateTime.Now,
-                WebAPIInput = Body == null ? access_token : JsonConvert.SerializeObject(Body),
+                WebAPIInput = Body == null ? API : JsonConvert.SerializeObject(Body),
                 WebAPIName = funName,
                 WebAPIOutput = JsonConvert.SerializeObject(valueTuple),
                 WebAPIURL = requestUrl
