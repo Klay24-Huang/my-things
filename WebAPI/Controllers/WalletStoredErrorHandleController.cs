@@ -123,6 +123,18 @@ namespace WebAPI.Controllers
                         }
                     }
                     #endregion
+                    #region 更新儲值錯誤LOG
+                    SPInput_WalletStoredErrorHandle input = new SPInput_WalletStoredErrorHandle()
+                    {
+                        Seqno = item.SEQNO,
+                        ProcessStatus = flag ? 1 : 2,
+                        ReturnCode = output?.ReturnCode ?? "",
+                        ExceptionData = output?.ExceptionData ?? "",
+                        Message = output?.Message ?? "",
+                        PRGName = funName
+                    };
+                    UpdWalletStoredErrorLog(input, ref lstError, ref errCode);
+                    #endregion
                     #region 寫入錢包
                     if (flag)
                     {
@@ -153,20 +165,7 @@ namespace WebAPI.Controllers
 
                         flag = wsp.sp_WalletStore(spInput_Wallet, ref errCode);
                     }
-                    #endregion
-                    #region 更新儲值錯誤LOG
-                    SPInput_WalletStoredErrorHandle input = new SPInput_WalletStoredErrorHandle()
-                    {
-                        Seqno = item.SEQNO,
-                        ProcessStatus = flag ? 1 : 2,
-                        ReturnCode = output?.ReturnCode ?? "",
-                        ExceptionData = output?.ExceptionData ?? "",
-                        Message = output?.Message ?? "",
-                        PRGName = funName
-                    };
-                    flag = UpdWalletStoredErrorLog(input, ref lstError, ref errCode);
-                    #endregion
-
+                    #endregion                   
                 }
             }
             #endregion

@@ -364,7 +364,7 @@ namespace WebAPI.Controllers
                                                 PAYMENTTYPE = "1",
                                                 PAYMEMO = "租金",
                                                 //PORDNO = obj.REMARK
-                                                PORDNO = ReturnControlList[z].REMARK,
+                                                PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
                                                 OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                             };
                                         }
@@ -389,7 +389,7 @@ namespace WebAPI.Controllers
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "eTag",
                                             //PORDNO = obj.REMARK
-                                            PORDNO = ReturnControlList[z].REMARK,
+                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
                                             OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }
@@ -404,7 +404,7 @@ namespace WebAPI.Controllers
                                             PAYTYPE = "1",
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "租金",
-                                            PORDNO = ReturnControlList[z].REMARK,
+                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
                                             OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }
@@ -528,6 +528,7 @@ namespace WebAPI.Controllers
         {
             //目前 台新0 中信1
             int Result = 0;
+            
             if (MerchantID == merID)
             {
                 Result = 1;

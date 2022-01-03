@@ -251,6 +251,9 @@ namespace HotaiPayWebView.Controllers
         #region 無信用卡列表頁面 
         public ActionResult NoCreditCard()
         {
+            logger.Error($"唐唐唐 ={Request.QueryString["p"]}");
+            logger.Error($"琦琦琦 ={Session["p"]}");
+
             string irent_access_token = "";
             HotaipayService HPServices = new HotaipayService();
             bool flag = false;
@@ -309,7 +312,11 @@ namespace HotaiPayWebView.Controllers
 
             var redirectURL = "";
             var nowDomain = Request.Url.AbsoluteUri;
-            if (nowDomain.IndexOf("hieasyrent.hotaimotor.com.tw") != -1)
+            if (nowDomain.IndexOf("hotaictbc.irentcar.com.tw") != -1)
+            {
+                redirectURL = this.redirectURL;
+            }
+            else if (nowDomain.IndexOf("hieasyrent.hotaimotor.com.tw") != -1)
             {
                 redirectURL = this.redirectURL;
             }

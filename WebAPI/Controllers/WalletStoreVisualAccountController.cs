@@ -230,7 +230,7 @@ namespace WebAPI.Controllers
             int value;
             Random rnd = new Random();
             string randomNum = rnd.Next(1, 99999).ToString().PadLeft(6, '0');
-            string payDeadlineStr = $"{(payDeadline.Year - 1911).ToString().Substring(2, 1)}{payDeadline.DayOfYear.ToString()}";
+            string payDeadlineStr = $"{(payDeadline.Year - 1911).ToString().Substring(2, 1)}{payDeadline.DayOfYear.ToString().PadLeft(3,'0')}";
             string strAccount = $"{businessCode}{randomNum}{payDeadlineStr}";
             int[] accWeights = { 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3 };  // 權重 長度15
             int accSum = 0;

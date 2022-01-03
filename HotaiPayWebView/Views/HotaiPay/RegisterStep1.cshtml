@@ -40,7 +40,7 @@
 
             <form class="form-inline d-flex flex-row justify-content-between align-items-start" method="post" action="GetOtpCode">
                 <div class="form-group">
-                    <input type="text" class="form-control input-light" id="phone" name="phone" placeholder="0912345678" value="@ViewBag.Phone">
+                    <input type="text" class="form-control input-light" id="phone" name="phone" placeholder="0912345678" value="@ViewBag.Phone" readonly="readonly">
                 </div>
                 <button type="submit" class="btn btn-blue-small mb-2" id="Optbtn">發送驗證碼</button>
                 <p id="pwdHint" style="color:red;">@ViewBag.PhoneAlert</p>
