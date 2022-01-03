@@ -42,7 +42,7 @@ namespace HotaiPayWebView.Controllers
             Dictionary<string, string> decryptDic = new Dictionary<string, string>();
             if (!Request.QueryString["p"].IsNullOrWhiteSpace())
             {
-                logger.Error("p參數未帶");
+                logger.Error($"接到p參數: p={Request.QueryString["p"]}");
                 decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
                 Session["p"] = Request.QueryString["p"].Trim();
             }
@@ -71,6 +71,9 @@ namespace HotaiPayWebView.Controllers
 
                 if (flag)
                 {
+                    ViewBag.PwdAlert = "";
+                    ViewBag.PhoneAlert = "";
+
                     logger.Info($"irent_access_token解密成功: irent_access_token={decryptDic["irent_access_token"].Trim()},id={IDNO}");
 
                     Session["irent_access_token"] = decryptDic["irent_access_token"].Trim();
