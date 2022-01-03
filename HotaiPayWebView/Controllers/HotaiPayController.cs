@@ -74,7 +74,7 @@ namespace HotaiPayWebView.Controllers
                     ViewBag.PwdAlert = "";
                     ViewBag.PhoneAlert = "";
 
-                    logger.Info($"irent_access_token解密成功: irent_access_token={decryptDic["irent_access_token"].Trim()},id={IDNO}");
+                    logger.Info($"irent_access_token解密成功: id={IDNO},irent_access_token={decryptDic["irent_access_token"].Trim()}");
 
                     Session["irent_access_token"] = decryptDic["irent_access_token"].Trim();
                     Session["id"] = IDNO;
@@ -98,7 +98,7 @@ namespace HotaiPayWebView.Controllers
             }
             else
             {
-                ViewBag.Alert = "iRent帳號過期，請重新登入";
+                ViewBag.PwdAlert = "iRent帳號過期，請重新登入";
                 return View();
             }
             //return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");
@@ -135,7 +135,7 @@ namespace HotaiPayWebView.Controllers
 
                 if (flag)
                 {
-                    logger.Info($"登入成功: hotai_access_token={apioutput.access_token},refresh_token={apioutput.refresh_token},memberState={apioutput.memberState}");
+                    logger.Info($"登入成功: id={Session["id"]}, hotai_access_token={apioutput.access_token},refresh_token={apioutput.refresh_token},memberState={apioutput.memberState}");
 
                     Session["phone"] = loginValue.Phone.Trim();
                     Session["hotai_access_token"] = apioutput.access_token;
@@ -154,14 +154,14 @@ namespace HotaiPayWebView.Controllers
                                 
                                 if (!string.IsNullOrEmpty(checkVer.memberBenefitsVersion))
                                 {
-                                    logger.Info("有更新的會員條款版本號");
+                                    logger.Info($"id={Session["id"]},有更新的會員條款版本號");
 
                                     Session["Benefitsterms"] = checkVer.memberBenefits;
                                     Session["BenefitstermsVer"] = checkVer.memberBenefitsVersion;
                                 }
                                 if (!string.IsNullOrEmpty(checkVer.privacyPolicyVersion))
                                 {
-                                    logger.Info("有更新的隱私條款版本號");
+                                    logger.Info($"id={Session["id"]},有更新的隱私條款版本號");
 
                                     Session["Policyterms"] = checkVer.privacyPolicy;
                                     Session["PolicytermsVer"] = checkVer.privacyPolicyVersion;
@@ -180,7 +180,7 @@ namespace HotaiPayWebView.Controllers
                                 //flag = true;//唐寫死，等和泰開通安康防火牆再弄
                                 if (flag)
                                 {
-                                    logger.Info($"取得OneID成功: OneID={getOneID.memberSeq}");
+                                    logger.Info($"取得OneID成功: id={Session["id"]},OneID={getOneID.memberSeq}");
 
                                     Session["oneID"] = "";//getOneID.memberSeq;//唐寫死，等和泰開通安康防火牆再弄
 
@@ -188,7 +188,7 @@ namespace HotaiPayWebView.Controllers
 
                                     if (errCode == "0000")
                                     {
-                                        logger.Info($"寫入和泰會員綁定資料表成功: errCode={errCode}");
+                                        logger.Info($"寫入和泰會員綁定資料表成功: id={Session["id"]},errCode={errCode}");
 
                                         TempData["irent_access_token"] = Session["irent_access_token"];
                                         return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "NoCreditCard" });
@@ -196,22 +196,22 @@ namespace HotaiPayWebView.Controllers
                                     }
                                     else if(errCode == "9527")
                                     {
-                                        logger.Info("此OneID已有資料在資料表中: errCode=9527");
+                                        logger.Info($"此OneID已有資料在資料表中: id={Session["id"]},errCode={errCode}");
 
                                         ViewBag.phone = loginValue.Phone.Trim();
-                                        ViewBag.PwdAlert = "此帳號已被註冊。";
+                                        ViewBag.PwdAlert = "此門號已被其他iRent帳號綁定。";
                                         return View();
                                     }
                                     else
                                     {
-                                        logger.Error($"寫入和泰綁定資料表失敗: errCode={errCode}");
+                                        logger.Error($"寫入和泰綁定資料表失敗: id={Session["id"]},errCode={errCode}");
                                         //return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                                         return RedirectToAction("BindCardFailed",new { });
                                     }
                                 }
                                 else
                                 {
-                                    logger.Error($"取得OneID失敗, ErrorMessage:{errorDic[errCode]}");
+                                    logger.Error($"取得OneID失敗: id={Session["id"]},ErrorMessage:{errorDic[errCode]}");
                                     //RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                                     return RedirectToAction("BindCardFailed", new { });
                                 }
@@ -222,7 +222,7 @@ namespace HotaiPayWebView.Controllers
                 }
                 else
                 {
-                    logger.Error($"登入失敗: ErrorMessage:{errorDic[errCode]}");
+                    logger.Error($"登入失敗: id={Session["id"]},ErrorMessage:{errorDic[errCode]}");
 
                     ViewBag.phone = loginValue.Phone.Trim();
 
