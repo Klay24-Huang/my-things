@@ -11,7 +11,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>輸入個人資料</title>
-
     <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
     <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
     <script src="~/Scripts/HotaiPayJS/PostAndGoto.js"></script>
@@ -19,7 +18,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="js/main.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
     <style>
         #fixed-center {
             /* background: #FFFF99;
@@ -38,43 +36,36 @@
             z-index: 9999;
         }
     </style>
-
 </head>
 
 <body>
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">輸入個人資料</h6></header>
-    @{Html.EnableClientValidation(); }
+    @*@{Html.EnableClientValidation(); }*@
     @using (Html.BeginForm("InsPersonInfo", "HotaiPayCtbc", FormMethod.Post, new { @id = "FastAddCardForm", @class = "form-horizontal", enctype = "multipart/form-data" }))
     {
-
-
         <div class="container" style="max-width: 414px;position:relative">
             <div id="fixed-center" style="visibility: hidden; ">
                 <img src="../images/LOAD.gif">
             </div>
-
             <div class="mt-4 opacity">
                 <p class="text-gray">輸入個人資料後，將透過簡訊驗證向中國信託取得您的中信卡資訊，確保支付安全。</p>
             </div>
-
             <div class="mt-4 opacity">
-                <label>生日</label>
+                <label id="birth_label">生日</label>
                 @*<input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" name="BIRTHDATE" id="BIRTHDATE" required>*@
                 @Html.TextBoxFor(m => m.Birthday, new { @class = "form-control input-light", placeholder = "輸入生日 ex.19950101" })
             </div>
             <div class="text-left">
                 <p style="color:red;">@Html.ValidationMessage("Birthday")</p>
             </div>
-
             <div class="mt-4 opacity">
-                <label>身分證字號</label>
+                <label id="ID_label">身分證字號</label>
                 @*<input type="text" class="form-control input-light" placeholder="輸入身分證字號" name="ID" id="ID" required>*@
                 @Html.TextBoxFor(m => m.CTBCIDNO, new { @class = "form-control input-light", placeholder = "輸入身分證字號" })
             </div>
             <div class="text-left">
                 <p style="color:red;">@Html.ValidationMessage("CTBCIDNO")</p>
             </div>
-
         </div>
 
         <div class="height-box"></div>
@@ -91,38 +82,48 @@
 </html>
 
 <script type="text/javascript">
-
     @*var msg = '@(ViewData["ERROR"] == null ? "" : ViewData["ERROR"].ToString())';
     if (msg == 'ERROR') {
         swal("錯誤!", "請確認!", "error");
     }*@
-
     function FastAddCard() {
-        document.getElementById("fixed-center").style.visibility = "visible";
-        $('.opacity').css('opacity', '0.1')
-        //alert("Fast");
-        $.ajax({
-            type: "POST",
-            url:"@Url.Action("InsPersonInfo")",
-            data: $("#FastAddCardForm").serialize(),
-            success: function (result) {
-                document.getElementById("fixed-center").style.visibility = "hidden";
-                $('.container').css('opacity', '1.0')
-                if (result.succ) {
-                    document.getElementById("fixed-center").style.visibility = "visible";
-                    $('.container').css('opacity', '0.1')
-                    GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);//gotoUrl是去中信的網址/creditcard/fbinding
+        console.log(document.getElementById('Birthday').value)
+        console.log(document.getElementById('CTBCIDNO').value)
+        var flag = true;
+        if (document.getElementById('Birthday').value == '') {
+            flag = false;
+            alert('生日沒填');
+        } else if (document.getElementById('CTBCIDNO').value == '') {
+            flag = false;
+            alert('身分證沒填');
+        }
+
+        if (flag) {
+            document.getElementById("fixed-center").style.visibility = "visible";
+            $('.opacity').css('opacity', '0.1')
+
+            $.ajax({
+                type: "POST",
+                url:"@Url.Action("InsPersonInfo")",
+                data: $("#FastAddCardForm").serialize(),
+                success: function (result) {
+                    document.getElementById("fixed-center").style.visibility = "hidden";
+                    $('.opacity').css('opacity', '1.0')
+                    if (result.succ) {
+                        document.getElementById("fixed-center").style.visibility = "visible";
+                        $('.opacity').css('opacity', '0.1')
+                        GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);//gotoUrl是去中信的網址/creditcard/fbinding
+                    }
+                    else {
+                        //console.log(result.gotoUrl)
+                        swal("錯誤!", "和泰中信快速綁定卡失敗", "error");
+                    }
+                },
+                error: function () {
+                    //controller那就回傳錯誤訊息給view了，不在這做
+                    swal("錯誤!", "快綁失敗", "error");
                 }
-                else {
-                    //console.log(result.gotoUrl)
-                    swal("錯誤!", "和泰中信快速綁定卡失敗", "error");
-                }
-            },
-            error: function () {
-                //controller那就回傳錯誤訊息給view了，不在這做
-                swal("錯誤!", "快綁失敗", "error");
-            }
-        })
-        //return false;
+            })
+        }
     }
 </script>
