@@ -206,13 +206,6 @@ namespace WebAPI.Controllers
                         StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
                         StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
                         MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
-                        //Name = spOutput.Name,       
-                        //PhoneNo = spOutput.PhoneNo, 
-                        //Email = spOutput.Email,     
-                        Name = "",       //非必填不帶值
-                        PhoneNo = "",    //非必填不帶值
-                        Email = "",      //非必填不帶值
-                        ID = baseVerify.regexStr(IDNO, CommonFunc.CheckType.FIDNO) ? "" : IDNO, //舊式居留證丟儲值會回證件格式不符，故不丟
                         AccountType = "2",
                         AmountType = "2",
                         CreateType = "1",

@@ -1,15 +1,14 @@
 ﻿using Domain.Flow.Hotai;
 using Domain.TB.Hotai;
 using Domain.WebAPI.Input.CTBCPOS;
-using Domain.WebAPI.Input.Hotai.Payment;
-using Domain.WebAPI.output.Hotai.Payment;
 using HotaiPayWebView.Models;
+using Newtonsoft.Json;
 using OtherService;
+using OtherService.WebAction;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Net.Http;
 using System.Web.Mvc;
+
 
 namespace HotaiPayWebView.Controllers
 {
@@ -83,12 +82,49 @@ namespace HotaiPayWebView.Controllers
             return Json(vm);
         }
         [HttpPost]
+        public ActionResult AddCard2()
+        {
+            var vm = new OFN_HotaiAddCard();
+            HotaipayService hotaipayService = new HotaipayService();
+
+            var input = new IFN_HotaiAddCard() { IDNO = "C221120413", RedirectURL = "", insUser = "umeko", LogID = 0, PRGName = "Test" };
+            var output = new OFN_HotaiAddCard();
+
+            var errCode = "";
+            var flag = hotaipayService.DoAddCard(input, ref output, ref errCode);
+
+            ServerPage sendPage = new ServerPage();
+            if (flag)
+            {
+                try { 
+                    sendPage.FormId = "AddCard2";
+                    sendPage.Target = "_self";
+                    sendPage.Url = output.gotoUrl;
+                    sendPage.SendText = JsonConvert.SerializeObject(output.postData);
+                    sendPage.ServiceMethod = HttpMethod.Post;
+                    return new RedirectAndPost(sendPage);
+                }
+                catch(Exception ex)
+                {
+                    HttpContext.Response.StatusCode = 403;
+                    return Json(new { status = "error", errCode = "", message = ex.Message });
+                    }
+            }
+            else
+            {
+                HttpContext.Response.StatusCode = 403;
+                return Json(new { status = "error", errCode = errCode, message = "" });
+            }
+            
+        }
+        [HttpPost]
         public JsonResult FastAddCard(UmekoTestViewModel ivm)
         {
             var vm = new OFN_HotaiFastAddCard();
 
             HotaipayService hotaipayService = new HotaipayService();
 
+            
             var input = new IFN_HotaiFastAddCard() {
                 IDNO = "C221120413"
                 , RedirectURL = "",
@@ -108,6 +144,45 @@ namespace HotaiPayWebView.Controllers
             }
 
             return Json(vm);
+        }
+
+
+        [HttpPost]
+        public ActionResult FastAddCard2(UmekoTestViewModel ivm)
+        {
+            var vm = new OFN_HotaiFastAddCard();
+
+            HotaipayService hotaipayService = new HotaipayService();
+
+            var input = new IFN_HotaiFastAddCard()
+            {
+                IDNO = "C221120413"
+                ,
+                RedirectURL = "",
+                CTBCIDNO = ivm.CTBCIDNO,
+                Birthday = ivm.Birthday,
+                insUser = "umeko",
+                LogID = 0,
+                PRGName = "Test"
+            };
+            var output = new OFN_HotaiFastAddCard();
+            string errCode = "";
+            var flag = hotaipayService.DoFastAddCard(input, ref output, ref errCode);
+
+            ServerPage sendPage = new ServerPage();
+            if (flag)
+            {
+
+                sendPage.FormId = "FastAddCard2";
+                sendPage.Target = "_self";
+                sendPage.Url = output.gotoUrl;
+                sendPage.SendText = JsonConvert.SerializeObject(output.postData);
+                sendPage.ServiceMethod = HttpMethod.Post;
+
+                return new RedirectAndPost(sendPage);
+            }
+            return Json(errCode);
+            
         }
 
 
