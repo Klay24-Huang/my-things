@@ -133,18 +133,18 @@ namespace WebAPI.Controllers
                     IDNO = spOut.IDNO;
                 }
             }
-            #region 檢查欠費
-            if (flag)
-            {
-                int TAMT = 0;
-                WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
-                flag = contract.CheckNPR330(IDNO, LogID, ref TAMT);
-                if (TAMT > 0)
-                {
-                    flag = false;
-                    errCode = "ERR234";
-                }
-            }
+            #region 檢查欠費 20220105路邊欠費查詢取消
+            //if (flag)
+            //{
+            //    int TAMT = 0;
+            //    WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
+            //    flag = contract.CheckNPR330(IDNO, LogID, ref TAMT);
+            //    if (TAMT > 0)
+            //    {
+            //        flag = false;
+            //        errCode = "ERR234";
+            //    }
+            //}
             #endregion
             //取車判斷
             if (flag)
