@@ -8,11 +8,19 @@
     document.body.appendChild(newform);
     newform.action = goto;
     $.each(data, function (name, value) {
-        $("<input type='text' />")
-            .attr("id", name)
-            .attr("name", name)
-            .attr("value", value)
-            .appendTo(newform);
+
+        var input = document.createElement("input");
+        input.setAttribute("type", "text");
+        input.setAttribute("name", name);
+        input.setAttribute("value", value);
+        newform.appendChild(input);
+        
+        //$("<input type='text' />")
+        //    .attr("id", name)
+        //    .attr("name", name)
+        //    .attr("value", value)
+        //    .appendTo(newform);
+            
     });
     console.log('4');
     console.log($("#" + formid).serialize());

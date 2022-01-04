@@ -548,6 +548,8 @@ namespace WebAPI.Models.ComboFunc
                     PayType = AuthInput.PayType,
                     AuthType = AuthInput.AuthType,
                     PromoCode = "",
+                    PRGName= AuthInput.funName,
+                    insUser = AuthInput.insUser
                 };
                 
                 flag = hotaipayService.DoReqPaymentAuth(WSAuthInput,ref WSAuthOutput, ref errCode);

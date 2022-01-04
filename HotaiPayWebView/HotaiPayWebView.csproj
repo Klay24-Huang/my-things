@@ -286,6 +286,10 @@
       <Project>{a30a71dc-72ca-4bd3-8b02-00c7a9b336c4}</Project>
       <Name>Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OtherService.WebAction\OtherService.WebAction.csproj">
+      <Project>{9d26c90e-8c3a-4369-a0b3-1e6b31729b5a}</Project>
+      <Name>OtherService.WebAction</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OtherService\OtherService.csproj">
       <Project>{c7b92ef2-f283-4135-8309-fd1a30b4ed38}</Project>
       <Name>OtherService</Name>

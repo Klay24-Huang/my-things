@@ -188,7 +188,7 @@ namespace WebAPI.Controllers
                         flag = contact.DoNPR135(apiInput.OrderNo, ref errCode, ref errMsg, ref STATUS, ref CNTRNO, ref INVSTATUS);
                         if (flag)
                         {
-                            if (INVSTATUS == "N" && STATUS=="04")
+                            if (INVSTATUS == "N" && STATUS == "04")
                             {
                                 flag = false;
                                 errCode = "ERR760";
@@ -221,7 +221,7 @@ namespace WebAPI.Controllers
                         }
                         else
                         {
-                            
+
                             //查詢有無綁卡
                             if (apiInput.DiffPrice > 0 && obj.PayMode == "0") //刷退，
                             {
@@ -326,6 +326,7 @@ namespace WebAPI.Controllers
                                 var trace = new TraceCom();
                                 var APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
                                 var MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+                                var ApiVersion = ConfigurationManager.AppSettings["TaishinWalletApiVersion"].ToString();
                                 WebAPIOutput_StoreValueCreateAccount output = null;
                                 WebAPI_CreateAccountAndStoredMoney wallet = null;
                                 var wsp = new WalletSp();
@@ -340,33 +341,37 @@ namespace WebAPI.Controllers
                                         int nowCount = 1;
                                         wallet = new WebAPI_CreateAccountAndStoredMoney()
                                         {
-                                            ApiVersion = "0.1.01",
+                                            ApiVersion = ApiVersion,
                                             GUID = guid,
                                             MerchantId = MerchantId,
                                             POSId = "",
-                                            StoreId = "",
+                                            StoreId = "1",//用此欄位區分訂閱制履保或錢包儲值紀錄
                                             StoreName = "",
                                             StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
                                             StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
                                             MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
-                                            Name = spOutput.Name,
-                                            PhoneNo = spOutput.PhoneNo,
-                                            Email = spOutput.Email,
-                                            ID = IDNO,
                                             AccountType = "2",
                                             CreateType = "1",
-                                            AmountType = "2",
+                                            AmountType = "3",
                                             Amount = apiInput.DiffPrice,
                                             Bonus = 0,
                                             BonusExpiredate = "",
-                                            SourceFrom = "9"
+                                            SourceFrom = "Z"
                                         };
 
                                         var body = JsonConvert.SerializeObject(wallet);
                                         TaishinWallet WalletAPI = new TaishinWallet();
                                         string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
                                         string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
-                                        flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+                                        try
+                                        {
+                                            flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            flag = false;
+                                            trace.BaseMsg = ex.Message;
+                                        }
 
                                         trace.traceAdd("DoStoreValueCreateAccount", new { wallet, MerchantId, utcTimeStamp, SignCode, output, errCode });
                                         trace.FlowList.Add("退費轉錢包");
@@ -385,7 +390,7 @@ namespace WebAPI.Controllers
                                         string formatString = "yyyyMMddHHmmss";
                                         SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
                                         {
-                                            IDNO = output.Result.ID,
+                                            IDNO = IDNO,
                                             WalletMemberID = output.Result.MemberId,
                                             WalletAccountID = output.Result.AccountId,
                                             Status = Convert.ToInt32(output.Result.Status),
@@ -398,7 +403,7 @@ namespace WebAPI.Controllers
                                             LastStoreTransId = output.Result.StoreTransId,
                                             LastTransId = output.Result.TransId,
                                             TaishinNO = output.Result.TransId,
-                                            OrderNo = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder) ? tmpOrder : 0 ,
+                                            OrderNo = Int64.TryParse(apiInput.OrderNo.Replace("H", ""), out tmpOrder) ? tmpOrder : 0,
                                             TradeType = "Store_Return",
                                             PRGName = "84",
                                             Mode = 4,
