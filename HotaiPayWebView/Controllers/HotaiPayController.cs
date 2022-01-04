@@ -40,6 +40,9 @@ namespace HotaiPayWebView.Controllers
         public ActionResult Login()
         {
             Dictionary<string, string> decryptDic = new Dictionary<string, string>();
+
+            logger.Debug($"p={Request.QueryString["p"]}");
+
             if (!Request.QueryString["p"].IsNullOrWhiteSpace())
             {
                 logger.Error($"接到p參數: p={Request.QueryString["p"]}");
