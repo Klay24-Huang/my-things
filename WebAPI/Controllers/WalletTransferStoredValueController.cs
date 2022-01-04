@@ -26,8 +26,6 @@ namespace WebAPI.Controllers
     /// <summary>
     /// 錢包轉贈
     /// </summary>
-    /// 2021-09-28 UPD BY YANKEY 調整日期輸出格式
-    /// 2021-11/08 UPD BY YANKEY 調整輸出格式-不輸出data
     public class WalletTransferStoredValueController : ApiController
     {
         private string connetStr    = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
@@ -313,10 +311,10 @@ namespace WebAPI.Controllers
                             Amount = apiInput.Amount,
                             BarCode = "",
                             StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
-                            Email = SPOutput.Email,
-                            Name = SPOutput.Name,
-                            ID = IDNO,
-                            PhoneNo = SPOutput.PhoneNo,
+                            Email = "",//SPOutput.Email, //20220104 UPD BY YANKEY ：避免不必要資訊檢核不通過，不輸入
+                            Name = "",//SPOutput.Name,
+                            ID = "",//IDNO,
+                            PhoneNo = "",//SPOutput.PhoneNo,
                             TransMemo = string.Format("由{0}轉贈", SPOutput.Name),
                             AccountData = new List<Domain.WebAPI.Input.Taishin.Wallet.Param.AccountData>()
                         };
@@ -337,7 +335,7 @@ namespace WebAPI.Controllers
                         flag = WalletAPI.DoTransferStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
                         if (flag == false)
                         {
-                            errCode = "ERR";
+                            errCode = "ERRTSB";
                             errMsg = output.Message;
                         }
 
