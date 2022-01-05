@@ -497,6 +497,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetHoilday.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletWithdrowInvoice.cs" />
