@@ -53,7 +53,7 @@
             <div class="mt-4 opacity">
                 <label id="birth_label">生日</label>
                 @*<input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" name="BIRTHDATE" id="BIRTHDATE" required>*@
-                @Html.TextBoxFor(m => m.Birthday, new { @class = "form-control input-light", placeholder = "輸入生日 ex.19950101" })
+                @Html.TextBoxFor(m => m.Birthday, new { @class = "form-control input-light", placeholder = "輸入生日 ex.19950101", @Value = ViewBag.BIRTH })
             </div>
             <div class="text-left">
                 <p style="color:red;">@Html.ValidationMessage("Birthday")</p>
@@ -61,7 +61,7 @@
             <div class="mt-4 opacity">
                 <label id="ID_label">身分證字號</label>
                 @*<input type="text" class="form-control input-light" placeholder="輸入身分證字號" name="ID" id="ID" required>*@
-                @Html.TextBoxFor(m => m.CTBCIDNO, new { @class = "form-control input-light", placeholder = "輸入身分證字號" })
+                @Html.TextBoxFor(m => m.CTBCIDNO, new { @class = "form-control input-light", placeholder = "輸入身分證字號" ,@Value = ViewBag.ID })
             </div>
             <div class="text-left">
                 <p style="color:red;">@Html.ValidationMessage("CTBCIDNO")</p>
