@@ -362,7 +362,7 @@ namespace HotaiPayWebView.Controllers
                     if (L_Output.Count > 0)
                     {
                         //return View("CreditCardChoose", L_Output);
-                        return RedirectToAction("CreditCardChoose", "HotaiPayCtbc",new { form = L_Output });
+                        return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");//,new { form = L_Output }
                     }
                 }
             }
