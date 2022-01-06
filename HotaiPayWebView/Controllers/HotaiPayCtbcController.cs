@@ -143,6 +143,11 @@ namespace HotaiPayWebView.Controllers
 
         public ActionResult InsPersonInfo()
         {
+            ViewBag.ID = Session["id"];
+            
+            List<GetBirthDate> lstdata = new HotaiPayCtbcRepository(connetStr).GetBirthDay(Session["id"].ToString());
+            ViewBag.BIRTH = lstdata[0].BD;
+
             return View();
         }
 

@@ -32,38 +32,60 @@ namespace WebAPI.Controllers
     public class CTBCInquiryController : ApiController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private readonly string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
-        private CommonFunc baseVerify { get; set; }
+        private CommonFunc BaseVerify { get; set; }
 
         [HttpPost]
-        public Dictionary<string, object> DoCTBCInquiry()
+        public Dictionary<string, object> DoCTBCInquiry(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
             var objOutput = new Dictionary<string, object>();    //輸出
-            bool flag = true;
+            string Access_Token = "";
+            string Access_Token_string = httpContext.Request.Headers["Authorization"] ?? ""; //Bearer 
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "CTBCInquiryController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
+            string Contentjson = "";
+            bool isGuest = true;
+
             NullOutput apiOutput = new NullOutput();
             Token token = null;
-            baseVerify = new CommonFunc();
+            BaseVerify = new CommonFunc();
+            IAPI_CTBCInquiry apiInput = null;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<WebAPIInput_InquiryByLidm> inquiryList = null;
             CTBCPosAPI posAPI = new CTBCPosAPI();
             #endregion
-            //寫入API Log
-            string ClientIP = baseVerify.GetClientIp(Request);
-            flag = baseVerify.InsAPLog("NA", ClientIP, funName, ref errCode, ref LogID);
+            #region 防呆
+            bool flag = BaseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+            if (flag)
+            {
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_CTBCInquiry>(Contentjson);
+                string ClientIP = BaseVerify.GetClientIp(Request);
+                flag = BaseVerify.InsAPLog("NA", ClientIP, funName, ref errCode, ref LogID);
+            }
+            if (flag)
+            {
 
+                apiInput.QueryBgn = apiInput.QueryBgn == "" ? "20220101" : apiInput.QueryBgn;
+                apiInput.QueryEnd = apiInput.QueryEnd == "" ? DateTime.Now.ToString("yyyyMMdd") : apiInput.QueryEnd;
+
+                if (!DateTime.TryParseExact(apiInput.QueryBgn, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime SD) || !DateTime.TryParseExact(apiInput.QueryEnd, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime ED) || DateTime.Compare(ED, SD) < 0)
+                {
+                    flag = false;
+                    errCode = "ERR907";
+                }
+            }
+            #endregion
             #region TB
             if (flag)
             {
-                inquiryList = GetCTBCQueryList(funName, ref flag, ref lstError, ref errCode);
+                inquiryList = GetCTBCQueryList(apiInput, funName, ref flag, ref lstError, ref errCode);
             }
 
             if (flag)
@@ -74,7 +96,7 @@ namespace WebAPI.Controllers
                     {
                         WebAPIInput_InquiryByLidm quiryInput = new WebAPIInput_InquiryByLidm()
                         {
-                            OrderID= inquiry.OrderID
+                            OrderID = inquiry.OrderID
                         };
 
                         WebAPIOutput_InquiryByLidm quiryOutput = new WebAPIOutput_InquiryByLidm();
@@ -89,7 +111,7 @@ namespace WebAPI.Controllers
                                 BatchId = quiryOutput.BatchId,
                                 BatchSeq = quiryOutput.BatchSeq,
                                 Xid = quiryOutput.XID,
-                                CurrentState=quiryOutput.CurrentState
+                                CurrentState = quiryOutput.CurrentState
                             };
 
                             flag = UpdateCTBCQueryStatus(spInput, ref lstError, ref errCode);
@@ -98,7 +120,7 @@ namespace WebAPI.Controllers
                     catch (Exception ex)
                     {
                         logger.Error("CTBCQueryListloop Error:" + ex.Message);
-                    }             
+                    }
                 }
 
             }
@@ -106,23 +128,25 @@ namespace WebAPI.Controllers
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {
-                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                BaseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+            BaseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;
             #endregion
         }
 
         //取得查詢訂單清單
-        private List<WebAPIInput_InquiryByLidm> GetCTBCQueryList(string funName, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
+        private List<WebAPIInput_InquiryByLidm> GetCTBCQueryList(IAPI_CTBCInquiry input, string funName, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             var capList = new List<WebAPIInput_InquiryByLidm>();
 
-            SP_Input_CTBCCapBase spInput = new SP_Input_CTBCCapBase()
+            SP_Input_GetCTBCInquiryList spInput = new SP_Input_GetCTBCInquiryList()
             {
-                PRGName = funName
+                PRGName = funName,
+                QueryBgn = input.QueryBgn,
+                QueryEnd = input.QueryEnd
             };
 
             string SPName = "usp_CTBCInquiry_Q01";
@@ -131,7 +155,7 @@ namespace WebAPI.Controllers
 
             DataSet ds = new DataSet();
             flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref capList, ref ds, ref lstError);
-            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+            BaseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
             //判斷訂單狀態
             if (flag)
             {
@@ -151,7 +175,7 @@ namespace WebAPI.Controllers
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SP_Input_CTBCInquiry, SPOutput_Base> SQLPayHelp = new SQLHelper<SP_Input_CTBCInquiry, SPOutput_Base>(connetStr);
             var flag = SQLPayHelp.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
-            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            BaseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
             return flag;
         }
