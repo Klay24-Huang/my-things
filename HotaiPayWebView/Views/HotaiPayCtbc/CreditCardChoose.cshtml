@@ -136,7 +136,7 @@
             }
         }
         if (flag) {
-            frmCreditCardChoose.submit();
+            document.getElementById("frmCreditCardChoose").submit();
         }
         else {
             swal("Wait!", "你沒有選擇卡片唷!", "error", { button: "我知道了" });
@@ -146,7 +146,7 @@
     //點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
     function goAddNewCard() {
         /*document.location.href = "/HotaiPayCtbc/BindNewCard/"*/
-        var URL =  "@ViewBag.reURL"+"HotaiPayCtbc/BindNewCard/";
+        var URL = "@ViewBag.reURL" + "/HotaiPayCtbc/BindNewCard/"; /*HotaiPayCtbc前面沒加/會葛屁*/
         window.location.href = URL;
     }
 </script>

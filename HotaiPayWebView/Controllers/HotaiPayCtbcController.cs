@@ -62,6 +62,7 @@ namespace HotaiPayWebView.Controllers
         //[HttpGet] //沒寫也會判定成get?!
         public ActionResult CreditCardChoose()//string irent_access_token，參數來源可以抓URL的QUERYSTRING和VIEW的
         {
+            logger.Error($"哈哈哈哈哈");
             //不抓QUERYSTRING改抓Session
             string irent_access_token = "";
             HotaipayService HPServices = new HotaipayService();
@@ -268,6 +269,15 @@ namespace HotaiPayWebView.Controllers
             long LogID = 65471;
             var decryptDic = new Dictionary<string, string>();
 
+            //20220107唐加，反正url會帶p進來，就再解析一次，看看能否解決session機制在webview上的問題
+            //若從login轉此頁不會帶p，但app上的按鈕直接進此頁會帶p
+            if (Request.QueryString["p"] != null)
+            {
+                decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+                Session["p"] = Request.QueryString["p"].Trim();
+            }
+            
+
             ////若網址列有irent_access_token
             //if (TempData["irent_access_token"]!=null)
             //{
@@ -350,7 +360,10 @@ namespace HotaiPayWebView.Controllers
                 {
                     List<HotaiCardInfo> L_Output = output.CreditCards;
                     if (L_Output.Count > 0)
-                        return View("CreditCardChoose", L_Output);
+                    {
+                        //return View("CreditCardChoose", L_Output);
+                        return RedirectToAction("CreditCardChoose", "HotaiPayCtbc");//,new { form = L_Output }
+                    }
                 }
             }
             else
