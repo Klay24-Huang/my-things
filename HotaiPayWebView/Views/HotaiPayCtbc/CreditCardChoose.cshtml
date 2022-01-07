@@ -123,9 +123,10 @@
 </body>
 </html>
 
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
     function TangCheckRadio() {
-        console.log('sdd')
+        //console.log('sdd')
         var radio = document.getElementsByName('CreditCardList');
         var flag = false;
         for (var i = 0; i < radio.length; i++) {
@@ -138,7 +139,7 @@
             document.getElementById("frmCreditCardChoose").submit();
         }
         else {
-            alert('沒選卡片');
+            swal("Wait!", "你沒有選擇卡片唷!", "error", { button: "我知道了" });
         }
     }
 

@@ -40,6 +40,9 @@ namespace HotaiPayWebView.Controllers
         public ActionResult Login()
         {
             Dictionary<string, string> decryptDic = new Dictionary<string, string>();
+
+            logger.Debug($"p={Request.QueryString["p"]}");
+
             if (!Request.QueryString["p"].IsNullOrWhiteSpace())
             {
                 logger.Error($"接到p參數: p={Request.QueryString["p"]}");
@@ -60,6 +63,13 @@ namespace HotaiPayWebView.Controllers
                 ViewBag.phone = decryptDic["phone"].Trim();
                 Session["phone"] = decryptDic["phone"].Trim();
             }
+
+            if (!string.IsNullOrEmpty(decryptDic["name"]))
+                Session["name"] = decryptDic["name"].Trim();
+            if (!string.IsNullOrEmpty(decryptDic["birth"]))
+                Session["birth"] = decryptDic["birth"].Trim();
+            if (!string.IsNullOrEmpty(decryptDic["email"]))
+                Session["email"] = decryptDic["email"].Trim();
 
             if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
             {
@@ -169,7 +179,7 @@ namespace HotaiPayWebView.Controllers
                                 return RedirectToRoute(new
                                 {
                                     controller = "HotaiPay",
-                                    action = "MembershipTerms1",
+                                    action = "MembershipTerms2",
                                     intoType = "UpdateVer"
                                 });
                             }
@@ -247,7 +257,7 @@ namespace HotaiPayWebView.Controllers
         #endregion
 
         #region 更新會員條款
-        public ActionResult MembershipTerms1(string intoType)
+        public ActionResult MembershipTerms2(string intoType)
         {
             if (intoType == "UpdateVer")
             {
@@ -269,7 +279,7 @@ namespace HotaiPayWebView.Controllers
                     {
                         Session["Benefitsterms"] = checkVer.memberBenefits;
                         Session["Policyterms"] = checkVer.privacyPolicy;
-                        @ViewBag.Privacy = Session["Policyterms"].ToString();
+                        ViewBag.Benefits = Session["Benefitsterms"].ToString();
                         return View();
                     }
                     else
@@ -349,9 +359,9 @@ namespace HotaiPayWebView.Controllers
             }
         }
 
-        public ActionResult MembershipTerms2()
+        public ActionResult MembershipTerms1()
         {
-            ViewBag.Benefits = Session["Benefitsterms"].ToString();
+            ViewBag.Privacy = Session["Policyterms"].ToString();
             return View();
         }
 
@@ -370,7 +380,8 @@ namespace HotaiPayWebView.Controllers
                 {
                     ViewBag.CustID = getMemberProflie.id;
                     ViewBag.Name = getMemberProflie.name;
-                    ViewBag.Birthday = getMemberProflie.birthday;
+
+                    ViewBag.Birthday = getMemberProflie.birthday.ToString("yyyyMMdd");
                     ViewBag.Email = getMemberProflie.email;
 
                     if (string.IsNullOrEmpty(getMemberProflie.sex))
@@ -398,29 +409,37 @@ namespace HotaiPayWebView.Controllers
             bool flag = true;
             string errCode = "";
 
+            ViewBag.CustID = signUpProfile.CustID;
+            ViewBag.Name = signUpProfile.Name;
+            ViewBag.Birthday = signUpProfile.Birth;
+            ViewBag.Email = signUpProfile.Email;
+
+            if (signUpProfile.Sex == "male")
+            {
+                ViewBag.MaleCheck = true;
+                ViewBag.FemaleCheck = false;
+            }
+            else if (signUpProfile.Sex == "female")
+            {
+                ViewBag.MaleCheck = false;
+                ViewBag.FemaleCheck = true;
+            }
+            else
+            {
+                ViewBag.MaleCheck = false;
+                ViewBag.FemaleCheck = false;
+            }
+
             if (ModelState.IsValid)
             {
-                ViewBag.CustID = signUpProfile.CustID.Trim();
-                ViewBag.Name = signUpProfile.Name.Trim();
-                ViewBag.Birthday = signUpProfile.Birth.Trim();
-                ViewBag.Email = signUpProfile.Email.Trim();
-
-                if (signUpProfile.Sex.Trim() == "male")
-                {
-                    ViewBag.MaleCheck = true;
-                    ViewBag.FemaleCheck = false;
-                }
-                else
-                {
-                    ViewBag.MaleCheck = false;
-                    ViewBag.FemaleCheck = true;
-                }
+                
 
                 if (!CheckROCID(signUpProfile.CustID.Trim()))
                 {
                     ViewBag.CustIDAlert = "身分證格式錯誤";
-                    return View("RegisterStep3");
+                    return View("Supplememtary");
                 }
+
                 else
                 {
                     WebAPIInput_UpdateMemberProfile memberProfileInput = new WebAPIInput_UpdateMemberProfile
@@ -460,7 +479,7 @@ namespace HotaiPayWebView.Controllers
                                     return RedirectToRoute(new
                                     {
                                         controller = "HotaiPay",
-                                        action = "MembershipTerms1",
+                                        action = "MembershipTerms2",
                                         intoType = "UpdateVer"
                                     });
                                 }
@@ -695,33 +714,42 @@ namespace HotaiPayWebView.Controllers
         #region 註冊驗證步驟三:會員資料填寫
         public ActionResult RegisterStep3()
         {
+            ViewBag.CustID = Session["id"];
+            ViewBag.Name = Session["name"];
+            ViewBag.Birthday = Session["birth"];
+            ViewBag.Email = Session["email"];
             return View();
         }
 
         [HttpPost]
         public ActionResult SetSignUpProfile(SignUpProfile signUpProfile)
         {
+            ViewBag.CustID = signUpProfile.CustID;
+            ViewBag.Name = signUpProfile.Name;
+            ViewBag.Birthday = signUpProfile.Birth;
+            ViewBag.Email = signUpProfile.Email;
+
+            if (signUpProfile.Sex == "male")
+            {
+                ViewBag.MaleCheck = true;
+                ViewBag.FemaleCheck = false;
+            }
+            else if (signUpProfile.Sex == "female")
+            {
+                ViewBag.MaleCheck = false;
+                ViewBag.FemaleCheck = true;
+            }
+            else
+            {
+                ViewBag.MaleCheck = false;
+                ViewBag.FemaleCheck = false;
+            }
+
             if (ModelState.IsValid)
             {
                 bool flag = false;
                 string errCode = "";
-                ViewBag.CustID = signUpProfile.CustID.Trim();
-                ViewBag.Name = signUpProfile.Name.Trim();
-                ViewBag.Birthday = signUpProfile.Birth.Trim();
-                ViewBag.Email = signUpProfile.Email.Trim();
-
-                if (signUpProfile.Sex.Trim() == "male")
-                {
-                    ViewBag.MaleCheck = true;
-                    ViewBag.FemaleCheck = false;
-                }
-                else
-                {
-                    ViewBag.MaleCheck = false;
-                    ViewBag.FemaleCheck = true;
-                }
-
-
+                
                 if (!CheckROCID(signUpProfile.CustID.Trim()))
                 {
                     ViewBag.CustIDAlert = "身分證格式錯誤";
