@@ -192,7 +192,8 @@ namespace HotaiPayWebView.Controllers
                                 {
                                     logger.Info($"取得OneID成功: id={Session["id"]},OneID={getOneID.memberSeq}");
 
-                                    Session["oneID"] = "";//getOneID.memberSeq;//唐寫死，等和泰開通安康防火牆再弄
+                                    //Session["oneID"] = "";//getOneID.memberSeq;//唐寫死，等和泰開通安康防火牆再弄
+                                    Session["oneID"] = getOneID.memberSeq;
 
                                     errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, apioutput.access_token, apioutput.refresh_token);
 

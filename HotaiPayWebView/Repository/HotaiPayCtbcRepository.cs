@@ -40,5 +40,29 @@ namespace HotaiPayWebView.Repository
             lstMember = GetObjList<CreditCardChoose>(ref flag, ref lstError, SQL, para, term);
             return lstMember;
         }
+
+        public List<GetBirthDate> GetBirthDay(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<GetBirthDate> lstMember = null;
+            SqlParameter[] para = new SqlParameter[1];
+            int nowCount = 0;
+            string term = "";
+            string SQL = " select convert(char(8),MEMBIRTH,112) as BD from TB_MemberData ";
+
+            term += " MEMIDNO=@IDNO";
+            para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+            para[nowCount].Value = IDNO;
+            para[nowCount].Direction = ParameterDirection.Input;
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term;
+            }
+
+            lstMember = GetObjList<GetBirthDate>(ref flag, ref lstError, SQL, para, term);
+            return lstMember;
+        }
     }
 }
