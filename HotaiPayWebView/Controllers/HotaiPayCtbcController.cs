@@ -25,8 +25,8 @@ namespace HotaiPayWebView.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         private string redirectURL = ConfigurationManager.AppSettings["redirectURL"];
-        private string iRentCarURL = ConfigurationManager.AppSettings["iRentCarURL"];
-        private string localURL = ConfigurationManager.AppSettings["localURL"];
+        //private string iRentCarURL = ConfigurationManager.AppSettings["iRentCarURL"];
+        //private string localURL = ConfigurationManager.AppSettings["localURL"];
 
         //private static CommonRepository commonRepository = new CommonRepository(ConfigurationManager.ConnectionStrings["IRent"].ConnectionString);
         //private static string MEMIDNO = "";
@@ -62,7 +62,7 @@ namespace HotaiPayWebView.Controllers
         //[HttpGet] //沒寫也會判定成get?!
         public ActionResult CreditCardChoose()//string irent_access_token，參數來源可以抓URL的QUERYSTRING和VIEW的
         {
-            logger.Error($"哈哈哈哈哈");
+            //logger.Error($"哈哈哈哈哈");
             //不抓QUERYSTRING改抓Session
             string irent_access_token = "";
             HotaipayService HPServices = new HotaipayService();
@@ -117,10 +117,8 @@ namespace HotaiPayWebView.Controllers
             var input = new IFN_HotaiAddCard()
             {
                 IDNO = Session["id"].ToString(),
-                //RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-                RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-
-                //RedirectURL = "https://www.irentcar.com.tw",
+                RedirectURL = ConfigurationManager.AppSettings["redirectURL"] + "HotaiPayCtbc/BindResult",
+                //RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", 
                 insUser = "TangWeiChi",
                 LogID = 0,
                 PRGName = "AddCard"
@@ -162,26 +160,20 @@ namespace HotaiPayWebView.Controllers
                 OFN_HotaiFastAddCard output = new OFN_HotaiFastAddCard();
 
                 //OFN_HotaiFastAddCard vm = new OFN_HotaiFastAddCard();
-
-                //IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard();
-                //input.Birthday = BIRTHDATE;
                 IFN_HotaiFastAddCard input = new IFN_HotaiFastAddCard()
                 {
-                    Birthday = inn.Birthday,//"19910804"
-                    IDNO = Session["id"].ToString(),//inn.CTBCIDNO,//"A121563290"
+                    Birthday = inn.Birthday,
+                    IDNO = Session["id"].ToString(),
                     CTBCIDNO = inn.CTBCIDNO,//"A121563290"
-                    //RedirectURL = ConfigurationManager.AppSettings["redirectURL"]+ "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-                    RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", //"https://www.irentcar.com.tw/irweb/HotaiPayCtbc/BindResult",
-                    insUser = "TangWeiChi",
+                    RedirectURL = ConfigurationManager.AppSettings["redirectURL"] + "HotaiPayCtbc/BindResult",
+                    //RedirectURL = Session["redirectURL"].ToString() + "HotaiPayCtbc/BindResult", 
+                    insUser = "HIMS",
                     LogID = 0,
                     PRGName = "InsPersonInfo"
                 };
                 string errCode = "";
                 //logger.Info($"tanginput : {JsonConvert.SerializeObject(input)}");
                 flag = addcard.DoFastAddCard(input, ref output, ref errCode);
-                //logger.Info($"tangerror : {errCode}");
-                //logger.Info($"tangerror2 : {JsonConvert.SerializeObject(output)}");
-                //logger.Info($"tangerror3 : {flag}");
                 if (flag)
                 {
                     //vm = output;               
@@ -239,7 +231,7 @@ namespace HotaiPayWebView.Controllers
         {
             //string a = irent_access_token;
 
-            @ViewBag.reURL = Session["redirectURL"].ToString();
+            @ViewBag.reURL = ConfigurationManager.AppSettings["redirectURL"];//Session["redirectURL"].ToString();
 
 
             return View();
@@ -257,8 +249,8 @@ namespace HotaiPayWebView.Controllers
         #region 無信用卡列表頁面 
         public ActionResult NoCreditCard()
         {
-            logger.Error($"唐唐唐 ={Request.QueryString["p"]}");
-            logger.Error($"琦琦琦 ={Session["p"]}");
+            logger.Error($"NoCreditCard帶入的網址參數 ={Request.QueryString["p"]}");
+            logger.Error($"NoCreditCard抓到的session ={Session["p"]}");
 
             string irent_access_token = "";
             HotaipayService HPServices = new HotaipayService();
@@ -271,7 +263,7 @@ namespace HotaiPayWebView.Controllers
 
             //20220107唐加，反正url會帶p進來，就再解析一次，看看能否解決session機制在webview上的問題
             //若從login轉此頁不會帶p，但app上的按鈕直接進此頁會帶p
-            if (Request.QueryString["p"] != null)
+            if (Request.QueryString["p"] != null && Session["p"]==null)
             {
                 decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
                 Session["p"] = Request.QueryString["p"].Trim();
@@ -335,15 +327,15 @@ namespace HotaiPayWebView.Controllers
             {
                 redirectURL = this.redirectURL;
             }
-            else if (nowDomain.IndexOf("www.irentcar.com.tw") != -1)
-            {
-                redirectURL = this.iRentCarURL;
-            }
-            else if (nowDomain.IndexOf("localhost:44330/") != -1)
-            {
-                redirectURL = this.localURL;
-            }
-            Session["redirectURL"] = redirectURL;
+            //else if (nowDomain.IndexOf("www.irentcar.com.tw") != -1)
+            //{
+            //    redirectURL = this.iRentCarURL;
+            //}
+            //else if (nowDomain.IndexOf("localhost:44330/") != -1)
+            //{
+            //    redirectURL = this.localURL;
+            //}
+            //Session["redirectURL"] = redirectURL;
             @ViewBag.reURL = redirectURL;
 
 
