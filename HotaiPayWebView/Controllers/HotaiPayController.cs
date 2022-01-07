@@ -151,7 +151,7 @@ namespace HotaiPayWebView.Controllers
                     Session["hotai_access_token"] = apioutput.access_token;
                     Session["refresh_token"] = apioutput.refresh_token;
                     if (apioutput.memberState == "1" || apioutput.memberState == "2")
-                        return View("Supplememtary");
+                        return RedirectToRoute(new { controller = "HotaiPay", action = "Supplememtary" });
                     else
                     {
                         WebAPIOutput_BenefitsAndPrivacyVersion checkVer = new WebAPIOutput_BenefitsAndPrivacyVersion();
@@ -370,6 +370,7 @@ namespace HotaiPayWebView.Controllers
         #region 補填會員資料頁面
         public ActionResult Supplememtary()
         {
+            
             string errCode = "";
 
             WebAPIOutput_GetMemberProfile getMemberProflie = new WebAPIOutput_GetMemberProfile();
@@ -401,6 +402,12 @@ namespace HotaiPayWebView.Controllers
                     }
                 }
             }
+
+            ViewBag.CustID = Session["id"];
+            ViewBag.Name = Session["name"];
+            ViewBag.Birthday = Session["birth"];
+            ViewBag.Email = Session["email"];
+
             return View();
         }
 

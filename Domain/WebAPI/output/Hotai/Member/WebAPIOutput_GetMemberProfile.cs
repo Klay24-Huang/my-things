@@ -11,6 +11,10 @@ namespace Domain.WebAPI.output.Hotai.Member
     /// </summary>
     public class WebAPIOutput_GetMemberProfile
     {
+        public string memberSeq { get; set; }
+        public int num { get; set; }
+        public string account { get; set; }
+        public bool isOpen { get; set; }
         /// <summary>
         /// 姓名
         /// </summary>
@@ -50,5 +54,17 @@ namespace Domain.WebAPI.output.Hotai.Member
         /// 地址
         /// </summary>
         public string address { get; set; }
+
+        public string registerPlatform { get; set; }
+        public string openAccountTime { get; set; }
+        public DateTime createTime { get; set; }
+        public DateTime updateTime { get; set; }
+        public string memberVersion { get; set; }
+        public string privacyVersion { get; set; }
+        public string memberAgreeTime { get; set; }
+        public string privacyAgreeTime { get; set; }
+        public string state { get; set; }
+        public bool isEnable { get; set; }
+        public bool isCheckEmail { get; set; }
     }
 }
