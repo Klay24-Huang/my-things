@@ -784,6 +784,7 @@ namespace HotaiPayWebView.Controllers
         [HttpPost]
         public ActionResult BindCardFailed(string mode)
         {
+            logger.Info($"tanginput_BindCardFailed : {Session["p"]}");
             //return RedirectToAction("/Login", new { p = Session["p"]} );
             //return RedirectToAction($"/Login?p={Session["p"]}");
             return RedirectToAction("Login", "HotaiPay", new { p = Session["p"] });
