@@ -30,24 +30,24 @@
     </div>
 
     <label>姓名</label>
-    <input type="text" class="form-control input-light" placeholder="吳志賢" name="name" value="@ViewBag.Name" required>
+    <input type="text" class="form-control input-light" placeholder="吳志賢" name="name" value="@ViewBag.Name" required readonly="readonly">
     <p style="color:red;">@ViewBag.NameAlert</p>
     <p style="color:red;">@Html.ValidationMessage("Name")</p>
     <div class="credit-card-box mt-4">
-        <div class="gender-choose mr-5"><input class="mr-1" type="radio" name="male" checked="@ViewBag.MaleCheck">先生</div>
-        <div class="gender-choose"><input class="mr-1" type="radio" name="female" checked="@ViewBag.FemaleCheck">女士</div>
+        <div class="gender-choose mr-5"><input class="mr-1" type="radio" id="sex" name="Sex" value="male" checked="@ViewBag.MaleCheck">先生</div>
+        <div class="gender-choose"><input class="mr-1" type="radio" id="sex" name="Sex" value="female" checked="@ViewBag.FemaleCheck">女士</div>
     </div>
-
+    <p style="color:red;">@Html.ValidationMessage("Sex")</p>
     <label class="mt-4">身分證字號</label>
-    <input type="text" class="form-control input-light" placeholder="A123456789" name="custID" value="@ViewBag.CustID" required>
+    <input type="text" class="form-control input-light" placeholder="A123456789" name="CustID" value="@ViewBag.CustID" required readonly="readonly">
     <p style="color:red;">@ViewBag.CustIDAlert</p>
     <p style="color:red;">@Html.ValidationMessage("CustID")</p>
     <label class="mt-4">生日</label>
-    <input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" name="birthday" value="@ViewBag.Birthday" required>
+    <input type="text" class="form-control input-light" placeholder="輸入生日 ex.19950101" name="Birth" value="@ViewBag.Birthday" required readonly="readonly">
     <p style="color:red;">@ViewBag.BirthAlert</p>
     <p style="color:red;">@Html.ValidationMessage("Birth")</p>
     <label class="mt-4">Email</label>
-    <input type="text" class="form-control input-light" placeholder="orange@goonsdesign.com" name="email" value="@ViewBag.Email" required>
+    <input type="text" class="form-control input-light" placeholder="orange@goonsdesign.com" name="Email" value="@ViewBag.Email" required>
     <p style="color:red;">@ViewBag.EmailAlert</p>
     <p style="color:red;">@Html.ValidationMessage("Email")</p>
     <button type="submit" class="btn btn-blue my-4 sweet-1 d-block d-sm-none" id="redbtn" onclick="_gaq.push">完成填寫</button>
