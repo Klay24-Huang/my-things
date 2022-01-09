@@ -170,7 +170,7 @@ namespace WebAPI.Controllers
                     }
                     if (flag)
                     {
-                        if (ProjType == 3)
+                        if (ProjType == 3 || ProjType == 4)
                         {
                             //路邊調整取車時間APP僅有十進位顯示故去除後面尾數，以免影響預授權判斷
                             int diff = SDate.Minute % 10;

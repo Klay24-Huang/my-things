@@ -23,7 +23,8 @@ namespace WebAPI.Controllers
     /// </summary>
     public class MA_GetCleanCarByLatLngController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //20211130 ADD BY ADAM REASON.效能因素改為由鏡像主機取得
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
         [HttpPost]
         public Dictionary<string, object> DoMA_GetCleanCarByLatLng(Dictionary<string, object> value)
         {

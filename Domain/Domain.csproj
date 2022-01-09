@@ -241,6 +241,8 @@
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyHistory.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_InsMonthlyPayData.cs" />
     <Compile Include="SP\Input\Notification\SPInput_InsPersonNotification.cs" />
+    <Compile Include="SP\Input\OrderAuth\SPInput_OrderNYList_I01.cs" />
+    <Compile Include="SP\Input\OrderAuth\SPInput_OrderNYList_U01.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderAuthReservation.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderAuth.cs" />
     <Compile Include="SP\Input\Rent\SPInput_UpdateOrderAuthListV2.cs" />
@@ -579,6 +581,7 @@
     <Compile Include="TB\BackEnd\BE_ReturnControl.cs" />
     <Compile Include="TB\BackEnd\BE_InsuranceData.cs" />
     <Compile Include="TB\BackEnd\BE_SameMobileData.cs" />
+    <Compile Include="TB\BackEnd\BE_SavePassenger.cs" />
     <Compile Include="TB\BackEnd\BE_SCITEM.cs" />
     <Compile Include="TB\BackEnd\BE_SCMITEM.cs.cs" />
     <Compile Include="TB\BackEnd\BE_ScoreBlock.cs" />
@@ -673,6 +676,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR125Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR130Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR136Save.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR138Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR172Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
@@ -794,6 +798,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR125Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR130Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR136Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR138Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR172Query.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR260Send.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR270Query.cs" />

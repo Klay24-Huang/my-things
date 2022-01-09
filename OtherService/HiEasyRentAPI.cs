@@ -50,6 +50,7 @@ namespace OtherService
         protected string ETAG031SaveURL; //ETAG沖銷
         protected string TransIRentMemCMKURL; // 會員條款更新至官網 20210824 ADD BY YEH
         protected string connetStr;
+        protected string NPR138SaveURL;  //春節定金收款發票
 
         /// <summary>
         /// 建構式
@@ -93,6 +94,8 @@ namespace OtherService
             SetMonthlyRentDataV2URL = (ConfigurationManager.AppSettings.Get("SetMonthlyRentDataV2URL") == null) ? "" : ConfigurationManager.AppSettings.Get("SetMonthlyRentDataV2URL").ToString();
             // 會員條款更新至官網 20210824 ADD BY YEH
             TransIRentMemCMKURL = (ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL") == null) ? "" : ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL").ToString();
+
+            NPR138SaveURL = (ConfigurationManager.AppSettings.Get("NPR138SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR138SaveURL").ToString();
         }
 
         #region 產生簽章
@@ -2470,6 +2473,82 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
             }
+            return output;
+        }
+        #endregion
+
+        #region 春節定金 20211118 ADD BY ADAM
+        public bool NPR138Save(WebAPIInput_NPR138Save input, ref WebAPIOutput_NPR138Save output)
+        {
+            bool flag = false;
+
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
+            output = DoNPR138Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_NPR138Save> DoNPR138Save(WebAPIInput_NPR138Save input)
+        {
+            WebAPIOutput_NPR138Save output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR138SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR138Save>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR138Save()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR138Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR138SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
             return output;
         }
         #endregion

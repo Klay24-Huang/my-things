@@ -29,6 +29,8 @@ namespace OtherService
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         private string apikey = ConfigurationManager.AppSettings["TaishinAPIKey"].ToString();
+        //20211213 ADD BY ADAM REASON.強制把換卡改到舊的商代，此目的在解決台新預授權用的商代在綁卡設定上有問題做的處置
+        private string oldapikey = ConfigurationManager.AppSettings["oldTaishinAPIKey"].ToString();
         private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                     //台新base網址
         private string ECBaseURL = ConfigurationManager.AppSettings["TaishinECBaseURL"].ToString();
         private string GetCardPage = ConfigurationManager.AppSettings["GetCardPage"].ToString();                    //取得綁卡網址
@@ -61,7 +63,8 @@ namespace OtherService
         public bool DoBind(WebAPIInput_Base wsInput, ref string errCode, ref WebAPIOutput_Base output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            //string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);
             string checksum = GenerateSign(ori);
 
             WebAPIInput_Bind Input = new WebAPIInput_Bind()
@@ -445,7 +448,7 @@ namespace OtherService
         public bool DoDeleteCreditCardAuth(PartOfDeleteCreditCardAuth wsInput, ref string errCode, ref WebAPIOutput_DeleteCreditCardAuth output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);//解綁鎖定在舊商代
             string checksum = GenerateSign(ori);
 
             WebAPIInput_DeleteCreditCardAuth Input = new WebAPIInput_DeleteCreditCardAuth()
@@ -1189,6 +1192,28 @@ namespace OtherService
                     //  tmpOrder = Convert.ToInt64(tmp);
                     creditType = 3;
                 }
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("M_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 4;
+                }
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("MA_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 5;
+                }
+                //20211116 ADD BY ADAM REASON.春節定金
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("D_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("D_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 6;
+                }
                 SPInput_UpdTrade UpdInput = new SPInput_UpdTrade()
                 {
                     LogID = 0,
@@ -1263,10 +1288,10 @@ namespace OtherService
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
             request.Method = "POST";
             request.ContentType = "application/json";
-            request.KeepAlive = true;
-            //request.KeepAlive = false;
-            //SetHeaderValue(request.Headers, "Connection", "close");
-            //request.Timeout = 78000;
+            //request.KeepAlive = true;
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 40000;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
             //{

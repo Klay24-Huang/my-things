@@ -114,8 +114,8 @@ namespace WebAPI.Controllers
                     IDNO = IDNO,
                     LogID = LogID,
                     Token = Access_Token,
-                    //Descript = "",
-                    //Cancel_Status_in = null ,
+                    Descript = "",
+                    Cancel_Status_in = 0,
                     CheckToken =1
                 };
                 string SPName = "usp_BookingCancel_U01";

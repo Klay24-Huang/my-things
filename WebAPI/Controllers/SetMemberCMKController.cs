@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR900";
                 }
-                if (apiInput.SeqNo <= 0)
+                if (apiInput.SeqNo < 0)
                 {
                     flag = false;
                     errCode = "ERR900";

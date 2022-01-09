@@ -26,6 +26,8 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        //解綁鎖定在舊商代
+        private string oldTaishinAPPOS = ConfigurationManager.AppSettings["oldTaishinAPPOS"].ToString();
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string BindSuccessURL = ConfigurationManager.AppSettings["BindSuccessURL"].ToString();
         private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
@@ -115,7 +117,8 @@ namespace WebAPI.Controllers
                         PartOfDeleteCreditCardAuth WSDeleteInput = new PartOfDeleteCreditCardAuth()
                         {
                             ApiVer = ApiVerOther,
-                            ApposId = TaishinAPPOS,
+                            //ApposId = TaishinAPPOS,
+                            ApposId = oldTaishinAPPOS,  //解綁鎖定在舊商代
                             RequestParams = new DeleteCreditCardAuthRequestParamasData()
                             {
                                 MemberId = IDNO,

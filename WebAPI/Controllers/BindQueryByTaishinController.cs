@@ -25,6 +25,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
+        private string oldTaishinAPPOS = ConfigurationManager.AppSettings["oldTaishinAPPOS"].ToString();
         private string ApiVer = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         [HttpPost]
         public Dictionary<string, object> DoBindQueryByTaishin(Dictionary<string, object> value)

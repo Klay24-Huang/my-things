@@ -284,6 +284,7 @@
     <Compile Include="Controllers\BindQueryByTaishinController.cs" />
     <Compile Include="Controllers\BindQueryController.cs" />
     <Compile Include="Controllers\BuyNowToolController.cs" />
+    <Compile Include="Controllers\CreditAuthNYJobController.cs" />
     <Compile Include="Controllers\CloseAccountFtpDownloadController.cs" />
     <Compile Include="Controllers\CloseAccountFtpUploadController.cs" />
     <Compile Include="Controllers\CreditAuthReservationJobController.cs" />
@@ -873,6 +874,8 @@
     <None Include="Properties\PublishProfiles\iRentV2-AS-Api3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Api4 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Backend-Api - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-backend-api-exp - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-backend-api-exp - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-backend-api-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-backend-api-test-promrtheus - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AutoJob - Web Deploy.pubxml" />

@@ -693,7 +693,9 @@ namespace WebAPI.Controllers
                         {
                             //Cache.StringSet("Key1", KeyString, TimeSpan.FromSeconds(1));
                             int CreditAuthCheckCacheSeconds = int.Parse(ConfigurationManager.AppSettings["CreditAuthCheckCacheSeconds"].ToString());
-                            Cache.StringSet("Key1", KeyString, TimeSpan.FromSeconds(CreditAuthCheckCacheSeconds));        //20210824 ADD BY ADAM REASON.調整重複付款判斷從1秒改為5秒
+                            //Cache.StringSet("Key1", KeyString, TimeSpan.FromSeconds(CreditAuthCheckCacheSeconds));        //20210824 ADD BY ADAM REASON.調整重複付款判斷從1秒改為5秒
+                            //20211210 UPD BY JERRY 快取邏輯調整，快取名稱應該不同，不然快取會一直被複寫
+                            Cache.StringSet(KeyString, KeyString, TimeSpan.FromSeconds(CreditAuthCheckCacheSeconds));        //20210824 ADD BY ADAM REASON.調整重複付款判斷從1秒改為5秒
 
                             //流水號改由cntrno轉入
                             int NPR330Save_ID = apiInput.CNTRNO == null ? 0 : int.Parse(apiInput.CNTRNO);
