@@ -67,9 +67,9 @@ namespace HotaiPayWebView.Controllers
             if (decryptDic.ContainsKey("name"))
                 Session["name"] = decryptDic["name"].Trim();
             if (decryptDic.ContainsKey("birth"))
-                Session["name"] = decryptDic["birth"].Trim();
+                Session["birth"] = decryptDic["birth"].Trim();
             if (decryptDic.ContainsKey("email"))
-                Session["name"] = decryptDic["email"].Trim();
+                Session["email"] = decryptDic["email"].Trim();
             
             if (decryptDic.ContainsKey("irent_access_token"))
             {
