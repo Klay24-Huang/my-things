@@ -58,20 +58,20 @@ namespace HotaiPayWebView.Controllers
                 return View();
             }
 
-            if (!string.IsNullOrEmpty(decryptDic["phone"]))
+            if (decryptDic.ContainsKey("phone"))
             {
                 ViewBag.phone = decryptDic["phone"].Trim();
                 Session["phone"] = decryptDic["phone"].Trim();
             }
 
-            if (!string.IsNullOrEmpty(decryptDic["name"]))
+            if (decryptDic.ContainsKey("name"))
                 Session["name"] = decryptDic["name"].Trim();
-            if (!string.IsNullOrEmpty(decryptDic["birth"]))
-                Session["birth"] = decryptDic["birth"].Trim();
-            if (!string.IsNullOrEmpty(decryptDic["email"]))
-                Session["email"] = decryptDic["email"].Trim();
-
-            if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
+            if (decryptDic.ContainsKey("birth"))
+                Session["name"] = decryptDic["birth"].Trim();
+            if (decryptDic.ContainsKey("email"))
+                Session["name"] = decryptDic["email"].Trim();
+            
+            if (decryptDic.ContainsKey("irent_access_token"))
             {
                 string IDNO = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -151,7 +151,7 @@ namespace HotaiPayWebView.Controllers
                     Session["hotai_access_token"] = apioutput.access_token;
                     Session["refresh_token"] = apioutput.refresh_token;
                     if (apioutput.memberState == "1" || apioutput.memberState == "2")
-                        return View("Supplememtary");
+                        return RedirectToRoute(new { controller = "HotaiPay", action = "Supplememtary" });
                     else
                     {
                         WebAPIOutput_BenefitsAndPrivacyVersion checkVer = new WebAPIOutput_BenefitsAndPrivacyVersion();
@@ -370,6 +370,7 @@ namespace HotaiPayWebView.Controllers
         #region 補填會員資料頁面
         public ActionResult Supplememtary()
         {
+            
             string errCode = "";
 
             WebAPIOutput_GetMemberProfile getMemberProflie = new WebAPIOutput_GetMemberProfile();
@@ -401,6 +402,7 @@ namespace HotaiPayWebView.Controllers
                     }
                 }
             }
+
             return View();
         }
 
