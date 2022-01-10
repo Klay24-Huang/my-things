@@ -40,7 +40,7 @@
     </div>
 
     <label>姓名</label>
-    <input type="text" class="form-control input-light" placeholder="吳志賢" name="Name" value="@ViewBag.Name" required readonly="readonly">
+    <input type="text" class="form-control input-light" placeholder="吳志賢" id="name" name="Name" value="@ViewBag.Name" required readonly="readonly">
     <p style="color:red;">@Html.ValidationMessage("Name")</p>
     <div class="credit-card-box mt-4">
         <div class="gender-choose mr-5"><input class="mr-1" type="radio" id="sex" name="Sex" value="male" checked="@ViewBag.MaleCheck">先生</div>
@@ -48,14 +48,14 @@
     </div>
     <p style="color:red;">@Html.ValidationMessage("Sex")</p>
     <label class="mt-4">身分證字號</label>
-    <input type="text" class="form-control input-light" name="CustID" placeholder="A123456789" value="@ViewBag.CustID" required readonly="readonly">
+    <input type="text" class="form-control input-light" id="custid" name="CustID" placeholder="A123456789" value="@ViewBag.CustID" required readonly="readonly">
     <p style="color:red;">@Html.ValidationMessage("CustID")</p>
     <p style="color:red;">@ViewBag.CustIDAlert</p>
     <label class="mt-4">生日</label>
-    <input type="text" class="form-control input-light" name="Birth" placeholder="輸入生日 ex.19950101" value="@ViewBag.Birthday" required readonly="readonly">
+    <input type="text" class="form-control input-light" id="birth" name="Birth" placeholder="輸入生日 ex.19950101" value="@ViewBag.Birthday" required readonly="readonly">
     <p style="color:red;">@Html.ValidationMessage("Birth")</p>
     <label class="mt-4">Email</label>
-    <input type="text" class="form-control input-light" name="Email" placeholder="orange@goonsdesign.com" value="@ViewBag.Email" required>
+    <input type="text" class="form-control input-light" id="email" name="Email" placeholder="orange@goonsdesign.com" value="@ViewBag.Email" required>
     <p style="color:red;">@Html.ValidationMessage("Email")</p>
 
 
@@ -85,6 +85,28 @@
 </div>
     }
         <script>
+            window.onload = function () {
+                if ($("#name").attr("value") === undefined)
+                    $("#name").removeAttr("readonly");
+                else
+                    $("#name").attr("readonly", "readonly");
+
+                if ($("#custid").attr("value") === undefined)
+                    $("#custid").removeAttr("readonly");
+                else
+                    $("#custid").attr("readonly", "readonly");
+
+                if ($("#email").attr("value") === undefined)
+                    $("#email").removeAttr("readonly");
+                else
+                    $("#email").attr("readonly", "readonly");
+
+                if ($("#birth").attr("value") === undefined)
+                    $("#birth").removeAttr("readonly");
+                else
+                    $("#birth").attr("readonly", "readonly");
+            }
+
             function checkSubmit(ctl, event) {
                 event.preventDefault();
                 swal({

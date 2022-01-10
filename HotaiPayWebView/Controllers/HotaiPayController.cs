@@ -58,20 +58,20 @@ namespace HotaiPayWebView.Controllers
                 return View();
             }
 
-            if (!string.IsNullOrEmpty(decryptDic["phone"]))
+            if (decryptDic.ContainsKey("phone"))
             {
                 ViewBag.phone = decryptDic["phone"].Trim();
                 Session["phone"] = decryptDic["phone"].Trim();
             }
 
-            if (!string.IsNullOrEmpty(decryptDic["name"]))
+            if (decryptDic.ContainsKey("name"))
                 Session["name"] = decryptDic["name"].Trim();
-            if (!string.IsNullOrEmpty(decryptDic["birth"]))
-                Session["birth"] = decryptDic["birth"].Trim();
-            if (!string.IsNullOrEmpty(decryptDic["email"]))
-                Session["email"] = decryptDic["email"].Trim();
-
-            if (!string.IsNullOrEmpty(decryptDic["irent_access_token"]))
+            if (decryptDic.ContainsKey("birth"))
+                Session["name"] = decryptDic["birth"].Trim();
+            if (decryptDic.ContainsKey("email"))
+                Session["name"] = decryptDic["email"].Trim();
+            
+            if (decryptDic.ContainsKey("irent_access_token"))
             {
                 string IDNO = "";
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -402,11 +402,6 @@ namespace HotaiPayWebView.Controllers
                     }
                 }
             }
-
-            ViewBag.CustID = Session["id"];
-            ViewBag.Name = Session["name"];
-            ViewBag.Birthday = Session["birth"];
-            ViewBag.Email = Session["email"];
 
             return View();
         }
