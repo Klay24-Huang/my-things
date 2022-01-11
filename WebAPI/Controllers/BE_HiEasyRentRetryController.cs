@@ -126,6 +126,11 @@ namespace WebAPI.Controllers
                 {
                     retryMode = spOut.ReturnMode;
                 }
+                else
+                {
+                    //如果查不出來的情況再用INPUT的參數強制指定
+                    retryMode = apiInput.retryMode > 0 ? apiInput.retryMode : 0;
+                }
 
                 if (flag)
                 {

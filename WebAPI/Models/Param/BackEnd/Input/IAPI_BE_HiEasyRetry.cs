@@ -18,5 +18,9 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// <para>3:130</para>
         /// </summary>
         public int Type { set; get; }
+        /// <summary>
+        /// DEBUG用 強制指定
+        /// </summary>
+        public int retryMode { set; get; } = 0;
     }
 }
