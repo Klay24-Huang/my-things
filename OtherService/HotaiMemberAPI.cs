@@ -390,7 +390,12 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_GetMemberProfile>(result.Data.ToString());
+                var settings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                };
+                output = JsonConvert.DeserializeObject<WebAPIOutput_GetMemberProfile>(result.Data.ToString(), settings);
             }
 
             return flag;
