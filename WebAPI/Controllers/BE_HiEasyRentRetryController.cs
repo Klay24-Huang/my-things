@@ -130,6 +130,11 @@ namespace WebAPI.Controllers
                 {
                     //如果查不出來的情況再用INPUT的參數強制指定
                     retryMode = apiInput.retryMode > 0 ? apiInput.retryMode : 0;
+                    if (retryMode > 0)
+                    {
+                        flag = true;
+                        errCode = "000000";
+                    }
                 }
 
                 if (flag)
