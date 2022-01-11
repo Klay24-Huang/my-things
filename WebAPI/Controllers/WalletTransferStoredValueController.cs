@@ -390,8 +390,11 @@ namespace WebAPI.Controllers
                 trace.BaseMsg = ex.Message;
             }
 
-            trace.traceAdd("TraceFinal", new { errCode, errMsg });
+            string errMsg_D = "";
+            trace.traceAdd("TraceFinal", new { errCode, errMsg_D });
             carRepo.AddTraceLog(79, funName, trace, flag);
+            if (errCode != "ERRTSB" && errMsg != "Success" && errMsg_D != "")
+                errMsg = errMsg_D;
 
             #region 寫入錯誤Log
             if (false == flag && false == isWriteError)
