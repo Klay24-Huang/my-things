@@ -382,7 +382,11 @@ namespace HotaiPayWebView.Controllers
                     ViewBag.CustID = getMemberProflie.id;
                     ViewBag.Name = getMemberProflie.name;
 
-                    ViewBag.Birthday = getMemberProflie.birthday.ToString("yyyyMMdd");
+                    if(getMemberProflie.birthday.ToString("yyyyMMdd")== "00010101")
+                        ViewBag.Birthday = null;
+                    else
+                        ViewBag.Birthday = getMemberProflie.birthday.ToString("yyyyMMdd");
+
                     ViewBag.Email = getMemberProflie.email;
 
                     if (string.IsNullOrEmpty(getMemberProflie.sex))
@@ -525,26 +529,31 @@ namespace HotaiPayWebView.Controllers
                         {
                             if (isMissingProfile.missingId)
                             {
-                                ViewBag.CustID = "缺少身份證字號";
+                                ViewBag.CustIDAlert = "缺少身份證字號";
+                                ViewBag.CustID = null;
                             }
                             if (isMissingProfile.missingName)
                             {
-                                ViewBag.Name = "缺少姓名";
+                                ViewBag.NameAlert = "缺少姓名";
+                                ViewBag.Name = null;
                             }
                             if (isMissingProfile.missingBirthday)
                             {
-                                ViewBag.Birthday = "缺少生日";
+                                ViewBag.BirthAlert = "缺少生日";
+                                ViewBag.BirthDay = null;
+
                             }
                             if (isMissingProfile.missingEmail)
                             {
-                                ViewBag.Email = "缺少電子郵件";
+                                ViewBag.EmailAlert = "缺少電子郵件";
+                                ViewBag.Email = null;
                             }
                             if (isMissingProfile.missingSex)
                             {
                                 ViewBag.MaleCheck = false;
                                 ViewBag.FemaleCheck = false;
                             }
-                            return View();
+                            return View("Supplememtary");
                         }
                     }
                     else
