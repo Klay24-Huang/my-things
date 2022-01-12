@@ -410,15 +410,11 @@ namespace HotaiPayWebView.Controllers
             return View();
         }
 
-        public ActionResult UpdateProfile(SignUpProfile signUpProfile)
+        [HttpPost]
+        public ActionResult Supplememtary(SignUpProfile signUpProfile)
         {
             bool flag = true;
             string errCode = "";
-
-            ViewBag.CustID = signUpProfile.CustID;
-            ViewBag.Name = signUpProfile.Name;
-            ViewBag.Birthday = signUpProfile.Birth;
-            ViewBag.Email = signUpProfile.Email;
 
             if (signUpProfile.Sex == "male")
             {
