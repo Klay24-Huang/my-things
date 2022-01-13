@@ -528,22 +528,33 @@ namespace HotaiPayWebView.Controllers
                                 ViewBag.CustIDAlert = "缺少身份證字號";
                                 ViewBag.CustID = null;
                             }
+                            else
+                                ViewBag.CustID = memberProfileInput.id;
+
                             if (isMissingProfile.missingName)
                             {
                                 ViewBag.NameAlert = "缺少姓名";
                                 ViewBag.Name = null;
                             }
+                            else
+                                ViewBag.Name = memberProfileInput.name;
+
                             if (isMissingProfile.missingBirthday)
                             {
                                 ViewBag.BirthAlert = "缺少生日";
                                 ViewBag.BirthDay = null;
-
                             }
+                            else
+                                ViewBag.BirthDay = memberProfileInput.birthday;
+
                             if (isMissingProfile.missingEmail)
                             {
                                 ViewBag.EmailAlert = "缺少電子郵件";
                                 ViewBag.Email = null;
                             }
+                            else
+                                ViewBag.Email = memberProfileInput.email;
+
                             if (isMissingProfile.missingSex)
                             {
                                 ViewBag.MaleCheck = false;
@@ -559,7 +570,26 @@ namespace HotaiPayWebView.Controllers
                 }
             }
             else
-                return View("Supplememtary");
+            {
+                if (ModelState.IsValidField("Name"))
+                {
+                    ViewBag.Name = Session["name"];
+                }
+                if (ModelState.IsValidField("CustID"))
+                {
+                    ViewBag.CustID = Session["id"];
+                }
+                if (ModelState.IsValidField("Birth"))
+                {
+                    ViewBag.Birthday = Session["birth"];
+                }
+                if (ModelState.IsValidField("Email"))
+                {
+                    ViewBag.Email = Session["email"];
+                }
+                return View(signUpProfile);
+            }
+            
         }
         #endregion
 
