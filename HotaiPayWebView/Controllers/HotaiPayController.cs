@@ -23,6 +23,7 @@ using Domain.SP.Input.Hotai;
 using Microsoft.Ajax.Utilities;
 using HotaiPayWebView.Models;
 using Newtonsoft.Json;
+using Domain.SP.Output.Hotai;
 
 namespace HotaiPayWebView.Controllers
 {
@@ -910,7 +911,18 @@ namespace HotaiPayWebView.Controllers
             if (flag)
             {
                 SPInput_MemberUnBind sp_unBindinput = new SPInput_MemberUnBind() { IDNO = IDNO, PRGName = "Unbind" };
-                flag = HPServices.sp_MemberUnBind(sp_unBindinput, ref errCode);
+                SPOutput_MemberUnBind spOutput = new SPOutput_MemberUnBind();
+                flag = HPServices.sp_MemberUnBind(sp_unBindinput, ref spOutput, ref errCode);
+
+                if (spOutput != null)
+                {
+                    //20220112 和泰要求解綁打登出API 使RefreshToken失效
+                    WebAPIInput_SignOut signOut = new WebAPIInput_SignOut()
+                    {
+                        refresh_token = spOutput.RefreshToken
+                    };
+                    hotaiAPI.DoSignOut(spOutput.AccessToken, signOut, ref errCode);
+                }
             }
 
             if (flag)
