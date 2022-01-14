@@ -225,7 +225,6 @@ namespace WebAPI.Controllers
                         int DataLen = lstData.Count;
                         if (DataLen > 0)
                         {
-                            //int tmpBill = Convert.ToInt32(new BillCommon().CalSpread(SDate, EDate, lstData[0].Price, lstData[0].PRICE_H, lstHoliday));
                             int isMin = 1;
 
                             int tmpBill = GetPriceBill(lstData[0], IDNO, LogID, lstHoliday, SDate, EDate, 0) +
@@ -306,20 +305,20 @@ namespace WebAPI.Controllers
 
                 #region for春節專案使用
                 //for春節專案使用，將原專案每小時金額改為春節價格，並將春節專案移除
-                var Temp = lstTmpData.Where(x => x.ProjID == "R139").FirstOrDefault();
-                if (Temp != null)
-                {
-                    foreach (var tmp in lstTmpData)
-                    {
-                        if (tmp.ProjID != "R139")
-                        {
-                            tmp.WorkdayPerHour = Temp.WorkdayPerHour;
-                            tmp.HolidayPerHour = Temp.HolidayPerHour;
-                        }
-                    }
+                //var Temp = lstTmpData.Where(x => x.ProjID == "R139").FirstOrDefault();
+                //if (Temp != null)
+                //{
+                //    foreach (var tmp in lstTmpData)
+                //    {
+                //        if (tmp.ProjID != "R139")
+                //        {
+                //            tmp.WorkdayPerHour = Temp.WorkdayPerHour;
+                //            tmp.HolidayPerHour = Temp.HolidayPerHour;
+                //        }
+                //    }
 
-                    lstTmpData.Remove(Temp);
-                }
+                //    lstTmpData.Remove(Temp);
+                //}
                 #endregion
 
                 outputApi = new OAPI_GetAnyRentProject()
@@ -328,7 +327,9 @@ namespace WebAPI.Controllers
                 };
 
                 #region 產出月租&Project虛擬卡片
-                if (flag && Score >= 60)    // 20210911 UPD BY YEH REASON:積分>=60才可使用訂閱制
+                bool isSpring = new CarRentCommon().isSpring(SDate, EDate); //是否為春節時段
+
+                if (flag && Score >= 60 && !isSpring)    // 20210911 UPD BY YEH REASON:積分>=60才可使用訂閱制
                 {
                     if (outputApi.GetAnyRentProjectObj != null && outputApi.GetAnyRentProjectObj.Count() > 0)
                     {
@@ -365,9 +366,9 @@ namespace WebAPI.Controllers
                                     newItem.WDRateForCar = z.WorkDayRateForCar;
 
                                     //newItem.HDRateForCar = z.HoildayRateForCar;
-                                //newItem.HDRateForCar = x.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
-                                //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
-                                newItem.HDRateForCar = x.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                    //newItem.HDRateForCar = x.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
+                                    //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
+                                    newItem.HDRateForCar = x.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
 
                                     newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                     newItem.HDRateForMoto = z.HoildayRateForMoto;

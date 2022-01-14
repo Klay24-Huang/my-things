@@ -22,5 +22,9 @@
         /// 假日價格
         /// </summary>
         public double PRICE_H { get; set; }
+        /// <summary>
+        /// 特定活動 (0:否 1:是)
+        /// </summary>
+        public int Event { get; set; }
     }
 }
