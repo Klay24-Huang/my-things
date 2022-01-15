@@ -18,6 +18,8 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using NLog;
+using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -28,6 +30,7 @@ namespace WebAPI.Controllers
     {
 
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// 【後台】短租補傳
         /// </summary>
@@ -375,6 +378,15 @@ namespace WebAPI.Controllers
                                         }
                                         else
                                         {
+                                            //遇到ETAG > 租金，先寫一筆空的進去
+                                            input.tbPaymentDetail[z] = new PaymentDetail()
+                                            {
+                                                PAYAMT = "0",
+                                                PAYTYPE = "",
+                                                PAYMENTTYPE = "",
+                                                PAYMEMO = "",
+                                                PORDNO = ""
+                                            };
                                             int k = z;
                                             while(k >= 0)
                                             {
@@ -462,6 +474,8 @@ namespace WebAPI.Controllers
                                 };
                             }
                             #endregion
+
+                            logger.Info(JsonConvert.SerializeObject(input));
 
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);
