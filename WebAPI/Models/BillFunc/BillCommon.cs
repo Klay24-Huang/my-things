@@ -3974,58 +3974,36 @@ namespace WebAPI.Models.BillFunc
         /// <mark>2020-12-22 eason</mark>
         public Tuple<double, double, double> GetTimePart(DateTime sd, DateTime ed, int ProjType)
         {
-            string funNM = "GetTimePart : ";
             double days = 0;
             double hours = 0;
             double mins = 0;
             double CarDayBaseMinute = 60;   // 汽車基本分鐘數
             double MotoDayBaseMinute = 6;   // 機車基本分鐘數
-            double dayMaxMins = 600;        // 單日上限分鐘
-            var proTys = new List<int>() { 0, 3, 4 };
+            //var proTys = new List<int>() { 0, 3, 4 };
 
-            if (sd == null || ed == null || sd > ed)
-                throw new Exception(funNM + "sd,ed 格式錯誤");
+            //if (sd == null || ed == null || sd > ed)
+            //    throw new Exception(funNM + "sd,ed 格式錯誤");
 
-            if (!proTys.Any(x => x == ProjType))
-                throw new Exception(funNM + "ProjType 錯誤");
+            //if (!proTys.Any(x => x == ProjType))
+            //    throw new Exception(funNM + "ProjType 錯誤");
 
-            // 20211115 UPD BY YEH REASON:日期轉換只留下"年月日時分"，秒以後的都去掉
-            sd = Convert.ToDateTime(sd.ToString("yyyy-MM-dd HH:mm"));
-            ed = Convert.ToDateTime(ed.ToString("yyyy-MM-dd HH:mm"));
-
-            var vMins = ed.Subtract(sd).TotalMinutes;
-            var vDays = ed.Subtract(sd).TotalDays;
+            var vsd = Convert.ToDateTime(sd.ToString("yyyy-MM-dd HH:mm"));
+            var ved = Convert.ToDateTime(ed.ToString("yyyy-MM-dd HH:mm"));
+            var vMins = ved.Subtract(vsd).TotalMinutes;
+            var vDays = ved.Subtract(vsd).TotalDays;
 
             if (ProjType == 4)
             {
-                if (vDays > 1)
+                dayBasMins = 6;
+                dayMaxMins = 600;   // 20220114 UPD BY YEH REASON:機車單日上限改為600分鐘
+
+                var xre = GetMotoRangeMins(vsd, ved, dayBasMins, dayMaxMins, new List<Holiday>());
+                if (xre != null)
                 {
-                    days += 1;
-                    sd = sd.AddDays(1);   //去除首日
-                    var xre = GetMotoRangeMins(sd, ed, MotoDayBaseMinute, dayMaxMins, new List<Holiday>());
-                    if (xre != null)
+                    var vre = GetTimePart(xre.Item1, dayMaxMins);
+                    if (vre != null)
                     {
-                        var vre = GetTimePart(xre.Item1, dayMaxMins);
-                        if (vre != null)
-                        {
-                            days += vre.Item1;
-                            hours = vre.Item2;
-                            mins = vre.Item3;
-                        }
-                    }
-                }
-                else
-                {
-                    if (vMins >= dayMaxMins)
-                    {
-                        days = 1;
-                        hours = 0;
-                        mins = 0;
-                    }
-                    else
-                    {
-                        var vre = GetTimePart(vMins, dayMaxMins);
-                        days = vre.Item1;
+                        days += vre.Item1;
                         hours = vre.Item2;
                         mins = vre.Item3;
                     }
@@ -4033,7 +4011,9 @@ namespace WebAPI.Models.BillFunc
             }
             else if (ProjType == 0 || ProjType == 3)
             {
-                var xre = GetCarRangeMins(sd, ed, CarDayBaseMinute, dayMaxMins, new List<Holiday>());
+                dayBasMins = 60;
+                dayMaxMins = 600;
+                var xre = GetCarRangeMins(sd, ed, dayBasMins, dayMaxMins, new List<Holiday>());
                 if (xre != null)
                 {
                     var vre = GetTimePart(xre.Item1, dayMaxMins);
