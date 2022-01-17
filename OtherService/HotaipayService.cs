@@ -431,14 +431,13 @@ namespace OtherService
         /// <param name="spInput"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        public bool sp_MemberUnBind(SPInput_MemberUnBind spInput, ref string errCode)
+        public bool sp_MemberUnBind(SPInput_MemberUnBind spInput, ref SPOutput_MemberUnBind spOutput, ref string errCode)
         {
             bool flag = true;
             string spName = "usp_HotaiMemberUnBind_U01";
 
             var lstError = new List<ErrorInfo>();
-            SPOutput_Base spOutput = new SPOutput_Base();
-            SQLHelper<SPInput_MemberUnBind, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_MemberUnBind, SPOutput_Base>(connetStr);
+            SQLHelper<SPInput_MemberUnBind, SPOutput_MemberUnBind> sqlHelp = new SQLHelper<SPInput_MemberUnBind, SPOutput_MemberUnBind>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
 
             if (flag)
