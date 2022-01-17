@@ -779,7 +779,10 @@ namespace HotaiPayWebView.Controllers
             logger.Info($"tanginput_BindCardFailed : {Session["p"]}");
             //return RedirectToAction("/Login", new { p = Session["p"]} );
             //return RedirectToAction($"/Login?p={Session["p"]}");
-            return RedirectToAction("Login", "HotaiPay", new { p = Session["p"] });
+
+            //20220117唐改
+            //return RedirectToAction("Login", "HotaiPay", new { p = Session["p"] });
+            return RedirectToRoute(new { controller = "HotaiPayCtbc", action = "NoCreditCard" });
         }
         #endregion
 
