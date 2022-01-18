@@ -74,6 +74,7 @@
     <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoredErrorHandle.cs" />
+    <Compile Include="SP\Output\Hotai\SPOutput_MemberUnBind.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_CTBCCapList.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiTranStep1.cs" />
