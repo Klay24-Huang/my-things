@@ -30,7 +30,10 @@ namespace WebAPI.Controllers
     {
 
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        protected static Logger logger = LogManager.GetCurrentClassLogger();
+        //補上hotaipay CONFIG
+        private static ConfigManager configManager = new ConfigManager("hotaipayment");
+        private string merID = configManager.GetKey("CTBCMerID");
+
         /// <summary>
         /// 【後台】短租補傳
         /// </summary>
@@ -373,7 +376,8 @@ namespace WebAPI.Controllers
                                                 PAYMENTTYPE = "1",
                                                 PAYMEMO = "租金",
                                                 //PORDNO = obj.REMARK
-                                                PORDNO = ReturnControlList[z].REMARK
+                                                PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                                OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                             };
                                         }
                                         else
@@ -406,7 +410,8 @@ namespace WebAPI.Controllers
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "eTag",
                                             //PORDNO = obj.REMARK
-                                            PORDNO = ReturnControlList[z].REMARK
+                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }
                                     else
@@ -420,7 +425,8 @@ namespace WebAPI.Controllers
                                             PAYTYPE = "1",
                                             PAYMENTTYPE = "1",
                                             PAYMEMO = "租金",
-                                            PORDNO = ReturnControlList[z].REMARK
+                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }
                                 }
@@ -435,7 +441,8 @@ namespace WebAPI.Controllers
                                     PAYTYPE = "",
                                     PAYMENTTYPE = "",
                                     PAYMEMO = "",
-                                    PORDNO = ""
+                                    PORDNO = "",
+                                    OPERATOR = 0        //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                 };
                             }
 
@@ -575,6 +582,19 @@ namespace WebAPI.Controllers
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;
 
+        }
+
+        private int GetOperator(string MerchantID)
+        {
+            //目前 台新0 中信1
+            int Result = 0;
+            
+            if (MerchantID == merID)
+            {
+                Result = 1;
+            }
+
+            return Result;
         }
 
     }

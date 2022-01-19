@@ -236,7 +236,11 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// <summary>
         /// 支付說明(ex:租金)
         /// </summary>
-            public string PAYMEMO { set; get; } 
+        public string PAYMEMO { set; get; } 
+        /// <summary>
+        /// 0: 台新 1:中信
+        /// </summary>
+        public int OPERATOR { set; get; }
     }
     //20211221 ADD BY ADAM REASON.增加副承租人清單
     public class SavePassenger

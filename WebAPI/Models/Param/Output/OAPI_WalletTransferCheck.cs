@@ -3,18 +3,20 @@
     public class OAPI_WalletTransferCheck
     {
         /// <summary>
-        /// 姓名
+        /// 驗證結果(1成功,0失敗)
         /// </summary>
-        public string Name { get; set; }
-
+        public int CkResult { get; set; } = 0;
         /// <summary>
-        /// 電話
+        /// 受贈者名稱
         /// </summary>
-        public string PhoneNo { get; set; }
-
+        public string ShowName { get; set; }
         /// <summary>
-        /// 轉贈金額
+        /// 顯示ID或電話號碼
         /// </summary>
-        public int Amount { get; set; }
+        public string ShowValue { get; set; }
+        /// <summary>
+        /// 受贈人ID
+        /// </summary>
+        public string IDNO { get; set; }
     }
 }

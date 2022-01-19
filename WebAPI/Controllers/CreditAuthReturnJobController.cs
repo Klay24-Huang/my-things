@@ -132,7 +132,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         OrderNo = OrderAuthList[i].order_number,
                         Token = Access_Token,
-                        transaction_no = OrderAuthList[i].transaction_no
+                        transaction_no = OrderAuthList[i].transaction_no,
+                        PayMode = 0
                     };
 
                     apiInput = new IAPI_CreditAuth()

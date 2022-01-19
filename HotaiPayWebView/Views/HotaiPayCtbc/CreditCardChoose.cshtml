@@ -1,0 +1,152 @@
+﻿@model List<Domain.TB.Hotai.HotaiCardInfo>
+@{
+    ViewBag.Title = "CreditCardChoose";
+    List<Domain.TB.Hotai.HotaiCardInfo> L_Output = new List<Domain.TB.Hotai.HotaiCardInfo>();
+    L_Output = Model;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰Pay設定</title>
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+<body>
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
+    @using (Html.BeginForm("CreditCardChoose", "HotaiPayCtbc", FormMethod.Post, new { id = "frmCreditCardChoose", name = "frmCreditCardChoose", @class = "form-horizontal" })) //使用@Html.BeginForm()預設使用Post傳遞變數，並且將表單傳送到與檢視同名的Action
+    {
+        <div class="container" style="max-width: 414px;">
+            <div class="mt-4">
+                <p class="text-gray">請選擇您欲綁定的信用卡</p>
+            </div>
+            @{
+                for (int i = 0; i < L_Output.Count; i++)
+                {
+                    var A_output = L_Output.ElementAt(i);
+                    if (A_output.CardType == "Jcb")
+                    {
+                        var CardName = A_output.CardName;
+                        var CardNumber = A_output.CardNumber;
+                        var CardType = A_output.CardType;
+                        var BankDesc = A_output.BankDesc;
+                        var CardToken = A_output.CardToken;
+                        bool IsDefault = A_output.IsDefault == 1 ? true : false;
+                        var MemberOneID = A_output.MemberOneID;
+                        var BankCode = A_output.BankCode;//822XXX
+
+                        <div class="credit-card-box mb-4">
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
+                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken|@BankCode" />
+
+                            <div class="credit-style mr-2">
+                                <img src="../../images/icon/credit_pay_JCB.svg" alt="">
+                                信用卡
+                            </div>
+                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                        </div>
+                    }
+
+                    if (A_output.CardType == "Master")
+                    {
+                        var CardName = A_output.CardName;
+                        var CardNumber = A_output.CardNumber;
+                        var CardType = A_output.CardType;
+                        var BankDesc = A_output.BankDesc;
+                        var CardToken = A_output.CardToken;
+                        bool IsDefault = A_output.IsDefault == 1 ? true : false;
+                        var MemberOneID = A_output.MemberOneID;
+                        var BankCode = A_output.BankCode;//822XXX
+
+                        <div class="credit-card-box mb-4">
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
+                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken|@BankCode" />
+
+                            <div class="credit-style mr-2">
+                                <img src="../../images/icon/credit_pay_MasterCard.svg" alt="">
+                                信用卡
+                            </div>
+                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                        </div>
+                    }
+                    if (A_output.CardType == "Visa")
+                    {
+                        var CardName = A_output.CardName;//666
+                        var CardNumber = A_output.CardNumber;//-8441
+                        var CardType = A_output.CardType;//VISA
+                        var BankDesc = A_output.BankDesc;//國外卡
+                        var CardToken = A_output.CardToken;//1850
+                        bool IsDefault = A_output.IsDefault == 1 ? true : false;
+                        var MemberOneID = A_output.MemberOneID;//112bd64b..........af980
+                        var BankCode = A_output.BankCode;//822XXX
+
+                        <div class="credit-card-box mb-4">
+                            <input class="mr-3" type="radio" id="card+@i" name="CreditCardList" checked="@(IsDefault )"
+                                   value="@MemberOneID|@CardType|@BankDesc|@CardNumber|@CardToken|@BankCode" />
+
+                            <div class="credit-style mr-2">
+                                <img src="../../images/icon/credit_pay_VISA.svg" alt="">
+                                信用卡
+                            </div>
+                            <div class="credit-number">@(CardNumber.Substring(CardNumber.Length - 5, 5).Replace("-", "*"))</div>
+                        </div>
+                    }
+                }
+            }
+            <div class="buttonBox text-center mb-2 d-none d-sm-block desktop-margin-top">
+                <a class="text-blue" onclick="goAddNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
+            </div>
+            <div class="buttonBox d-none d-sm-block">
+                @*<button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">*@
+                <button type="button" class="btn btn-blue" style="max-width: 414px;" id="agree-btn" onclick="TangCheckRadio()">
+                    選擇預設信用卡
+                </button>
+            </div>
+        </div>
+
+        <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
+            <div class="buttonBox mb-2">
+                <a class="text-blue" onclick="goAddNewCard()">＋ 新增信用卡</a>
+            </div>
+            <div class="buttonBox">
+                @*<button type="submit" class="btn btn-blue" style="max-width: 414px;" id="agree-btn">*@
+                <button type="button" class="btn btn-blue" style="max-width: 414px;" id="agree-btn" onclick="TangCheckRadio()">
+                    選擇預設信用卡
+                </button>
+            </div>
+        </div>
+    }
+</body>
+</html>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    function TangCheckRadio() {
+        //console.log('sdd')
+        var radio = document.getElementsByName('CreditCardList');
+        var flag = false;
+        for (var i = 0; i < radio.length; i++) {
+            if (radio[i].checked) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            document.getElementById("frmCreditCardChoose").submit();
+        }
+        else {
+            swal("Wait!", "你沒有選擇卡片唷!", "error", { button: "我知道了" });
+        }
+    }
+
+    //點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
+    function goAddNewCard() {
+        /*document.location.href = "/HotaiPayCtbc/BindNewCard/"*/
+        var URL = "@ViewBag.reURL" + "/HotaiPayCtbc/BindNewCard/"; /*HotaiPayCtbc前面沒加/會葛屁*/
+        window.location.href = URL;
+    }
+</script>

@@ -974,6 +974,10 @@ namespace WebAPI.Controllers
 
                         xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                         outputApi.Rent.TotalRental = xTotalRental;
+
+                        // 20211229 UPD BY YEH REASON:output增加預授權金額、差額
+                        outputApi.Rent.PreAmount = PreAmount;
+                        outputApi.Rent.DiffAmount = DiffAmount;
                         trace.FlowList.Add("總價計算");
                         #endregion
 

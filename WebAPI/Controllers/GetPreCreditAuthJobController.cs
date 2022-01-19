@@ -240,7 +240,7 @@ namespace WebAPI.Controllers
                 WeekdayPrice = orderInfo.WeekdayPrice,
                 HoildayPrice = orderInfo.HoildayPrice
             };
-            EstimateDetail outData ;
+            EstimateDetail outData;
             commonService.EstimatePreAuthAmt(estimateData, out outData);
             return outData.estimateAmt;
 
@@ -253,7 +253,8 @@ namespace WebAPI.Controllers
                 order_number = input.order_number,
                 IDNO = input.IDNO,
                 final_price = input.pre_final_Price,
-                CardType = 1,
+                //CardType = 0,
+                CardType = input.CardType,
                 AuthType = input.AuthType,
                 GateNO = GetGateNo(GateCount),
                 isRetry = 0,
@@ -272,7 +273,8 @@ namespace WebAPI.Controllers
                 order_number = input.order_number,
                 IDNO = input.IDNO,
                 final_price = input.pre_final_Price,
-                CardType = 1,
+                //CardType = 0,
+                CardType = input.CardType,
                 AuthType = input.AuthType,
                 GateNO = GetGateNo(GateCount),
                 isRetry = 0,

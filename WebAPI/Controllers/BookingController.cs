@@ -1,9 +1,14 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Bill;
 using Domain.SP.Input.Booking;
+using Domain.SP.Input.Subscription;
+using Domain.SP.Input.Common;
+using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Bill;
 using Domain.SP.Output.Booking;
+using Domain.SP.Output.Wallet;
+using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
@@ -23,7 +28,6 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
 using WebCommon;
-using Domain.SP.Input.Subscription;
 using WebAPI.Models.ComboFunc;
 using WebAPI.Service;
 using Domain.SP.Input.Rent;
@@ -38,10 +42,8 @@ namespace WebAPI.Controllers
     /// </summary>
     public class BookingController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
-        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
-        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+        private readonly string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private readonly string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
 
         CommonFunc baseVerify { get; set; }
 
@@ -53,7 +55,7 @@ namespace WebAPI.Controllers
             var monSp = new MonSubsSp();
             HttpContext httpContext = HttpContext.Current;
             string Access_Token = "";
-            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
+            string Access_Token_string = httpContext.Request.Headers["Authorization"] ?? ""; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
             bool isWriteError = false;
@@ -95,6 +97,11 @@ namespace WebAPI.Controllers
             BillCommon billCommon = new BillCommon();
             CommonService commonService = new CommonService();
             CreditAuthComm creditAuthComm = new CreditAuthComm();
+            bool CreditFlag = true;     // 信用卡綁卡
+            string CreditErrCode = "";  // 信用卡綁卡錯誤訊息
+            bool WalletFlag = false;    // 綁定錢包
+            int WalletNotice = 0;       // 錢包餘額不足通知 (0:不顯示 1:顯示)
+            int WalletAmout = 0;        // 錢包餘額
 
             #endregion
             #region 防呆
@@ -180,7 +187,7 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    flag = baseVerify.CheckDate(apiInput.SDate, apiInput.EDate, ref errCode, ref SDate, ref EDate);//同站
+                    flag = baseVerify.CheckDate(apiInput.SDate, apiInput.EDate, ref errCode, ref SDate, ref EDate); //同站
 
                     if (flag)
                     {
@@ -205,7 +212,7 @@ namespace WebAPI.Controllers
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
-            #region 取得安心服務每小時價格          
+            #region 取得安心服務每小時價格
             if (flag)
             {
                 var result = commonService.GetInsurancePrice(IDNO, CarTypeCode, LogID, ref errCode);
@@ -213,12 +220,58 @@ namespace WebAPI.Controllers
                 InsurancePerHours = result.InsurancePerHours;
             }
             #endregion
-            #region 檢查信用卡是否綁卡
+            #region 檢查信用卡是否綁卡、錢包是否開通
             if (flag)
             {
-                var result = creditAuthComm.CheckTaishinBindCard(ref flag, IDNO, ref errCode);
+                if (ProjType == 4)  // 4:機車
+                {
+                    #region 檢查信用卡是否綁卡
+                    var result = creditAuthComm.CheckTaishinBindCard(ref CreditFlag, IDNO, ref CreditErrCode);
+                    #endregion
+
+                    #region 檢查錢包是否開通
+                    string spName = "usp_CreditAndWalletQuery_Q01";
+                    SPInput_CreditAndWalletQuery spWalletInput = new SPInput_CreditAndWalletQuery
+                    {
+                        IDNO = IDNO,
+                        Token = Access_Token,
+                        LogID = LogID
+                    };
+                    SPOut_CreditAndWalletQuery spWalletOut = new SPOut_CreditAndWalletQuery();
+                    SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
+                    flag = sqlHelp.ExecuteSPNonQuery(spName, spWalletInput, ref spWalletOut, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, spWalletOut.Error, spWalletOut.ErrorCode, ref lstError, ref errCode);
+
+                    if (flag)
+                    {
+                        WalletFlag = spWalletOut.WalletStatus == "2";
+                        WalletAmout = spWalletOut.WalletAmout;
+                    }
+                    #endregion
+
+                    if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
+                    {
+                        flag = false;
+                        errCode = "ERR292";
+                    }
+                    else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包，要給APP值顯示通知
+                    {
+                        WalletNotice = 1;
+
+                        if (WalletAmout < 50)   // 錢包餘額 < 50元 不給預約
+                        {
+                            flag = false;
+                            errCode = "ERR294";
+                        }
+                    }
+                }
+                else
+                {   // 0:同站汽車 3:路邊汽車
+                    var result = creditAuthComm.CheckTaishinBindCard(ref flag, IDNO, ref errCode);
+                }
             }
             #endregion
+
             #region 檢查欠費
             if (flag)
             {
@@ -232,15 +285,14 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            #region 判斷專案限制及取得專案設定
+            #region 取得最晚取車時間
             if (flag)
             {
-                //判斷專案限制及取得專案設定
-                if (ProjType == 3)
+                if (ProjType == 3)  // 路邊汽車
                 {
                     LastPickCarTime = SDate.AddMinutes(AnyRentDefaultPickTime);
                 }
-                else if (ProjType == 4)
+                else if (ProjType == 4) // 路邊機車
                 {
                     LastPickCarTime = SDate.AddMinutes(MotorRentDefaultPickTime);
                 }
@@ -290,32 +342,33 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
             #region 預約
             if (flag)
             {
+                SPName = "usp_Booking";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
-                    CarNo = (string.IsNullOrWhiteSpace(apiInput.CarNo)) ? "" : apiInput.CarNo,
-                    Price = price,
-                    Insurance = apiInput.Insurance,
-                    CarType = CarType,
-                    ED = EDate,
-                    StopPickTime = LastPickCarTime,
                     IDNO = IDNO,
-                    InsurancePurePrice = InsurancePurePrice,
-                    LogID = LogID,
-                    PayMode = PayMode,
                     ProjID = apiInput.ProjID,
                     ProjType = ProjType,
-                    RStationID = StationID,
                     StationID = StationID,
+                    CarType = CarType,
+                    RStationID = StationID,
+                    SD = SDate,
+                    ED = EDate,
+                    StopPickTime = LastPickCarTime,
+                    Price = price,
+                    CarNo = (string.IsNullOrWhiteSpace(apiInput.CarNo)) ? "" : apiInput.CarNo,
                     Token = Access_Token,
-                    SD = SDate
+                    Insurance = apiInput.Insurance,
+                    InsurancePurePrice = InsurancePurePrice,
+                    PayMode = PayMode,
+                    LogID = LogID,
                     //20211012 ADD BY ADAM REASON.增加手機定位點
                     //PhoneLat = apiInput.PhoneLat,
                     //PhoneLon = apiInput.PhoneLon
                 };
-                SPName = "usp_Booking";
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
@@ -372,7 +425,7 @@ namespace WebAPI.Controllers
                     {
                         //同站取車前6小時後預約立即授權
                         DateTime checkDate = SDate.AddHours(-6);
-                        canAuth = DateTime.Compare(DateTime.Now, checkDate) >= 0 ? true : false;
+                        canAuth = DateTime.Compare(DateTime.Now, checkDate) >= 0;
                     }
                     else if (ProjType == 3)
                     {
@@ -380,8 +433,7 @@ namespace WebAPI.Controllers
                         int triaHour = 1;  //2021/12/16 因企劃臨時要求路邊只預收1小時授權金
                         estimateData.ED = SDate.AddHours(triaHour);
                     }
-                    EstimateDetail estimateDetail;
-                    commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
+                    commonService.EstimatePreAuthAmt(estimateData, out EstimateDetail estimateDetail);
 
                     //需扣掉春節訂金
                     preAuthAmt = orderData.PreAuthAmt == 0 ? estimateDetail.estimateAmt : estimateDetail.estimateAmt - orderData.PreAuthAmt;
@@ -430,7 +482,7 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             Token = Access_Token,
                             AuthType = 1,
-                            CardType = 1,
+                            CardType = AuthOutput == null ? 1 : AuthOutput.CardType,
                             final_price = preAuthAmt,
                             OrderNo = spOut.OrderNum,
                             PRGName = funName,
@@ -457,7 +509,7 @@ namespace WebAPI.Controllers
                                 Title = "取授權成功通知",
                                 imageurl = "",
                                 url = "",
-                                Message = $"已於{DateTime.Now.ToString("MM/dd HH:mm")}以末四碼{cardNo}信用卡預約取授權成功，金額 {preAuthAmt}，謝謝!"
+                                Message = $"已於{DateTime.Now:MM/dd HH:mm}以末四碼{cardNo}信用卡預約取授權成功，金額 {preAuthAmt}，謝謝!"
 
                             };
                             commonService.sp_InsPersonNotification(input_Notification, ref error);
@@ -544,7 +596,8 @@ namespace WebAPI.Controllers
                 {
                     //20210427 ADD BY ADAM REASON.針對編碼調整
                     OrderNo = "H" + spOut.OrderNum.ToString().PadLeft(spOut.OrderNum.ToString().Length, '0'),
-                    LastPickTime = LastPickCarTime.ToString("yyyyMMddHHmmss")
+                    LastPickTime = LastPickCarTime.ToString("yyyyMMddHHmmss"),
+                    WalletNotice = WalletNotice
                 };
             }
             else
@@ -570,6 +623,7 @@ namespace WebAPI.Controllers
             #endregion
         }
 
+        #region 春節租金-汽車
         /// <summary>
         /// 春節租金-汽車
         /// </summary>
@@ -596,6 +650,7 @@ namespace WebAPI.Controllers
                 re = xre.RentInPay;
             return re;
         }
+        #endregion
 
     }
 }

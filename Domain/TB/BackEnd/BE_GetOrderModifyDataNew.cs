@@ -205,5 +205,9 @@
         /// 安心服務每小時價格
         /// </summary>
         public int InsurancePerHours { set; get; }
+        /// <summary>
+        /// 付款方式(0:信用卡,1:電子錢包)
+        /// </summary>
+        public string PayMode { get; set; }
     }
 }

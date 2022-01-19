@@ -1,0 +1,26 @@
+{
+  "AppSettings": {
+    "HotaiAppId": "IRAPP",
+    "HotaiAppVersion": "V1.0.0",
+    "HotaiApiVersion": "V3",
+    "HotaiKey": "LPT06Y4N99LEKBRP8T0Y8TTBTC9MYRVT",
+    "HotaiIV": "KMZ7FYD1EPISHKY0",
+    "HotaiMemberFrontEndURL": "https://mfe-api-test.hotaimember.com.tw/api/app/service",
+    "HotaiMemberBackEndURL": "https://mbe-api-test.hotaimember.com.tw/",
+    "HotaiAppKey": "IbuzwcL+5+sgyxlQnvPNQeYK1M9Ojn2LvLp68TTYYERrdfeeozz/kd1YVKec8271nY+nE9bM0pxEF0tSOvMsXhk9/t4nKQxCUt0nWC110HzPlnQbVh0xDaAQUigy36/T7WWC8FWoa0iytIdMfEm7aXr4jRua8DeEtBVHrugcbZoB8Cz54mOO5yCjHmvT2Q1zvyUoxv6XJUmEoRgpP/GVIneXqsxCJBfyyT3Al2B2eakbLlS5Sd01EhyprYasUaVzFonWV04brybHyxf5cpMO59xwXDfLLGd/OivwwO8mYU8PLlZae4JVI1yUzW7HHw7qsiB7X82cWMG5X6uJCSihqg==",
+    "HotaiRSAKey": "MIIBCgKCAQEAor5yx8+K9TzFf//q/KX50/5F7ORPZ0g5v2SQ5YdcrzgFX9lm1O9rByakAAYJjZND59PtJscnR+XTiVPmVOllO4wJEScf/2a+d/iegW4btY6TKkvHyfs/lPKzkOF4rUPCJTIH1VgOrPG0aR8JRjjgYmP5snp/XUIVh28UatL4bG3PNDtXDzVQ41AlQ0xkwRaB2IVK7IpE3GH/E+uugxNbyhHgB09OIJpj7h4Gs+YrQH+8glbWfBbOgq+UZR1K0SrHe5Btkezr+xyj7E20fkCwV1bPdCnh04NxiWwHfZohSUizGlNt6M3OzDF+/goT6nlGTERLnhG9NAqylClXr6IQVQIDAQAB",
+    "SendSmsOtpURL": "api/otp/sms",
+    "SmsOtpValidationURL": "api/otp/sms-validatation",
+    "SigninURL": "api/signin",
+    "HotaiPaymentURL": "https://stage-payment.hotaiconnected.com.tw",
+    "HotaiPaymentSingleEntry": "/api",
+    "HotaiPaymentKey": "H5EpgABi8Yy3heB5+EWVI2s5aAVR2KLTPlufXTTakhI=",
+    "HotaiPaymentIV": "5dsubdixk7y/WHfKSCdUvA==",
+    "CTBCBindCard": "https://testepos.ctbcbank.com:9443/mFastPay/TxnServlet",
+    "CTBCFastBind": "https://obtest.ctbcbank.com/api/cpc/init-bind-card",
+    "CTBCPosAPI": "https://testepos.ctbcbank.com",
+    "CTBCMerID": "77495",
+    "CTBCTerminalID": "99833350",
+    "MacKey": "N1vqWqFUvdjtDRemdhKGSPAK"
+  }
+}

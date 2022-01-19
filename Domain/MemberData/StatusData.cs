@@ -122,5 +122,17 @@
         /// <para>N：不需重新確認</para>
         /// </summary>
         public string AuthStatus { get; set; }
+
+        /// <summary>
+        /// 和泰OneID綁定狀態
+        /// <para>Y：綁定</para>
+        /// <para>N：未綁</para>
+        /// </summary>
+        public string BindHotai { get; set; }
+
+        /// <summary>
+        /// 是否為和雲特殊身分 Y/N 暫用和泰的特殊身分
+        /// </summary>
+        public string IsHIMS { get; set; }
     }
 }

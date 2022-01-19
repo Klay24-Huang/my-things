@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
                             var creditAuthComm = new CreditAuthComm();
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                CheckoutMode = (OrderAuth.CardType == 1) ? 0 : -1,
+                                CheckoutMode = (OrderAuth.CardType == 1) ? 0 : 4,
                                 OrderNo = OrderAuth.order_number,
                                 IDNO = OrderAuth.IDNO,
                                 Amount = Amount,
