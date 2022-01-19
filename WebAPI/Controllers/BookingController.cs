@@ -345,7 +345,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                SPName = "usp_Booking";
+                SPName = "usp_Booking_T20220118";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
@@ -364,9 +364,8 @@ namespace WebAPI.Controllers
                     InsurancePurePrice = InsurancePurePrice,
                     PayMode = PayMode,
                     LogID = LogID,
-                    //20211012 ADD BY ADAM REASON.增加手機定位點
-                    //PhoneLat = apiInput.PhoneLat,
-                    //PhoneLon = apiInput.PhoneLon
+                    PhoneLat = apiInput.PhoneLat,
+                    PhoneLon = apiInput.PhoneLon
                 };
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
