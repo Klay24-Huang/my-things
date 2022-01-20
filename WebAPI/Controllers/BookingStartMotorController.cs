@@ -173,6 +173,7 @@ namespace WebAPI.Controllers
                         errCode = "ERR291";
                     }
                 }
+            }
             #region 檢查欠費 20220105路邊欠費查詢取消
             //if (flag)
             //{
@@ -395,9 +396,9 @@ namespace WebAPI.Controllers
                     }
                 }
             }
+                #endregion
             #endregion
             #endregion
-
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {
