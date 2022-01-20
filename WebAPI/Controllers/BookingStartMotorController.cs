@@ -191,13 +191,15 @@ namespace WebAPI.Controllers
             #region 取車
             if (flag)
             {
-                string CheckTokenName = "usp_BeforeBookingStart";
+                string CheckTokenName = "usp_BeforeBookingStart_T20220119";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    PhoneLon = apiInput.PhoneLon,
+                    PhoneLat = apiInput.PhoneLat
                 };
                 SPOutput_BeforeBookingStart spOut = new SPOutput_BeforeBookingStart();
                 SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart> sqlHelp = new SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart>(connetStr);
