@@ -44,43 +44,43 @@ namespace Domain.TB
         /// <summary>
         /// 汽車剩餘總時數
         /// </summary>
-        public float CarTotalHours { set; get; } = 0;
+        public double CarTotalHours { set; get; } = 0;
         /// <summary>
         /// 汽車平日剩餘時數
         /// </summary>
-        public float WorkDayHours { set; get; } = 0;
+        public double WorkDayHours { set; get; } = 0;
         /// <summary>
         /// 汽車假日剩餘時數
         /// </summary>
-        public float HolidayHours { set; get; } = 0;
+        public double HolidayHours { set; get; } = 0;
         /// <summary>
         /// 機車剩餘總時數
         /// </summary>
-        public float MotoTotalHours { set; get; } = 0;
+        public double MotoTotalHours { set; get; } = 0;
         /// <summary>
         /// 機車平日剩餘分鐘
         /// </summary>
-        public float MotoWorkDayMins { set; get; } = 0;
+        public double MotoWorkDayMins { set; get; } = 0;
         /// <summary>
         /// 機車假日剩餘分鐘
         /// </summary>
-        public float MotoHolidayMins { set; get; } = 0;
+        public double MotoHolidayMins { set; get; } = 0;
         /// <summary>
         /// 汽車平日優惠費率
         /// </summary>
-        public float WorkDayRateForCar { set; get; } = 0;
+        public double WorkDayRateForCar { set; get; } = 0;
         /// <summary>
         /// 汽車假日優惠費率
         /// </summary>
-        public float HoildayRateForCar { set; get; } = 0;
+        public double HoildayRateForCar { set; get; } = 0;
         /// <summary>
         /// 機車平日優惠費率
         /// </summary>
-        public float WorkDayRateForMoto { set; get; } = 0;
+        public double WorkDayRateForMoto { set; get; } = 0;
         /// <summary>
         /// 機車假日優惠費率
         /// </summary>
-        public float HoildayRateForMoto { set; get; } = 0;
+        public double HoildayRateForMoto { set; get; } = 0;
         /// <summary>
         /// 開始時間
         /// </summary>

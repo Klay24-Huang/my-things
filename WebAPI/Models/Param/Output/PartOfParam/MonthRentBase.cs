@@ -13,10 +13,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <summary>
         /// 平日費率
         /// </summary>
-        public float WorkdayRate { set; get; }
+        public double WorkdayRate { set; get; }
         /// <summary>
         /// 假日費率
         /// </summary>
-        public float HoildayRate { set; get; }
+        public double HoildayRate { set; get; }
     }
 }

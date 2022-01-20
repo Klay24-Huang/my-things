@@ -695,8 +695,11 @@ namespace WebAPI.Models.BillFunc
                         if (m != null)
                             x.xRate = m.WorkDayRateForMoto;
                     }
+                    //20220120 ADD BY ADAM REASON.FLOAT轉DOUBLE會造成小數問題，故取小數點1位四捨五入
+                    x.xRate = Math.Round(x.xRate, 1);
                 });
                 //取GroupId
+                
                 dayPayList = GetDateGroup(norDates, "nor_", dayPayList);
             }
             #endregion
