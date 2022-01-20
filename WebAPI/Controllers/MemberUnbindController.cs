@@ -1,6 +1,9 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Member;
 using Domain.SP.Output;
+using Domain.SP.Output.Hotai;
+using Domain.WebAPI.Input.Hotai.Member;
+using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -115,6 +118,36 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_MemberUnBind, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_MemberUnBind, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            }
+            #endregion
+
+            #region 和泰會員解綁
+            if (flag)
+            {
+                string spName = "usp_HotaiMemberUnBind_U01";
+                SPInput_MemberUnBind spInput = new SPInput_MemberUnBind()
+                {
+                    IDNO = IDNO,
+                    APIName = funName
+                };
+                SPOutput_MemberUnBind spOut = new SPOutput_MemberUnBind();
+                SQLHelper<SPInput_MemberUnBind, SPOutput_MemberUnBind> sqlHelp = new SQLHelper<SPInput_MemberUnBind, SPOutput_MemberUnBind>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    if (spOut != null)
+                    {
+                        var SignErrCode = "";
+                        HotaiMemberAPI api = new HotaiMemberAPI();
+                        WebAPIInput_SignOut signOut = new WebAPIInput_SignOut()
+                        {
+                            refresh_token = spOut.RefreshToken
+                        };
+                        var SignFlag = api.DoSignOut(spOut.AccessToken, signOut, ref SignErrCode);
+                    }
+                }
             }
             #endregion
             #endregion
