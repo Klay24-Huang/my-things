@@ -1148,7 +1148,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
-            string spName = "usp_SetSubsNxt_U1";
+            string spName = "usp_SetSubsNxt_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsNxt();
