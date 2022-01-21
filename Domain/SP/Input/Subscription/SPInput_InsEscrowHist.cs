@@ -11,11 +11,11 @@ namespace Domain.SP.Input.Subscription
         public string IDNO { get; set; }
         public string MemberID { get; set; }
         public string AccountID { get; set; }
-        public string Email { get; set; }
+        public string Email { get; set; } = "";
         /// <summary>
         /// 電話
         /// </summary>
-        public string PhoneNo { get; set; }
+        public string PhoneNo { get; set; } = "";
         /// <summary>
         /// 履保金額
         /// </summary>
@@ -41,5 +41,20 @@ namespace Domain.SP.Input.Subscription
         /// 履保台新回傳狀態
         /// </summary>
         public string EcStatus { get; set; }
+
+        /// <summary>
+        /// 履保類別 0:訂閱儲值，1:使用
+        /// </summary>
+        public int UseType { get; set; } = 0;
+
+        /// <summary>
+        /// 履保對應編號 0:MonthlyRentId 1:OrderNo
+        /// </summary>
+        public int MonthlyNo { get; set; }
+
+        /// <summary>
+        /// 程式ID
+        /// </summary>
+        public string PRGID { get; set; }
     }
 }

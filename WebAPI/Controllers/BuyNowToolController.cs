@@ -542,6 +542,7 @@ namespace WebAPI.Controllers
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
+                        trace.traceAdd("exeNxt", new { buyNxtCom });
                         trace.FlowList.Add("後續api處理");
                     }
                     #endregion
@@ -564,16 +565,19 @@ namespace WebAPI.Controllers
                                     Name = mem.MEMCNAME,
                                     PhoneNo = mem.MEMTEL,
                                     Email = mem.MEMEMAIL,
-                                    Amount = ProdPrice
+                                    Amount = ProdPrice,
+                                    UseType = 0,
+                                    MonthlyNo = apiInput.MonthlyRentId == 0 ? buyNxtCom.MonthlyRentId : apiInput.MonthlyRentId,
+                                    PRGID = funName
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
-                                trace.traceAdd("Contract", new { spin, xFlag, xerrCode, xerrMsg });
+                                trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, xerrCode, xerrMsg });
                                 trace.FlowList.Add("履保處理");
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            trace.traceAdd("Escrow_Exception", new { ex });
                         }
                     }
                     #endregion
@@ -922,6 +926,7 @@ namespace WebAPI.Controllers
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
+                        trace.traceAdd("exeNxt", new { buyNxtCom });
                         trace.FlowList.Add("後續api處理");
                     }
                     outputApi.PayResult = flag ? 1 : 0;
@@ -943,14 +948,19 @@ namespace WebAPI.Controllers
                                     Name = mem.MEMCNAME,
                                     PhoneNo = mem.MEMTEL,
                                     Email = mem.MEMEMAIL,
-                                    Amount = ProdPrice
+                                    Amount = ProdPrice,
+                                    UseType=0,
+                                    MonthlyNo= buyNxtCom.MonthlyRentId,
+                                    PRGID = funName
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                                trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });
+                                trace.FlowList.Add("履保處理");
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            trace.traceAdd("Escrow_Exception", new { ex });
                         }
                     }
 
@@ -1288,20 +1298,28 @@ namespace WebAPI.Controllers
                             mem = msp.GetMemberData(IDNO, LogID, Access_Token);
                             if (mem != null)
                             {
-                                var spin = new ICF_TSIB_Escrow_Type()
+                                for (int i = 0; i < sp_re.Arrs.Count; i++)
                                 {
-                                    IDNO = IDNO,
-                                    Name = mem.MEMCNAME,
-                                    PhoneNo = mem.MEMTEL,
-                                    Email = mem.MEMEMAIL,
-                                    Amount = ProdPrice
-                                };
-                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                                    var spin = new ICF_TSIB_Escrow_Type()
+                                    {
+                                        IDNO = IDNO,
+                                        Name = mem.MEMCNAME,
+                                        PhoneNo = mem.MEMTEL,
+                                        Email = mem.MEMEMAIL,
+                                        Amount = sp_re.Arrs[i].PeriodPayPrice,
+                                        UseType = 0,
+                                        MonthlyNo = sp_re.Arrs[i].MonthlyRentId
+                                    };
+                                    var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });                                   
+                                }
+                                trace.FlowList.Add("履保處理");
+
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            trace.traceAdd("Escrow_Exception", new { ex });
                         }
                     }
 
@@ -1386,7 +1404,7 @@ namespace WebAPI.Controllers
                                         UNIMNO = InvData.UNIMNO,
                                         NPOBAN = InvData.NPOBAN,
                                         Invno = INVNO,
-                                        InvoicePrice = ProdPrice,
+                                        InvoicePrice =ProdPrice,
                                         InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
                                     };
 

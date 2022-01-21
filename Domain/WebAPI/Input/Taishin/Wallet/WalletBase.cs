@@ -35,19 +35,19 @@ namespace Domain.WebAPI.Input.Taishin.Wallet
         /// <summary>
         /// 會員姓名
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         /// <summary>
         /// 會員電話
         /// </summary>
-        public string PhoneNo { get; set; }
+        public string PhoneNo { get; set; } = "";
         /// <summary>
         /// 會員email
         /// </summary>
-        public string Email { get; set; }
+        public string Email { get; set; } = "";
         /// <summary>
         /// 會員身份證
         /// </summary>
-        public string ID { get; set; }
+        public string ID { get; set; } = "";
         /// <summary>
         /// 帳戶類別，預設帶2
         /// <para>1:個人一類</para>

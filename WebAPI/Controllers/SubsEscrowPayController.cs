@@ -163,17 +163,20 @@ namespace WebAPI.Controllers
                                         PhoneNo = f.PhoneNo,
                                         Amount = Convert.ToInt16(Math.Floor(f.Amount)),
                                         CreateDate = f.CreateDate,
-                                        EcStatus = f.Status
+                                        EcStatus = f.Status,
+                                        PRGID=funName
                                     };
                                     mscom.TSIB_Escrow_PayTransaction(outapi_in, ref errCode);
+                                    trace.traceAdd("TSIB_Escrow_PayTransaction", new { outapi_in, errCode });                                  
                                 }
                                 catch(Exception ex)
                                 {
-
+                                    trace.traceAdd("Escrow_Exceptiom", new { ex });
                                 }
 
                                 loop += 1;
                             }
+                            trace.FlowList.Add("履保處理");
                         }
                     }
                 }

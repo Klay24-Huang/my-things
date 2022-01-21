@@ -612,7 +612,8 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
-                        errCode = buyNxtCom.errCode;
+                        errCode = buyNxtCom.errCode;                        
+                        trace.traceAdd("exeNxt", new { buyNxtCom});
                         trace.FlowList.Add("後續api處理");
                     }
                     #endregion
@@ -635,17 +636,22 @@ namespace WebAPI.Controllers
                                     Name = mem.MEMCNAME,
                                     PhoneNo = mem.MEMTEL,
                                     Email = mem.MEMEMAIL,
-                                    Amount = ProdPrice
+                                    Amount = ProdPrice,
+                                    UseType = 0,
+                                    MonthlyNo = buyNxtCom.MonthlyRentId,
+                                    PRGID= funName
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
-                                trace.traceAdd("Contract", new { spin, xFlag, xerrCode, xerrMsg });
+                                trace.traceAdd("TSIB_Escrow_Month", new { spin, xerrCode, xerrMsg });
                                 trace.FlowList.Add("履保處理");
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            trace.traceAdd("Escrow_Exception", new { ex });
                         }
+                       
+
                     }
                     #endregion
 
@@ -700,6 +706,7 @@ namespace WebAPI.Controllers
                                 INVNO = wsOutput.Data[0].INVNO;
                                 logger.Trace("INVNO=" + INVNO);
                             }
+                            trace.traceAdd("MonthlyRentSave", new { wsInput, wsOutput });
                             trace.FlowList.Add("發票開立");
                             if (INVNO != "")
                             {
@@ -729,6 +736,7 @@ namespace WebAPI.Controllers
                                 {
                                     logger.Trace("spError=" + sp_errCode);
                                 }
+                                trace.traceAdd("sp_SaveSubsInvno", new { spin, sp_errCode });
                                 trace.FlowList.Add("發票存檔");
                             }
                             else
@@ -760,6 +768,7 @@ namespace WebAPI.Controllers
                                 {
                                     logger.Trace("spError=" + sp_errCode);
                                 }
+                                trace.traceAdd("sp_InsMonthlyInvErr", new { spInput, sp_errCode });
                                 trace.FlowList.Add("發票錯誤處理");
                             }
                         }
@@ -1085,6 +1094,7 @@ namespace WebAPI.Controllers
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
+                        trace.traceAdd("exeNxt", new { buyNxtCom });
                         trace.FlowList.Add("後續api處理");
                     }
                     outputApi.PayResult = flag ? 1 : 0;
@@ -1106,15 +1116,21 @@ namespace WebAPI.Controllers
                                     Name = mem.MEMCNAME,
                                     PhoneNo = mem.MEMTEL,
                                     Email = mem.MEMEMAIL,
-                                    Amount = ProdPrice
+                                    Amount = ProdPrice,
+                                    UseType = 0,
+                                    MonthlyNo=buyNxtCom.MonthlyRentId,
+                                    PRGID = funName
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                                trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });
+                                trace.FlowList.Add("履保處理");
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            trace.traceAdd("Escrow_Exception", new { ex });
                         }
+
                     }
 
                     #endregion
@@ -1169,6 +1185,7 @@ namespace WebAPI.Controllers
                             INVNO = wsOutput.Data[0].INVNO;
                             logger.Trace("INVNO=" + INVNO);
                         }
+                        trace.traceAdd("MonthlyRentSave", new { wsInput, wsOutput });
                         trace.FlowList.Add("發票開立");
                         if (INVNO != "")
                         {
@@ -1198,6 +1215,7 @@ namespace WebAPI.Controllers
                             {
                                 logger.Trace("spError=" + sp_errCode);
                             }
+                            trace.traceAdd("sp_SaveSubsInvno", new { spin, sp_errCode });
                             trace.FlowList.Add("發票存檔");
                         }
                     }
@@ -1206,8 +1224,6 @@ namespace WebAPI.Controllers
                         //紀錄開立失敗
                         logger.Trace(ex.Message);
                     }
-
-
 
                     #endregion
 
@@ -1270,6 +1286,7 @@ namespace WebAPI.Controllers
             string AuthCode = "";
             string MerchantTradeNo = "";
             string INVNO = "";
+
 
             var mem = new Domain.MemberData.RegisterData();
             var InvData = new Domain.MemberData.InvoiceData();
@@ -1404,8 +1421,8 @@ namespace WebAPI.Controllers
                         var spin = new SPInput_GetArrsSubsList()
                         {
                             IDNO = IDNO,
-                            LogID = LogID,
-                            //SetNow = apiInput.SetNow
+                            LogID = LogID
+                            
                         };
                         sp_re = msp.sp_GetArrsSubsList(spin, ref sp_errCode);
                         if (sp_re != null && sp_re.Arrs != null && sp_re.Arrs.Count() > 0)
@@ -1497,6 +1514,7 @@ namespace WebAPI.Controllers
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
                         errCode = buyNxtCom.errCode;
+                        trace.traceAdd("exeNxt", new { buyNxtCom });
                         trace.FlowList.Add("後續api處理");
                     }
                     outputApi.PayResult = flag ? 1 : 0;
@@ -1512,20 +1530,28 @@ namespace WebAPI.Controllers
                             mem = msp.GetMemberData(IDNO, LogID, Access_Token);
                             if (mem != null)
                             {
-                                var spin = new ICF_TSIB_Escrow_Type()
+                                for (int i = 0; i < sp_re.Arrs.Count; i++)
                                 {
-                                    IDNO = IDNO,
-                                    Name = mem.MEMCNAME,
-                                    PhoneNo = mem.MEMTEL,
-                                    Email = mem.MEMEMAIL,
-                                    Amount = ProdPrice
-                                };
-                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                                    var spin = new ICF_TSIB_Escrow_Type()
+                                    {
+                                        IDNO = IDNO,
+                                        Name = mem.MEMCNAME,
+                                        PhoneNo = mem.MEMTEL,
+                                        Email = mem.MEMEMAIL,
+                                        Amount = sp_re.Arrs[i].PeriodPayPrice,
+                                        UseType = 0,
+                                        MonthlyNo = sp_re.Arrs[i].MonthlyRentId,
+                                        PRGID = funName
+                                    };
+                                    var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });                                   
+                                }
+                                trace.FlowList.Add("履保處理");
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            trace.traceAdd("Escrow_Exception", new { ex });
                         }
                     }
 
@@ -1588,6 +1614,7 @@ namespace WebAPI.Controllers
                                 INVNO = wsOutput.Data[0].INVNO;
                                 logger.Trace("INVNO=" + INVNO);
                             }
+                            trace.traceAdd("MonthlyRentSaveV2", new { wsInput, wsOutput });
                             trace.FlowList.Add("發票開立");
                             if (INVNO != "")
                             {
@@ -1619,12 +1646,13 @@ namespace WebAPI.Controllers
                                     {
                                         logger.Trace("spError=" + sp_errCode);
                                     }
+                                    trace.traceAdd("sp_SaveSubsInvno", new { spin, sp_errCode });
                                 }
                                 trace.FlowList.Add("發票存檔");
                             }
                         }
                         catch (Exception ex)
-                        {
+                        {   
                             //紀錄開立失敗
                             logger.Trace(ex.Message);
                         }

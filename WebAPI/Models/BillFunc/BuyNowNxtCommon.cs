@@ -85,7 +85,7 @@ namespace WebAPI.Models.BillFunc
                             spIn.TaishinTradeNo = TransactionNo;
                             
                             flag = msp.sp_CreateSubsMonth(spIn, ref errCode, ref MonthlyRentId);
-                            trace.traceAdd("CreateSubsMonth", new { flag, errCode });
+                            trace.traceAdd("CreateSubsMonth", new { flag, errCode, MonthlyRentId });
                         }
                         else
                         {
@@ -119,7 +119,7 @@ namespace WebAPI.Models.BillFunc
                             spIn.PayTypeId = PayTypeId;
                             spIn.InvoTypeId = InvoTypeId;
                             flag = msp.sp_UpSubsMonth(spIn, ref errCode, ref MonthlyRentId, ref NowPeriod, ref OriSDATE);
-                            trace.traceAdd("UpSubsMonth", new { flag,errCode });
+                            trace.traceAdd("UpSubsMonth", new { flag,errCode, MonthlyRentId, NowPeriod, OriSDATE });
                         }
                         else
                         {

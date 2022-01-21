@@ -301,13 +301,13 @@ namespace WebAPI.Models.BillFunc
                 AccountType = "2",
                 ApiVersion = "0.1.01",
                 CreateType = "1",
-                Email = sour.Email,
-                GUID = guid,
-                ID = sour.IDNO,
+                //ID = sour.IDNO,  //202210019 ADD BY AMBER REASON.非必填欄位避免檢核失敗
+                //Email = sour.Email,
+                //Name = sour.Name,
+                //PhoneNo = sour.PhoneNo, 
+                GUID = guid,             
                 MemberId = sour.MemberId,
-                MerchantId = MerchantId,
-                Name = sour.Name,
-                PhoneNo = sour.PhoneNo,
+                MerchantId = MerchantId,            
                 POSId = "",
                 SourceFrom = "9",
                 Amount = sour.Amount,
@@ -316,8 +316,7 @@ namespace WebAPI.Models.BillFunc
                 StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
                 StoreTransId = string.Format("{0}{1}", sour.IDNO, NowTime.ToString("MMddHHmmss")),
                 StoreId = "",
-                Bonus = 0,
-                BonusExpiredate = ""
+                Bonus = 0
             };
             var body = JsonConvert.SerializeObject(escrow);
             TaishinWallet WalletAPI = new TaishinWallet();
@@ -337,14 +336,17 @@ namespace WebAPI.Models.BillFunc
                     MemberID = sour.MemberId,
                     AccountID = output.Result.AccountId,
                     EcStatus = output.Result.Status,
-                    Email = output.Result.Email,
-                    PhoneNo = output.Result.PhoneNo,
+                    Email = sour.Email,
+                    PhoneNo = sour.PhoneNo,
                     Amount = sour.Amount,
                     TotalAmount = output.Result.Amount,
                     CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
                     LastStoreTransId = output.Result.StoreTransId,
                     LastTransId = output.Result.TransId,
-                    LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null)
+                    LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
+                    UseType = sour.UseType,
+                    MonthlyNo = sour.MonthlyNo,
+                    PRGID=sour.PRGID                  
                 };
                 msp.sp_InsEscrowHist(spin, ref errCode);
             }
@@ -406,6 +408,7 @@ namespace WebAPI.Models.BillFunc
                     spin.EscrowStatus = 1;
                     msp.sp_SetSubsBookingMonth(spin, ref errCode);
 
+                    int.TryParse(sour.OrderNo.ToString(), out int OrderNo);
                     var spIn2 = new SPInput_InsEscrowHist()
                     {
                         IDNO = sour.IDNO,
@@ -419,7 +422,10 @@ namespace WebAPI.Models.BillFunc
                         LastStoreTransId = output.Result.StoreTransId,
                         LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
                         LastTransId = output.Result.TransId,
-                        EcStatus = sour.EcStatus
+                        EcStatus = sour.EcStatus,
+                        UseType = 1,
+                        MonthlyNo = OrderNo,
+                        PRGID = sour.PRGID
                     };
                     msp.sp_InsEscrowHist(spIn2, ref errCode);
                 }
@@ -1251,7 +1257,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.InsEscrowHist);
-            string spName = "usp_InsEscrowHist_U1";
+            string spName = "usp_InsEscrowHist_U02";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_InsEscrowHist();
