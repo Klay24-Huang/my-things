@@ -6,6 +6,7 @@ using Domain.TB.BackEnd;
 using Domain.WebAPI.Input.Taishin.Wallet;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
+using NLog;
 using OtherService;
 using Reposotory.Implement;
 using System;
@@ -27,6 +28,8 @@ namespace WebAPI.Controllers
 {
     public class BE_WalletWithdrawController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
@@ -76,24 +79,33 @@ namespace WebAPI.Controllers
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 #endregion
             }
-
-            #region TB
-            if (flag)
+            try
             {
-                flag = WithdrawWalletFlow(0, int.Parse(apiInput.cashAmount), apiInput.IDNO, "Withdraw", funName, LogID, Access_Token, ref errCode).flag;
-            }
-            #endregion
 
-            #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
-            {
-                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                #region TB
+                if (flag)
+                {
+                    flag = WithdrawWalletFlow(0, int.Parse(apiInput.cashAmount), apiInput.IDNO, "Withdraw", funName, LogID, Access_Token, ref errCode).flag;
+                }
+                #endregion
+
+                #region 寫入錯誤Log
+                if (false == flag && false == isWriteError)
+                {
+                    baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                }
+                #endregion
+                #region 輸出
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+                return objOutput;
+                #endregion
             }
-            #endregion
-            #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
-            return objOutput;
-            #endregion
+            catch(Exception ex)
+            {
+                logger.Error("FunName: BE_WalletWithdrawController" + " " + ex.Message);
+                baseVerify.GenerateOutput(ref objOutput, false, "ERR999", ex.Message, apiOutput, token);
+                return objOutput;
+            }
 
         }
 
