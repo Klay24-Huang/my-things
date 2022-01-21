@@ -49,9 +49,8 @@ namespace WebAPI.Controllers
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
-            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
+            string Access_Token_string = httpContext.Request.Headers["Authorization"] ?? ""; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
             bool isWriteError = false;
@@ -88,40 +87,7 @@ namespace WebAPI.Controllers
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-                    //不開放訪客
-                    if (flag)
-                    {
-                        //if (isGuest)
-                        //{
-                        //    flag = false;
-                        //    errCode = "ERR101";
-                        //}
-                    }
                 }
-
-                #endregion
-
-                #region Token判斷
-
-                //if (flag && isGuest == false)
-                //{
-                //    var token_in = new IBIZ_TokenCk
-                //    {
-                //        LogID = LogID,
-                //        Access_Token = Access_Token
-                //    };
-                //    var token_re = cr_com.TokenCk(token_in);
-                //    if (token_re != null)
-                //    {
-                //        trace.traceAdd(nameof(token_re), token_re);
-                //        flag = token_re.flag;
-                //        errCode = token_re.errCode;
-                //        lstError = token_re.lstError;
-                //        IDNO = token_re.IDNO;
-                //    }
-                //    trace.FlowList.Add("Token判斷");
-                //    trace.traceAdd("TokenCk", new { flag, errCode });
-                //}
 
                 #endregion
 
