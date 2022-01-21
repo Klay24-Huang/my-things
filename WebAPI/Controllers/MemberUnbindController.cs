@@ -125,29 +125,30 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 string spName = "usp_HotaiMemberUnBind_U01";
-                SPInput_MemberUnBind spInput = new SPInput_MemberUnBind()
+                Domain.SP.Input.Hotai.SPInput_MemberUnBind spInput = new Domain.SP.Input.Hotai.SPInput_MemberUnBind()
                 {
                     IDNO = IDNO,
-                    APIName = funName
+                    PRGName = funName
                 };
                 SPOutput_MemberUnBind spOut = new SPOutput_MemberUnBind();
-                SQLHelper<SPInput_MemberUnBind, SPOutput_MemberUnBind> sqlHelp = new SQLHelper<SPInput_MemberUnBind, SPOutput_MemberUnBind>(connetStr);
+                SQLHelper<Domain.SP.Input.Hotai.SPInput_MemberUnBind, SPOutput_MemberUnBind> sqlHelp = new SQLHelper<Domain.SP.Input.Hotai.SPInput_MemberUnBind, SPOutput_MemberUnBind>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
-                if (flag)
-                {
-                    if (spOut != null)
-                    {
-                        var SignErrCode = "";
-                        HotaiMemberAPI api = new HotaiMemberAPI();
-                        WebAPIInput_SignOut signOut = new WebAPIInput_SignOut()
-                        {
-                            refresh_token = spOut.RefreshToken
-                        };
-                        var SignFlag = api.DoSignOut(spOut.AccessToken, signOut, ref SignErrCode);
-                    }
-                }
+                // 20220121 UPD BY YEH REASON:不打和泰API
+                //if (flag)
+                //{
+                //    if (spOut != null)
+                //    {
+                //        var SignErrCode = "";
+                //        HotaiMemberAPI api = new HotaiMemberAPI();
+                //        WebAPIInput_SignOut signOut = new WebAPIInput_SignOut()
+                //        {
+                //            refresh_token = spOut.RefreshToken
+                //        };
+                //        var SignFlag = api.DoSignOut(spOut.AccessToken, signOut, ref SignErrCode);
+                //    }
+                //}
             }
             #endregion
             #endregion
