@@ -1096,7 +1096,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.CreateSubsMonth);
-            string spName = "usp_CreateSubsMonth_U1";
+            string spName = "usp_CreateSubsMonth_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1121,7 +1121,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.UpSubsMonth);
-            string spName = "usp_UpSubsMonth_U1";
+            string spName = "usp_UpSubsMonth_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1229,7 +1229,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.ArrearsPaySubs);
-            string spName = "usp_ArrearsPaySubs_U1";
+            string spName = "usp_ArrearsPaySubs_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1786,7 +1786,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
 
-            string spName = "usp_SaveSubsInvno_U1";
+            string spName = "usp_SaveSubsInvno_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SaveInvno();

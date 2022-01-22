@@ -418,7 +418,8 @@ namespace WebAPI.Controllers
                                     NPOBAN = InvData.NPOBAN,
                                     Invno = INVNO,
                                     InvoicePrice = ProdPrice,
-                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                    PRGID=funName
                                 };
 
                                 xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -873,7 +874,8 @@ namespace WebAPI.Controllers
                                 NPOBAN = InvData.NPOBAN,
                                 Invno = INVNO,
                                 InvoicePrice = ProdPrice,
-                                InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                PRGID=funName
                             };
 
                             xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -1060,8 +1062,7 @@ namespace WebAPI.Controllers
                         var spin = new SPInput_GetArrsSubsList()
                         {
                             IDNO = IDNO,
-                            LogID = LogID
-                            
+                            LogID = LogID                       
                         };
                         sp_re = msp.sp_GetArrsSubsList(spin, ref sp_errCode);
                         if (sp_re != null && sp_re.Arrs != null && sp_re.Arrs.Count() > 0)
@@ -1279,7 +1280,8 @@ namespace WebAPI.Controllers
                                         NPOBAN = InvData.NPOBAN,
                                         Invno = INVNO,
                                         InvoicePrice = ProdPrice,
-                                        InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                        InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                        PRGID=funName
                                     };
 
                                     xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);

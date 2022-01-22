@@ -56,5 +56,6 @@ namespace Domain.SP.Input.Subscription
         /// 發票日期
         /// </summary>
         public string InvoiceDate { get; set; }
+        public string PRGID { get; set; } = "";
     }
 }

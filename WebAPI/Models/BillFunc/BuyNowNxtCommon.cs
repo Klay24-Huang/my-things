@@ -83,6 +83,7 @@ namespace WebAPI.Models.BillFunc
                             //20210709 ADD BY ADAM REASON.補上台新訂單編號
                             spIn.MerchantTradeNo = MerchantTradeNo;
                             spIn.TaishinTradeNo = TransactionNo;
+                            spIn.PRGID = ApiID.ToString();
                             
                             flag = msp.sp_CreateSubsMonth(spIn, ref errCode, ref MonthlyRentId);
                             trace.traceAdd("CreateSubsMonth", new { flag, errCode, MonthlyRentId });
@@ -111,6 +112,7 @@ namespace WebAPI.Models.BillFunc
                             spIn.LogID = LogID;
                             spIn.MerchantTradeNo = MerchantTradeNo;
                             spIn.TaishinTradeNo = TransactionNo;
+                            spIn.PRGID = ApiID.ToString();
                         }
                         if (!string.IsNullOrWhiteSpace(spIn.IDNO) && spIn.LogID > 0 &&
                             !string.IsNullOrWhiteSpace(spIn.MonProjID) && spIn.MonProPeriod > 0 &&
@@ -141,6 +143,7 @@ namespace WebAPI.Models.BillFunc
                             spIn.MerchantTradeNo = MerchantTradeNo;
                             spIn.TaishinTradeNo = TransactionNo;
                             spIn.MonthlyRentIds = MonthlyRentIds;
+                            spIn.PRGID = ApiID.ToString();
                         }
                         if (string.IsNullOrWhiteSpace(spIn.IDNO) || spIn.LogID == 0)
                         {
