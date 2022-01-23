@@ -549,6 +549,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GeneralTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />

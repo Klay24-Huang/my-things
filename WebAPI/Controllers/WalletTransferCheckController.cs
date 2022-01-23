@@ -15,12 +15,13 @@ using Domain.SP.Input.Wallet;
 using WebAPI.Service;
 using WebAPI.Utils;
 using Domain.SP.Output.Wallet;
+using System.Configuration;
 
 namespace WebAPI.Controllers
 {
     public class WalletTransferCheckController : ApiController
     {
-        //private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost()]
         public Dictionary<string, object> DoWalletTransferCheck([FromBody] Dictionary<string, object> value)
@@ -43,6 +44,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             var apiInput = new IAPI_WalletTransferCheck();
             var outputApi = new OAPI_WalletTransferCheck();
+            var outputApi_old = new OAPI_GeneralTransferCheck();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -53,6 +55,8 @@ namespace WebAPI.Controllers
 
             string inIDNO = "";//輸入身分證號
             string inPhoneNo = "";//輸入手機號碼          
+
+            bool oldVersion = false;
 
             #endregion
 
@@ -80,23 +84,32 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO_Phone) )
+                    //20220122 ADD BY ADAM REASON.要保留舊版的運作
+                    if (apiInput != null && apiInput.IDNO != "")
                     {
-                        flag = false;
-                        errMsg = "未輸入主要查詢KEY值";
-                        errCode = "ERR257";//未輸入主要查詢KEY值
+
+                        oldVersion = true;
                     }
                     else
                     {
-                        if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))//判斷是否為全部數字
-                            //inPhoneNo = intPhoneNo.ToString();
-                            inPhoneNo = apiInput.IDNO_Phone;
+                        if (apiInput == null || string.IsNullOrWhiteSpace(apiInput.IDNO_Phone))
+                        {
+                            flag = false;
+                            errMsg = "未輸入主要查詢KEY值";
+                            errCode = "ERR257";//未輸入主要查詢KEY值
+                        }
                         else
-                            inIDNO = apiInput.IDNO_Phone;
-                    }
+                        {
+                            if (Int32.TryParse(apiInput.IDNO_Phone, out int intPhoneNo))//判斷是否為全部數字
+                                                                                        //inPhoneNo = intPhoneNo.ToString();
+                                inPhoneNo = apiInput.IDNO_Phone;
+                            else
+                                inIDNO = apiInput.IDNO_Phone;
+                        }
 
-                    trace.FlowList.Add("判斷輸入為電話或身分證");
-                    trace.traceAdd("InputCheck", new { flag, errCode, errMsg});
+                        trace.FlowList.Add("判斷輸入為電話或身分證");
+                        trace.traceAdd("InputCheck", new { flag, errCode, errMsg });
+                    }
                 }
 
                 #endregion
@@ -131,67 +144,100 @@ namespace WebAPI.Controllers
                 var CkTo = new SPOut_WalletTransferCheck();
                 if (flag)
                 {
-                    string sp1ErrCode = "", sp2ErrCode="";
-
-                    #region 贈與人檢查
-
-                    var sp1In = new SPInput_WalletTransferCheck()
+                    if (oldVersion)
                     {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                    };
-                    var sp1_list = wsp.sp_WalletTransferCheck(sp1In, ref sp1ErrCode);
-                    if (sp1_list != null && sp1_list.Count() > 0)
-                        CkFrom = sp1_list.FirstOrDefault();
-                    else
-                        CkFrom = null;
-
-                    if (sp1ErrCode != "0000")
-                    {
-                        flag = false;
-                        errCode = sp1ErrCode;
-                    }
-
-                    trace.traceAdd("sp1_lnfo", new { sp1In,  sp1_list, sp1ErrCode});
-                    trace.FlowList.Add("贈與人檢查");
-
-                    #endregion
-
-                    #region 受贈人檢查
-
-                    if (flag)
-                    {
-                        var sp2In = new SPInput_WalletTransferCheck()
+                        string SPName = new ObjType().GetSPName(ObjType.SPType.GetMemberInfo);
+                        SPInput_GetMemberName SPInput = new SPInput_GetMemberName()
                         {
-                            IDNO = inIDNO,//受贈人
-                            PhoneNo = inPhoneNo,//受贈人
-                            LogID = LogID,
+                            LoginIDNO = IDNO,
+                            DonateIDNO = apiInput.IDNO,
+                            Token = Access_Token,
+                            LogID = LogID
                         };
-                        var sp2_list = wsp.sp_WalletTransferCheck(sp2In, ref sp2ErrCode);
-                        if (sp2_list != null && sp2_list.Count() > 0) 
-                        {
-                            CkTo = sp2_list.FirstOrDefault();
-                            /*
-                            if (!string.IsNullOrWhiteSpace(inPhoneNo))
-                                outputApi.ShowValue = CkTo.ShowValue;
-                            else
-                                outputApi.ShowValue = CkTo.ShowName;
-                            */
-                            outputApi.ShowValue = CkTo.ShowValue;
-                            outputApi.ShowName = CkTo.ShowName;
-                            outputApi.IDNO = CkTo.IDNO;
-                        }
-                        else
-                            CkTo = null;
-
-                        if (sp2ErrCode != "0000")
+                        SPOutput_GetMemberName SPOutput = new SPOutput_GetMemberName();
+                        SQLHelper<SPInput_GetMemberName, SPOutput_GetMemberName> sqlHelp = new SQLHelper<SPInput_GetMemberName, SPOutput_GetMemberName>(connetStr);
+                        flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
+                        if (string.IsNullOrEmpty(SPOutput.Name))
                         {
                             flag = false;
-                            errCode = sp2ErrCode;
+                            errCode = "ERR201";
                         }
 
-                        trace.traceAdd("sp2_lnfo", new { sp2In, sp2_list, sp2ErrCode });
-                        trace.FlowList.Add("受贈人檢查");
+                        if (flag)
+                        {
+                            outputApi_old = new OAPI_GeneralTransferCheck
+                            {
+                                Name = SPOutput.Name,
+                                PhoneNo = SPOutput.PhoneNo,
+                                Amount = apiInput.Amount
+                            };
+                        }
+                    }
+                    else
+                    {
+                        string sp1ErrCode = "", sp2ErrCode = "";
+
+                        #region 贈與人檢查
+
+                        var sp1In = new SPInput_WalletTransferCheck()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                        };
+                        var sp1_list = wsp.sp_WalletTransferCheck(sp1In, ref sp1ErrCode);
+                        if (sp1_list != null && sp1_list.Count() > 0)
+                            CkFrom = sp1_list.FirstOrDefault();
+                        else
+                            CkFrom = null;
+
+                        if (sp1ErrCode != "0000")
+                        {
+                            flag = false;
+                            errCode = sp1ErrCode;
+                        }
+
+                        trace.traceAdd("sp1_lnfo", new { sp1In, sp1_list, sp1ErrCode });
+                        trace.FlowList.Add("贈與人檢查");
+
+                        #endregion
+
+                        #region 受贈人檢查
+
+                        if (flag)
+                        {
+                            var sp2In = new SPInput_WalletTransferCheck()
+                            {
+                                IDNO = inIDNO,//受贈人
+                                PhoneNo = inPhoneNo,//受贈人
+                                LogID = LogID,
+                            };
+                            var sp2_list = wsp.sp_WalletTransferCheck(sp2In, ref sp2ErrCode);
+                            if (sp2_list != null && sp2_list.Count() > 0)
+                            {
+                                CkTo = sp2_list.FirstOrDefault();
+                                /*
+                                if (!string.IsNullOrWhiteSpace(inPhoneNo))
+                                    outputApi.ShowValue = CkTo.ShowValue;
+                                else
+                                    outputApi.ShowValue = CkTo.ShowName;
+                                */
+                                outputApi.ShowValue = CkTo.ShowValue;
+                                outputApi.ShowName = CkTo.ShowName;
+                                outputApi.IDNO = CkTo.IDNO;
+                            }
+                            else
+                                CkTo = null;
+
+                            if (sp2ErrCode != "0000")
+                            {
+                                flag = false;
+                                errCode = sp2ErrCode;
+                            }
+
+                            trace.traceAdd("sp2_lnfo", new { sp2In, sp2_list, sp2ErrCode });
+                            trace.FlowList.Add("受贈人檢查");
+                        }
                     }
 
                     #endregion
@@ -253,7 +299,15 @@ namespace WebAPI.Controllers
             }
 
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+            if (oldVersion)
+            {
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi_old, token);
+            }
+            else
+            {
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+            }
+            
             return objOutput;
             #endregion        
         }
