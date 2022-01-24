@@ -1091,6 +1091,7 @@ namespace WebAPI.Controllers
                     TraceType = eumTraceType.exception
                 };
                 carRepo.AddTraceLog(errItem);
+                flag = false;
                 errCode = "ERR902";
                 //errMsg = "";
                 //throw;

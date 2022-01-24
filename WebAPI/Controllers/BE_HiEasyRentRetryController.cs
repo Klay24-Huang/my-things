@@ -18,6 +18,8 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using NLog;
+using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -129,6 +131,16 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     retryMode = spOut.ReturnMode;
+                }
+                else
+                {
+                    //如果查不出來的情況再用INPUT的參數強制指定
+                    retryMode = apiInput.retryMode > 0 ? apiInput.retryMode : 0;
+                    if (retryMode > 0)
+                    {
+                        flag = true;
+                        errCode = "000000";
+                    }
                 }
 
                 if (flag)
@@ -370,6 +382,15 @@ namespace WebAPI.Controllers
                                         }
                                         else
                                         {
+                                            //遇到ETAG > 租金，先寫一筆空的進去
+                                            input.tbPaymentDetail[z] = new PaymentDetail()
+                                            {
+                                                PAYAMT = "0",
+                                                PAYTYPE = "",
+                                                PAYMENTTYPE = "",
+                                                PAYMEMO = "",
+                                                PORDNO = ""
+                                            };
                                             int k = z;
                                             while(k >= 0)
                                             {
@@ -460,6 +481,8 @@ namespace WebAPI.Controllers
                                 };
                             }
                             #endregion
+
+                            logger.Info(JsonConvert.SerializeObject(input));
 
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);

@@ -625,6 +625,7 @@
     <Build Include="dbo\Tables\TB_MemberCMK.sql" />
     <Build Include="dbo\Stored Procedures\usp_BeforeBookingExtend.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetHotaiDefaultCard_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SetSubsNxt_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiMemberUnBind_U01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiToken_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiToken_U01.sql" />

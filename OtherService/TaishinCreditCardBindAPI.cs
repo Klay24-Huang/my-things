@@ -1291,7 +1291,7 @@ namespace OtherService
             //request.KeepAlive = true;
             request.KeepAlive = false;
             SetHeaderValue(request.Headers, "Connection", "close");
-            request.Timeout = 40000;
+            request.Timeout = 60000;
             //設定刷卡逾時設定15秒
             //if (Site.ToUpper().Contains("AUTH"))
             //{

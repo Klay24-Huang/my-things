@@ -43,7 +43,7 @@ namespace RelayAPI.Controllers
                 request.Method = "POST";
                 request.ContentType = "application/json";
                 request.KeepAlive = false;
-                request.Timeout = 30000;
+                request.Timeout = 50000;
 
                 try
                 {

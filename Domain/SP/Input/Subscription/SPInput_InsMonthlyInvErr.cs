@@ -65,5 +65,20 @@ namespace Domain.SP.Input.Subscription
         /// 發票金額
         /// </summary>
         public int INVAMT { get; set; }
+
+        /// <summary>
+        /// 程式名稱
+        /// </summary>
+        public string PRGID { get; set; } = "";
+
+        /// <summary>
+        /// 短租回傳錯誤代碼
+        /// </summary>
+        public string RtnCode { get; set; } = "";
+
+        /// <summary>
+        /// 短租回傳錯誤訊息
+        /// </summary>
+        public string RtnMsg { get; set; } = "";
     }
 }
