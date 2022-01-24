@@ -482,7 +482,7 @@ namespace WebAPI.Controllers
                             }
                             #endregion
 
-                            logger.Info(JsonConvert.SerializeObject(input));
+                            //logger.Info(JsonConvert.SerializeObject(input));
 
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);

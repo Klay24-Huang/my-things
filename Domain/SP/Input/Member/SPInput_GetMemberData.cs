@@ -16,9 +16,5 @@
         /// </summary>
         public int CheckToken { get; set; } = 1;
 
-        /// <summary>
-        /// 是否檢查Token (0:不檢查 1:要檢查)
-        /// </summary>
-        public int CheckToken { set; get; } = 1;
     }
 }
