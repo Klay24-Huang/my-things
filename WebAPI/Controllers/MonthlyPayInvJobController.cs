@@ -188,6 +188,7 @@ namespace WebAPI.Controllers
                         InvNo = wsOutput.Data[0].INVNO;
                         logger.Trace("InvNo=" + InvNo);
                     }
+                    trace.traceAdd("MonthlyRentSave", new { wsInput, wsOutput });
                     trace.FlowList.Add("發票開立");
 
                     if (InvNo != "")
@@ -241,7 +242,10 @@ namespace WebAPI.Controllers
                             CARRIERID = sp_re.CarrierId,
                             UNIMNO = sp_re.Unimno,
                             NPOBAN = sp_re.Npoban,
-                            INVAMT = sp_re.PreiodPrice
+                            INVAMT = sp_re.PreiodPrice,
+                            PRGID = funName,
+                            RtnCode = wsOutput?.RtnCode ?? "-4",
+                            RtnMsg = wsOutput?.Message ?? ""
                         };
 
                         xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);

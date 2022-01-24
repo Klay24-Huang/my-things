@@ -34,6 +34,7 @@ using Domain.SP.Input.Member;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using NLog;
+using System.Data.SqlClient;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -1602,6 +1603,41 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        public Dictionary<string, object> Sql_GetMonData(int monthlyRentID)
+        {
+            Dictionary<string, object> resultDic = new Dictionary<string, object>();
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["IRent"].ConnectionString))
+                {
+
+                    conn.Open();
+
+                    using (SqlCommand cmd = new SqlCommand("SP_MonthlyRentNowPeriod_Q01", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MonthlyRentID", SqlDbType.Int).Value = monthlyRentID;
+
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            resultDic.Add("NowPeriod", reader["NowPeriod"]);
+                            resultDic.Add("StartDate", reader["StartDate"]);
+                            resultDic.Add("EndDate", reader["EndDate"]);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            return resultDic;
+        }
+
         public List<SPOut_GetMonSetInfo> sp_GetMonSetInfo(SPInput_GetMonSetInfo spInput, ref string errCode)
         {
             var re = new List<SPOut_GetMonSetInfo>();
@@ -1811,7 +1847,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
 
-            string spName = "usp_InsMonthlyInvErr_I01";
+            string spName = "usp_InsMonthlyInvErr_I02";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SaveInvno();

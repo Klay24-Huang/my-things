@@ -300,8 +300,8 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         flag = buyNxtCom.exeNxt(MerchantTradeNo, TransactionNo);
-                        errCode = buyNxtCom.errCode;                        
-                        trace.traceAdd("exeNxt", new { buyNxtCom});
+                        errCode = buyNxtCom.errCode;
+                        trace.traceAdd("exeNxt", new { buyNxtCom });
                         trace.FlowList.Add("後續api處理");
                     }
                     #endregion
@@ -327,7 +327,7 @@ namespace WebAPI.Controllers
                                     Amount = ProdPrice,
                                     UseType = 0,
                                     MonthlyNo = buyNxtCom.MonthlyRentId,
-                                    PRGID= funName
+                                    PRGID = funName
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
                                 trace.traceAdd("TSIB_Escrow_Month", new { spin, xerrCode, xerrMsg });
@@ -338,7 +338,7 @@ namespace WebAPI.Controllers
                         {
                             trace.traceAdd("Escrow_Exception", new { ex });
                         }
-                       
+
 
                     }
                     #endregion
@@ -419,7 +419,7 @@ namespace WebAPI.Controllers
                                     Invno = INVNO,
                                     InvoicePrice = ProdPrice,
                                     InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                    PRGID=funName
+                                    PRGID = funName
                                 };
 
                                 xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -451,7 +451,10 @@ namespace WebAPI.Controllers
                                     CARRIERID = InvData.CARRIERID,
                                     UNIMNO = InvData.UNIMNO,
                                     NPOBAN = InvData.NPOBAN,
-                                    INVAMT = ProdPrice
+                                    INVAMT = ProdPrice,
+                                    PRGID = funName,
+                                    RtnCode = wsOutput?.RtnCode ?? "-4",
+                                    RtnMsg = wsOutput?.Message ?? ""
                                 };
 
                                 xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
@@ -783,7 +786,7 @@ namespace WebAPI.Controllers
                                     Email = mem.MEMEMAIL,
                                     Amount = ProdPrice,
                                     UseType = 0,
-                                    MonthlyNo=buyNxtCom.MonthlyRentId,
+                                    MonthlyNo = buyNxtCom.MonthlyRentId,
                                     PRGID = funName
                                 };
                                 var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
@@ -875,7 +878,7 @@ namespace WebAPI.Controllers
                                 Invno = INVNO,
                                 InvoicePrice = ProdPrice,
                                 InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                PRGID=funName
+                                PRGID = funName
                             };
 
                             xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -885,6 +888,41 @@ namespace WebAPI.Controllers
                             }
                             trace.traceAdd("sp_SaveSubsInvno", new { spin, sp_errCode });
                             trace.FlowList.Add("發票存檔");
+                        }
+                        else
+                        {
+                            //20210826 ADD BY ADAM REASON.發票開立失敗處理
+                            //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
+                            string sp_errCode = "";
+                            var spInput = new SPInput_InsMonthlyInvErr()
+                            {
+                                ApiInput = JsonConvert.SerializeObject(wsInput),
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                MonthlyRentID = buyNxtCom.MonthlyRentId,
+                                MonProjID = apiInput.UP_MonProjID,
+                                MonProPeriod = apiInput.UP_MonProPeriod,
+                                ShortDays = apiInput.UP_ShortDays,
+                                NowPeriod = buyNxtCom.NowPeriod,
+                                PayTypeId = (Int64)apiInput.PayTypeId,
+                                InvoTypeId = InvoTypeId,
+                                InvoiceType = InvData.InvocieType,
+                                CARRIERID = InvData.CARRIERID,
+                                UNIMNO = InvData.UNIMNO,
+                                NPOBAN = InvData.NPOBAN,
+                                INVAMT = ProdPrice,
+                                PRGID = funName,
+                                RtnCode = wsOutput?.RtnCode ?? "-4",
+                                RtnMsg = wsOutput?.Message ?? "",
+                            };
+
+                            xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
+                            if (!xflag)
+                            {
+                                logger.Trace("spError=" + sp_errCode);
+                            }
+                            trace.traceAdd("sp_InsMonthlyInvErr", new { spInput, sp_errCode });
+                            trace.FlowList.Add("發票錯誤處理");
                         }
                     }
                     catch (Exception ex)
@@ -1062,7 +1100,7 @@ namespace WebAPI.Controllers
                         var spin = new SPInput_GetArrsSubsList()
                         {
                             IDNO = IDNO,
-                            LogID = LogID                       
+                            LogID = LogID
                         };
                         sp_re = msp.sp_GetArrsSubsList(spin, ref sp_errCode);
                         if (sp_re != null && sp_re.Arrs != null && sp_re.Arrs.Count() > 0)
@@ -1184,7 +1222,7 @@ namespace WebAPI.Controllers
                                         PRGID = funName
                                     };
                                     var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
-                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });                                   
+                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });
                                 }
                                 trace.FlowList.Add("履保處理");
                             }
@@ -1281,7 +1319,7 @@ namespace WebAPI.Controllers
                                         Invno = INVNO,
                                         InvoicePrice = ProdPrice,
                                         InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                        PRGID=funName
+                                        PRGID = funName
                                     };
 
                                     xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -1293,9 +1331,42 @@ namespace WebAPI.Controllers
                                 }
                                 trace.FlowList.Add("發票存檔");
                             }
+                            else
+                            {
+                                //20210826 ADD BY ADAM REASON.發票開立失敗處理
+                                //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
+                                string sp_errCode = "";
+                                for (int i = 0; i < sp_re.Arrs.Count; i++)
+                                {
+                                    var spInput = new SPInput_InsMonthlyInvErr()
+                                    {
+                                        ApiInput = JsonConvert.SerializeObject(wsInput),
+                                        IDNO = IDNO,
+                                        LogID = LogID,
+                                        MonthlyRentID = sp_re.Arrs[i].MonthlyRentId,
+                                        MonProjID = sp_re.Arrs[i].ProjID,
+                                        MonProPeriod = sp_re.Arrs[i].MonProPeriod,
+                                        ShortDays = sp_re.Arrs[i].ShortDays,
+                                        NowPeriod = sp_re.Arrs[i].rw,
+                                        PayTypeId = (Int64)apiInput.PayTypeId,
+                                        InvoTypeId = InvoTypeId,
+                                        InvoiceType = InvData.InvocieType,
+                                        CARRIERID = InvData.CARRIERID,
+                                        UNIMNO = InvData.UNIMNO,
+                                        NPOBAN = InvData.NPOBAN,
+                                        INVAMT = sp_re.Arrs[i].PeriodPayPrice,
+                                        PRGID = funName,
+                                        RtnCode = wsOutput?.RtnCode ?? "-4",
+                                        RtnMsg = wsOutput?.Message ?? "",
+                                    };
+                                    xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
+                                    trace.traceAdd("sp_InsMonthlyInvErr", new { spInput, sp_errCode });
+                                }
+                                trace.FlowList.Add("發票錯誤處理");
+                            }
                         }
                         catch (Exception ex)
-                        {   
+                        {
                             //紀錄開立失敗
                             logger.Trace(ex.Message);
                         }

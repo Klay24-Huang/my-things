@@ -73,6 +73,11 @@ namespace WebAPI.Controllers
             string MerchantTradeNo = "";
             string INVNO = "";
             int MonthlyRentId = 0;
+            string SDate = "";
+            string EDate = "";
+            int nowPeriod = 0;
+
+
             var mem = new Domain.MemberData.RegisterData();
             var InvData = new Domain.MemberData.InvoiceData();
 
@@ -181,7 +186,10 @@ namespace WebAPI.Controllers
 
                             IsMoto = fItem.IsMoto;
                         }
-
+                        var nowPeriodMonData = msp.Sql_GetMonData(apiInput.MonthlyRentId);
+                        SDate = Convert.ToDateTime(nowPeriodMonData["StartDate"]).ToString("yyyyMMdd");
+                        EDate = Convert.ToDateTime(nowPeriodMonData["EndDate"]).ToString("yyyyMMdd");
+                        nowPeriod = Convert.ToInt32(nowPeriodMonData["NowPeriod"]);
                         trace.traceAdd("monthInfo", new { monObjs, spin, sp_errCode });
                         trace.FlowList.Add("月租資訊");
                     }
@@ -285,9 +293,9 @@ namespace WebAPI.Controllers
                                 MonProjID = apiInput.MonProjID,
                                 MonProPeriod = apiInput.MonProPeriod,
                                 ShortDays = apiInput.ShortDays,
-                                NowPeriod = 1, //第一期固定寫1
-                                SDATE = DateTime.Now.ToString("yyyyMMdd"),
-                                EDATE = DateTime.Now.AddDays(apiInput.MonProPeriod * 30).ToString("yyyyMMdd"),
+                                NowPeriod = nowPeriod,
+                                SDATE = SDate,
+                                EDATE = EDate,
                                 IsMoto = IsMoto,
                                 RCVAMT = ProdPrice,
                                 UNIMNO = InvData.UNIMNO,
@@ -335,7 +343,7 @@ namespace WebAPI.Controllers
                                     MonProjID = apiInput.MonProjID,
                                     MonProPeriod = apiInput.MonProPeriod,
                                     ShortDays = apiInput.ShortDays,
-                                    NowPeriod = 1,  //寫死第一期
+                                    NowPeriod = nowPeriod,
                                     PayTypeId = (Int64)apiInput.PayTypeId,
                                     InvoTypeId = InvoTypeId,
                                     InvoiceType = InvData.InvocieType,
@@ -344,7 +352,8 @@ namespace WebAPI.Controllers
                                     NPOBAN = InvData.NPOBAN,
                                     Invno = INVNO,
                                     InvoicePrice = ProdPrice,
-                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                    PRGID=funName
                                 };
 
                                 xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -353,6 +362,41 @@ namespace WebAPI.Controllers
                                     logger.Trace("spError=" + sp_errCode);
                                 }
                                 trace.FlowList.Add("發票存檔");
+                            }
+                            else
+                            {
+                                //20210826 ADD BY ADAM REASON.發票開立失敗處理
+                                //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
+                                string sp_errCode = "";
+                                var spInput = new SPInput_InsMonthlyInvErr()
+                                {
+                                    ApiInput = JsonConvert.SerializeObject(wsInput),
+                                    IDNO = IDNO,
+                                    LogID = LogID,
+                                    MonthlyRentID = apiInput.MonthlyRentId == 0 ? buyNxtCom.MonthlyRentId : apiInput.MonthlyRentId,
+                                    MonProjID = apiInput.MonProjID,
+                                    MonProPeriod = apiInput.MonProPeriod,
+                                    ShortDays = apiInput.ShortDays,
+                                    NowPeriod = nowPeriod,
+                                    PayTypeId = (Int64)apiInput.PayTypeId,
+                                    InvoTypeId = InvoTypeId,
+                                    InvoiceType = InvData.InvocieType,
+                                    CARRIERID = InvData.CARRIERID,
+                                    UNIMNO = InvData.UNIMNO,
+                                    NPOBAN = InvData.NPOBAN,
+                                    INVAMT = ProdPrice,
+                                    PRGID = funName,
+                                    RtnCode = wsOutput?.RtnCode ?? "-4",
+                                    RtnMsg = wsOutput?.Message ?? ""
+                                };
+
+                                xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
+                                if (!xflag)
+                                {
+                                    logger.Trace("spError=" + sp_errCode);
+                                }
+                                trace.traceAdd("sp_InsMonthlyInvErr", new { spInput, sp_errCode });
+                                trace.FlowList.Add("發票錯誤處理");
                             }
                         }
                         catch (Exception ex)
@@ -705,7 +749,8 @@ namespace WebAPI.Controllers
                                 NPOBAN = InvData.NPOBAN,
                                 Invno = INVNO,
                                 InvoicePrice = ProdPrice,
-                                InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                PRGID=funName
                             };
 
                             xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -1049,7 +1094,8 @@ namespace WebAPI.Controllers
                                         NPOBAN = InvData.NPOBAN,
                                         Invno = INVNO,
                                         InvoicePrice =ProdPrice,
-                                        InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                        InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                        PRGID=funName
                                     };
 
                                     xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
