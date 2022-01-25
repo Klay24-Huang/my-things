@@ -39,25 +39,6 @@ namespace HotaiPayWebView.Controllers
             return View();
         }
 
-        //有一樣的了
-        //[HttpPost]
-        //public ActionResult CreditCardChoose()
-        //{
-        //    bool flag;
-        //    HotaipayService hotaipayService = new HotaipayService();
-        //    SPInput_SetDefaultCard spInput = new SPInput_SetDefaultCard();
-        //    string errCode="";
-        //    spInput.IDNO = MEMIDNO;
-        //    flag = hotaipayService.sp_SetDefaultCard(spInput,ref errCode);
-        //    if (flag)
-        //    {
-        //        return RedirectToAction("SuccessBind", "HotaiPay");
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("BindCardFailed", "HotaiPay");
-        //    }
-        //}
 
         //[HttpGet] //沒寫也會判定成get?!
         public ActionResult CreditCardChoose()//string irent_access_token，參數來源可以抓URL的QUERYSTRING和VIEW的
@@ -263,33 +244,34 @@ namespace HotaiPayWebView.Controllers
 
             //20220107唐加，反正url會帶p進來，就再解析一次，看看能否解決session機制在webview上的問題
             //若從login轉此頁不會帶p，但app上的按鈕直接進此頁會帶p
-            if (Request.QueryString["p"] != null && Session["p"]==null)
-            {
-                decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
-                Session["p"] = Request.QueryString["p"].Trim();
-            }
-            
-
-            ////若網址列有irent_access_token
-            //if (TempData["irent_access_token"]!=null)
+            //if (Request.QueryString["p"] != null && Session["p"]==null)
             //{
-            //    irent_access_token = TempData["irent_access_token"].ToString().Trim();
+            //    decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
+            //    Session["p"] = Request.QueryString["p"].Trim();
             //}
-            if (Session["p"] != null)
-            {
-                decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
-                irent_access_token = decryptDic["irent_access_token"].Trim();
-            }
             //若有p加密字串
-            else if (Request.QueryString["p"] != null && Request.QueryString["p"].Trim().Length > 0)
+            if (Request.QueryString["p"] != null && Request.QueryString["p"].Trim().Length > 0)
             {
+                //重新賦值
+                Session["p"] = Request.QueryString["p"].ToString();
                 //進行解密
                 decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
                 irent_access_token = decryptDic["irent_access_token"].Trim();
             }
-            else {
-                return View("Login","HotaiPay");
+            HotaiPayController HP = new HotaiPayController();
+            if (!HP.CheckIdno(decryptDic["id"]))
+            {
+                if (Session["p"] != null && Session["p"].ToString().Trim().Length > 0)
+                {
+                    Session["p"] = Session["p"].ToString();
+                    decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
+                    irent_access_token = decryptDic["irent_access_token"].Trim();
+                }
             }
+            
+            //else {
+            //    return View("Login","HotaiPay");
+            //}
 
 
             //以上面獲得的Token取IDNO
