@@ -201,6 +201,7 @@
     <Compile Include="Controllers\AnyRentController.cs" />
     <Compile Include="Controllers\AreaListController.cs" />
     <Compile Include="Controllers\ArrearsQueryController.cs" />
+    <Compile Include="Controllers\AutoSubscribeJobController.cs" />
     <Compile Include="Controllers\BatExchangeStationController.cs" />
     <Compile Include="Controllers\BE_AuditController.cs" />
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />

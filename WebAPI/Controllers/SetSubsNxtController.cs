@@ -46,9 +46,8 @@ namespace WebAPI.Controllers
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
-            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
+            string Access_Token_string = httpContext.Request.Headers["Authorization"] ?? ""; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
             bool isWriteError = false;
@@ -112,22 +111,7 @@ namespace WebAPI.Controllers
 
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        trace.traceAdd(nameof(token_re), token_re);
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
-                    trace.FlowList.Add("Token判斷");
-                    trace.traceAdd("TokenCk", new { flag, errCode });
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
                 }
 
                 #endregion
@@ -143,13 +127,13 @@ namespace WebAPI.Controllers
                         NxtMonProjID = apiInput.MonProjID,
                         NxtMonProPeriod = apiInput.MonProPeriod,
                         NxtShortDays = apiInput.ShortDays,
-                        AutoSubs = apiInput.AutoSubs
+                        AutoSubs = apiInput.AutoSubs,
+                        PRGID = funName
                     };
-                    trace.traceAdd("spIn", spIn);
                     //取出月租列表
                     flag = msp.sp_SetSubsNxt(spIn, ref errCode);
-                    trace.traceAdd("sp_re", flag);
-                    trace.FlowList.Add("sp呼叫");
+                    trace.traceAdd("sp_SetSubsNxt", new { flag, spIn, errCode });
+                    trace.FlowList.Add("設定自動訂閱");
                 }
 
                 #endregion

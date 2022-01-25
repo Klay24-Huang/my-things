@@ -64,6 +64,7 @@ namespace WebAPI.Controllers
         private static readonly Gauge ProcessedJobCount17 = Metrics.CreateGauge("CreditAuth_Fail_hasFind", "NUM_CreditAuth_Fail_hasFind");
         private static readonly Gauge ProcessedJobCount18 = Metrics.CreateGauge("CreditAuth_Fail_sp_ArrearsQueryByNPR330ID", "NUM_CreditAuth_Fail_sp_ArrearsQueryByNPR330ID");
         private static readonly Gauge ProcessedJobCount19 = Metrics.CreateGauge("CreditAuth_Fail_isGuest", "NUM_CreditAuth_Fail_isGuest");
+        private static readonly Gauge ProcessedJobCount20 = Metrics.CreateGauge("CreditAuth_Fail_car_mgt_status_13", "NUM_CreditAuth_Fail_car_mgt_status_13");
         #endregion
 
         #region 參數宣告
@@ -262,6 +263,12 @@ namespace WebAPI.Controllers
                                 errCode = "ERR209";
                                 //ProcessedJobCount9.Inc();//唐加prometheus
                                 SetCount("NUM_CreditAuth_Fail_car_mgt_status_15");//已完成還車付款，請勿重覆付款
+                            }
+                            else if (OrderDataLists[0].car_mgt_status < 13) // 20220120 UPD BY YEH REASON:狀態非13不可還車
+                            {
+                                flag = false;
+                                errCode = "ERR210";
+                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_13");  //尚未完成還車步驟，無法還車付款
                             }
                             else if (OrderDataLists[0].car_mgt_status < 11)
                             {
@@ -844,6 +851,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                flag = false;
                 trace.BaseMsg = ex.Message;
                 //ProcessedJobCount2.Inc();//唐加prometheus
                 SetCount("NUM_CreditAuth_Fail");
@@ -1212,6 +1220,9 @@ namespace WebAPI.Controllers
                     break;
                 case "NUM_CreditAuth_Fail_isGuest":
                     ProcessedJobCount19.Set(value); //宣告Guage才能用set
+                    break;
+                case "NUM_CreditAuth_Fail_car_mgt_status_13":
+                    ProcessedJobCount20.Set(value); //宣告Guage才能用set
                     break;
             }
         }

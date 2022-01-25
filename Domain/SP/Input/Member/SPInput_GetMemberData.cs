@@ -20,5 +20,10 @@ namespace Domain.SP.Input.Member
         /// 
         /// </summary>
         public Int64 LogID { set; get; }
+
+        /// <summary>
+        /// 是否檢查Token (0:不檢查 1:要檢查)
+        /// </summary>
+        public int CheckToken { set; get; } = 1;
     }
 }

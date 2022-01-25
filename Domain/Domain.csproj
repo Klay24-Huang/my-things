@@ -211,6 +211,7 @@
     <Compile Include="SP\Input\Rent\SPInput_OrderAuthReservation.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderAuth.cs" />
     <Compile Include="SP\Input\Rent\SPInput_UpdateOrderAuthListV2.cs" />
+    <Compile Include="SP\Input\Subscription\SPInput_AutoSubscribeJob_I01.cs" />
     <Compile Include="SP\Output\Bill\PreAmountData.cs" />
     <Compile Include="SP\Output\MonthlyRent\MonthlyRentNotify.cs" />
     <Compile Include="SP\Output\OrderList\PreOrderAuth.cs" />
@@ -384,6 +385,8 @@
     <Compile Include="SP\Output\SPOutput_RefundBase.cs" />
     <Compile Include="SP\Output\SPOutput_InsTrade.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_ArrearsPaySubs.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_AutoSubscribeJob.cs" />
+    <Compile Include="SP\Output\Subscription\SPOut_AutoSubscribeJob_I01.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_CreateSubsMonth.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_DelSubsHist.cs" />
     <Compile Include="SP\Output\Subscription\SPOut_GetArrsSubsList.cs" />

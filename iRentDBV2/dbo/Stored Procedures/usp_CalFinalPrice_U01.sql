@@ -7,6 +7,7 @@
 * 作    者 : eason
 * 撰寫日期 : 20210107
 * 修改日期 : 20211026 UPD BY YEH REASON:差額存檔
+			 20220120 UPD BY YEH REASON:將car_mgt_status壓為13
 
 * Example  : 
 ***********************************************************************************************/
@@ -45,7 +46,6 @@ DECLARE @cancel_status TINYINT;
 DECLARE @booking_status TINYINT;
 DECLARE @Descript NVARCHAR(200);
 DECLARE @NowTime DATETIME;
-DECLARE @ProjType INT;
 DECLARE @APIID INT;
 
 /*初始設定*/
@@ -63,7 +63,6 @@ SET @car_mgt_status=0;
 SET @cancel_status=0;
 SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @ProjType=5;
 SET @IDNO=ISNULL(@IDNO,'');
 SET @OrderNo=ISNULL(@OrderNo,0);
 SET @Token=ISNULL(@Token,'');
@@ -102,12 +101,16 @@ BEGIN TRY
 	BEGIN
 		SELECT @booking_status=booking_status,
 				@cancel_status=cancel_status,
-				@car_mgt_status=car_mgt_status,
-				@ProjType=ProjType
+				@car_mgt_status=car_mgt_status
 		FROM TB_OrderMain WITH(NOLOCK)
 		WHERE order_number=@OrderNo;
 
 		SELECT @APIID=ISNULL(APIID,0) FROM TB_APIList WITH(NOLOCK) WHERE APIName=@APIName;
+
+		-- 20220120 UPD BY YEH REASON:將car_mgt_status壓為13
+		UPDATE TB_OrderMain
+		SET car_mgt_status=13
+		WHERE order_number=@OrderNo;
 
 		UPDATE TB_OrderDetail
 		SET final_price=@final_price,
@@ -170,5 +173,5 @@ BEGIN CATCH
 END CATCH
 RETURN @Error
 
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice';
+EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CalFinalPrice_U01';
 GO

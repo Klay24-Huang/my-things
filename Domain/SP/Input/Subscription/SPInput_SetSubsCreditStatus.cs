@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Subscription
 {
@@ -12,6 +8,9 @@ namespace Domain.SP.Input.Subscription
         /// 身分證號
         /// </summary>
         public string IDNO { get; set; }
+        /// <summary>
+        /// LogID
+        /// </summary>
         public Int64 LogID { get; set; }
         /// <summary>
         /// 呼叫的ApiId
@@ -34,10 +33,20 @@ namespace Domain.SP.Input.Subscription
         /// </summary>
         public string BankApiRe { get; set; }
         /// <summary>
-        /// 刷卡結果0(未發送),1(回傳成功),2(回傳失敗),3(excetion)
+        /// 刷卡結果
+        /// <para>0:未發送</para>
+        /// <para>1:回傳成功</para>
+        /// <para>2:回傳失敗</para>
+        /// <para>3:Exception</para>
         /// </summary>
         public int CreditStatus { get; set; }
+        /// <summary>
+        /// ???
+        /// </summary>
         public DateTime? SetNow { get; set; }
+        /// <summary>
+        /// 刷卡失敗Exception訊息
+        /// </summary>
         public string Note { get; set; }
     }
 }

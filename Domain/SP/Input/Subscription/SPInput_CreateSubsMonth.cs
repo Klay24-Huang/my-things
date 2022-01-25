@@ -39,5 +39,6 @@ namespace Domain.SP.Input.Subscription
         /// 台新的交易序號
         /// </summary>
         public string TaishinTradeNo { get; set; }
+        public string PRGID { get; set; } = "";
     }
 }
