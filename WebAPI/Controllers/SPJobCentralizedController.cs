@@ -70,12 +70,16 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                if (!allowList.Any(p => p == apiInput.RunSPName))
+                if (allowList.Any(p => p == apiInput.RunSPName))
+                {
+                    var RunFlag = RunSP(apiInput.RunSPName, ref lstError, ref errCode);
+                    
+                }
+                else
                 {
                     flag = false;
                     errCode = "ERR908";
                 }
-                var RunFlag = RunSP(apiInput.RunSPName, ref lstError, ref errCode);
             }
             #endregion
             
