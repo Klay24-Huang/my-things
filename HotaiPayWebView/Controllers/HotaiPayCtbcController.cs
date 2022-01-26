@@ -40,50 +40,6 @@ namespace HotaiPayWebView.Controllers
         }
 
 
-        //[HttpGet] //沒寫也會判定成get?!
-        public ActionResult CreditCardChoose()//string irent_access_token，參數來源可以抓URL的QUERYSTRING和VIEW的
-        {
-            //logger.Error($"哈哈哈哈哈");
-            //不抓QUERYSTRING改抓Session
-            string irent_access_token = "";
-            HotaipayService HPServices = new HotaipayService();
-            var decryptDic = new Dictionary<string, string>();
-            if (Session["p"] != null)
-            {
-                decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
-                irent_access_token = Session["irent_access_token"].ToString();//decryptDic["irent_access_token"].Trim();
-            }
-
-            bool flag;
-            HotaipayService getlist = new HotaipayService();
-            IFN_QueryCardList input = new IFN_QueryCardList();
-            OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
-            string errorcode = "";
-            Int64 LogID = 0;
-            List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string ID = "";
-            List<HotaiCardInfo> Data = new List<HotaiCardInfo>();
-
-            flag = GetIDNOFromToken(irent_access_token, LogID, ref ID, ref lstError);
-            //flag = true;
-            if (flag)
-            {
-                Session["p"] = Session["p"];
-                Session["id"] = ID;
-                Session["irent_access_token"] = irent_access_token;
-
-                input.IDNO = ID;
-                input.PRGName = "CreditCardChoose";
-                flag = getlist.DoQueryCardList(input, ref output, ref errorcode);
-                Data = output.CreditCards;
-                return View(Data);
-            }
-            else
-            {
-                return View(Data);
-            }
-
-        }
 
         //同BindNewCard
         //public ActionResult ChooseNewCard()
@@ -291,6 +247,10 @@ namespace HotaiPayWebView.Controllers
 
             if (flag)
             {
+                if (IDNO == "") {
+                    ViewBag.LoginAlert = "登入憑證失效，請重新登入iRent";
+                    return View();
+                }
                 Session["id"] = IDNO;
                 Session["irent_access_token"] = irent_access_token;
                 Session["p"] = Session["p"];
@@ -299,17 +259,6 @@ namespace HotaiPayWebView.Controllers
             {
                 ViewBag.Alert = "fail to get user info";
                 return View();
-            }
-
-
-            //取得卡片清單
-            IFN_QueryCardList input = new IFN_QueryCardList();
-            OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
-            if (flag)
-            {
-                input.IDNO = IDNO;
-                flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
-                //logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
             }
 
             var redirectURL = "";
@@ -334,11 +283,22 @@ namespace HotaiPayWebView.Controllers
             @ViewBag.reURL = redirectURL;
 
 
+            //取得卡片清單
+            IFN_QueryCardList input = new IFN_QueryCardList();
+            OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
+            if (flag)
+            {
+                input.IDNO = IDNO;
+                flag = HPServices.DoQueryCardList(input, ref output, ref errCode);
+                //logger.Info($"DoQueryCardList |IDNO :{IDNO} | flag:{flag} | output.CreditCards.Count :{output.CreditCards.Count} ");
+            }
             //和泰Token失效
             if (errCode == "ERR941")
             {
                 //logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
-                return RedirectToRoute("Login", "HotaiPay" );
+                ViewBag.LoginAlert = "和泰登入憑證失效，請重新登入和泰會員";
+                return View();
+                
             }
 
             if (flag)
@@ -361,7 +321,56 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
-        #region 選擇綁定卡片
+
+        #region 選擇綁定卡片(載入)
+        //[HttpGet] //沒寫也會判定成get?!
+        public ActionResult CreditCardChoose()//string irent_access_token，參數來源可以抓URL的QUERYSTRING和VIEW的
+        {
+            //logger.Error($"哈哈哈哈哈");
+            //不抓QUERYSTRING改抓Session
+            string irent_access_token = "";
+            HotaipayService HPServices = new HotaipayService();
+            var decryptDic = new Dictionary<string, string>();
+            if (Session["p"] != null)
+            {
+                decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
+                irent_access_token = Session["irent_access_token"].ToString();//decryptDic["irent_access_token"].Trim();
+            }
+
+            bool flag;
+            HotaipayService getlist = new HotaipayService();
+            IFN_QueryCardList input = new IFN_QueryCardList();
+            OFN_HotaiCreditCardList output = new OFN_HotaiCreditCardList();
+            string errorcode = "";
+            Int64 LogID = 0;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string ID = "";
+            List<HotaiCardInfo> Data = new List<HotaiCardInfo>();
+
+            flag = GetIDNOFromToken(irent_access_token, LogID, ref ID, ref lstError);
+            //flag = true;
+            if (flag)
+            {
+                Session["p"] = Session["p"];
+                Session["id"] = ID;
+                Session["irent_access_token"] = irent_access_token;
+
+                input.IDNO = ID;
+                input.PRGName = "CreditCardChoose";
+                flag = getlist.DoQueryCardList(input, ref output, ref errorcode);
+                Data = output.CreditCards;
+                return View(Data);
+            }
+            else
+            {
+                return View(Data);
+            }
+
+        }
+        #endregion
+
+
+        #region 選擇綁定卡片(送出)
         [HttpPost]
         public ActionResult CreditcardChoose(FormCollection form)
         {
@@ -376,7 +385,7 @@ namespace HotaiPayWebView.Controllers
             string thatCardValue = form["CreditCardList"].Trim();
             if (thatCardValue != "")
             {
-                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nthatCardValue={thatCardValue}");
+                //logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nthatCardValue={thatCardValue}");
                 string[] input = thatCardValue.Split('|');
                 string MemberOneID = input[0];
                 string CardType = input[1];
@@ -394,7 +403,7 @@ namespace HotaiPayWebView.Controllers
                 sp_input.BankDesc = BankDesc;
                 sp_input.PRGName = "CreditcardChoose";
                 sp_input.BankCode = BankCode;
-                logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc}\nBankCode={BankCode} ");
+                //logger.Info($"選擇的卡片是：\nIDNO={IDNO}\nOneID={MemberOneID}\nCardToken={CardToken}\nCardNo={CardNumber}\nCardType={CardType}\nBankDesc={BankDesc}\nBankCode={BankCode} ");
                 flag = HPServices.sp_SetDefaultCard(sp_input, ref errCode);
                 if (!flag)
                 {
