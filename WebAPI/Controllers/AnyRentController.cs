@@ -204,30 +204,32 @@ namespace WebAPI.Controllers
                 {
                     #region 春節專案使用
                     //春節限定，將R139專案移除，並將R139的價格給原專案
-                    List<AnyRentObj> ListOutCorrect = new List<AnyRentObj>();
-                    ListOutCorrect = ListOut.Where(x => x.ProjID != "R139").ToList();
+                    //List<AnyRentObj> ListOutCorrect = new List<AnyRentObj>();
+                    //ListOutCorrect = ListOut.Where(x => x.ProjID != "R139").ToList();
 
-                    var TempR139List = ListOut.Where(x => x.ProjID == "R139").ToList();
-                    if (TempR139List != null)
-                    {
-                        foreach (var temp in TempR139List)
-                        {
-                            var Modify = ListOutCorrect.Where(x => x.CarNo == temp.CarNo).FirstOrDefault();
-                            if (Modify != null)
-                            {
-                                Modify.Rental = temp.Rental;
-                            }
-                        }
-                    }
+                    //var TempR139List = ListOut.Where(x => x.ProjID == "R139").ToList();
+                    //if (TempR139List != null)
+                    //{
+                    //    foreach (var temp in TempR139List)
+                    //    {
+                    //        var Modify = ListOutCorrect.Where(x => x.CarNo == temp.CarNo).FirstOrDefault();
+                    //        if (Modify != null)
+                    //        {
+                    //            Modify.Rental = temp.Rental;
+                    //        }
+                    //    }
+                    //}
                     #endregion
 
-                    if (ListOutCorrect != null && ListOutCorrect.Count() > 0) { }
-                    _AnyRentObj = objUti.TTMap<List<AnyRentObj>, List<OAPI_AnyRent_Param>>(ListOutCorrect);
+                    if (ListOut != null && ListOut.Count() > 0)
+                        _AnyRentObj = objUti.TTMap<List<AnyRentObj>, List<OAPI_AnyRent_Param>>(ListOut);
 
                     if (_AnyRentObj != null && _AnyRentObj.Count() > 0)
                     {
                         #region 加入月租資訊
-                        if (Score >= 60)    // 20210923 UPD BY YEH REASON:積分>=60才可使用訂閱制
+                        bool isSpring = new CarRentCommon().isSpring(SDate, EDate); //是否為春節時段
+
+                        if (Score >= 60 && !isSpring)    // 20210923 UPD BY YEH REASON:積分>=60才可使用訂閱制
                         {
                             if (InUseMonth != null && InUseMonth.Count() > 0)
                             {

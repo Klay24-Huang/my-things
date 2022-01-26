@@ -12,8 +12,8 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public static readonly string codeVersion = "202107291115";//hack: 修改程式請修正此版號
 
-        public static readonly string strSpringSd = "2021-02-09 00:00:00";//春節起
-        public static readonly string strSpringEd = "2021-02-17 00:00:00";//春節迄
+        public static readonly string strSpringSd = "2022-01-29 00:00:00";//春節起
+        public static readonly string strSpringEd = "2022-02-06 23:59:59";//春節迄
 
         /// <summary>
         /// BuyNow可執行ApiID
