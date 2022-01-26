@@ -48,9 +48,11 @@ namespace HotaiPayWebView.Controllers
             string irent_access_token = "";
             HotaipayService HPServices = new HotaipayService();
             var decryptDic = new Dictionary<string, string>();
-            if(Session["p"] != null)
+            if (Session["p"] != null)
+            {
                 decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
-            irent_access_token = decryptDic["irent_access_token"].Trim();
+                irent_access_token = Session["irent_access_token"].ToString();//decryptDic["irent_access_token"].Trim();
+            }
 
             bool flag;
             HotaipayService getlist = new HotaipayService();
@@ -66,6 +68,7 @@ namespace HotaiPayWebView.Controllers
             //flag = true;
             if (flag)
             {
+                Session["p"] = Session["p"];
                 Session["id"] = ID;
                 Session["irent_access_token"] = irent_access_token;
 
@@ -227,6 +230,7 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
+
         #region 無信用卡列表頁面 
         public ActionResult NoCreditCard()
         {
@@ -250,25 +254,33 @@ namespace HotaiPayWebView.Controllers
             //    Session["p"] = Request.QueryString["p"].Trim();
             //}
             //若有p加密字串
+
             if (Request.QueryString["p"] != null && Request.QueryString["p"].Trim().Length > 0)
             {
                 //重新賦值
-                Session["p"] = Request.QueryString["p"].ToString();
+                Session["p"] = Request.QueryString["p"];
                 //進行解密
                 decryptDic = HPServices.QueryStringDecryption(Request.QueryString["p"].Trim());
                 irent_access_token = decryptDic["irent_access_token"].Trim();
             }
-            HotaiPayController HP = new HotaiPayController();
-            if (!HP.CheckIdno(decryptDic["id"]))
+
+            if (Session["p"] != null && Session["p"].ToString().Trim().Length > 0)
             {
-                if (Session["p"] != null && Session["p"].ToString().Trim().Length > 0)
-                {
-                    Session["p"] = Session["p"].ToString();
-                    decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
-                    irent_access_token = decryptDic["irent_access_token"].Trim();
-                }
+                Session["p"] = Session["p"].ToString();
+                decryptDic = HPServices.QueryStringDecryption(Session["p"].ToString().Trim());
+                irent_access_token = decryptDic["irent_access_token"].Trim();
             }
-            
+
+            //try//for DeBug
+            //{
+            //    foreach (KeyValuePair<string, string> kvp in decryptDic)
+            //    {
+            //        logger.Debug("Key = {0}, Value = {1}",
+            //            kvp.Key, kvp.Value);
+            //    }
+            //}
+            //catch (Exception e) { logger.Error(e.Message); }
+
             //else {
             //    return View("Login","HotaiPay");
             //}
@@ -281,6 +293,7 @@ namespace HotaiPayWebView.Controllers
             {
                 Session["id"] = IDNO;
                 Session["irent_access_token"] = irent_access_token;
+                Session["p"] = Session["p"];
             }
             else
             {
@@ -325,7 +338,7 @@ namespace HotaiPayWebView.Controllers
             if (errCode == "ERR941")
             {
                 //logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
-                return RedirectToRoute("/HotaiPay/Login", new { p = decryptDic });
+                return RedirectToRoute("Login", "HotaiPay" );
             }
 
             if (flag)
