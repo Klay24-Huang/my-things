@@ -56,7 +56,8 @@ namespace WebAPI.Models.BaseFunc
             /// <summary>
             /// 統編
             /// </summary>
-            UniCode
+            UniCode,
+            HotaiPWD
         }
         #endregion
 
@@ -917,6 +918,9 @@ namespace WebAPI.Models.BaseFunc
                     break;
                 case CheckType.latlng:
                     param = @"^[1-9]{1}[0-9]{1,2}[.]{1}[0-9]{4,}$";
+                    break;
+                case CheckType.HotaiPWD:
+                    param = @"^(?=.*\d)(?=.*[a-zA-Z]).{6,12}$";
                     break;
             }
             return param;

@@ -823,8 +823,8 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-
-            var orderInfo = GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
             int creditType = orderInfo.creditType;
             Int64 tmpOrder = orderInfo.OrderNo;
             string tmp = orderInfo.OrderString;
@@ -914,8 +914,8 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-
-            var orderInfo = GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
             int creditType = orderInfo.creditType;
             Int64 tmpOrder = orderInfo.OrderNo;
             //string tmp = orderInfo.OrderString;
@@ -1024,7 +1024,8 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-            var orderInfo = GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
             int creditType = orderInfo.creditType;
             Int64 tmpOrder = orderInfo.OrderNo;
 
@@ -1044,6 +1045,11 @@ namespace OtherService
 
             new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);
 
+            if(!flag && errCode == "000000")
+            {
+                errCode = lstError?.Count > 0 ? lstError.FirstOrDefault()?.ErrorCode : "ERR913";
+            }
+
             if (flag)
             {
                 output = DoCreditCardAuthSendForClose(Input, AutoClosed, AuthType, funName, InsUser).Result;
@@ -1057,6 +1063,7 @@ namespace OtherService
                 else
                 {
                     flag = false;
+                    errCode = output.RtnCode == "0" ? "ERR913" : errCode;
                 }
             }
 
@@ -1402,7 +1409,8 @@ namespace OtherService
                 new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
 
                 #region 更新刷卡結果
-                var orderInfo = GetOrderInfoFromMerchantTradeNo(input.RequestParams.MerchantTradeNo);
+                var payInfoApi = new PayInfoForCredit();
+                var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(input.RequestParams.MerchantTradeNo);
                 int creditType = orderInfo.creditType;
                 Int64 tmpOrder = orderInfo.OrderNo;
 
@@ -1749,55 +1757,6 @@ namespace OtherService
             byte[] hash = sha256.ComputeHash(bytes);
             string sign = Convert.ToBase64String(hash).ToUpper();
             return sign;
-        }
-
-        private (int creditType, string OrderString, Int64 OrderNo) GetOrderInfoFromMerchantTradeNo(string ori)
-        {
-            (int creditType, string OrderString, Int64 OrderNo) orderInfo = (99, "", 0);
-
-            var payTypeInfos = GetCreditCardPayInfoColl();
-
-            //Dictionary<string, int> typeDic = new Dictionary<string, int>()
-            //{
-            //    {"F_",0},{"P_",1},{"E_",2},{"G_",3},{"M_",4},{"MA_",5},{"W_",6}
-            //};
-
-            Dictionary<string, int> typeDic = payTypeInfos.ToDictionary(p => p.PayTypeCode, p => p.PayType);
-
-            foreach (KeyValuePair<string, int> type in typeDic)
-            {
-                int Index = ori.IndexOf(type.Key);
-                if (Index > -1)
-                {
-                    orderInfo.creditType = type.Value;
-                    orderInfo.OrderString = ori.Substring(0, Index);
-                    if (orderInfo.creditType == 0 || orderInfo.creditType == 6) //租金or訂金
-                    {
-                        orderInfo.OrderNo = Convert.ToInt64(orderInfo.OrderString);
-                    }
-                    break;
-                }
-            }
-
-            return orderInfo;
-        }
-
-
-        public List<CreditCardPayInfo> GetCreditCardPayInfoColl()
-        {
-            List<CreditCardPayInfo> CreditCardPayInfoColl = new List<CreditCardPayInfo>()
-            {
-                new CreditCardPayInfo{ PayType = 0,PayTypeStr = "租金",PayTypeCode="F_"},
-                new CreditCardPayInfo{ PayType = 1,PayTypeStr = "罰金",PayTypeCode="P_"},//沒在用
-                new CreditCardPayInfo{ PayType = 2,PayTypeStr = "eTag",PayTypeCode="E_"},//沒在用
-                new CreditCardPayInfo{ PayType = 3,PayTypeStr = "補繳",PayTypeCode="G_"},
-                new CreditCardPayInfo{ PayType = 4,PayTypeStr = "訂閱",PayTypeCode="M_"},
-                new CreditCardPayInfo{ PayType = 5,PayTypeStr = "訂閱",PayTypeCode="MA_"},
-                new CreditCardPayInfo{ PayType = 6,PayTypeStr = "春節訂金",PayTypeCode="D_"},
-                new CreditCardPayInfo{ PayType = 7,PayTypeStr = "錢包",PayTypeCode="W_"},
-            };
-
-            return CreditCardPayInfoColl;
         }
 
         private WebAPIOutput_Auth ForTest(string TradeAmount)

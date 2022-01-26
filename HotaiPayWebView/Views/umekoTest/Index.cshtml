@@ -1,0 +1,227 @@
+﻿@model HotaiPayWebView.Models.UmekoTestViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="@Url.Content("~/Scripts/jquery-3.4.1.min.js")" type="text/javascript"></script>
+    <script src="~/Scripts/HotaiPayJS/PostAndGoto.js"></script>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("GetList", "umekoTest", FormMethod.Get, new { @id = "GetListForm" }))
+        {
+            <input type="submit" name="submit" value="GetList" />
+        }
+
+        <input type="button" value="AddCard" class="btn btn-primary" onclick="AddCard()" />
+        @using (Html.BeginForm("AddCard2", "umekoTest", FormMethod.Post, new { @id = "AddCard2Form" }))
+        {
+            <input type="button" value="AddCard2" class="btn btn-primary" onclick="AddCard2()" />
+        }
+            <input type="button" value="FastAddCard" name="submit" onclick="FastAddCard()" />
+            <input type="button" value="FastAddCard2" name="submit" onclick="FastAddCard3()" />
+            <input type="button" value="CrditAuth" name="submit" onclick="CrditAuth()" />
+            <input type="button" value="inquiry" name="submit" onclick="inquiry()" />
+            @using (Html.BeginForm("FastAddCard2", "umekoTest", FormMethod.Post, new { @id = "FastAddCardForm" }))
+            {
+                <hr />
+                <p>快綁參數</p>
+                <p><span>IDNO:</span> <span>A121563290</span></p>
+                <p><span>Birthday:</span><span>19910804</span></p>
+
+                @Html.TextBoxFor(m => m.CTBCIDNO, new { @class = "form-control", placeholder = "中信客戶身分證" })
+                @Html.TextBoxFor(m => m.Birthday, new { @class = "form-control", placeholder = "中信客戶生日(YYYYMMDD)" })
+
+            }
+
+            @using (Html.BeginForm("CrditAuth", "umekoTest", FormMethod.Post, new { @id = "CrditAuthForm" }))
+            {
+                <hr />
+                <p>信用卡授權/查詢</p>
+                <p><span>卡片ID:</span> <span>1850</span></p>
+
+                @Html.TextBoxFor(m => m.OrderID, new { @class = "form-control", placeholder = "訂單編號" })
+                @Html.TextBoxFor(m => m.CardToken, new { @class = "form-control", placeholder = "卡片ID" })
+
+            }
+            <div id="AuthResult"></div>
+
+            <hr />
+            <p>br換行</p>
+            @Html.ToLineBreak(Model.hotaiCardInfo.BankDesc)
+            <hr>
+            <p>Paragraphs換行</p>
+            @Html.ToParagraphs(Model.hotaiCardInfo.BankDesc)
+
+            <span>強型別</span>
+            @Html.ToParagraphFor(m => m.hotaiCardInfo.BankDesc)
+
+            <hr>
+            <p>清單 有序號</p>
+            @Html.ToOrderedList(Model.hotaiCardInfo.BankDesc)
+
+            <hr>
+            <p>清單 無序號</p>
+            @Html.ToUnorderedList(Model.hotaiCardInfo.BankDesc)
+
+
+        </div>
+    <script type="text/javascript">
+
+        function AddCard() {
+            alert("nomal");
+            //WriteLog("nomal");
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddCard")",
+                data: "",
+                success: function (result) {
+                    console.log(result);
+                    if (result.succ) {
+                        GOTO("toCTBCSmall", result.gotoUrl, result.postData);
+                    }
+                    else {
+                        alert("getPWD Error");
+                    }
+                },
+                error: function () {
+
+                }
+            });
+
+            return false;
+        }
+        function AddCard2() {
+            alert("nomal2");
+            $("#AddCard2Form").submit();
+            //WriteLog("nomal");
+        }
+
+        function FastAddCard() {
+            alert("Fast");
+            $.ajax({
+                type: "POST",
+                url:"@Url.Action("FastAddCard")",
+                data: $("#FastAddCardForm").serialize(),
+                success: function (result) {
+                    console.log(result);
+                    if (result.succ) {
+                        GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);
+                    }
+                    else {
+                        alert(result.succ);
+                    }
+                },
+                error: function () {
+                    console.log("x");
+                }
+            })
+
+            return false;
+        }
+
+        function FastAddCard2() {
+            alert("Fast2");
+            $.ajax({
+                type: "POST",
+                url:"@Url.Action("FastAddCard2")",
+                data: $("#FastAddCardForm").serialize(),
+                success: function (result) {
+                    console.log(result);
+                    //if (result.succ) {
+                    //    GOTO("toCTBCFastSmall", result.gotoUrl, result.postData);
+                    //}
+                    //else {
+                    //    alert(result.succ);
+                    //}
+                },
+                error: function () {
+                    console.log("x");
+                }
+            })
+
+            return false;
+        }
+
+        function FastAddCard3() {
+            alert("Fast3");
+            $("#FastAddCardForm").submit();
+        }
+
+        function CrditAuth() {
+            alert("Payment Auth");
+            $.ajax({
+                type: "POST",
+                url:"@Url.Action("CrditAuth")",
+                data: $("#CrditAuthForm").serialize(),
+                success: function (result) {
+                    console.log(result);
+                    generate_table("AuthResult","CrditAuthReturn", result);
+                },
+                error: function () {
+                    console.log("x");
+                }
+            })
+
+            return false;
+        }
+
+        function inquiry() {
+            alert("inquiry");
+            $.ajax({
+                type: "POST",
+                url:"@Url.Action("inquiry")",
+                data: $("#CrditAuthForm").serialize(),
+                success: function (result) {
+                    console.log(result);
+                    alert("Y");
+
+                },
+                error: function () {
+                    console.log("x");
+                }
+            })
+
+            return false;
+        }
+
+        function generate_table(parentid,tableid,data) {
+
+            // creates a <table> element and a <tbody> element
+            var parent = document.getElementById(parentid);
+            var tbl = document.createElement("table");
+            var tbody = document.createElement("tbody");
+            tbl.id = tableid;
+
+            $.each(data, function (name, value) {
+                var row = document.createElement("tr");
+                var cell1 = document.createElement("td");
+                var cell2 = document.createElement("td");
+
+                var cellText1 = document.createTextNode(name);
+                var cellText2 = document.createTextNode(value);
+                cell1.appendChild(cellText1);
+                cell2.appendChild(cellText2);
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                tbody.appendChild(row);
+            });
+
+
+            tbl.appendChild(tbody);
+
+            parent.appendChild(tbl);
+            tbl.setAttribute("border", "2");
+        }
+
+    </script>
+</body>
+
+</html>

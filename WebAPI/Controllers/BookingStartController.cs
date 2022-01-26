@@ -16,6 +16,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
@@ -23,6 +24,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Domain.SP.Output.Bill;
@@ -153,6 +155,23 @@ namespace WebAPI.Controllers
             if (flag && isGuest == false)
             {
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+            }
+            #endregion
+            #region 檢查信用卡是否綁卡
+            if (flag)
+            {
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (ds.Tables.Count == 0)
+                {
+                    flag = false;
+                    errCode = "ERR290";
+                }
+                else if (ds.Tables[0].Rows.Count == 0)
+                {
+                    flag = false;
+                    errCode = "ERR290";
+                }
+                ds.Dispose();
             }
             #endregion
             #region 檢查欠費
@@ -321,7 +340,6 @@ namespace WebAPI.Controllers
                 //}
                 #endregion
             }
-
 
             //開始對車機做動作
             if (flag)

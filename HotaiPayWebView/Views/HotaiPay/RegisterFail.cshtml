@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "RegisterFail";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰集團會員註冊</title>
+
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+<body>
+
+
+
+    <header class="d-flex justify-content-center align-items-center"><h5 style="margin-top: 8px;">和泰集團會員註冊</h5></header>
+
+
+    <div class="container text-center" style="max-width: 414px;">
+
+        <div class="image-box mt-8">
+            <img src="../images/fail-face-icon.svg" alt="">
+        </div>
+
+        <div class="text-box">
+            <h6 style="color:#EB7F87 ;">和泰會員註冊失敗！</h6>
+            <p class="text-gray">請重新進行註冊</p>
+        </div>
+        <div class="buttonBox d-none d-sm-block desktop-margin-top">
+            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;">重新進行註冊</button>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("RegisterStep1", "HotaiPay", FormMethod.Get))
+    {
+    <div class="footer-btn-box footer-btn-margin">
+        <div class="buttonBox">
+            <button type="submit" class="btn btn-outline-gray bottom-btn" id="agree-btn" style="max-width: 414px;">重新進行註冊</button>
+
+        </div>
+    </div>
+    }
+</body>
+</html>
+

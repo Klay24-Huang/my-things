@@ -49,7 +49,7 @@ if @Retry = 0
 	Set @AuthFlg = 0
 
 BEGIN TRY
-	SELECT TOP 20
+	SELECT TOP 1
 		A.authSeq,
 		A.order_number,
 		A.final_price,
@@ -62,7 +62,7 @@ BEGIN TRY
 		A.AuthFlg
 	INTO #TB_OrderAuth
 	FROM TB_OrderAuthReservation A WITH(NOLOCK) 
-	Where AuthFlg = @AuthFlg And AppointmentTime >=@NowTime
+	Where AuthFlg = @AuthFlg And AppointmentTime <=@NowTime
 	ORDER BY A.authSeq ASC
 	
 	--檢查訂單狀態
@@ -78,8 +78,7 @@ BEGIN TRY
 	--取出手機，失敗要發簡訊用
 	Select IDNO = MEMIDNO,Mobile = MEMTEL into #MemberData
 	From TB_MemberData with(nolock)
-	Where MEMIDNO in (Select distinct IDNO From #TB_OrderAuth)
-	And HasCheckMobile = 1
+	Where MEMIDNO in (Select distinct IDNO From #TB_OrderAuth)  And HasCheckMobile = 1
 
 	--SELECT A.IDNO,CardToken=SUBSTRING(MAX(CONVERT(VARCHAR,A.MKTime,120)+A.CardToken),20,8000)
 	--INTO #TB_MemberCardBinding
@@ -105,6 +104,7 @@ BEGIN TRY
 	FROM #TB_OrderAuth A
 	--LEFT JOIN #TB_MemberCardBinding B ON A.IDNO=B.IDNO
 	Left Join #MemberData C ON A.IDNO = C.IDNO
+
 
 	--信用卡且台新付款又不綁卡直接押失敗
 	--Update #TB_OrderAuthList

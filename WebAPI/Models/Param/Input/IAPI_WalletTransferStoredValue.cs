@@ -8,9 +8,10 @@ namespace WebAPI.Models.Param.Input
     public class IAPI_WalletTransferStoredValue
     {
         /// <summary>
-        /// 受轉贈者身份證
+        /// 身分證或手機號碼(受贈人)
         /// </summary>
-        public string  TransID{set;get;}
+        public string IDNO { get; set; }
+
         /// <summary>
         /// 轉贈金額
         /// </summary>

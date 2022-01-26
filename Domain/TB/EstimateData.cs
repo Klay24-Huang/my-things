@@ -52,7 +52,7 @@ namespace Domain.TB
         /// <summary>
         /// 結束時間
         /// </summary>
-        public DateTime ED { get; set; }     
+        public DateTime ED { get; set; }
     }
 
     public class EstimateDetail
@@ -65,8 +65,8 @@ namespace Domain.TB
         /// <summary>
         /// 每公里n元
         /// </summary>
-        public float MilUnit {get;set;}
-        
+        public float MilUnit { get; set; }
+
         /// <summary>
         /// 里程費
         /// </summary>

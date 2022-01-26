@@ -358,6 +358,10 @@ namespace WebAPI.Controllers
             string MerchantTradeNo = "";
             string INVNO = "";
             int MonthlyRentId = 0;
+            string SDate = "";
+            string EDate = "";
+            int nowPeriod = 0;
+
 
             var mem = new Domain.MemberData.RegisterData();
             var InvData = new Domain.MemberData.InvoiceData();
@@ -446,7 +450,6 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region TB
-
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -493,6 +496,10 @@ namespace WebAPI.Controllers
                             IsMoto = fItem.IsMoto;
                         }
 
+                        var nowPeriodMonData = msp.Sql_GetMonData(apiInput.MonthlyRentId);
+                        SDate = Convert.ToDateTime(nowPeriodMonData["StartDate"]).ToString("yyyyMMdd");
+                        EDate = Convert.ToDateTime(nowPeriodMonData["EndDate"]).ToString("yyyyMMdd");
+                        nowPeriod = Convert.ToInt32(nowPeriodMonData["NowPeriod"]);
                         trace.traceAdd("monthInfo", new { monObjs, spin, sp_errCode });
                         trace.FlowList.Add("月租資訊");
                     }
@@ -592,9 +599,9 @@ namespace WebAPI.Controllers
                                 MonProjID = apiInput.MonProjID,
                                 MonProPeriod = apiInput.MonProPeriod,
                                 ShortDays = apiInput.ShortDays,
-                                NowPeriod = 1, //第一期固定寫1
-                                SDATE = DateTime.Now.ToString("yyyyMMdd"),
-                                EDATE = DateTime.Now.AddDays(apiInput.MonProPeriod * 30).ToString("yyyyMMdd"),
+                                NowPeriod = nowPeriod, 
+                                SDATE = SDate,
+                                EDATE = EDate,
                                 IsMoto = IsMoto,
                                 RCVAMT = ProdPrice,
                                 UNIMNO = InvData.UNIMNO,
@@ -640,7 +647,7 @@ namespace WebAPI.Controllers
                                     MonProjID = apiInput.MonProjID,
                                     MonProPeriod = apiInput.MonProPeriod,
                                     ShortDays = apiInput.ShortDays,
-                                    NowPeriod = 1,  //寫死第一期
+                                    NowPeriod = nowPeriod,  
                                     PayTypeId = (Int64)apiInput.PayTypeId,
                                     InvoTypeId = InvoTypeId,
                                     InvoiceType = InvData.InvocieType,

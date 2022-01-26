@@ -1,6 +1,8 @@
-﻿using Domain.SP.Input.OtherService.Common;
+﻿using Domain.SP.Input.Hotai;
+using Domain.SP.Input.OtherService.Common;
 using Domain.SP.Input.OtherService.Taishin;
 using Domain.SP.Output;
+using Domain.SP.Output.Hotai;
 using OtherService.Enum;
 using System;
 using System.Collections.Generic;
@@ -163,5 +165,7 @@ namespace OtherService.Common
                 }
             }
         }
+
+
     }
 }
