@@ -7,10 +7,29 @@ namespace WebAPI.Models.Param.CusFun.Input
 {
     public class ICF_TSIB_Escrow_Type
     {
+        /// <summary>
+        /// 帳號
+        /// </summary>
         public string IDNO { get; set; }
+
+        /// <summary>
+        /// 姓名
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// 手機號碼
+        /// </summary>
         public string PhoneNo { get; set; }
+
+        /// <summary>
+        /// EMAIL
+        /// </summary>
         public string Email { get; set; }
+
+        /// <summary>
+        /// 金額
+        /// </summary>
         public int Amount { get; set; }
 
         /// <summary>
