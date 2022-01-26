@@ -83,7 +83,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_SendSmsOtp>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_SendSmsOtp>(result.Data?.ToString());
             }
             return flag;
         }
@@ -103,7 +103,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
             }
             return flag;
         }
@@ -123,7 +123,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_Token>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_Token>(result.Data.ToString());
             }
             return flag;
         }
@@ -144,7 +144,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_SendSmsOtp>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_SendSmsOtp>(result.Data.ToString());
             }
             return flag;
 
@@ -166,7 +166,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
             }
             return flag;
 
@@ -205,7 +205,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_GetEmail>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_GetEmail>(result.Data.ToString());
             }
             return flag;
 
@@ -226,7 +226,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_OtpValidation>(result.Data.ToString());
             }
             return flag;
         }
@@ -266,7 +266,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_Signin>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_Signin>(result.Data.ToString());
             }
 
             return flag;
@@ -287,7 +287,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_CheckSignup>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_CheckSignup>(result.Data.ToString());
             }
 
             return flag;
@@ -308,7 +308,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_Token>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_Token>(result.Data.ToString());
             }
 
             return flag;
@@ -369,7 +369,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_IsMissingMemberProfile>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_IsMissingMemberProfile>(result.Data.ToString());
             }
 
             return flag;
@@ -395,7 +395,7 @@ namespace OtherService
                     NullValueHandling = NullValueHandling.Ignore,
                     MissingMemberHandling = MissingMemberHandling.Ignore
                 };
-                output = JsonConvert.DeserializeObject<WebAPIOutput_GetMemberProfile>(result.Data.ToString(), settings);
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_GetMemberProfile>(result.Data.ToString(), settings);
             }
 
             return flag;
@@ -497,7 +497,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString());
             }
 
             return flag;
@@ -520,7 +520,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                //output = JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString()); 和泰沒回ResponseData
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_BenefitsAndPrivacyVersion>(result.Data.ToString());
             }
             return flag;
         }
@@ -540,7 +540,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_GetPrivacy>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_GetPrivacy>(result.Data.ToString());
             }
             return flag;
 
@@ -595,7 +595,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_GetMobilePhoneToOneID>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_GetMobilePhoneToOneID>(result.Data.ToString());
             }
             return flag;
         }
@@ -616,7 +616,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_Townships>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_Townships>(result.Data.ToString());
             }
             return flag;
         }
@@ -649,7 +649,7 @@ namespace OtherService
             if (result.Succ)
             {
                 flag = true;
-                output = JsonConvert.DeserializeObject<WebAPIOutput_GetPublicKey>(result.Data.ToString());
+                output = result.Data == null ? output : JsonConvert.DeserializeObject<WebAPIOutput_GetPublicKey>(result.Data.ToString());
             }
             return flag;
         }
