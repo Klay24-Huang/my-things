@@ -608,6 +608,16 @@
     <Build Include="dbo\Stored Procedures\usp_SendReturnCarControl_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_BeforeBookingExtend.sql" />
     <Build Include="dbo\Stored Procedures\usp_SetSubsNxt_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsEscrowHist_U02.sql" />
+    <Build Include="dbo\Stored Procedures\usp_CreateSubsMonth_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_UpSubsMonth_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SaveSubsInvno_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ArrearsPaySubs_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_PaySubs_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_InsMonthlyInvErr_I02.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetSubsHist_Q1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetSubsCNT_Q1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetMySubs_Q1.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />
