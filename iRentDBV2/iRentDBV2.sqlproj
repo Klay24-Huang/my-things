@@ -618,6 +618,8 @@
     <Build Include="dbo\Stored Procedures\usp_GetSubsHist_Q1.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetSubsCNT_Q1.sql" />
     <Build Include="dbo\Stored Procedures\usp_GetMySubs_Q1.sql" />
+    <Build Include="dbo\Stored Procedures\usp_AutoSubscribeJob_I01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_AutoSubscribeJob_Q01.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="iRentDBV2.refactorlog" />

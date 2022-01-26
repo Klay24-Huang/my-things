@@ -201,6 +201,7 @@
     <Compile Include="Controllers\AnyRentController.cs" />
     <Compile Include="Controllers\AreaListController.cs" />
     <Compile Include="Controllers\ArrearsQueryController.cs" />
+    <Compile Include="Controllers\AutoSubscribeJobController.cs" />
     <Compile Include="Controllers\BatExchangeStationController.cs" />
     <Compile Include="Controllers\BE_AuditController.cs" />
     <Compile Include="Controllers\BE_AuditCredentialsController.cs" />
@@ -297,6 +298,7 @@
     <Compile Include="Controllers\JointRentIviteeFeedBackController.cs" />
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
+    <Compile Include="Controllers\MonthlyRentNotifyController.cs" />
     <Compile Include="Controllers\NewsReadController.cs" />
     <Compile Include="Controllers\NoticeReadController.cs" />
     <Compile Include="Controllers\PersonNoticeReadController.cs" />
@@ -423,6 +425,7 @@
     <Compile Include="Controllers\SetParkingSpaceByReturnController.cs" />
     <Compile Include="Controllers\SetPWDController.cs" />
     <Compile Include="Controllers\SetSubsNxtController.cs" />
+    <Compile Include="Controllers\SPJobCentralizedController.cs" />
     <Compile Include="Controllers\SubsEscrowPayController.cs" />
     <Compile Include="Controllers\SyncMochiParkController.cs" />
     <Compile Include="Controllers\TestTaishiBQController.cs" />
@@ -655,6 +658,7 @@
     <Compile Include="Models\Param\Input\IAPI_SetParkingSpaceByReturn.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetSubsNxt.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SPJobCentralized.cs" />
     <Compile Include="Models\Param\Input\IAPI_SubsEscrowPay.cs" />
     <Compile Include="Models\Param\Input\IAPI_TransWebMemCMK.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
