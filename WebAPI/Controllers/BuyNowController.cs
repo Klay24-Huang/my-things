@@ -128,27 +128,27 @@ namespace WebAPI.Controllers
                 #region TB
 
                 #region 刷卡判斷
-                if (flag)
-                {//24小時內相同呼叫條件視為相同
-                    string spErrCode = "";
-                    var spIn = new SPInput_GetSubsCreditStatus()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        APIID = 181,
-                        ActionNM = funName,
-                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                    };
-                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                    if (sp_list != null && sp_list.Count() > 0)
-                    {
-                        flag = false;
-                        errCode = "ERR277";
-                        errMsg = "刷卡已存在";
-                    }
-                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
-                    trace.FlowList.Add("刷卡判斷");
-                }
+                //if (flag)
+                //{//24小時內相同呼叫條件視為相同
+                //    string spErrCode = "";
+                //    var spIn = new SPInput_GetSubsCreditStatus()
+                //    {
+                //        IDNO = IDNO,
+                //        LogID = LogID,
+                //        APIID = 181,
+                //        ActionNM = funName,
+                //        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                //    };
+                //    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                //    if (sp_list != null && sp_list.Count() > 0)
+                //    {
+                //        flag = false;
+                //        errCode = "ERR277";
+                //        errMsg = "刷卡已存在";
+                //    }
+                //    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                //    trace.FlowList.Add("刷卡判斷");
+                //}
                 #endregion
               
                 #region 購買前檢核
@@ -602,27 +602,27 @@ namespace WebAPI.Controllers
                 #region TB
 
                 #region 刷卡判斷
-                if (flag)
-                {//24小時內相同呼叫條件視為相同
-                    string spErrCode = "";
-                    var spIn = new SPInput_GetSubsCreditStatus()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        APIID = 181,
-                        ActionNM = funName,
-                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                    };
-                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                    if (sp_list != null && sp_list.Count() > 0)
-                    {
-                        flag = false;
-                        errCode = "ERR277";
-                        errMsg = "刷卡已存在";
-                    }
-                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
-                    trace.FlowList.Add("刷卡判斷");
-                }
+                //if (flag)
+                //{//24小時內相同呼叫條件視為相同
+                //    string spErrCode = "";
+                //    var spIn = new SPInput_GetSubsCreditStatus()
+                //    {
+                //        IDNO = IDNO,
+                //        LogID = LogID,
+                //        APIID = 181,
+                //        ActionNM = funName,
+                //        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                //    };
+                //    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                //    if (sp_list != null && sp_list.Count() > 0)
+                //    {
+                //        flag = false;
+                //        errCode = "ERR277";
+                //        errMsg = "刷卡已存在";
+                //    }
+                //    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                //    trace.FlowList.Add("刷卡判斷");
+                //}
                 #endregion
 
                 #region 升轉前檢核
@@ -645,7 +645,6 @@ namespace WebAPI.Controllers
                     {
                         flag = false;
                         errCode = spErrCode;
-                        errMsg = "升轉失敗";
                     }
                     trace.traceAdd("BuyNowAddMonth", new { spIn, spErrCode });
                     trace.FlowList.Add("升轉前檢核");
@@ -837,36 +836,36 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 發票
-
-
-                    try
+                    if (flag && ProdPrice > 0)
                     {
-                        WebAPIInput_MonthlyRentSave wsInput = new WebAPIInput_MonthlyRentSave()
+                        try
                         {
-                            CUSTID = IDNO,
-                            CUSTNM = mem.MEMCNAME,
-                            EMAIL = mem.MEMEMAIL,
-                            MonRentID = buyNxtCom.MonthlyRentId,
-                            MonProjID = apiInput.UP_MonProjID,
-                            MonProPeriod = apiInput.UP_MonProPeriod,
-                            ShortDays = apiInput.UP_ShortDays,
-                            NowPeriod = buyNxtCom.NowPeriod, //第一期固定寫1
-                            SDATE = buyNxtCom.OriSDATE.ToString("yyyyMMdd"),
-                            EDATE = buyNxtCom.OriSDATE.AddDays(apiInput.UP_MonProPeriod * 30).ToString("yyyyMMdd"),
-                            IsMoto = IsMoto,
-                            RCVAMT = ProdPrice,
-                            UNIMNO = InvData.UNIMNO,
-                            CARDNO = CreditCardNo,
-                            AUTHCODE = AuthCode,
-                            NORDNO = TransactionNo,
-                            INVKIND = InvData.InvocieType,
-                            CARRIERID = InvData.CARRIERID,
-                            NPOBAN = InvData.NPOBAN,
-                            INVTITLE = "",
-                            INVADDR = ""
-                        };
+                            WebAPIInput_MonthlyRentSave wsInput = new WebAPIInput_MonthlyRentSave()
+                            {
+                                CUSTID = IDNO,
+                                CUSTNM = mem.MEMCNAME,
+                                EMAIL = mem.MEMEMAIL,
+                                MonRentID = buyNxtCom.MonthlyRentId,
+                                MonProjID = apiInput.UP_MonProjID,
+                                MonProPeriod = apiInput.UP_MonProPeriod,
+                                ShortDays = apiInput.UP_ShortDays,
+                                NowPeriod = buyNxtCom.NowPeriod, //第一期固定寫1
+                                SDATE = buyNxtCom.OriSDATE.ToString("yyyyMMdd"),
+                                EDATE = buyNxtCom.OriSDATE.AddDays(apiInput.UP_MonProPeriod * 30).ToString("yyyyMMdd"),
+                                IsMoto = IsMoto,
+                                RCVAMT = ProdPrice,
+                                UNIMNO = InvData.UNIMNO,
+                                CARDNO = CreditCardNo,
+                                AUTHCODE = AuthCode,
+                                NORDNO = TransactionNo,
+                                INVKIND = InvData.InvocieType,
+                                CARRIERID = InvData.CARRIERID,
+                                NPOBAN = InvData.NPOBAN,
+                                INVTITLE = "",
+                                INVADDR = ""
+                            };
 
-                        wsInput.tbPaymentDetail = new List<NPR130SavePaymentList>
+                            wsInput.tbPaymentDetail = new List<NPR130SavePaymentList>
                         {
                             new NPR130SavePaymentList()
                             {
@@ -877,91 +876,91 @@ namespace WebAPI.Controllers
                                 PAYMEMO = "月租訂閱制"
                             }
                         };
-                        WebAPIOutput_MonthlyRentSave wsOutput = new WebAPIOutput_MonthlyRentSave();
-                        var xflag = EasyRentApi.MonthlyRentSave(wsInput, ref wsOutput);
-                        if (wsOutput.Result == false)
-                        {
-                            xflag = false;
-                        }
-                        else
-                        {
-                            INVNO = wsOutput.Data[0].INVNO;
-                            logger.Trace("INVNO=" + INVNO);
-                        }
-                        trace.traceAdd("MonthlyRentSave", new { wsInput, wsOutput });
-                        trace.FlowList.Add("發票開立");
-                        if (INVNO != "")
-                        {
-                            //寫入發票資訊
-                            string sp_errCode = "";
-                            var spin = new SPInput_SaveInvno()
+                            WebAPIOutput_MonthlyRentSave wsOutput = new WebAPIOutput_MonthlyRentSave();
+                            var xflag = EasyRentApi.MonthlyRentSave(wsInput, ref wsOutput);
+                            if (wsOutput.Result == false)
                             {
-                                IDNO = IDNO,
-                                LogID = LogID,
-                                NowPeriod = buyNxtCom.NowPeriod,
-                                PayTypeId = (Int64)apiInput.PayTypeId,
-                                InvoTypeId = InvoTypeId,
-                                InvoiceType = InvData.InvocieType,
-                                CARRIERID = InvData.CARRIERID,
-                                UNIMNO = InvData.UNIMNO,
-                                NPOBAN = InvData.NPOBAN,
-                                Invno = INVNO,
-                                InvoicePrice = ProdPrice,
-                                InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                PRGID = funName,
-                                MonthlyRentID= buyNxtCom.MonthlyRentId
-                            };
-
-                            xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
-                            if (!xflag)
-                            {
-                                logger.Trace("spError=" + sp_errCode);
+                                xflag = false;
                             }
-                            trace.traceAdd("sp_SaveSubsInvno", new { spin, sp_errCode });
-                            trace.FlowList.Add("發票存檔");
-                        }
-                        else
-                        {
-                            //20210826 ADD BY ADAM REASON.發票開立失敗處理
-                            //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
-                            string sp_errCode = "";
-                            var spInput = new SPInput_InsMonthlyInvErr()
+                            else
                             {
-                                ApiInput = JsonConvert.SerializeObject(wsInput),
-                                IDNO = IDNO,
-                                LogID = LogID,
-                                MonthlyRentID = buyNxtCom.MonthlyRentId,
-                                MonProjID = apiInput.UP_MonProjID,
-                                MonProPeriod = apiInput.UP_MonProPeriod,
-                                ShortDays = apiInput.UP_ShortDays,
-                                NowPeriod = buyNxtCom.NowPeriod,
-                                PayTypeId = (Int64)apiInput.PayTypeId,
-                                InvoTypeId = InvoTypeId,
-                                InvoiceType = InvData.InvocieType,
-                                CARRIERID = InvData.CARRIERID,
-                                UNIMNO = InvData.UNIMNO,
-                                NPOBAN = InvData.NPOBAN,
-                                INVAMT = ProdPrice,
-                                PRGID = funName,
-                                RtnCode = wsOutput?.RtnCode ?? "-4",
-                                RtnMsg = wsOutput?.Message ?? "",
-                            };
-
-                            xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
-                            if (!xflag)
-                            {
-                                logger.Trace("spError=" + sp_errCode);
+                                INVNO = wsOutput.Data[0].INVNO;
+                                logger.Trace("INVNO=" + INVNO);
                             }
-                            trace.traceAdd("sp_InsMonthlyInvErr", new { spInput, sp_errCode });
-                            trace.FlowList.Add("發票錯誤處理");
+                            trace.traceAdd("MonthlyRentSave", new { wsInput, wsOutput });
+                            trace.FlowList.Add("發票開立");
+                            if (INVNO != "")
+                            {
+                                //寫入發票資訊
+                                string sp_errCode = "";
+                                var spin = new SPInput_SaveInvno()
+                                {
+                                    IDNO = IDNO,
+                                    LogID = LogID,
+                                    NowPeriod = buyNxtCom.NowPeriod,
+                                    PayTypeId = (Int64)apiInput.PayTypeId,
+                                    InvoTypeId = InvoTypeId,
+                                    InvoiceType = InvData.InvocieType,
+                                    CARRIERID = InvData.CARRIERID,
+                                    UNIMNO = InvData.UNIMNO,
+                                    NPOBAN = InvData.NPOBAN,
+                                    Invno = INVNO,
+                                    InvoicePrice = ProdPrice,
+                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                    PRGID = funName,
+                                    MonthlyRentID = buyNxtCom.MonthlyRentId
+                                };
+
+                                xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
+                                if (!xflag)
+                                {
+                                    logger.Trace("spError=" + sp_errCode);
+                                }
+                                trace.traceAdd("sp_SaveSubsInvno", new { spin, sp_errCode });
+                                trace.FlowList.Add("發票存檔");
+                            }
+                            else
+                            {
+                                //20210826 ADD BY ADAM REASON.發票開立失敗處理
+                                //資料寫入錯誤紀錄log TB_MonthlyInvErrLog
+                                string sp_errCode = "";
+                                var spInput = new SPInput_InsMonthlyInvErr()
+                                {
+                                    ApiInput = JsonConvert.SerializeObject(wsInput),
+                                    IDNO = IDNO,
+                                    LogID = LogID,
+                                    MonthlyRentID = buyNxtCom.MonthlyRentId,
+                                    MonProjID = apiInput.UP_MonProjID,
+                                    MonProPeriod = apiInput.UP_MonProPeriod,
+                                    ShortDays = apiInput.UP_ShortDays,
+                                    NowPeriod = buyNxtCom.NowPeriod,
+                                    PayTypeId = (Int64)apiInput.PayTypeId,
+                                    InvoTypeId = InvoTypeId,
+                                    InvoiceType = InvData.InvocieType,
+                                    CARRIERID = InvData.CARRIERID,
+                                    UNIMNO = InvData.UNIMNO,
+                                    NPOBAN = InvData.NPOBAN,
+                                    INVAMT = ProdPrice,
+                                    PRGID = funName,
+                                    RtnCode = wsOutput?.RtnCode ?? "-4",
+                                    RtnMsg = wsOutput?.Message ?? "",
+                                };
+
+                                xflag = msp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
+                                if (!xflag)
+                                {
+                                    logger.Trace("spError=" + sp_errCode);
+                                }
+                                trace.traceAdd("sp_InsMonthlyInvErr", new { spInput, sp_errCode });
+                                trace.FlowList.Add("發票錯誤處理");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //紀錄開立失敗
+                            logger.Trace(ex.Message);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        //紀錄開立失敗
-                        logger.Trace(ex.Message);
-                    }
-
                     #endregion
 
                 }
@@ -1078,27 +1077,27 @@ namespace WebAPI.Controllers
                 #region TB
 
                 #region 刷卡判斷
-                if (flag)
-                {//24小時內相同呼叫條件視為相同
-                    string spErrCode = "";
-                    var spIn = new SPInput_GetSubsCreditStatus()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        APIID = 181,
-                        ActionNM = funName,
-                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                    };
-                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                    if (sp_list != null && sp_list.Count() > 0)
-                    {
-                        flag = false;
-                        errCode = "ERR277";
-                        errMsg = "刷卡已存在";
-                    }
-                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
-                    trace.FlowList.Add("刷卡判斷");
-                }
+                //if (flag)
+                //{//24小時內相同呼叫條件視為相同
+                //    string spErrCode = "";
+                //    var spIn = new SPInput_GetSubsCreditStatus()
+                //    {
+                //        IDNO = IDNO,
+                //        LogID = LogID,
+                //        APIID = 181,
+                //        ActionNM = funName,
+                //        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                //    };
+                //    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                //    if (sp_list != null && sp_list.Count() > 0)
+                //    {
+                //        flag = false;
+                //        errCode = "ERR277";
+                //        errMsg = "刷卡已存在";
+                //    }
+                //    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                //    trace.FlowList.Add("刷卡判斷");
+                //}
                 #endregion
 
                 #region 進入欠費繳交流程
