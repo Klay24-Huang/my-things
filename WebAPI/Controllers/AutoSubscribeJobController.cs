@@ -306,7 +306,8 @@ namespace WebAPI.Controllers
                                     NPOBAN = item.NPOBAN,
                                     Invno = INVNO,
                                     InvoicePrice = PeriodPayPrice,
-                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                                    InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                                    PRGID = funName
                                 };
 
                                 xflag = MonSubsSp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -336,6 +337,9 @@ namespace WebAPI.Controllers
                                     UNIMNO = item.UNIMNO,
                                     NPOBAN = item.NPOBAN,
                                     INVAMT = PeriodPayPrice,
+                                    PRGID = funName,
+                                    RtnCode = wsOutput?.RtnCode ?? "-4",
+                                    RtnMsg = wsOutput?.Message ?? ""
                                 };
 
                                 xflag = MonSubsSp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
