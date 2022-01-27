@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Subscription
 {
-    public class SPInput_SaveInvno
+    public class SPInput_SaveInvno : SPInput_Base
     {
         /// <summary>
         /// 會員編號
         /// </summary>
         public string IDNO { get; set; }
-        public Int64 LogID { get; set; }
-        public string MonProjID { get; set; }
-        public int MonProPeriod { get; set; }
-        public int ShortDays { get; set; }
+        /// <summary>
+        /// MonthlyRentID
+        /// </summary>
+        public long MonthlyRentID { get; set; } = 0;
         /// <summary>
         /// 目前期數
         /// </summary>
@@ -56,6 +52,9 @@ namespace Domain.SP.Input.Subscription
         /// 發票日期
         /// </summary>
         public string InvoiceDate { get; set; }
+        /// <summary>
+        /// 程式來源
+        /// </summary>
         public string PRGID { get; set; } = "";
     }
 }

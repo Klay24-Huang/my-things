@@ -1868,7 +1868,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
 
-            string spName = "usp_BuyNowAddMonth_Q01";
+            string spName = "usp_BuyNowAddMonth_Q02";
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SaveInvno();
             SQLHelper<SPInput_BuyNowAddMonth_Q01, SPOut_SaveInvno> sqlHelp = new SQLHelper<SPInput_BuyNowAddMonth_Q01, SPOut_SaveInvno>(connetStr);

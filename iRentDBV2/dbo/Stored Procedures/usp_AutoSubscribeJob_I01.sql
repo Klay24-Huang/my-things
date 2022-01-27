@@ -25,6 +25,7 @@ CREATE PROCEDURE [dbo].[usp_AutoSubscribeJob_I01]
 	@InvoTypeId			INT						,	-- 發票設定
 	@MerchantTradeNo	VARCHAR(30)				,	-- 台新送出的訂單編號
 	@TaishinTradeNo		VARCHAR(50)				,	-- 台新的交易序號
+	@PRGID				VARCHAR(50)				,	-- 來源程式
 	@LogID				BIGINT					,	-- LogID
 	@NewMonthlyRentID	BIGINT			OUTPUT	,	-- 新期數的第一筆MonthlyRentId
 	@ErrorCode			VARCHAR(6)		OUTPUT	,	-- 回傳錯誤代碼
@@ -57,6 +58,7 @@ SET @IDNO = ISNULL(@IDNO,'');
 SET @MonthlyRentId = ISNULL(@MonthlyRentId,0);
 SET @MonProjID = ISNULL(@MonProjID,'');
 SET @NxtMonSetID = ISNULL(@NxtMonSetID,0);
+SET @PRGID = ISNULL(@PRGID,@FunName);
 SET @LogID = ISNULL(@LogID,0);
 
 BEGIN TRY
@@ -168,7 +170,7 @@ BEGIN TRY
 			DECLARE @SubsGroup INT = NEXT VALUE FOR NM_SubsGroup;	-- 不懂這作法用意，不就流水號嗎?
 
 			INSERT INTO TB_SubsMain(MonProjID, MonProPeriod, ShortDays, SubsGroup, AutoSubs, IDNO, RenewPeriod, UpdPeriod, MKTime, UPDTime, A_PRGID, A_USERID, U_PRGID, U_USERID)
-			VALUES(@MonProjID, @MonProPeriod, @ShortDays, @SubsGroup, 1, @IDNO, 0, 0, @NowTime, @NowTime, @FunName, @IDNO, @FunName, @IDNO);
+			VALUES(@MonProjID, @MonProPeriod, @ShortDays, @SubsGroup, 1, @IDNO, 0, 0, @NowTime, @NowTime, @PRGID, @IDNO, @PRGID, @IDNO);
 
 			SELECT @SubsId = @@IDENTITY;
 
@@ -188,7 +190,7 @@ BEGIN TRY
 				0, B.MotoTotalMins, B.MotoWDMins, B.MotoHDMins,
 				B.WDRateForCar, B.HDRateForCar, B.WDRateForMoto, B.HDRateForMoto,
 				A.SDATE, A.EDATE, @NowTime, @NowTime,
-				@FunName, @IDNO, @FunName, @IDNO
+				@PRGID, @IDNO, @PRGID, @IDNO
 			FROM @TB_Period A
 			INNER JOIN TB_MonthlyRentSet B ON B.MonSetID=A.NxtMonSetID;
 			
@@ -209,7 +211,7 @@ BEGIN TRY
 			VALUES(@NewMonthlyRentID, @MRSDetailID, @IDNO, 1,
 				   @NowTime, @NowTime, @PayTypeId, @InvoTypeId,
 				   @MerchantTradeNo, @TaishinTradeNo, @NowTime, @NowTime,
-				   @FunName, @IDNO, @FunName, @IDNO
+				   @PRGID, @IDNO, @PRGID, @IDNO
 			);
 		END
 
@@ -218,12 +220,12 @@ BEGIN TRY
 		BEGIN
 			UPDATE TB_SubsNxt
 			SET SubsNxtTime=@NowTime,
-				U_PRGID=@FunName,
+				U_PRGID=@PRGID,
 				U_USERID=@IDNO
 			WHERE SubsNxtID=@SubsNxtID;
 
 			INSERT INTO TB_SubsNxt (IDNO, IsMotor, NowMonthlyRentId, NowMonSetID, NxtMonSetID, NowSubsEDate, SubsNxtTime, MKTime, UPDTime, A_PRGID, A_USERID, U_PRGID, U_USERID)
-			VALUES(@IDNO, @IsMotor, @NewMonthlyRentID, @NxtMonSetID ,@NxtMonSetID, @NowTime, NULL, @NowTime, @NowTime, @FunName, @IDNO, @FunName, @IDNO);
+			VALUES(@IDNO, @IsMotor, @NewMonthlyRentID, @NxtMonSetID ,@NxtMonSetID, @NextSD, NULL, @NowTime, @NowTime, @PRGID, @IDNO, @PRGID, @IDNO);
 		END
 	END
 	COMMIT TRAN
@@ -244,4 +246,3 @@ END CATCH
 
 RETURN @Error
 GO
-
