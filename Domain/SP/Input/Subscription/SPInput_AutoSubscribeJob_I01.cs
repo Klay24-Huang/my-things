@@ -63,5 +63,10 @@
         /// 交易序號
         /// </summary>
         public string TaishinTradeNo { get; set; }
+
+        /// <summary>
+        /// 來源程式
+        /// </summary>
+        public string PRGID { get; set; }
     }
 }

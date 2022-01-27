@@ -62,6 +62,7 @@ BEGIN TRY
 		FROM TB_SubsMain A WITH(NOLOCK)
 		INNER JOIN TB_MonthlyRentUse B WITH(NOLOCK) ON B.IDNO=A.IDNO AND B.SubsId=A.SubsId
 		INNER JOIN #Temp C ON C.SubsId=B.SubsId AND C.IDNO=B.IDNO
+		WHERE A.AutoSubs=1
 		GROUP BY B.IDNO,B.SubsId;
 
 		SELECT A.IDNO,
@@ -74,7 +75,7 @@ BEGIN TRY
 			A.NxtMonSetID,
 			C.EndDate,
 			E.PeriodPayPrice,
-			ISNULL(G.MEMSENDCD,2) AS InvoiceType,
+			CASE WHEN G.MEMSENDCD > 6 THEN 2 ELSE ISNULL(G.MEMSENDCD,2) END AS InvoiceType,
 			G.CARRIERID,
 			G.UNIMNO,
 			G.NPOBAN,
@@ -87,7 +88,8 @@ BEGIN TRY
 		INNER JOIN TB_MemberScoreMain F WITH(NOLOCK) ON F.MEMIDNO=A.IDNO
 		INNER JOIN TB_MemberData G WITH(NOLOCK) ON G.MEMIDNO=A.IDNO
 		LEFT JOIN TB_Code H WITH(NOLOCK) ON H.MapCode=G.MEMSENDCD AND H.UseFlag=1 AND H.CodeGroup='InvoiceType'
-		WHERE F.SCORE >= 60;
+		WHERE F.SCORE >= 60
+		AND D.EDATE >= @TwoDayString;
 
 		DROP TABLE IF EXISTS #Temp;
 		DROP TABLE IF EXISTS #Temp2;
@@ -120,4 +122,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMemberMedal';
 GO
-

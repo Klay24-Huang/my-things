@@ -43,7 +43,6 @@ namespace WebAPI.Controllers
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"];    //Bearer 
             var objOutput = new Dictionary<string, object>();   //輸出
             bool flag = true;
-            bool isWriteError = false;
             string errMsg = "Success";  //預設成功
             string errCode = "000000";  //預設成功
             string funName = "AutoSubscribeJobController";
@@ -95,7 +94,7 @@ namespace WebAPI.Controllers
             #region 自動續訂
             if (flag && SPOutList != null && SPOutList.Count > 0)
             {
-                logger.Trace("AutoSubscribeJob Count:" + SPOutList.Count.ToString());
+                logger.Trace("Process Count:" + SPOutList.Count.ToString());
 
                 foreach (var item in SPOutList)
                 {
@@ -175,7 +174,8 @@ namespace WebAPI.Controllers
                             InvoTypeId = item.InvoiceID,
                             MerchantTradeNo = MerchantTradeNo,
                             TaishinTradeNo = TransactionNo,
-                            LogID = LogID,
+                            PRGID = funName,
+                            LogID = LogID
                         };
                         SPOut_AutoSubscribeJob_I01 spOut = new SPOut_AutoSubscribeJob_I01();
                         SQLHelper<SPInput_AutoSubscribeJob_I01, SPOut_AutoSubscribeJob_I01> sqlHelp = new SQLHelper<SPInput_AutoSubscribeJob_I01, SPOut_AutoSubscribeJob_I01>(connetStr);
@@ -293,10 +293,9 @@ namespace WebAPI.Controllers
                                 var spin = new SPInput_SaveInvno()
                                 {
                                     IDNO = item.IDNO,
-                                    LogID = LogID,
-                                    MonthlyRentID=item.MonthlyRentId,
+                                    MonthlyRentID = NewMonthlyRentID,
                                     NowPeriod = 1,  // 寫死第一期
-                                    PayTypeId = 0,  // 不知道幹嘛用的
+                                    PayTypeId = 0,
                                     InvoTypeId = item.InvoiceID,
                                     InvoiceType = item.InvoiceType.ToString(),
                                     CARRIERID = item.CARRIERID,
@@ -305,13 +304,14 @@ namespace WebAPI.Controllers
                                     Invno = INVNO,
                                     InvoicePrice = PeriodPayPrice,
                                     InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                    PRGID = funName
+                                    PRGID = funName,
+                                    LogID = LogID
                                 };
 
                                 xflag = MonSubsSp.sp_SaveSubsInvno(spin, ref sp_errCode);
                                 if (!xflag)
                                 {
-                                    logger.Error($"IDNO:{item.IDNO} -- spError={sp_errCode}");
+                                    logger.Error($"IDNO:{item.IDNO} -- MonthlyRentId:{item.MonthlyRentId} -- spError={sp_errCode}");
                                 }
                             }
                             else
@@ -328,7 +328,7 @@ namespace WebAPI.Controllers
                                     MonProPeriod = item.MonProPeriod,
                                     ShortDays = item.ShortDays,
                                     NowPeriod = 1,
-                                    PayTypeId = 0,  // 不知道幹嘛用的
+                                    PayTypeId = 0,
                                     InvoTypeId = item.InvoiceID,
                                     InvoiceType = item.InvoiceType.ToString(),
                                     CARRIERID = item.CARRIERID,
@@ -343,7 +343,7 @@ namespace WebAPI.Controllers
                                 xflag = MonSubsSp.sp_InsMonthlyInvErr(spInput, ref sp_errCode);
                                 if (!xflag)
                                 {
-                                    logger.Error($"IDNO:{item.IDNO} -- spError={sp_errCode}");
+                                    logger.Error($"IDNO:{item.IDNO} -- MonthlyRentId:{item.MonthlyRentId} -- spError={sp_errCode}");
                                 }
                             }
                         }
@@ -359,7 +359,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (!flag && !isWriteError)
+            if (!flag)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
