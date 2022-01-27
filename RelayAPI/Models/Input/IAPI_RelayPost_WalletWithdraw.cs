@@ -5,7 +5,7 @@ using System.Web;
 
 namespace RelayAPI.Models.Input
 {
-    public class IAPI_RelayPost
+    public class IAPI_RelayPost_WalletWithdraw
     {
         public string BaseUrl { get; set; }
         public string ApiUrl { get; set; }

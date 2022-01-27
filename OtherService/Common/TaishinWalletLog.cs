@@ -11,7 +11,7 @@ using WebCommon;
 
 namespace OtherService.Common
 {
-    class TaishinWalletLog
+    public class TaishinWalletLog
     {
  
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
