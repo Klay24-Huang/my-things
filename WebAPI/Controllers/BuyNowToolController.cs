@@ -350,7 +350,8 @@ namespace WebAPI.Controllers
                                     Invno = INVNO,
                                     InvoicePrice = ProdPrice,
                                     InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                    PRGID=funName
+                                    PRGID=funName,
+                                    MonthlyRentID= apiInput.MonthlyRentId
                                 };
 
                                 xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -744,7 +745,8 @@ namespace WebAPI.Controllers
                                 Invno = INVNO,
                                 InvoicePrice = ProdPrice,
                                 InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                PRGID=funName
+                                PRGID=funName,
+                                MonthlyRentID = buyNxtCom.MonthlyRentId
                             };
 
                             xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -1086,7 +1088,8 @@ namespace WebAPI.Controllers
                                         Invno = INVNO,
                                         InvoicePrice =ProdPrice,
                                         InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                        PRGID=funName
+                                        PRGID=funName,
+                                        MonthlyRentID= sp_re.Arrs[i].MonthlyRentId
                                     };
 
                                     xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
