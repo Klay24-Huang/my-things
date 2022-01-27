@@ -340,9 +340,6 @@ namespace WebAPI.Controllers
                                 {
                                     IDNO = IDNO,
                                     LogID = LogID,
-                                    MonProjID = apiInput.MonProjID,
-                                    MonProPeriod = apiInput.MonProPeriod,
-                                    ShortDays = apiInput.ShortDays,
                                     NowPeriod = nowPeriod,
                                     PayTypeId = (Int64)apiInput.PayTypeId,
                                     InvoTypeId = InvoTypeId,
@@ -737,9 +734,6 @@ namespace WebAPI.Controllers
                             {
                                 IDNO = IDNO,
                                 LogID = LogID,
-                                MonProjID = apiInput.UP_MonProjID,
-                                MonProPeriod = apiInput.UP_MonProPeriod,
-                                ShortDays = apiInput.UP_ShortDays,
                                 NowPeriod = buyNxtCom.NowPeriod,
                                 PayTypeId = (Int64)apiInput.PayTypeId,
                                 InvoTypeId = InvoTypeId,
@@ -1082,9 +1076,6 @@ namespace WebAPI.Controllers
                                     {
                                         IDNO = IDNO,
                                         LogID = LogID,
-                                        MonProjID = sp_re.Arrs[i].ProjID,
-                                        MonProPeriod = sp_re.Arrs[i].MonProPeriod,
-                                        ShortDays = sp_re.Arrs[i].ShortDays,
                                         NowPeriod = sp_re.Arrs[i].rw,
                                         PayTypeId = (Int64)apiInput.PayTypeId,
                                         InvoTypeId = InvoTypeId,

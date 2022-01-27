@@ -294,9 +294,7 @@ namespace WebAPI.Controllers
                                 {
                                     IDNO = item.IDNO,
                                     LogID = LogID,
-                                    MonProjID = item.MonProjID,
-                                    MonProPeriod = item.MonProPeriod,
-                                    ShortDays = item.ShortDays,
+                                    MonthlyRentID=item.MonthlyRentId,
                                     NowPeriod = 1,  // 寫死第一期
                                     PayTypeId = 0,  // 不知道幹嘛用的
                                     InvoTypeId = item.InvoiceID,

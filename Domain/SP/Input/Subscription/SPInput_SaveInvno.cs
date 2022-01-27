@@ -12,10 +12,8 @@ namespace Domain.SP.Input.Subscription
         /// 會員編號
         /// </summary>
         public string IDNO { get; set; }
+        public long MonthlyRentID { get; set; } = 0;
         public Int64 LogID { get; set; }
-        public string MonProjID { get; set; }
-        public int MonProPeriod { get; set; }
-        public int ShortDays { get; set; }
         /// <summary>
         /// 目前期數
         /// </summary>

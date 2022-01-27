@@ -109,8 +109,6 @@ namespace WebAPI.Controllers
                             errCode = "ERR101";
                         }
                     }
-
-
                     trace.FlowList.Add("防呆");
                 }
 
@@ -129,7 +127,7 @@ namespace WebAPI.Controllers
 
                 #region TB
 
-                //是否已刷過卡
+                #region 刷卡判斷
                 if (flag)
                 {//24小時內相同呼叫條件視為相同
                     string spErrCode = "";
@@ -148,10 +146,12 @@ namespace WebAPI.Controllers
                         errCode = "ERR277";
                         errMsg = "刷卡已存在";
                     }
+                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                    trace.FlowList.Add("刷卡判斷");
                 }
-
-                //先檢查是否可以購買訂閱制
-                //目前兩個情況會擋掉，積分小於60，已經有重複買的也不能
+                #endregion
+              
+                #region 購買前檢核
                 if (flag)
                 {
                     string spErrCode = "";
@@ -159,9 +159,10 @@ namespace WebAPI.Controllers
                     {
                         IDNO = IDNO,
                         MonProjId = apiInput.MonProjID,
-                        MonProPeroid = apiInput.MonProPeriod,
+                        MonProPeriod = apiInput.MonProPeriod,
                         ShortDays = apiInput.ShortDays,
-                        LogID = LogID
+                        LogID = LogID,
+                        VerifyType=0
                     };
                     if (!msp.sp_BuyNowAddMonth_Q01(spIn, ref spErrCode))
                     {
@@ -169,8 +170,12 @@ namespace WebAPI.Controllers
                         errCode = spErrCode;
                         errMsg = "購買失敗!";
                     }
+                    trace.traceAdd("BuyNowAddMonth", new { spIn, spErrCode });
+                    trace.FlowList.Add("購買前檢核");
                 }
+                #endregion
 
+                #region 進入購買流程
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -306,6 +311,7 @@ namespace WebAPI.Controllers
                     }
                     #endregion
 
+                    outputApi.PayResult = flag ? 1 : 0;
                     #region 履保
                     if (flag)
                     {
@@ -406,9 +412,6 @@ namespace WebAPI.Controllers
                                 {
                                     IDNO = IDNO,
                                     LogID = LogID,
-                                    MonProjID = apiInput.MonProjID,
-                                    MonProPeriod = apiInput.MonProPeriod,
-                                    ShortDays = apiInput.ShortDays,
                                     NowPeriod = 1,  //寫死第一期
                                     PayTypeId = (Int64)apiInput.PayTypeId,
                                     InvoTypeId = InvoTypeId,
@@ -419,7 +422,8 @@ namespace WebAPI.Controllers
                                     Invno = INVNO,
                                     InvoicePrice = ProdPrice,
                                     InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                    PRGID = funName
+                                    PRGID = funName,
+                                    MonthlyRentID= buyNxtCom.MonthlyRentId
                                 };
 
                                 xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -473,10 +477,9 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    #endregion
-
-                    outputApi.PayResult = flag ? 1 : 0;
+                    #endregion                 
                 }
+                #endregion
 
                 #endregion
 
@@ -598,7 +601,7 @@ namespace WebAPI.Controllers
 
                 #region TB
 
-                //是否已刷過卡
+                #region 刷卡判斷
                 if (flag)
                 {//24小時內相同呼叫條件視為相同
                     string spErrCode = "";
@@ -617,8 +620,39 @@ namespace WebAPI.Controllers
                         errCode = "ERR277";
                         errMsg = "刷卡已存在";
                     }
+                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                    trace.FlowList.Add("刷卡判斷");
                 }
+                #endregion
 
+                #region 升轉前檢核
+                if (flag)
+                {
+                    string spErrCode = "";
+                    var spIn = new SPInput_BuyNowAddMonth_Q01()
+                    {
+                        IDNO = IDNO,
+                        MonProjId = apiInput.MonProjID,
+                        UP_MonProjID=apiInput.UP_MonProjID,
+                        MonProPeriod = apiInput.MonProPeriod,
+                        UP_MonProPeriod=apiInput.UP_MonProPeriod,
+                        ShortDays = apiInput.ShortDays,
+                        UP_ShortDays=apiInput.UP_ShortDays,
+                        LogID = LogID,
+                        VerifyType = 1
+                    };
+                    if (!msp.sp_BuyNowAddMonth_Q01(spIn, ref spErrCode))
+                    {
+                        flag = false;
+                        errCode = spErrCode;
+                        errMsg = "升轉失敗";
+                    }
+                    trace.traceAdd("BuyNowAddMonth", new { spIn, spErrCode });
+                    trace.FlowList.Add("升轉前檢核");
+                }
+                #endregion
+
+                #region 進入升轉流程
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -765,9 +799,8 @@ namespace WebAPI.Controllers
                         trace.traceAdd("exeNxt", new { buyNxtCom });
                         trace.FlowList.Add("後續api處理");
                     }
-                    outputApi.PayResult = flag ? 1 : 0;
-
                     #endregion
+                    outputApi.PayResult = flag ? 1 : 0;
 
                     #region 履保
 
@@ -865,9 +898,6 @@ namespace WebAPI.Controllers
                             {
                                 IDNO = IDNO,
                                 LogID = LogID,
-                                MonProjID = apiInput.UP_MonProjID,
-                                MonProPeriod = apiInput.UP_MonProPeriod,
-                                ShortDays = apiInput.UP_ShortDays,
                                 NowPeriod = buyNxtCom.NowPeriod,
                                 PayTypeId = (Int64)apiInput.PayTypeId,
                                 InvoTypeId = InvoTypeId,
@@ -878,7 +908,8 @@ namespace WebAPI.Controllers
                                 Invno = INVNO,
                                 InvoicePrice = ProdPrice,
                                 InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                PRGID = funName
+                                PRGID = funName,
+                                MonthlyRentID= buyNxtCom.MonthlyRentId
                             };
 
                             xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -934,6 +965,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                 }
+                #endregion
 
                 #endregion
 
@@ -1045,7 +1077,7 @@ namespace WebAPI.Controllers
 
                 #region TB
 
-                //是否已刷過卡
+                #region 刷卡判斷
                 if (flag)
                 {//24小時內相同呼叫條件視為相同
                     string spErrCode = "";
@@ -1064,8 +1096,12 @@ namespace WebAPI.Controllers
                         errCode = "ERR277";
                         errMsg = "刷卡已存在";
                     }
+                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                    trace.FlowList.Add("刷卡判斷");
                 }
+                #endregion
 
+                #region 進入欠費繳交流程
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -1111,6 +1147,9 @@ namespace WebAPI.Controllers
                             MonthlyRentIds = String.Join(",", sp_re.Arrs.Select(x => x.MonthlyRentId));
                             buyNxtCom.MonthlyRentIds = MonthlyRentIds;
                         }
+
+                        trace.traceAdd("GetArrsSubsList", new { spin, sp_re, sp_errCode });
+                        trace.FlowList.Add("查詢欠費");
                     }
 
                     #endregion
@@ -1195,10 +1234,9 @@ namespace WebAPI.Controllers
                         trace.traceAdd("exeNxt", new { buyNxtCom });
                         trace.FlowList.Add("後續api處理");
                     }
-                    outputApi.PayResult = flag ? 1 : 0;
-
                     #endregion
 
+                    outputApi.PayResult = flag ? 1 : 0;
                     #region 履保
 
                     if (flag)
@@ -1235,6 +1273,7 @@ namespace WebAPI.Controllers
 
                     #endregion
 
+                    #region 發票
                     if (flag && ProdPrice > 0)  //阻擋0元發票
                     {
                         try
@@ -1306,9 +1345,6 @@ namespace WebAPI.Controllers
                                     {
                                         IDNO = IDNO,
                                         LogID = LogID,
-                                        MonProjID = sp_re.Arrs[i].ProjID,
-                                        MonProPeriod = sp_re.Arrs[i].MonProPeriod,
-                                        ShortDays = sp_re.Arrs[i].ShortDays,
                                         NowPeriod = sp_re.Arrs[i].rw,
                                         PayTypeId = (Int64)apiInput.PayTypeId,
                                         InvoTypeId = InvoTypeId,
@@ -1319,7 +1355,8 @@ namespace WebAPI.Controllers
                                         Invno = INVNO,
                                         InvoicePrice = ProdPrice,
                                         InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
-                                        PRGID = funName
+                                        PRGID = funName,
+                                        MonthlyRentID= sp_re.Arrs[i].MonthlyRentId
                                     };
 
                                     xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
@@ -1343,10 +1380,7 @@ namespace WebAPI.Controllers
                                         ApiInput = JsonConvert.SerializeObject(wsInput),
                                         IDNO = IDNO,
                                         LogID = LogID,
-                                        MonthlyRentID = sp_re.Arrs[i].MonthlyRentId,
-                                        MonProjID = sp_re.Arrs[i].ProjID,
-                                        MonProPeriod = sp_re.Arrs[i].MonProPeriod,
-                                        ShortDays = sp_re.Arrs[i].ShortDays,
+                                        MonthlyRentID = sp_re.Arrs[i].MonthlyRentId,                                
                                         NowPeriod = sp_re.Arrs[i].rw,
                                         PayTypeId = (Int64)apiInput.PayTypeId,
                                         InvoTypeId = InvoTypeId,
@@ -1371,7 +1405,9 @@ namespace WebAPI.Controllers
                             logger.Trace(ex.Message);
                         }
                     }
+                    #endregion
                 }
+                #endregion
 
                 #endregion
 

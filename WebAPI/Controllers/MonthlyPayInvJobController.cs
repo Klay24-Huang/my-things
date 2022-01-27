@@ -198,9 +198,6 @@ namespace WebAPI.Controllers
                         {
                             IDNO = apiInput.IdNo,
                             LogID = LogID,
-                            MonProjID = sp_re.MonProjID,
-                            MonProPeriod = sp_re.MonProPeriod,
-                            ShortDays = sp_re.ShortDays,
                             NowPeriod = sp_re.NowPeriod,
                             PayTypeId = sp_re.PayTypeId,
                             InvoTypeId = sp_re.InvoTypeId,
@@ -210,7 +207,8 @@ namespace WebAPI.Controllers
                             NPOBAN = sp_re.Npoban,
                             Invno = InvNo,
                             InvoicePrice = sp_re.PreiodPrice,
-                            InvoiceDate = DateTime.Now.ToString("yyyyMMdd")
+                            InvoiceDate = DateTime.Now.ToString("yyyyMMdd"),
+                            MonthlyRentID= apiInput.MonthlyRentId
                         };
 
                         xflag = msp.sp_SaveSubsInvno(spin, ref sp_errCode);
