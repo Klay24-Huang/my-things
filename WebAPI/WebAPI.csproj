@@ -298,6 +298,8 @@
     <Compile Include="Controllers\GetMemberScoreController.cs" />
     <Compile Include="Controllers\GetMemberScoreItemController.cs" />
     <Compile Include="Controllers\GetMotorParkingDataController.cs" />
+    <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
+    <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\GetOrderInsuranceInfoController.cs" />
     <Compile Include="Controllers\GetPreCreditAuthJobController.cs" />
     <Compile Include="Controllers\JointRentInvitationController.cs" />
@@ -308,7 +310,6 @@
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
     <Compile Include="Controllers\JointRentIviteeFeedBackController.cs" />
-    <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\NewsReadController.cs" />
     <Compile Include="Controllers\NoticeReadController.cs" />
@@ -438,6 +439,7 @@
     <Compile Include="Controllers\SetSubsNxtController.cs" />
     <Compile Include="Controllers\SubsEscrowPayController.cs" />
     <Compile Include="Controllers\SyncMochiParkController.cs" />
+    <Compile Include="Controllers\TestPushServiceController.cs" />
     <Compile Include="Controllers\TestTaishiBQController.cs" />
     <Compile Include="Controllers\TestTaishiBUController.cs" />
     <Compile Include="Controllers\TransWebMemCMKController.cs" />
@@ -689,6 +691,7 @@
     <Compile Include="Models\Param\Input\IAPI_SetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_SetSubsNxt.cs" />
     <Compile Include="Models\Param\Input\IAPI_SubsEscrowPay.cs" />
+    <Compile Include="Models\Param\Input\IAPI_TestPushService.cs" />
     <Compile Include="Models\Param\Input\IAPI_TransWebMemCMK.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCarImage.cs" />
     <Compile Include="Models\Param\Input\IAPI_UploadCredentials.cs" />

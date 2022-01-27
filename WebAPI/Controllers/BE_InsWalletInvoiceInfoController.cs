@@ -82,6 +82,7 @@ namespace WebAPI.Controllers
                     RVACNT = apiInput.RVACNT,
                     RVBANK = apiInput.RVBANk,
                     RV_NAME = apiInput.RV_NAME,
+                    DocURL = apiInput.DocURL,
                     LogID = LogID,
                     PRGName = funName
                 };

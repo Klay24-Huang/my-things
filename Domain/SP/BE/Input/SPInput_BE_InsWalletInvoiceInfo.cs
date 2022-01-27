@@ -22,6 +22,7 @@ namespace Domain.SP.BE.Input
         public string UserID { get; set; }
         public string PRGName { get; set; }
         public long LogID { get; set; }
+        public string DocURL { get; set; }
 
     }
 }

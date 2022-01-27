@@ -187,7 +187,7 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    flag = baseVerify.CheckDate(apiInput.SDate, apiInput.EDate, ref errCode, ref SDate, ref EDate); //同站
+                    flag = baseVerify.CheckDate(apiInput.SDate, apiInput.EDate, ref errCode, ref SDate, ref EDate);//同站
 
                     if (flag)
                     {
@@ -241,7 +241,6 @@ namespace WebAPI.Controllers
                     SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
                     flag = sqlHelp.ExecuteSPNonQuery(spName, spWalletInput, ref spWalletOut, ref lstError);
                     baseVerify.checkSQLResult(ref flag, spWalletOut.Error, spWalletOut.ErrorCode, ref lstError, ref errCode);
-
                     if (flag)
                     {
                         WalletFlag = spWalletOut.WalletStatus == "2";
@@ -342,7 +341,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                SPName = "usp_Booking";
+                SPName = "usp_Booking_V20220118";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
@@ -361,9 +360,8 @@ namespace WebAPI.Controllers
                     InsurancePurePrice = InsurancePurePrice,
                     PayMode = PayMode,
                     LogID = LogID,
-                    //20211012 ADD BY ADAM REASON.增加手機定位點
-                    //PhoneLat = apiInput.PhoneLat,
-                    //PhoneLon = apiInput.PhoneLon
+                    PhoneLat = apiInput.PhoneLat,
+                    PhoneLon = apiInput.PhoneLon
                 };
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);

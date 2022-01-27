@@ -238,6 +238,7 @@ namespace WebAPI.Controllers
                     if (apiInput.PayType == 0)
                     {
                         #region 租金
+
                         #region 取出訂單資訊
                         if (flag)
                         {

@@ -277,6 +277,7 @@
     <Compile Include="SP\Input\Other\SPInput_NewsRead_I01.cs" />
     <Compile Include="SP\Input\Other\SPInput_NoticeRead_I01.cs" />
     <Compile Include="SP\Input\Other\SPInput_PersonNotificationRead_I01.cs" />
+    <Compile Include="SP\Input\Other\SPInput_TestPushService_I01.cs" />
     <Compile Include="SP\Input\PolygonList\SpInput_GetAlliRentStation.cs" />
     <Compile Include="SP\Input\PolygonList\SPInput_PolygonListQuery.cs" />
     <Compile Include="SP\Input\Other\SPInput_GetNews.cs" />
@@ -418,6 +419,7 @@
     <Compile Include="SP\Output\PolygonList\SPOutput_PolygonListQuery.cs" />
     <Compile Include="SP\Output\PolygonList\SPOut_GetAlliRentStation.cs" />
     <Compile Include="SP\Output\Project\SPOutput_GetStationCarTypeOfMutiStation.cs" />
+    <Compile Include="SP\Output\Register\SPOuput_CheckMobileUse.cs" />
     <Compile Include="SP\Output\Register\SPOuput_GetMemberMobile.cs" />
     <Compile Include="SP\Output\Register\SPOutput_CheckMobileUse.cs" />
     <Compile Include="SP\Output\Register\SPOutput_GetVerifyCode.cs" />
@@ -611,6 +613,7 @@
     <Compile Include="TB\FeedBackPIC.cs" />
     <Compile Include="TB\GetFeedBackKindData.cs" />
     <Compile Include="TB\GetFullProjectInfo.cs" />
+    <Compile Include="TB\GetMemberCMK.cs" />
     <Compile Include="TB\GetPolygonRawData.cs" />
     <Compile Include="TB\Holiday.cs" />
     <Compile Include="TB\Hotai\HotaiToken.cs" />
@@ -908,8 +911,8 @@
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_ECRefund.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetCreditCardList.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_GetPaymentInfo.cs" />
-    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_RelayPost.cs" />
     <Compile Include="WebAPI\output\IRentAPIOutput_Generic.cs" />
+    <Compile Include="WebAPI\output\Taishin\WebAPIOutput_RelayPost.cs" />
     <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_InquiryByLidm.cs" />
   </ItemGroup>
   <ItemGroup>

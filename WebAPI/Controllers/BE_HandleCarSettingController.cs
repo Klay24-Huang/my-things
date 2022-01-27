@@ -63,8 +63,8 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
-                string[] checkList = { apiInput.UserID, apiInput.StationId, apiInput.CarNo };
-                string[] errList = { "ERR900", "ERR900", "ERR900" };
+                string[] checkList = { apiInput.UserID, apiInput.StationId, apiInput.CarNo,apiInput.nowStationId };
+                string[] errList = { "ERR900", "ERR900", "ERR900", "ERR900" };
                 //1.判斷必填
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
 
@@ -77,15 +77,14 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleCarSetting);
+                string spName = "usp_BE_Handle_CarSetting_V20211117";
                 SPInput_BE_HandleCarSetting spInput = new SPInput_BE_HandleCarSetting()
                 {
                     LogID = LogID,
-                   CarNo=apiInput.CarNo.Replace(" ",""),
-                    StationID=apiInput.StationId.Replace(" ",""),
-                    UserID = apiInput.UserID
-
-
+                    CarNo = apiInput.CarNo.Replace(" ", ""),
+                    StationID = apiInput.StationId.Replace(" ", ""),
+                    UserID = apiInput.UserID,
+                    nowStationID = apiInput.nowStationId.Replace(" ", "")
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BE_HandleCarSetting, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_HandleCarSetting, SPOutput_Base>(connetStr);

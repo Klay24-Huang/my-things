@@ -231,7 +231,8 @@ namespace WebAPI.Controllers
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag && ListOut.Count > 0)
+
+                if (flag)
                 {
                     // 20210825 UPD BY YEH REASON:拋短租
                     // 20211105 UPD BY YEH REASON:改成迴圈拋多筆
