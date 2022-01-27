@@ -19,5 +19,6 @@ namespace WebAPI.Models.Param.Input
         public string RVBANk { get; set; }
         public string RVACNT { get; set; }
         public string RV_NAME { get; set; }
+        public string DocURL { get; set; }
     }
 }

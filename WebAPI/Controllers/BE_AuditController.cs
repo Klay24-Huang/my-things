@@ -18,6 +18,8 @@ using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 using Prometheus; //20210707唐加prometheus
 using StackExchange.Redis;//20210913唐加redis
+using Domain.TB;
+using Reposotory.Implement;
 
 namespace WebAPI.Controllers
 {
@@ -234,9 +236,41 @@ namespace WebAPI.Controllers
 
             }
             //這邊資料用api拋給sqyhi06vm
-            if (flag)
+            if (flag && apiInput.AuditStatus == 1)
             {
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+
+                if (flag)
+                {
+                    //20211222 UPD BY FRANK REASON.將拋短租轉移至會員審核通過後進行
+                    GetMemberCMK memberCMKData = null;
+                    memberCMKData = new HiEasyRentRepository(connetStr).GetMemberCMK(apiInput.IDNO);
+                    WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
+                    {
+                        IDNO = memberCMKData.MEMIDNO,
+                        VERTYPE = memberCMKData.VerType,
+                        VER = memberCMKData.Version,
+                        VERSOURCE = memberCMKData.Source,
+                        TEL = memberCMKData.TEL,
+                        SMS = memberCMKData.SMS,
+                        EMAIL = memberCMKData.EMAIL,
+                        POST = memberCMKData.POST,
+                        MEMO = "",
+                        COMPID = "EF",
+                        COMPNM = "和雲",
+                        PRGID = "iRent_6",
+                        USERID = "iRentUser"
+                    };
+                    WebAPIOutput_TransIRentMemCMK CMKOutput = new WebAPIOutput_TransIRentMemCMK();
+                    
+
+                    flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref CMKOutput);
+                    if (flag == false)
+                    {
+                        errCode = "ERR776";
+                    }
+                }
+
                 WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
 
                 WebAPIInput_NPR010Save spInput = new WebAPIInput_NPR010Save() //宣告好多欄位傳去NPR010，但下面只有部分設定，部分還直接寫死
@@ -362,6 +396,13 @@ namespace WebAPI.Controllers
                 logger.Error(ex.Message);
             }
             ProcessedJobCount1.Set(value); //宣告Guage才能用set
+        }
+        private int MEMRFNBR_FromStr(string sour)
+        {
+            if (double.TryParse(sour, out double d_sour))
+                return Convert.ToInt32(Math.Floor(d_sour));
+            else
+                throw new Exception("MEMRFNBR格式錯誤");
         }
     }
 }

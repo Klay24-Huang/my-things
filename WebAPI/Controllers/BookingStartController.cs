@@ -157,23 +157,6 @@ namespace WebAPI.Controllers
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
-            #region 檢查信用卡是否綁卡
-            if (flag)
-            {
-                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
-                if (ds.Tables.Count == 0)
-                {
-                    flag = false;
-                    errCode = "ERR290";
-                }
-                else if (ds.Tables[0].Rows.Count == 0)
-                {
-                    flag = false;
-                    errCode = "ERR290";
-                }
-                ds.Dispose();
-            }
-            #endregion
             #region 檢查欠費
             if (flag)
             {
@@ -190,13 +173,15 @@ namespace WebAPI.Controllers
             //取車判斷
             if (flag)
             {
-                string CheckTokenName = "usp_BeforeBookingStart";
+                string CheckTokenName = "usp_BeforeBookingStart_V20220119";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    PhoneLat = apiInput.PhoneLat,
+                    PhoneLon = apiInput.PhoneLon
                 };
                 SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart> sqlHelp = new SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spBeforeStart, ref spOut, ref lstError);

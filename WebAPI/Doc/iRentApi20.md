@@ -212,7 +212,6 @@
 
 20210906 取得租金明細(GetPayDetail)欄位修正
 
-20210907 增加推播相關
 
 20210909 共同承租人回應邀請(JointRentIviteeFeedBack) Input欄位調整&錯誤代碼修正
 
@@ -1406,6 +1405,7 @@
 
 ## GetBanner 取得廣告資訊
 
+
 ### [/api/GetBanner/]
 
 * 20210316發佈
@@ -1413,9 +1413,7 @@
 * ASP.NET Web API (REST API)
 
 * 傳送跟接收採JSON格式
-
 * 動作 [GET]
-
 * input傳入參數說明
 
 | 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
@@ -1553,7 +1551,6 @@
 * 20210315發佈
 
 * ASP.NET Web API (REST API)
-
 * 傳送跟接收採JSON格式
 
 * HEADER帶入AccessToken**(必填)**
@@ -1711,7 +1708,6 @@
 ### [/api/NormalRent/]
 
 * 20210324修改
-
 * 20210407修改 - input移除掉Seats 
 
 * ASP.NET Web API (REST API)
@@ -1882,7 +1878,6 @@
 | ------------- | -------------- | :--: | --------- |
 | IsFavStation  | 是否為常用據點 | int  | 0:否 1:是 |
 | GetCarTypeObj | 車型牌卡清單   | List |           |
-
 * GetCarTypeObj回傳參數說明
 
 | 參數名稱 | 參數說明     |  型態  | 範例 |
@@ -2207,7 +2202,6 @@
         ]
     }
 }
-
 ```
 
 * 錯誤代碼清單
@@ -2895,7 +2889,6 @@
 - 20210531補上
 
 - ASP.NET Web API (REST API)
-
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
@@ -2918,7 +2911,6 @@
     "EDate":""
 }
 ```
-
 * output 回傳參數說明
 
 | 參數名稱     | 參數說明           |  型態  | 範例          |
@@ -3637,7 +3629,6 @@
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
-
 
 * Output範例
 
@@ -4673,7 +4664,6 @@
 ## CreditAuth 付款與還款
 
 ### [/api/CreditAuth/]
-
 * 20210909 補資料
 
 * ASP.NET Web API (REST API)
@@ -4681,10 +4671,6 @@
 * 傳送跟接收採JSON格式
 
 * HEADER帶入AccessToken**(必填)**
-
-* 動作 [POST]
-
-* input傳入參數說明
 
 | 參數名稱     | 參數說明                       | 必要 |  型態  | 範例     |
 | ------------ | ------------------------------ | :--: | :----: | -------- |
@@ -4802,20 +4788,6 @@
 {
     "IsMoto": 0,
     "ReMode": 1,
-}
-```
-
-* Output回傳參數說明
-
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
 * Data資料物件說明,汽車牌卡(ReMode=1, IsMoto=0)
 
 | 參數名稱    | 參數說明                    | 型態 | 範例 |
@@ -6617,7 +6589,6 @@
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
 
-
 * Output範例
 
 ```
@@ -7045,19 +7016,6 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                   | 說明                                       |
-| -------- | ------------------------------------------ | ------------------------------------------ |
-| ERR168   | 找不到符合的訂單                           | 取消訂單時找不到可取消的訂單               |
-| ERR919   | 對方不能租車，請對方確認會員狀態哦！       | 對方不能租車，請對方確認會員狀態哦！       |
-| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ | 已至邀請人數上限，請手動移除非邀請對象哦！ |
-| ERR936   | 格式不符，請重新輸入哦！                   | 輸入格式不符                               |
-
-## JointRentInvitation 案件共同承租人邀請
-
-### [/api/JointRentInvitation/]
-
-* 20210819新增
-
 * ASP.NET Web API (REST API)
 
 * 傳送跟接收採JSON格式
@@ -7298,16 +7256,6 @@
 | AutoStored   | 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
 | HasHotaiPay  | 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
 | HotaiListObj | 和泰PAY卡清單                                                |  list  |          |
-
-* BindListObj 回傳參數說明
-
-| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
-| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
-| BankNo          | 銀行帳號                         | string |                                                       |
-| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
-| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
-| AvailableAmount | 剩餘額度                         | string |                                                       |
-| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
 
 * HotaiListObj 回傳參數說明
 
@@ -8091,7 +8039,6 @@
 
 | 參數名稱   | 參數說明              |  型態  | 範例             |
 | ---------- | --------------------- | :----: | ---------------- |
-
 
 * Output範例
 

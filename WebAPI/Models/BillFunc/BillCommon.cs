@@ -3932,7 +3932,6 @@ namespace WebAPI.Models.BillFunc
         /// <mark>2020-12-22 eason</mark>
         public Tuple<double, double, double> GetTimePart(DateTime sd, DateTime ed, int ProjType)
         {
-            string funNM = "GetTimePart : ";
             double days = 0;
             double hours = 0;
             double mins = 0;

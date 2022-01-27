@@ -195,16 +195,18 @@ namespace WebAPI.Controllers
                 {
                     #region 春節專案使用
                     //春節限定，將R140專案移除
-                    var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
+                    //var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
                     #endregion
 
-                    if (tempList != null && tempList.Count() > 0)
-                        _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(tempList);
+                    if (MotorList != null && MotorList.Count() > 0)
+                        _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(MotorList);
 
                     if (_MotorRentObj != null && _MotorRentObj.Count() > 0)
                     {
                         #region 加入月租資訊
-                        if (Score >= 60)    // 20210924 UPD BY YEH REASON:積分>=60才可使用訂閱制
+                        bool isSpring = new CarRentCommon().isSpring(SDate, EDate); //是否為春節時段
+
+                        if (Score >= 60 && !isSpring)    // 20210924 UPD BY YEH REASON:積分>=60才可使用訂閱制
                         {
                             if (InUseMonth != null && InUseMonth.Count() > 0)
                             {

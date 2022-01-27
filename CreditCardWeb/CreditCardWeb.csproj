@@ -160,6 +160,8 @@
     <Content Include="NLog.config" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-pay-api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-pay-api - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-pay-api-test - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-pay-api-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-pay-api - Web Deploy.pubxml" />
     <Content Include="Scripts\ActionJS\CommonFunc.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />

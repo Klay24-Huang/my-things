@@ -16,17 +16,16 @@ using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
-
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 活動通知讀取
+    /// 測試推播
     /// </summary>
-    public class NewsReadController : ApiController
+    public class TestPushServiceController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         [HttpPost]
-        public Dictionary<string, object> DoNewsRead(Dictionary<string, object> value)
+        public Dictionary<string, object> DoTestPushService(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -34,13 +33,13 @@ namespace WebAPI.Controllers
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
-            bool isWriteError = false;//Adam哥最帥，幫我上版
+            bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "NewsReadController";
+            string funName = "TestPushServiceController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_NewsRead apiInput = null;
+            IAPI_TestPushService apiInput = null;
             NullOutput outputApi = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -54,7 +53,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_NewsRead>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_TestPushService>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 Contentjson = "Not Input";
@@ -93,15 +92,21 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                SPInput_NewsRead_I01 spInput = new SPInput_NewsRead_I01()
+
+                SPInput_TestPushService_I01 spInput = new SPInput_TestPushService_I01()
                 {
                     IDNO = IDNO,
-                    NewsID = (Int64)apiInput.NewsID,
+                    PushRegID = apiInput.PushRegID,
+                    Title = apiInput.Title,
+                    Message = apiInput.Message,
+                    UserName = apiInput.UserName,
+                    Url = apiInput.Url,
                     LogID = LogID
                 };
-                string spName = new ObjType().GetSPName(ObjType.SPType.NewsRead);
+                //string spName = new ObjType().GetSPName(ObjType.SPType.NewsRead);
+                string spName = "usp_TestPushService_I01";
                 SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_NewsRead_I01, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_NewsRead_I01, SPOutput_Base>(connetStr);
+                SQLHelper<SPInput_TestPushService_I01, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_TestPushService_I01, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }

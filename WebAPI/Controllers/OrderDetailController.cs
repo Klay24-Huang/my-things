@@ -1,8 +1,6 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.OrderList;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.TB;
 using System;
 using System.Collections.Generic;
@@ -13,7 +11,6 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
@@ -101,26 +98,14 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
 
-            //取得訂單明細
+            #region 取得訂單明細
             if (flag)
             {
                 SPInput_GetOrderDetail spInput = new SPInput_GetOrderDetail()
@@ -130,7 +115,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.OrderDetail);
+                string SPName = "usp_GetOrderDetail";
                 SPOutput_Base spOut = new SPOutput_Base();
                 List<OrderDetailData> orderFinishDataLists = new List<OrderDetailData>();
                 DataSet ds = new DataSet();
@@ -156,67 +141,41 @@ namespace WebAPI.Controllers
                         var xre = billComm.GetTimePart(Convert.ToDateTime(item.StartTime), Convert.ToDateTime(item.EndTime), item.ProjType);
                         if (xre != null)
                         {
-                            td = Convert.ToInt32(xre.Item1);
-                            th = Convert.ToInt32(xre.Item2);
-                            tm = Convert.ToInt32(xre.Item3);
+                            td = Convert.ToInt32(xre.Item1);    // 用車使用幾天
+                            th = Convert.ToInt32(xre.Item2);    // 用車使用幾時
+                            tm = Convert.ToInt32(xre.Item3);    // 用車使用幾分
                         }
+                        #region 月租點數
                         if (item.MonthlyHours > 0)
                         {
                             if (item.ProjType == 4)
                             {
-                                var vre = billComm.GetTimePart(item.MonthlyHours, 200);
-                                md = Convert.ToInt32(Math.Floor(vre.Item1));
-                                mh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                mm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                var vre = billComm.GetTimePart(item.MonthlyHours, 600);     // 20220114 UPD BY YEH REASON:機車單日上限改為600分鐘
+                                md = Convert.ToInt32(Math.Floor(vre.Item1));    // 月租使用幾天
+                                mh = Convert.ToInt32(Math.Floor(vre.Item2));    // 月租使用幾時
+                                mm = Convert.ToInt32(Math.Floor(vre.Item3));    // 月租使用幾分
                             }
                             else
                             {
                                 var vre = billComm.GetTimePart(item.MonthlyHours * 60, 600);
-                                md = Convert.ToInt32(Math.Floor(vre.Item1));
-                                mh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                mm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                md = Convert.ToInt32(Math.Floor(vre.Item1));    // 月租使用幾天
+                                mh = Convert.ToInt32(Math.Floor(vre.Item2));    // 月租使用幾時
+                                mm = Convert.ToInt32(Math.Floor(vre.Item3));    // 月租使用幾分
                             }
                         }
+                        #endregion
+                        #region 折抵點數
                         if (item.GiftPoint > 0 || item.GiftMotorPoint > 0)
                         {
                             if (item.ProjType == 4)
                             {
-                                if (item.MonthlyHours > 0)
+                                var allPoints = item.GiftPoint + item.GiftMotorPoint;
+                                var vre = billComm.GetTimePart(allPoints, 600);     // 20220114 UPD BY YEH REASON:機車單日上限改為600分鐘
+                                if (vre != null)
                                 {
-                                    var allPoints = item.GiftPoint + item.GiftMotorPoint;
-                                    var vre = billComm.GetTimePart(allPoints, 200);
-                                    if (vre != null)
-                                    {
-                                        gd = Convert.ToInt32(Math.Floor(vre.Item1));
-                                        gh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                        gm = Convert.ToInt32(Math.Floor(vre.Item3));
-                                    }
-                                }
-                                else
-                                {
-                                    var allPoints = item.GiftPoint + item.GiftMotorPoint;
-                                    if (allPoints > 199)
-                                    {
-                                        allPoints -= 199;
-                                        gd += 1;
-                                        var vre = billComm.GetTimePart(allPoints, 200);
-                                        if (vre != null)
-                                        {
-                                            gd += Convert.ToInt32(Math.Floor(vre.Item1));
-                                            gh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                            gm = Convert.ToInt32(Math.Floor(vre.Item3));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var vre = billComm.GetTimePart(allPoints, 199);
-                                        if (vre != null)
-                                        {
-                                            gd = Convert.ToInt32(Math.Floor(vre.Item1));
-                                            gh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                            gm = Convert.ToInt32(Math.Floor(vre.Item3));
-                                        }
-                                    }
+                                    gd = Convert.ToInt32(Math.Floor(vre.Item1));    // 折抵使用幾天
+                                    gh = Convert.ToInt32(Math.Floor(vre.Item2));    // 折抵使用幾時
+                                    gm = Convert.ToInt32(Math.Floor(vre.Item3));    // 折抵使用幾分
                                 }
                             }
                             else
@@ -224,37 +183,28 @@ namespace WebAPI.Controllers
                                 var vre = billComm.GetTimePart(item.GiftPoint, 600);
                                 if (vre != null)
                                 {
-                                    gd = Convert.ToInt32(Math.Floor(vre.Item1));
-                                    gh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                    gm = Convert.ToInt32(Math.Floor(vre.Item3));
+                                    gd = Convert.ToInt32(Math.Floor(vre.Item1));    // 折抵使用幾天
+                                    gh = Convert.ToInt32(Math.Floor(vre.Item2));    // 折抵使用幾時
+                                    gm = Convert.ToInt32(Math.Floor(vre.Item3));    // 折抵使用幾分
                                 }
                             }
                         }
                         #endregion
+                        #endregion
 
                         #region 折扣完剩餘日時分
-                        int vtd = td;
-                        int vth = th;
-                        int vtm = tm;
+                        int vtd = td;   // 用車使用幾天
+                        int vth = th;   // 用車使用幾時
+                        int vtm = tm;   // 用車使用幾分
 
                         double oriPayMins = 0;
                         double lastPayMins = 0;
                         if (item.ProjType == 4)
                         {
-                            if (vtd > 1)
-                            {
-                                oriPayMins += 199;
-                                vtd -= 1;
-                                oriPayMins += vtd * 200;
-                                oriPayMins += vth * 60;
-                                oriPayMins += vtm;
-                            }
-                            else
-                            {
-                                oriPayMins += vth * 60;
-                                oriPayMins += vtm;
-                            }
-                            lastPayMins = oriPayMins - (md + gd) * 200 - (mh + gh) * 60 - (mm + gm);
+                            oriPayMins += vtd * 600;
+                            oriPayMins += vth * 60;
+                            oriPayMins += vtm;
+                            lastPayMins = oriPayMins - (md + gd) * 600 - (mh + gh) * 60 - (mm + gm);
                         }
                         else
                         {
@@ -266,35 +216,19 @@ namespace WebAPI.Controllers
                         lastPayMins = lastPayMins < 0 ? 0 : lastPayMins;
                         if (lastPayMins > 0)
                         {
-                            double laPayMins = lastPayMins;
                             if (item.ProjType == 4)
                             {
-                                if (laPayMins >= 199)
+                                var vre = billComm.GetTimePart(lastPayMins, 600);
+                                if (vre != null)
                                 {
-                                    laPayMins -= 199;//去除首日
-                                    ud += 1;
-                                    var vre = billComm.GetTimePart(laPayMins, 200);
-                                    if (vre != null)
-                                    {
-                                        ud += Convert.ToInt32(Math.Floor(vre.Item1));
-                                        uh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                        um = Convert.ToInt32(Math.Floor(vre.Item3));
-                                    }
-                                }
-                                else
-                                {
-                                    var vre = billComm.GetTimePart(laPayMins, 199);
-                                    if (vre != null)
-                                    {
-                                        ud = Convert.ToInt32(Math.Floor(vre.Item1));
-                                        uh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                        um = Convert.ToInt32(Math.Floor(vre.Item3));
-                                    }
+                                    ud = Convert.ToInt32(Math.Floor(vre.Item1));
+                                    uh = Convert.ToInt32(Math.Floor(vre.Item2));
+                                    um = Convert.ToInt32(Math.Floor(vre.Item3));
                                 }
                             }
                             else
                             {
-                                var vre = billComm.GetTimePart(laPayMins, 600);
+                                var vre = billComm.GetTimePart(lastPayMins, 600);
                                 if (vre != null)
                                 {
                                     ud = Convert.ToInt32(Math.Floor(vre.Item1));
@@ -305,18 +239,20 @@ namespace WebAPI.Controllers
                         }
                         #endregion
 
+                        #region 春節訂金
                         int UseOrderPrice = orderFinishDataLists[0].UseOrderPrice;
                         var NYPayLists = cr_repo.GetNYPayList(Convert.ToInt32(tmpOrder));
-                        if(NYPayLists != null && NYPayLists.Count() > 0)
+                        if (NYPayLists != null && NYPayLists.Count() > 0)
                         {
                             var nItem = NYPayLists.FirstOrDefault();
                             UseOrderPrice = UseOrderPrice - nItem.RETURNAMT;
                             UseOrderPrice = UseOrderPrice > 0 ? UseOrderPrice : 0;
                         }
+                        #endregion
 
                         outputApi = new OAPI_OrderDetail()
                         {
-                            OrderNo = string.Format("H{0}", orderFinishDataLists[0].OrderNo.ToString().PadLeft(7, '0')),
+                            OrderNo = string.Format("H{0}", orderFinishDataLists[0].OrderNo.ToString().PadLeft(orderFinishDataLists[0].OrderNo.ToString().Length, '0')),
                             ContactURL = "",
                             Operator = orderFinishDataLists[0].Operator,
                             CarTypePic = orderFinishDataLists[0].CarTypePic,
@@ -328,10 +264,10 @@ namespace WebAPI.Controllers
                             OperatorScore = orderFinishDataLists[0].OperatorScore,
                             ProjName = orderFinishDataLists[0].ProjName,
                             CarRentBill = orderFinishDataLists[0].pure_price,
-                            TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),     //未折抵計費時數
-                            MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),   //月租折抵
-                            GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),      //點數折抵
-                            PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),       //折抵計費時數
+                            TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),     // 使用時數
+                            MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),   // 月租折抵
+                            GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),      // 折抵時數
+                            PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),       // 計費時數
                             MileageBill = orderFinishDataLists[0].mileage_price,
                             InsuranceBill = orderFinishDataLists[0].Insurance_price,
                             EtagBill = orderFinishDataLists[0].Etag,
@@ -375,6 +311,7 @@ namespace WebAPI.Controllers
                     }
                 }
             }
+            #endregion
             #endregion
 
             #region 寫入錯誤Log

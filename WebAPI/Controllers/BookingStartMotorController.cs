@@ -190,13 +190,15 @@ namespace WebAPI.Controllers
             #region 取車
             if (flag)
             {
-                string CheckTokenName = "usp_BeforeBookingStart";
+                string CheckTokenName = "usp_BeforeBookingStart_V20220119";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    PhoneLon = apiInput.PhoneLon,
+                    PhoneLat = apiInput.PhoneLat
                 };
                 SPOutput_BeforeBookingStart spOut = new SPOutput_BeforeBookingStart();
                 SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart> sqlHelp = new SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart>(connetStr);
@@ -347,12 +349,13 @@ namespace WebAPI.Controllers
                                         outputApi.BLEDEVICEID = ble.BLE_Device;
                                         outputApi.BLEDEVICEPWD = ble.BLE_PWD;
                                     }
+
                                 }
                             }
                         }
-                        #endregion
+                        
                     }
-
+                    #endregion
                     #region 20210514 開啟電源後須紀錄電量 20210521 改為設定完租約再記錄電量
                     if (flag)
                     {

@@ -175,7 +175,7 @@ namespace WebAPI.Controllers
 
                 if (string.IsNullOrEmpty(VerifyCode))
                     VerifyCode = baseVerify.getRand(0, 999999);
- 
+
                 HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
                 WebAPIOutput_NPR260Send wsOutput = new WebAPIOutput_NPR260Send();
                 string Message = string.Format("您的手機驗證碼是：{0}", VerifyCode);
