@@ -1626,14 +1626,15 @@ namespace WebAPI.Models.BillFunc
                             resultDic.Add("NowPeriod", reader["NowPeriod"]);
                             resultDic.Add("StartDate", reader["StartDate"]);
                             resultDic.Add("EndDate", reader["EndDate"]);
+                            resultDic.Add("IDNO", reader["IDNO"]);
                         }
                     }
                 }
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw;
+                throw ;
             }
             return resultDic;
         }
