@@ -753,7 +753,7 @@ namespace WebAPI.Models.BillFunc
                         var Event = ProjectList.Where(x => x.Event == 1).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();     // 活動專案
                         var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();    // 一般專案
 
-                        if (Event.PROJID.Contains(sour.ProjID))
+                        if (Event != null && Event.PROJID.Contains(sour.ProjID))
                         {
                             if (Normal != null)
                             {
@@ -773,7 +773,7 @@ namespace WebAPI.Models.BillFunc
                         var Event = ProjectList.Where(x => x.Event == 1).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();     // 活動專案
                         var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();    // 一般專案
 
-                        if (Event.PROJID.Contains(sour.ProjID))
+                        if (Event != null && Event.PROJID.Contains(sour.ProjID))
                         {   // 所選專案 是 活動專案
                             if (Normal != null)
                             {
