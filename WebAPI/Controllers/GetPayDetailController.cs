@@ -895,17 +895,23 @@ namespace WebAPI.Controllers
                         //outputApi.UseOrderPrice = UseOrderPrice;
                         //20220126 ADD BY ADAM REASON.春節訂金改用預授權金額帶入
                         outputApi.UseOrderPrice = PreAmount;
-                        outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金                      
-                        if (xTotalRental < 0)
+                        outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金
+                        
+                        //如果有春節訂金就要把罰金加上去
+                        xTotalRental += OrderPrice > 0 ? UseOrderPrice : 0;
+
+                        //if (xTotalRental < 0)
+                        if (UseOrderPrice > 0)
                         {
-                            outputApi.ReturnOrderPrice = (-1) * xTotalRental;
+                            //outputApi.ReturnOrderPrice = (-1) * xTotalRental;
                             int orderNo = Convert.ToInt32(item.OrderNo);
-                            carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                            //carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                            carRepo.UpdNYPayList(orderNo, UseOrderPrice);
 
                             //不含退還訂金
-                            OrderPrice = OrderPrice - outputApi.ReturnOrderPrice;
-                            OrderPrice = OrderPrice > 0 ? OrderPrice : 0;
-                            outputApi.UseOrderPrice = OrderPrice;
+                            //OrderPrice = OrderPrice - outputApi.ReturnOrderPrice;
+                            //OrderPrice = OrderPrice > 0 ? OrderPrice : 0;
+                            //outputApi.UseOrderPrice = OrderPrice;
                         }
                         #endregion
 

@@ -629,7 +629,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -677,7 +679,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -734,7 +738,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -795,7 +801,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -857,7 +865,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -1021,7 +1031,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {

@@ -788,8 +788,18 @@ namespace WebAPI.Models.BillFunc
                         }
                         else
                         {
-                            xsour.PRICE = Normal.PRICE / 10;
-                            xsour.PRICE_H = Normal.PRICE_H / 10;
+                            //20220129 ADD BY ADAM REASON.春節路邊專案有可能取不到Normal專案
+                            if (Normal != null)
+                            {
+                                xsour.PRICE = Normal.PRICE / 10;
+                                xsour.PRICE_H = Normal.PRICE_H / 10;
+                            }
+                            else
+                            {
+                                // 撈不到就給原專案的價格
+                                xsour.PRICE = sour.ProDisPRICE;
+                                xsour.PRICE_H = sour.ProDisPRICE_H;
+                            }
                         }
                     }
                 }
