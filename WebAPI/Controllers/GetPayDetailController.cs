@@ -122,8 +122,8 @@ namespace WebAPI.Controllers
 
             var neverHasFine = new List<int>() { 3, 4 };    //路邊,機車不會逾時
 
-            //int OrderPrice = 0;     //原始訂金
-            //int UseOrderPrice = 0;  //使用訂金(4捨5入)
+            int OrderPrice = 0;     //原始訂金
+            int UseOrderPrice = 0;  //使用訂金(4捨5入)
             string MonIds = "";     //短期月租Id可多筆
             #endregion
             #endregion
@@ -211,8 +211,8 @@ namespace WebAPI.Controllers
                     trace.OrderNo = item.OrderNo;
                     motoBaseMins = item.BaseMinutes;
                     ProjType = item.ProjType;
-                    //UseOrderPrice = item.UseOrderPrice;
-                    //OrderPrice = item.OrderPrice;
+                    UseOrderPrice = item.UseOrderPrice;
+                    OrderPrice = item.OrderPrice;
                     ProjID = item.ProjID;
                     PreAmount = item.PreAmount;
 
@@ -893,23 +893,30 @@ namespace WebAPI.Controllers
                         //xTotalRental -= UseOrderPrice;  //預繳定金扣抵
 
                         //outputApi.UseOrderPrice = UseOrderPrice;
-                        //outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金                      
+                        //春節訂金改用愈授權金額帶入
+                        outputApi.UseOrderPrice = PreAmount;
+                        outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金  
+                        //如果有春節訂金就要把罰金加上去
+                        xTotalRental += OrderPrice > 0 ? UseOrderPrice : 0;
                         //if (xTotalRental < 0)
-                        //{
-                        //    outputApi.ReturnOrderPrice = (-1) * xTotalRental;
-                        //    int orderNo = Convert.ToInt32(item.OrderNo);
-                        //    carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                        if (UseOrderPrice > 0)
+                        {
+                            //outputApi.ReturnOrderPrice = (-1) * xTotalRental;
+                            int orderNo = Convert.ToInt32(item.OrderNo);
+                            //carRepo.UpdNYPayList(orderNo, outputApi.ReturnOrderPrice);
+                            carRepo.UpdNYPayList(orderNo, UseOrderPrice);
 
-                        //    //不含退還訂金
-                        //    OrderPrice = OrderPrice - outputApi.ReturnOrderPrice;
-                        //    OrderPrice = OrderPrice > 0 ? OrderPrice : 0;
-                        //    outputApi.UseOrderPrice = OrderPrice;
-                        //}
+                            //不含退還訂金
+                            //OrderPrice = OrderPrice - outputApi.ReturnOrderPrice;
+                            //OrderPrice = OrderPrice > 0 ? OrderPrice : 0;
+                            //outputApi.UseOrderPrice = OrderPrice;
+                        }
                         #endregion
 
                         DiffAmount = xTotalRental - PreAmount;  // 差額 = 訂單總價 - 預授權金額
 
-                        xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
+                        //xTotalRental = (xTotalRental- UseOrderPrice) < 0 ? 0 : xTotalRental;
+                        
                         outputApi.Rent.TotalRental = xTotalRental;
 
                         // 20211229 UPD BY YEH REASON:output增加預授權金額、差額
