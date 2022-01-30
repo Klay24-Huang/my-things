@@ -888,15 +888,16 @@ namespace WebAPI.Controllers
                         // 總價 = 車輛租金 + 停車費 + 里程費 + 逾時費用 + 安心服務費用 + 安心服務費用(逾時) + ETAG費用
                         var xTotalRental = xCarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice + outputApi.Rent.ETAGRental;
 
-                        #region 2021春節訂金已不使用
+                        #region 2021春節訂金已不使用-2022春節已開啟
                         // 20211026 UPD BY YEH REASON:2021春節訂金已不使用
                         //xTotalRental -= UseOrderPrice;  //預繳定金扣抵
 
                         //outputApi.UseOrderPrice = UseOrderPrice;
                         //20220126 ADD BY ADAM REASON.春節訂金改用預授權金額帶入
                         outputApi.UseOrderPrice = PreAmount;
-                        outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金
-                        
+                        //outputApi.FineOrderPrice = OrderPrice - UseOrderPrice;//沒收訂金
+                        outputApi.FineOrderPrice = UseOrderPrice;//改罰金
+
                         //如果有春節訂金就要把罰金加上去
                         xTotalRental += OrderPrice > 0 ? UseOrderPrice : 0;
 
