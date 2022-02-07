@@ -68,6 +68,8 @@
 - [BuyNow/AddMonth 月租購買](#BuyNowAddMonth)
 - [BuyNow/UpMonth 月租升轉](#BuyNowUpMonth)
 - [BuyNow/PayArrs 欠費繳交](#BuyNowPayArrs)
+- [BuyNowTool/AddMonth 月租購買工具](#BuyNowToolAddMonth)
+- [BuyNowTool/UpMonth 月租升轉工具](#BuyNowToolUpMonth)
 - [GetMySubs 我的方案牌卡明細](#GetMySubs)
 - [GetSubsCNT 取得合約明細](#GetSubsCNT)
 - [GetChgSubsList 變更下期續約列表](#GetChgSubsList)
@@ -264,6 +266,8 @@
 20211103 新增取得取消訂單列表(GetCancelOrderList)
 
 20220121 補月租購買(BuyNowAddMonth)、月租升轉(BuyNowUpMonth)、欠費繳交(BuyNowPayArrs)、設定自動續約(SetSubsNxt)錯誤代碼
+
+20220207 新增月租購買(BuyNowToolAddMonth)、升轉工具(BuyNowToolUpMonth)
 
 # API位置
 
@@ -5129,6 +5133,8 @@
 | ERR275   | 期數需相同           | 期數需相同           |
 | ERR277   | 刷卡已存在           | 刷卡已存在           |
 | ERR909   | 專案不存在           | 專案不存在           |
+| ERR993   | 不能升轉比現在專案低的資費       | 不能升轉比現在專案低的資費       |
+| ERR994   | 只能升轉同種類專案               | 只能升轉同種類專案               |
 
 ## BuyNow/DoPayArrs 月租欠費
 
@@ -5205,6 +5211,199 @@
 | ERR909   | 專案不存在     | 專案不存在     |
 | ERR914   | 資料邏輯錯誤   | 資料邏輯錯誤   |
 | ERR916   | 參數格式錯誤   | 參數格式錯誤   |
+
+
+## BuyNowTool/DoAddMonth 月租購買工具
+
+### [/api/BuyNowTool/DoAddMonth]
+
+* 20220207發佈
+
+* 使用情境 客人已刷卡未建訂閱制月租資料、補履保發票
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+* input 購買月租 (api/BuyNowTool/DoAddMonth) 參數說明
+
+| 參數名稱     | 參數說明              | 必要 |  型態  | 範例 |
+| ------------ | --------------------- | :--: | :----: | ---- |
+| MonProjID    | 專案編號(key          |  Y   | string | MR01 |
+| MonProPeriod | 期數(key)             |  Y   |  int   | 2    |
+| ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
+| SetSubsNxt   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
+| MerchantTradeNo | 商店訂單編號       |  N   | string | A225668592M_20220127131822863|
+| TransactionNo   | 台新訂單編號       |  N   | string | IR202201276YKVO00023 |
+| MonthlyRentId   | 訂閱制編號         |  N   |  int   | 2363 |
+| CreditCardFlg   | 是否付費(0:否 1是) |  N   |  int   | 0 |
+| SubsDataFlg     | 是否訂閱(0:否 1是) |  N   |  int   | 0 |
+| EscrowMonthFlg  | 是否履保(0:否 1是) |  N   |  int   | 0 |
+| InvoiceFlg      | 是否開發票(0:否 1是) |  N   |  int   | 0 |
+| IDNO            | 會員編號           |  Y   |  string  | A225668592 |
+| ProdPrice       | 合約金額           |  Y   |  int     | 299 |
+
+
+* input範例 (購買月租)
+
+```
+{
+    "MonProjID": "MR01",
+    "MonProPeriod": 2,
+    "ShortDays": 0,
+    "SetSubsNxt": 0,
+    "MerchantTradeNo":"A225668592M_20220127131822863",
+    "TransactionNo":"IR202201276YKVO00023",
+    "MonthlyRentId": 2363,
+    "CreditCardFlg":0,
+    "SubsDataFlg":0,
+    "EscrowMonthFlg" : 1,
+    "InvoiceFlg" : 1,
+    "IDNO":"A225668592",
+    "ProdPrice":299
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data資料物件說明
+
+| 參數名稱  | 參數說明              | 型態 | 範例 |
+| --------- | --------------------- | :--: | ---- |
+| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
+
+* Output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "PayResult": 1
+    }
+}
+```
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                         | 說明                             |
+| -------- | -------------------------------- | -------------------------------- |
+| ERR247   | 參數格式不符                     | 輸入參數格式不符                 |
+| ERR261   | 專案不存在                       | 專案不存在                       |
+| ERR262   | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
+| ERR263   | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
+| ERR283   | 積分過低無法購買訂閱制           | 積分過低無法購買訂閱制           |
+
+
+## BuyNowTool/DoUpMonth 月租升轉工具
+
+### [/api/BuyNowTool/DoUpMonth]
+
+* 20220207發佈
+
+* 使用情境 1.客人已刷卡未建訂閱制升轉資料 2.只跑履保發票用DoAddMonth
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+* input 月租升轉 (api/BuyNowTool/DoUpMonth) 參數說明
+
+| 參數名稱     | 參數說明              | 必要 |  型態  | 範例 |
+| ------------ | --------------------- | :--: | :----: | ---- |
+| IDNO            | 會員編號           |  Y   |  string  | A225668592 |
+| MonProjID       | 目前專案編號(key          |  Y   | string | MR04 |
+| MonProPeriod    | 目前專案期數(key)         |  Y   |  int   | 6    |
+| ShortDays       | 目前專案短天期(key)       |  Y   |  int   | 0    |
+| UP_MonProjID    | 升轉專案編號(key          |  Y   | string | MR05 |
+| UP_MonProPeriod | 升轉期數(key)             |  Y   |  int   | 6   |
+| UP_ShortDays    | 升轉短天期(key)           |  Y   |  int   | 0    |
+| SetSubsNxt      | 設定自動續約(0否,1是)     |  N   |  int   | 0    |
+| MerchantTradeNo | 商店訂單編號       |  N   | string | A225668592M_20220127131822863|
+| TransactionNo   | 台新訂單編號       |  N   | string | IR202201276YKVO00023 |
+| CreditCardFlg   | 是否付費(0:否 1是) |  N   |  int   | 0 |
+
+* input範例 (月租升轉)
+
+```
+{
+    "IDNO":"A225668592",
+    "MonProjID": "MR04",
+    "MonProPeriod": 6,
+    "ShortDays": 0,
+    "UP_MonProjID":"MR05",
+    "UP_MonProPeriod":6,
+    "UP_ShortDays":0,
+    "SetSubsNxt": 0,
+    "MerchantTradeNo":"A225668592M_20220127131822863",
+    "TransactionNo":"IR202201276YKVO00023",
+    "CreditCardFlg":0
+}
+```
+
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data資料物件說明
+
+| 參數名稱  | 參數說明              | 型態 | 範例 |
+| --------- | --------------------- | :--: | ---- |
+| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
+
+* Output範例
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "PayResult": 1
+    }
+}
+```
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                         | 說明                             |
+| -------- | -------------------------------- | -------------------------------- |
+| ERR247   | 參數格式不符                     | 輸入參數格式不符                 |
+| ERR261   | 專案不存在                       | 專案不存在                       |
+| ERR262   | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
+| ERR263   | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
+| ERR283   | 積分過低無法購買訂閱制           | 積分過低無法購買訂閱制           |
+| ERR909   | 專案不存在                       | 專案不存在                       |
+| ERR993   | 不能升轉比現在專案低的資費       | 不能升轉比現在專案低的資費       |
+| ERR994   | 只能升轉同種類專案               | 只能升轉同種類專案               |
+
 
 ## GetMySubs 我的方案牌卡明細
 
