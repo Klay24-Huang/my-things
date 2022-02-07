@@ -975,7 +975,7 @@ namespace WebAPI.Controllers
                 trace.BaseMsg = ex.Message;
             }
 
-            carRepo.AddTraceLog(181, funName, trace, flag);
+            carRepo.AddTraceLog(224, funName, trace, flag);
 
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
@@ -1417,7 +1417,7 @@ namespace WebAPI.Controllers
                 trace.BaseMsg = ex.Message;
             }
 
-            carRepo.AddTraceLog(181, funName, trace, flag);
+            carRepo.AddTraceLog(225, funName, trace, flag);
 
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
