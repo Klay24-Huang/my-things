@@ -270,7 +270,6 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-
             #region 檢查欠費
             if (flag)
             {
@@ -368,7 +367,21 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
             #endregion
-           
+
+            #region 寫入訂單對應訂閱制月租
+            if (flag && spOut.haveCar == 1 && apiInput.MonId > 0)
+            {
+                var sp_in = new SPInput_SetSubsBookingMonth()
+                {
+                    IDNO = IDNO,
+                    LogID = LogID,
+                    OrderNo = spOut.OrderNum,
+                    MonthlyRentId = apiInput.MonId
+                };
+                monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
+            }
+            #endregion
+
             #region 預授權機制
             if (flag && spOut.haveCar == 1 && (ProjType == 0 || ProjType == 3))
             {
@@ -528,30 +541,11 @@ namespace WebAPI.Controllers
                     carRepo.AddTraceLog(34, funName, trace, flag);
                 }             
             }
-
             #endregion
 
             //預約成功
             if (flag && spOut.haveCar == 1)
             {
-                #region 寫入訂單對應訂閱制月租
-                if (flag)
-                {
-                    if (apiInput.MonId > 0)
-                    {
-                        var sp_in = new SPInput_SetSubsBookingMonth()
-                        {
-                            IDNO = IDNO,
-                            LogID = LogID,
-                            OrderNo = spOut.OrderNum,
-                            MonthlyRentId = apiInput.MonId
-                        };
-                        monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
-                        //不擋booking
-                    }
-                }
-                #endregion
-
                 #region 機車先送report now
                 //車機指令改善 機車先送report now
                 if (ProjType == 4)
