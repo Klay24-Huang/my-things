@@ -21,5 +21,6 @@ namespace Domain.SP.Input.Subscription
         public DateTime? SetNow { get; set; }
         public string MerchantTradeNo { get; set; }
         public string TaishinTradeNo { get; set; }
+        public string PRGID { get; set; } = "";
     }
 }
