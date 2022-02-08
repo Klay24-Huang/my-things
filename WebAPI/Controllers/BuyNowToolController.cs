@@ -111,17 +111,6 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    //不開放訪客
-                    if (flag)
-                    {
-                        if (isGuest)
-                        {
-                            flag = false;
-                            errCode = "ERR101";
-                            errMsg = "不開放訪客";
-                        }
-                    }
-
                     if (flag)
                     {
                         //不刷卡代表只補資料(需帶信用卡交易紀錄)
@@ -578,18 +567,6 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    //不開放訪客
-                    if (flag)
-                    {
-                        if (isGuest)
-                        {
-                            flag = false;
-                            errCode = "ERR101";
-                            errMsg = "不開放訪客";
-
-                        }
-                    }
-
                     if (flag)
                     {
                         //不刷卡代表只補資料(需帶當初信用卡交易紀錄)
@@ -615,14 +592,6 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                #region Token判斷(註解)
-                //if (flag && isGuest == false)
-                //{
-                //    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
-                //    buyNxtCom.IDNO = IDNO;
-                //    trace.FlowList.Add("Token判斷");
-                //}
-                #endregion
 
                 #region TB
 
