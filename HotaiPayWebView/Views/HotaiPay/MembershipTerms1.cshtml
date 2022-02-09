@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "MembershipTerms1";
 }
 
@@ -19,17 +18,16 @@
 
 <body>
 
-
     <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員與隱私權條款</h6></header>
 
-    <div class="tab-choose d-flex" style="max-width: 525px;margin: auto;">
-       
-            <button class="btn tab-btn" onclick="javascript:location.href='MembershipTerms2'">會員條款</button>
-        
-            <button class="btn tab-btn tab-active" onclick="javascript:location.href='MembershipTerms1'">隱私權條款</button>
-        </div>
+    <div class="tab-choose d-flex" style="max-width: 414px; margin: auto;">
 
-    <div class="container" style="max-width: 525px;position:relative">
+        <button class="btn tab-btn" onclick="javascript:location.href='MembershipTerms2'">會員條款</button>
+
+        <button class="btn tab-btn tab-active" onclick="javascript:location.href='MembershipTerms1'">隱私權條款</button>
+    </div>
+
+    <div class="container" style="max-width: 525px; position: relative">
 
         <div class="notice-text pre-scrollable">
             <ul>
@@ -41,19 +39,18 @@
         </div>
     </div>
 
-
     @using (Html.BeginForm("AgreeTerms", "HotaiPay", FormMethod.Get))
     {
-    <div class="container footer" style="max-width: 414px;position:relative">
-        <div class="form-check form-check-inline mb-3">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
-            <label class="form-check-label" for="inlineCheckbox1">
-                我已經閱讀並同意<a class="text-blue">「和泰集團會員條款」</a>與
-                <a class="text-blue">「隱私權條款」</a>
-            </label>
+        <div class="container footer" style="max-width: 414px;position:relative">
+            <div class="form-check form-check-inline mb-3">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox1">
+                <label class="form-check-label" for="inlineCheckbox1">
+                    我已經閱讀並同意<a class="text-blue">「和泰集團會員條款」</a>與
+                    <a class="text-blue">「隱私權條款」</a>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn" disabled>同意</button>
         </div>
-        <button type="submit" class="btn btn-disable-gray mb-2" id="redbtn" disabled>同意</button>
-    </div>
     }
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -64,29 +61,26 @@
 
     <script>
         let flag = 0;
-        
         $(":checkbox").click(function () {
-                var e = document.getElementById("redbtn");
-
-                if (flag === 0) {
-                    e.className = "btn btn-blue mb-2";
-                    e.disabled = false;
-                    flag = 1;
+            var e = document.getElementById("redbtn");
+            if (flag === 0) {
+                e.className = "btn btn-blue mb-2";
+                e.disabled = false;
+                flag = 1;
             } else {
                 e.className = "btn btn-disable-gray mb-2";
                 e.disabled = true;
-                    flag = 0;
+                flag = 0;
             }
         })
 
         document.getElementById("redbtn").onfocus = function () {
 
             if (!document.getElementById("inlineCheckbox1").checked) {
-                    swal("您尚未同意會員相關條款喔!", "按下OK回到上一頁!", "warning");
-                }
-                }
+                swal("您尚未同意會員相關條款喔!", "按下OK回到上一頁!", "warning");
+            }
+        }
     </script>
 
 </body>
 </html>
-
