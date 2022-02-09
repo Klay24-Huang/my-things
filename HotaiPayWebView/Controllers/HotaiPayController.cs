@@ -315,7 +315,7 @@ namespace HotaiPayWebView.Controllers
         {
             string errCode = "";
             bool flag = false;
-            if (Session["BenefitstermsVer"] == null || Session["PolicytermsVer"] == null)
+            if (Session["BenefitstermsVer"] == null && Session["PolicytermsVer"] == null)
             {
                 if (TempData["TermsWay"].ToString().Trim() == "UpdateVer")
                 {
@@ -354,12 +354,12 @@ namespace HotaiPayWebView.Controllers
                 {
                     WebAPIInput_UpdateBenefitsAndPrivacyVersion input = new WebAPIInput_UpdateBenefitsAndPrivacyVersion
                     {
-                        memberBenefitsVersion = Session["BenefitstermsVer"].ToString().Trim(),
-                        privacyPolicyVersion = Session["PolicytermsVer"].ToString().Trim()
+                        memberBenefitsVersion = Session["BenefitstermsVer"] == null ? "" : Session["BenefitstermsVer"].ToString(),
+                        privacyPolicyVersion =Session["PolicytermsVer"]==null?"": Session["PolicytermsVer"].ToString()
                     };
                     WebAPIOutput_BenefitsAndPrivacyVersion output = new WebAPIOutput_BenefitsAndPrivacyVersion();
                     flag = hotaiAPI.DoUpdateBenefitsAndPrivacyVersion(Session["hotai_access_token"].ToString().Trim(), input, ref output, ref errCode);
-
+                    //flag = true;
                     if (flag)
                     {
                         TempData["irent_access_token"] = Session["irent_access_token"];

@@ -64,26 +64,27 @@
 
     <script>
         let flag = 0;
+        
         $(":checkbox").click(function () {
-            var e = document.getElementById("redbtn");
-            
-            if (flag === 0) {
-                e.className = "btn btn-blue mb-2";
-                e.disabled = false;
-                flag = 1;
+                var e = document.getElementById("redbtn");
+
+                if (flag === 0) {
+                    e.className = "btn btn-blue mb-2";
+                    e.disabled = false;
+                    flag = 1;
             } else {
                 e.className = "btn btn-disable-gray mb-2";
                 e.disabled = true;
-                flag = 0
-            }  
+                    flag = 0;
+            }
         })
 
         document.getElementById("redbtn").onfocus = function () {
-            
+
             if (!document.getElementById("inlineCheckbox1").checked) {
-                swal("您尚未同意會員相關條款喔!", "按下OK回到上一頁!", "warning");
-            }
-        }
+                    swal("您尚未同意會員相關條款喔!", "按下OK回到上一頁!", "warning");
+                }
+                }
     </script>
 
 </body>
