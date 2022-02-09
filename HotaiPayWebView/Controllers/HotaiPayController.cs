@@ -263,8 +263,24 @@ namespace HotaiPayWebView.Controllers
         {
             if (intoType == "UpdateVer")
             {
+                WebAPIOutput_GetPrivacy checkVer = new WebAPIOutput_GetPrivacy();
                 TempData["TermsWay"] = "UpdateVer";
-                @ViewBag.Privacy = Session["Policyterms"].ToString();
+                string errCode = "";
+                var flag = hotaiAPI.DoGetPrivacy("", ref checkVer, ref errCode);
+
+                if (flag)
+                {
+                    if (!string.IsNullOrEmpty(checkVer.memberBenefits) || !string.IsNullOrEmpty(checkVer.privacyPolicy))
+                    {
+                        Session["Benefitsterms"] = checkVer.memberBenefits;
+                        Session["Policyterms"] = checkVer.privacyPolicy;
+                        ViewBag.Benefits = Session["Benefitsterms"].ToString();
+                        return View();
+                    }
+                    else
+                        return Redirect("RegisterStep1");
+                }
+
             }
             else
             {
