@@ -200,8 +200,7 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
-
-                #region
+                #region 後續流程
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -473,11 +472,11 @@ namespace WebAPI.Controllers
                         errCode = "ERR247";
                         errMsg = "輸入參數格式不符";
                     }
-                    outputApi.PayResult = flag ? 1 : 0;
                 }
                 #endregion
 
                 #endregion
+                outputApi.PayResult = flag ? 1 : 0;
 
                 trace.traceAdd("outputApi", outputApi);
             }
@@ -937,13 +936,12 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
-
-                    outputApi.PayResult = flag ? 1 : 0;
-
                 }
                 #endregion
 
                 #endregion
+
+                outputApi.PayResult = flag ? 1 : 0;
 
                 trace.traceAdd("outputApi", outputApi);
             }
