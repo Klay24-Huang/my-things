@@ -737,6 +737,8 @@ namespace WebAPI.Controllers
                                     string AuthCode = "";
                                     string CardNo = "";
                                     string payCD = "1"; //短租付費類型 1.信用卡 2.錢包扣款
+                                    int CardType = 1;   //0:和泰PAY 1:台新(預設)  //20220206 ADD BY ADAM REASON.和泰pay
+                                    string MerchantID = ""; //TaishinAPPOS  
                                     //錢包扣款
                                     if (apiInput.CheckoutMode == 1)
                                     {
@@ -796,7 +798,7 @@ namespace WebAPI.Controllers
                                             TaishinTradeNo = AuthOutput?.BankTradeNo ?? "";
                                             RTNCODE = "1000";
                                             RESULTCODE = "1000";
-
+                                            CardType = AuthOutput.CardType; //20220206 ADD BY ADAM REASON.和泰pay
                                         }
                                     }
                                     if (RTNCODE == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
@@ -817,7 +819,8 @@ namespace WebAPI.Controllers
                                         WebAPIInput_NPR340Save wsInput = null;
                                         WebAPIOutput_NPR340Save wsOutput = new WebAPIOutput_NPR340Save();
                                         //string MerchantTradeNo = "";
-                                        string ServiceTradeNo = TaishinTradeNo;
+                                        //string ServiceTradeNo = TaishinTradeNo;
+                                        string ServiceTradeNo = CardType == 1 ? TaishinTradeNo : MerchantTradeNo;     //20220206 ADD BY ADAM REASON.和泰pay
                                         //string AuthCode = AuthOutput?.AuthIdResp ?? "0000";
                                         //string CardNo = AuthOutput?.CardNo ?? "XXXX-XXXX-XXXX-XXXX";
 
@@ -842,9 +845,10 @@ namespace WebAPI.Controllers
                                                 PAYMENTTYPE = Convert.ToInt64(sp_result[i].PAYMENTTYPE),
                                                 PAYDATE = DateTime.Now.ToString("yyyyMMdd"),
                                                 NORDNO = ServiceTradeNo,
-                                                CDTMAN = ""
+                                                CDTMAN = "",
+                                                OPERATOR = (CardType == 1 ? 0 : 1)      //0:台新 1:中信
                                             });
-                                            //錢包參數
+                                            //錢包參數(20220206上班前才發現，這個目前iRentService沒上)
                                             wsInput.tbNPR340PaymentDetail.Add(new NPR340PaymentDetail()
                                             {
                                                 CNTRNO = sp_result[i].CNTRNO,
@@ -853,6 +857,7 @@ namespace WebAPI.Controllers
                                                 PAYMEMO = "",
                                                 PORDNO = sp_result[i].IRENTORDNO,
                                                 PAYTCD = payCD
+                                                //OPERATOR = (CardType == 1 ? 0 : 1)      //0:台新 1:中信
                                             });
                                         }
 
