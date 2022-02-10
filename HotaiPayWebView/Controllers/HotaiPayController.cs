@@ -342,7 +342,7 @@ namespace HotaiPayWebView.Controllers
                         {
                             Session["oneID"] = getOneID.memberSeq;
 
-                            errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, Session["irent_access_token"].ToString().Trim(), Session["refresh_token"].ToString().Trim());
+                            errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, Session["hotai_access_token"].ToString().Trim(), Session["refresh_token"].ToString().Trim());
                             if (errCode == "0000")
                             {
                                 TempData["irent_access_token"] = Session["irent_access_token"];
