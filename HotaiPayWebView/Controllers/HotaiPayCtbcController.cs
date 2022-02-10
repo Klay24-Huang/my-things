@@ -296,7 +296,7 @@ namespace HotaiPayWebView.Controllers
             if (errCode == "ERR941")
             {
                 //logger.Error("HotaiPay.NoCreditCard.DoQueryToken fail");
-                ViewBag.LoginAlert = "和泰登入憑證失效，請重新登入和泰會員";
+                ViewBag.LoginAlert = "和泰登入憑證失效，請嘗試重綁和泰會員";
                 return View();
                 
             }

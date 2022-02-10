@@ -379,7 +379,7 @@ namespace HotaiPayWebView.Controllers
 
         public ActionResult MembershipTerms1()
         {
-            ViewBag.Privacy = Session["Policyterms"].ToString();
+            ViewBag.Privacy = Session["Policyterms"];
             return View();
         }
 
