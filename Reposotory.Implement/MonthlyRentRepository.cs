@@ -49,7 +49,7 @@ namespace Reposotory.Implement
             WorkDayRateForCar,HoildayRateForCar,
             WorkDayRateForMoto,HoildayRateForMoto,
             StartDate,EndDate
-            FROM TB_MonthlyRent ";
+            FROM TB_MonthlyRent WITH(NOLOCK) ";
             SqlParameter[] para = new SqlParameter[4];
             string term = "";
             int nowCount = 0;
@@ -122,7 +122,8 @@ namespace Reposotory.Implement
             m.WorkDayRateForMoto,m.HoildayRateForMoto,
             m.StartDate,m.EndDate,
             IsMix=case when ((s.CarWDHours > 0 or s.CarHDHours > 0) and (s.MotoTotalMins > 0 or s.HDRateForMoto < 2)) then 1 else 0 end
-            FROM SYN_MonthlyRent m JOIN TB_MonthlyRentSet s  
+            FROM SYN_MonthlyRent m WITH(NOLOCK) 
+            INNER JOIN TB_MonthlyRentSet s WITH(NOLOCK) 
             on s.MonProjID = m.ProjID and s.MonProPeriod = m.MonProPeriod and s.ShortDays = m.ShortDays
             ";
 
