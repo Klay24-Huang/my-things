@@ -1,6 +1,8 @@
-﻿using Domain.SP.Input.OtherService.Common;
+﻿using Domain.SP.Input.Hotai;
+using Domain.SP.Input.OtherService.Common;
 using Domain.SP.Input.OtherService.Taishin;
 using Domain.SP.Output;
+using Domain.SP.Output.Hotai;
 using OtherService.Enum;
 using System;
 using System.Collections.Generic;
@@ -57,6 +59,24 @@ namespace OtherService.Common
                 }
             }
         }
+
+        /// <summary>
+        /// 寫入刷卡 有關帳檔版本
+        /// </summary>
+        public void InsCreditAuthDataforClose(SPInput_InsTradeForClose input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_InsTradeForClose, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_InsTradeForClose, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = "usp_InsTradeForClose_I01_V20211214";//new ObjType().GetSPName(ObjType.SPType.InsTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                }
+            }
+        }
         /// <summary>
         /// 更新刷卡結果
         /// </summary>
@@ -66,6 +86,24 @@ namespace OtherService.Common
             SQLHelper<SPInput_UpdTrade, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_UpdTrade, SPOutput_Base>(connetStr);
             SPOutput_Base spOut = new SPOutput_Base();
             string SPName = new ObjType().GetSPName(ObjType.SPType.UpdTrade);
+            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            if (flag)
+            {
+                if (spOut.Error == 1)
+                {
+                    flag = false;
+                }
+            }
+        }
+        /// <summary>
+        /// 更新刷卡結果 有關帳檔版本
+        /// </summary>
+        /// <param name="flag"></param>
+        public void UpdCreditAuthDataForClose(SPInput_UpdTradeForClose input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            SQLHelper<SPInput_UpdTradeForClose, SPOutput_Base> SqlHelper = new SQLHelper<SPInput_UpdTradeForClose, SPOutput_Base>(connetStr);
+            SPOutput_Base spOut = new SPOutput_Base();
+            string SPName = "usp_UPDTradeForClose_U01";
             flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
             if (flag)
             {
@@ -127,5 +165,7 @@ namespace OtherService.Common
                 }
             }
         }
+
+
     }
 }

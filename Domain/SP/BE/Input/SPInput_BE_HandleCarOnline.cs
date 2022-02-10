@@ -23,5 +23,13 @@ namespace Domain.SP.BE.Input
         /// 操作者
         /// </summary>
         public string UserID { set; get; }
+        /// <summary>
+        /// 下線原因
+        /// </summary>
+        public string OffLineReason { get; set; }
+        /// <summary>
+        /// 備註
+        /// </summary>
+        public string Memo { get; set; }
     }
 }

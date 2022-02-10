@@ -9,6 +9,7 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
     public class WebAPIOutput_NPR390QueryData
     {
         public string CUSTID { set; get; }
+        public string MEMRFNBR { set; get; }
         public string RENT_NO { set; get; }
         public string IRENT_NO { set; get; }
         public string MEMO { set; get; }

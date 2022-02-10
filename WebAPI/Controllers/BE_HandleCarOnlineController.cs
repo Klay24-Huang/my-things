@@ -83,14 +83,15 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                string spName = new ObjType().GetSPName(ObjType.SPType.BE_CarDataSettingSetOnline);
+                string spName = "usp_BE_CarDataSettingSetOnline";
                 SPInput_BE_HandleCarOnline spInput = new SPInput_BE_HandleCarOnline()
                 {
                     LogID = LogID,
                     CarNo = apiInput.CarNo.Replace(" ", ""),
                     Online=apiInput.Online,
-                    UserID = apiInput.UserID
-
+                    UserID = apiInput.UserID,
+                    OffLineReason = apiInput.OffLineReason,
+                    Memo = apiInput.Memo
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();

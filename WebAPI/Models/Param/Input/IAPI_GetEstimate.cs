@@ -36,5 +36,9 @@ namespace WebAPI.Models.Param.Input
         /// <para>1:是</para>
         /// </summary>
         public int Insurance { set; get; }
+        /// <summary>
+        /// 訂閱制代碼 20211104 ADD BY ADAM
+        /// </summary>
+        public int MonId { set; get; } = 0;
     }
 }

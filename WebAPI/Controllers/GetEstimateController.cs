@@ -1,26 +1,20 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
+using Domain.SP.Input.Bill;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.TB;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using Domain.SP.Input.Bill;
-using Domain.SP.Output.Bill;
 using WebCommon;
-using System.Data;
-using SSAPI.Client.Local;
-using WebAPI.Utils;
-using System.Linq;
 
 namespace WebAPI.Controllers
 {
@@ -35,9 +29,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoGetProject(Dictionary<string, object> value)
         {
             #region 初始宣告
-            var CarRepo = new CarRentRepo(connetStr);
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -54,11 +46,10 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             List<ProjectPriceBase> priceBase = new List<ProjectPriceBase>();
-            StationAndCarRepository _repository;
             ProjectRepository projectRepository;
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
+            var CarRepo = new CarRentRepo(connetStr);
             DateTime SDate = DateTime.Now.AddHours(-1);
             DateTime EDate = DateTime.Now;
             ProjectInfo obj;
@@ -167,47 +158,17 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            //Token判斷
-            //20201109 ADD BY ADAM REASON.TOKEN判斷修改
-            //if (flag && isGuest == false)
-            if (flag && Access_Token_string.Split(' ').Length >= 2)
+            #region Token判斷
+            if (flag && isGuest == false)
             {
-                /*
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenOnlyToken);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_Base>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-                */
-
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token_string.Split(' ')[1].ToString()
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                //訪客機制BYPASS
-                if (spOut.ErrorCode == "ERR101")
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                if (errCode == "ERR101")    //訪客機制BYPASS
                 {
                     flag = true;
-                    spOut.ErrorCode = "";
-                    spOut.Error = 0;
                     errCode = "000000";
                 }
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
             }
+            #endregion
 
             if (flag)
             {
@@ -218,7 +179,6 @@ namespace WebAPI.Controllers
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
                 if (QueryMode == 0 || (QueryMode == 1 && ProjType == 3))
                 {
-                    //ProjectPriceBase priceBase = projectRepository.GetProjectPriceBase(apiInput.ProjID, apiInput.CarType, ProjType);
                     //20201110 ADD BY ADAM REASON.改為sp處理
                     SPInput_GetProjectPriceBase spInput = new SPInput_GetProjectPriceBase()
                     {
@@ -227,9 +187,11 @@ namespace WebAPI.Controllers
                         CarType = apiInput.CarType,
                         ProjType = ProjType,
                         IDNO = IDNO,
+                        MonId = apiInput.MonId,     //20211104 ADD BY ADAM REASON.訂閱制調整
                         LogID = LogID
                     };
-                    string SPName = new ObjType().GetSPName(ObjType.SPType.GetProjectPriceBase);
+                    //20211104 ADD BY ADAM REASON.訂閱制定金修改
+                    string SPName = "usp_GetProjectPriceBase";
                     SPOutput_Base spOutBase = new SPOutput_Base();
                     SQLHelper<SPInput_GetProjectPriceBase, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetProjectPriceBase, SPOutput_Base>(connetStr);
                     DataSet ds = new DataSet();
@@ -242,49 +204,49 @@ namespace WebAPI.Controllers
                         {
                             #region 春節汽車
                             var cr_com = new CarRentCommon();
-                            DateTime sprSd = Convert.ToDateTime(apiInput.SDate);
-                            DateTime sprEd = Convert.ToDateTime(apiInput.EDate);
                             var pr = priceBase[0];
                             List<int> proTypes = new List<int>() { 0, 3 };
-                            bool isSpring = cr_com.isSpring(sprSd, sprEd);
-                            if (proTypes.Any(x=>x==ProjType) && isSpring)
+                            bool isSpring = cr_com.isSpring(SDate, EDate);
+                            if (proTypes.Any(x => x == ProjType) && isSpring)
                             {
-                                string carCode = "";
                                 //有跨到春節就會回傳春節專案,只針對同站 
                                 var bizIn = new IBIZ_SpringInit()
                                 {
+                                    IDNO = IDNO,
                                     ProjID = apiInput.ProjID,
                                     ProjType = ProjType,
+                                    CarNo = apiInput.CarNo,
                                     CarType = apiInput.CarType,
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    lstHoliday = lstHoliday,
-                                    SD = Convert.ToDateTime(apiInput.SDate),
-                                    ED = Convert.ToDateTime(apiInput.EDate),
+                                    SD = SDate,
+                                    ED = EDate,
                                     ProDisPRICE = Convert.ToDouble(pr.PRICE) / 10,
-                                    ProDisPRICE_H = Convert.ToDouble(pr.PRICE_H) / 10
+                                    ProDisPRICE_H = Convert.ToDouble(pr.PRICE_H) / 10,
+                                    lstHoliday = lstHoliday,
+                                    LogID = LogID
                                 };
 
-                                if (string.IsNullOrWhiteSpace(apiInput.CarType) && ProjType==3)
-                                {//路邊projID一定是非春節(一般時段),春節期間仍然回傳非春節ProjID, 邏輯已確認過
-                                    if (!string.IsNullOrWhiteSpace(apiInput.CarNo))
-                                        carCode = CarRepo.GetCarTypeGroupCode(apiInput.CarNo);
-                                    else
-                                        throw new Exception("路邊CarNo為必填");
+                                //if (ProjType == 3)
+                                //{   //路邊projID一定是非春節(一般時段),春節期間仍然回傳非春節ProjID, 邏輯已確認過
+                                //    //if (!string.IsNullOrWhiteSpace(apiInput.CarNo))
+                                //    //    carCode = CarRepo.GetCarTypeGroupCode(apiInput.CarNo);
+                                //    //else
+                                //    //    throw new Exception("路邊CarNo為必填");
 
-                                    if (!string.IsNullOrWhiteSpace(carCode))
-                                    {
-                                        bizIn.CarType = carCode;
-                                        bizIn.PRICE = Convert.ToDouble(pr.PRICE) / 10;
-                                        bizIn.PRICE_H = Convert.ToDouble(pr.PRICE_H) / 10;
-                                        bizIn.ProDisPRICE = 0;
-                                        bizIn.ProDisPRICE_H = 0;
-                                    }
-                                    else
-                                        throw new Exception("無對應CarTypeGroupCoder");
-                                }
-                                
-                                var xre = cr_com.GetSpringInit(bizIn, connetStr,funName);
+                                //    string carCode = CarRepo.GetCarTypeGroupCode(apiInput.CarNo);
+
+                                //    if (!string.IsNullOrEmpty(carCode))
+                                //    {
+                                //        bizIn.CarType = carCode;
+                                //        //bizIn.PRICE = Convert.ToDouble(pr.PRICE) / 10;
+                                //        //bizIn.PRICE_H = Convert.ToDouble(pr.PRICE_H) / 10;
+                                //        //bizIn.ProDisPRICE = 0;
+                                //        //bizIn.ProDisPRICE_H = 0;
+                                //    }
+                                //    //else
+                                //    //    throw new Exception("無對應CarTypeGroupCoder");
+                                //}
+
+                                var xre = cr_com.GetSpringInit(bizIn, connetStr, funName);
                                 if (xre != null)
                                 {
                                     double InsurBill = Convert.ToDouble(pr.InsurancePerHours) * (Convert.ToDouble(xre.RentInMins) / 60);
@@ -296,7 +258,7 @@ namespace WebAPI.Controllers
                                         MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
                                         MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
                                     };
-                                }                               
+                                }
                             }
                             else
                             {
@@ -334,8 +296,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-    
-    
     }
-
 }

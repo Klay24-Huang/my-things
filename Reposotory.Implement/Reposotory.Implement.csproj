@@ -79,6 +79,7 @@
     <Compile Include="SubScriptionRepository.cs" />
     <Compile Include="Sync\SendMsgRepository.cs" />
     <Compile Include="SystemSettingRepository.cs" />
+    <Compile Include="WalletRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">

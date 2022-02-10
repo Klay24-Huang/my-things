@@ -1,8 +1,6 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Member;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.Member;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
@@ -12,11 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
@@ -74,6 +70,11 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR900";
                 }
+                if (apiInput.SeqNo < 0)
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                }
             }
 
             //不開放訪客
@@ -88,37 +89,27 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            // Token判斷
+            #region Token判斷
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    Token = Access_Token,
-                    LogID = LogID
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
 
             if (flag)
             {
                 if (apiInput.CHKStatus == "Y")
                 {
-                    string spName = new ObjType().GetSPName(ObjType.SPType.SetMemberCMK);
+                    //string spName = "usp_SetMemberCMK";
+                    string spName = "usp_SetMemberCMK";    //20211207 ADD BY ADAM REASON.為了版本共存先切一版出來
                     SPInput_SetMemberCMK spInput = new SPInput_SetMemberCMK()
                     {
                         IDNO = IDNO,
+                        VerType = "",   // 從DB抓
+                        Version = "",   // 從DB抓
+                        SeqNo = apiInput.SeqNo,
                         Source = "I",
                         AgreeDate = DateTime.Now,
-                        VerType = "Hims",
-                        Version = "",   // 從DB抓
                         TEL = "Y",      // 預設Y
                         SMS = "Y",      // 預設Y
                         EMAIL = "Y",    // 預設Y
@@ -132,32 +123,39 @@ namespace WebAPI.Controllers
                     DataSet ds = new DataSet();
                     flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
                     baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                    if (flag)
+                    if (flag && ListOut.Count > 0)
                     {
                         // 20210824 UPD BY YEH REASON:拋短租
-                        WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
+                        // 20211105 UPD BY YEH REASON:改成迴圈拋多筆
+                        foreach (var list in ListOut)
                         {
-                            IDNO = ListOut.FirstOrDefault().MEMIDNO,
-                            VERTYPE = ListOut.FirstOrDefault().VerType,
-                            VER = ListOut.FirstOrDefault().Version,
-                            VERSOURCE = ListOut.FirstOrDefault().Source,
-                            TEL = ListOut.FirstOrDefault().TEL,
-                            SMS = ListOut.FirstOrDefault().SMS,
-                            EMAIL = ListOut.FirstOrDefault().EMAIL,
-                            POST = ListOut.FirstOrDefault().POST,
-                            MEMO = "",
-                            COMPID = "EF",
-                            COMPNM = "和雲",
-                            PRGID = "iRent_205",
-                            USERID = "iRentUser"
-                        };
-                        WebAPIOutput_TransIRentMemCMK wsOutput = new WebAPIOutput_TransIRentMemCMK();
-                        HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                            if (flag)
+                            {
+                                WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
+                                {
+                                    IDNO = list.MEMIDNO,
+                                    VERTYPE = list.VerType,
+                                    VER = list.Version,
+                                    VERSOURCE = list.Source,
+                                    TEL = list.TEL,
+                                    SMS = list.SMS,
+                                    EMAIL = list.EMAIL,
+                                    POST = list.POST,
+                                    MEMO = "",
+                                    COMPID = "EF",
+                                    COMPNM = "和雲",
+                                    PRGID = "iRent_205",
+                                    USERID = "iRentUser"
+                                };
+                                WebAPIOutput_TransIRentMemCMK wsOutput = new WebAPIOutput_TransIRentMemCMK();
+                                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
 
-                        flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref wsOutput);
-                        if (flag == false)
-                        {
-                            errCode = "ERR776";
+                                flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref wsOutput);
+                                if (flag == false)
+                                {
+                                    errCode = "ERR776";
+                                }
+                            }
                         }
                     }
                 }

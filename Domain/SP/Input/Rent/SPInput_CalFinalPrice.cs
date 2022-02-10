@@ -29,7 +29,7 @@ namespace Domain.SP.Input.Rent
         /// </summary>
         public int Insurance_price { set; get; } = 0;
         /// <summary>
-        ///  罰金
+        /// 逾時費用
         /// </summary>
         public int fine_price { set; get; } = 0;
         /// <summary>
@@ -69,5 +69,15 @@ namespace Domain.SP.Input.Rent
         /// auth token
         /// </summary>
         public string Token { set; get; }
+
+        /// <summary>
+        /// 差額
+        /// </summary>
+        public int DiffAmount { get; set; }
+
+        /// <summary>
+        /// API名稱
+        /// </summary>
+        public string APIName { get; set; }
     }
 }

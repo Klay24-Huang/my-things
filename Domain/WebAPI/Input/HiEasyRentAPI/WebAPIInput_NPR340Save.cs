@@ -75,6 +75,10 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// 罰單編號
         /// </summary>
         public string POLNO { get; set; }
+        /// <summary>
+        /// 0: 台新 1:中信 20220206
+        /// </summary>
+        public int OPERATOR { get; set; }
     }
     public class NPR340PaymentDetail
     {
@@ -106,5 +110,9 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// 支付說明(ex:租金)
         /// </summary>
         public string PAYMEMO { set; get; }
+        /// <summary>
+        /// 0: 台新 1:中信 20220206
+        /// </summary>
+        //public int OPERATOR { get; set; }
     }
 }

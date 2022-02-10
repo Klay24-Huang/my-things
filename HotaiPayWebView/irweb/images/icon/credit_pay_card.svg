@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="14px" viewBox="0 0 20 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon/32/credit_pay</title>
+    <g id="1.4-註冊_和泰會員" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="新增信用卡" transform="translate(-30.000000, -257.000000)">
+            <g id="Group" transform="translate(24.000000, 243.000000)">
+                <g transform="translate(0.000000, 5.000000)" id="icon/32/line_pay">
+                    <g transform="translate(6.000000, 9.000000)" id="Group-2">
+                        <rect id="Rectangle" fill="#424447" x="0" y="0" width="20" height="14" rx="1"></rect>
+                        <rect id="Rectangle" fill-opacity="0.8" fill="#FFFFFF" x="2" y="10" width="4" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle" fill-opacity="0.8" fill="#FFFFFF" x="0" y="3" width="20" height="3"></rect>
+                        <rect id="Rectangle" fill-opacity="0.8" fill="#FFFFFF" x="7" y="10" width="4" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle" fill-opacity="0.8" fill="#FFFFFF" x="12" y="10" width="4" height="1" rx="0.5"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

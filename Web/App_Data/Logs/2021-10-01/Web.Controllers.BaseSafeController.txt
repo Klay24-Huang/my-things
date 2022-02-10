@@ -1,0 +1,12 @@
+2021-10-01 15:29:10.4638|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'FuncMaintain_View',IPAddr:'::1}
+2021-10-01 15:29:18.8070|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetHandleList',IPAddr:'::1}
+2021-10-01 15:29:19.4506|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetFuncGroup',IPAddr:'::1}
+2021-10-01 15:29:19.5203|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetPowerList',IPAddr:'::1}
+2021-10-01 15:29:37.8379|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'FuncMaintain_View',IPAddr:'::1}
+2021-10-01 15:29:37.8379|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetHandleList',IPAddr:'::1}
+2021-10-01 15:29:37.8559|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetFuncGroup',IPAddr:'::1}
+2021-10-01 15:29:37.9109|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetPowerList',IPAddr:'::1}
+2021-10-01 15:29:42.7491|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'FuncMaintain_View',IPAddr:'::1}
+2021-10-01 15:29:42.7491|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetHandleList',IPAddr:'::1}
+2021-10-01 15:29:42.7491|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetFuncGroup',IPAddr:'::1}
+2021-10-01 15:29:42.8131|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'GetPowerList',IPAddr:'::1}

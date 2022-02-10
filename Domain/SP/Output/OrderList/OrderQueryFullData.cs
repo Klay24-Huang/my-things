@@ -101,6 +101,9 @@ namespace Domain.SP.Output.OrderList
         #endregion
 
         #region 專案相關
+        /// <summary>
+        /// 專案代碼
+        /// </summary>
         public string ProjID { get; set; }
         /// <summary>
         /// 專案類型
@@ -121,18 +124,7 @@ namespace Domain.SP.Output.OrderList
         /// 假日每小時
         /// </summary>
         public int PRICE_H { set; get; }
-        /// <summary>
-        /// 春節訂金
-        /// </summary>
-        public int OrderPrice { get; set; }
-        /// <summary>
-        /// 使用訂金
-        /// </summary>
-        public int UseOrderPrice { get; set; }
-        /// <summary>
-        /// 剩餘訂金
-        /// </summary>
-        public int LastOrderPrice { get; set; }
+        
         /// <summary>
         /// 前n分鐘0元
         /// </summary>
@@ -271,6 +263,26 @@ namespace Domain.SP.Output.OrderList
         /// 副承租人每小時費率總和
         /// </summary>
         public int JointInsurancePerHour { get; set; }
+
+        /// <summary>
+        /// 預授權金額
+        /// </summary>
+        public int PreAmount { get; set; }
+        #endregion
+
+        #region 無用欄位
+        /// <summary>
+        /// 春節訂金
+        /// </summary>
+        public int OrderPrice { get; set; }
+        /// <summary>
+        /// 使用訂金
+        /// </summary>
+        public int UseOrderPrice { get; set; }
+        /// <summary>
+        /// 剩餘訂金
+        /// </summary>
+        public int LastOrderPrice { get; set; }
         #endregion
     }
 
@@ -335,5 +347,67 @@ namespace Domain.SP.Output.OrderList
         /// CardToken
         /// </summary>
         public string CardToken { set; get; }
+    }
+
+
+    public class OrderAuthListV2: OrderAuthList
+    {
+        public int AutoClosed { get; set; }
+
+        public int AuthType { get; set; }
+        
+        public int CardType { get; set; }
+
+        public int isRetry { get; set; }
+
+        public string Mobile { get; set; }      
+    }
+
+    /// <summary>
+    /// 春節訂金
+    /// </summary>
+    public class OrderAuthNYList
+    {
+        /// <summary>
+        /// 訂單編號
+        /// </summary>
+        public int order_number { set; get; }
+        /// <summary>
+        /// 授權金額
+        /// </summary>
+        public int final_price { set; get; }
+        /// <summary>
+        /// 會員編號
+        /// </summary>
+        public string IDNO { set; get; }
+        /// <summary>
+        /// CardToken
+        /// </summary>
+        public string CardToken { set; get; }
+        /// <summary>
+        /// 台新訂單編號
+        /// </summary>
+        public string transaction_no { set; get; }
+        /// <summary>
+        /// 短租預約編號
+        /// </summary>
+        public string ORDNO { set; get; }
+        /// <summary>
+        /// 發票寄送方式 => TB_OrderMain.bill_option
+        /// </summary>
+        public string INVKIND { set; get; }
+        /// <summary>
+        /// 統編
+        /// </summary>
+        public string UNIMNO { set; get; }
+        /// <summary>
+        /// 發票載具條碼
+        /// </summary>
+        public string CARRIERID { set; get; }
+        /// <summary>
+        /// 愛心碼
+        /// </summary>
+        public string NPOBAN { set; get; }
+        
     }
 }

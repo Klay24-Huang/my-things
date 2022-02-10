@@ -204,6 +204,10 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// </summary>
         public string PARKINGAMT2 { set; get; }
         public PaymentDetail[] tbPaymentDetail { set; get; }
+        /// <summary>
+        /// 副承租人清單
+        /// </summary>
+        public SavePassenger[] tbSavePassenger { set; get; }
     }
     public class PaymentDetail
     {
@@ -232,6 +236,26 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// <summary>
         /// 支付說明(ex:租金)
         /// </summary>
-            public string PAYMEMO { set; get; } 
+        public string PAYMEMO { set; get; } 
+        /// <summary>
+        /// 0: 台新 1:中信
+        /// </summary>
+        public int OPERATOR { set; get; }
+    }
+    //20211221 ADD BY ADAM REASON.增加副承租人清單
+    public class SavePassenger
+    {
+        /// <summary>
+        /// 身分證字號
+        /// </summary>
+        public string MEMIDNO { get; set; }
+        /// <summary>
+        /// 副承租人姓名
+        /// </summary>
+        public string MEMCNAME { get; set; }
+        /// <summary>
+        /// 副承租人安心服務每小時金額
+        /// </summary>
+        public int InsurancePerHours { get; set; }
     }
 }

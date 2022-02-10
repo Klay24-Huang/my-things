@@ -15,6 +15,7 @@ namespace WebAPI.Models.Param.CusFun.Input
         public string PhoneNo { get; set; }
         public int Amount { get; set; }
         public DateTime CreateDate { get; set; }
-        public string EcStatus { get; set; } 
+        public string EcStatus { get; set; }
+        public string PRGID { get; set; }
     }
 }

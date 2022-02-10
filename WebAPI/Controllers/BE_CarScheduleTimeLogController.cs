@@ -179,7 +179,7 @@ namespace WebAPI.Controllers
                     {
                         List<BE_CarScheduleTimeLog> orders = lstCarSchedule.FindAll(delegate (BE_CarScheduleTimeLog car)
                         {
-                            return car.CarNo.Replace(" ","") == lstCar[i].CarNo;
+                            return car.CarNo.Replace(" ","") == lstCar[i].CarNo.Replace(" ", "");
                         });
                         List<BE_OrderInfo> tmpOrderInfo=new List<BE_OrderInfo>();
 

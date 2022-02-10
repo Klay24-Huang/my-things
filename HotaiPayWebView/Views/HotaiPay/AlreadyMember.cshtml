@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "AlreadyMember";
+    string Token = ViewData["Token"].ToString();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰集團會員</title>
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/sweetalert.css">
+</head>
+<body>
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰集團會員</h6></header>
+    <div class="container text-center" style="max-width: 414px;">
+        <div class="web-img mt-8">
+
+            <img class="object-fit mb-8" alt="iRent汽機車共享" src="../images/hotai-logo.svg">
+        </div>
+        <div class="image-box">
+            <img src="../images/success-face-icon.svg" alt="">
+        </div>
+        <div class="text-box mb-8">
+            <h6 class="text-gray">您已是和泰集團會員囉！</h6>
+        </div>
+        <div class="buttonBox d-none d-sm-block desktop-margin-top">
+            <button type="submit" class="btn btn-outline-gray my-3" style="max-width: 414px;" onclick="location.href='https://www.hotaimember.com.tw/Account/Profile'">修改和泰集團會員資料</button>
+        </div>
+        <div class="buttonBox d-none d-sm-block">
+            <a class="text-gray text-underline sweet-1"  onclick="Unbind()">我要解綁</a>
+        </div>
+    </div>
+    <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
+        <div class="buttonBox">
+            <button type="submit" id="modifyData" class="btn btn-outline-gray my-3" style="max-width: 414px;" onclick="location.href='https://www.hotaimember.com.tw/Account/Profile'">修改和泰集團會員資料</button>
+        </div>
+        <div class="buttonBox">
+            <a class="text-gray text-underline sweet-1" onclick="Unbind()">我要解綁</a>
+        </div>
+    </div>
+    <input hidden="hidden" value=@Token id="Token" />
+
+    <script src="@Url.Content("~/Scripts/jquery-3.4.1.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/HotaiPayJS/sweetalert.js")" type="text/javascript"></script>
+    <script type="text/javascript">
+        var Token= $("#Token").val();
+        function Unbind() {
+        swal({
+            title:"",
+            text: "確定解綁和泰集團會員嗎？",
+            imageUrl:'@Url.Content("../images/alert-popup.svg")',
+            showCancelButton: true,
+            confirmButtonText: '確認',
+            cancelButtonText: "取消",
+            cancelButtonClass: "btn-outline-gray-small",
+            confirmButtonClass: "btn-blue-small"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $.ajax({
+                    url: "@Url.Action("Unbind")",
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { token: Token },
+                    success: function (result) {
+                        if (result) {
+                            window.location.href = result.redirectUrl;
+                        } else {
+                            swal({
+                                title: "",
+                                text: "和泰會員解綁失敗！請重新登入iRent後再試一次",
+                                type: "error",
+                                confirmButtonText: '確認',
+                            });
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        });
+    }
+    </script>
+</body>
+</html>
+

@@ -15,5 +15,6 @@ namespace Domain.SP.Input.Subscription
         public int NxtShortDays { get; set; }
         public int AutoSubs { get; set; }
         public DateTime? SetNow { get; set; }
+        public string PRGID { get; set; } = "";
     }
 }

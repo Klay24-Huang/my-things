@@ -11,5 +11,6 @@ namespace Domain.SP.BE.Input
         public int Mode { set; get; }
         public string Mobile { set; get; }
         public string USERID { set; get; }
+        public string MEMO { set; get; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domain.TB.BackEnd;
+﻿using Domain.TB;
+using Domain.TB.BackEnd;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -251,6 +252,39 @@ namespace Reposotory.Implement
             }
 
             return lstNPR136;
+        }
+
+        public GetMemberCMK GetMemberCMK(string IDNO)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            GetMemberCMK data = null;
+
+            int nowCount = 0;
+            string SQL = "SELECT A.MEMIDNO,A.VerType,A.Version,A.Source,A.AgreeDate,A.TEL,A.SMS,A.EMAIL,A.POST FROM TB_MemberCMK A WITH(NOLOCK) ";
+            SQL += "INNER JOIN TB_CMKDef B WITH(NOLOCK) ON B.VerType=A.VerType AND B.Version=A.Version ";
+
+            SqlParameter[] para = new SqlParameter[10];
+            string term = "";
+
+            if (!string.IsNullOrEmpty(IDNO))
+            {
+                term += (term == "") ? "" : " AND ";
+                term += " A.MEMIDNO=@IDNO";
+                para[nowCount] = new SqlParameter("@IDNO", SqlDbType.VarChar, 20);
+                para[nowCount].Value = IDNO;
+                para[nowCount].Direction = ParameterDirection.Input;
+                nowCount++;
+            }
+
+            if ("" != term)
+            {
+                SQL += " WHERE " + term + " AND A.VerType='Hims' AND B.Trans=1;";
+            }
+
+            data = GetObjList<GetMemberCMK>(ref flag, ref lstError, SQL, para, term)[0];
+
+            return data;
         }
     }
 }

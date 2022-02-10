@@ -73,5 +73,14 @@ namespace Domain.SP.Input.Booking
         /// 此api呼叫的log id 對應TB_APILOG PK
         /// </summary>
         public Int64 LogID { set; get; }
+
+        /// <summary>
+        /// 手機的定位(經度) 20211012 ADD BY ADAM
+        /// </summary>
+        public double PhoneLon { get; set; }
+        /// <summary>
+        /// 手機的定位(緯度) 20211012 ADD BY ADAM
+        /// </summary>
+        public double PhoneLat { get; set; }
     }
 }

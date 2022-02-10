@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewBag.Title = "NoCreditCard";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="@Url.Content("~/Scripts/jquery-3.4.1.min.js")" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰Pay設定</title>
+
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/bootstrap.css">
+    <link rel="stylesheet" href="~/Content/HotaiPayCss/style.css">
+</head>
+<body>
+
+    <header class="d-flex justify-content-center align-items-center"><h6 style="margin-top: 8px;">和泰Pay設定</h6></header>
+
+    <div class="container" style="max-width: 414px;" id="CardList">
+        <div class="mt-4">
+            <p class="text-gray">請選擇您欲綁定的信用卡</p>
+        </div>
+
+        <div class="new-card d-flex ctbc-card mt-5" id="bindNewCard">
+            <div class="w-100">
+                <span>
+                    <img class="mr-2" src="../../images/icon/credit_pay_card.svg" alt="">
+                    <a class="text-blue" onclick="goAddNewCard()" style="cursor: pointer;">＋ 新增信用卡</a>
+                </span>
+            </div>
+            <div class="d-flex"><img class="align-self-center" src="../images/icon/more.svg" alt=""></div>
+        </div>
+
+        <div class="buttonBox d-none d-sm-block desktop-margin-top">
+            <button type="submit" class="btn btn-disable-gray bottom-btn" style="max-width: 414px;" id="agree-btn">
+                選擇預設信用卡
+            </button>
+        </div>
+        <div class="text-left">
+            <p style="color:red;">@ViewBag.LoginAlert</p>
+        </div>
+    </div>
+    <div class="footer-btn-box footer-btn-margin d-block d-sm-none">
+        <div class="buttonBox">
+            <button type="submit" class="btn btn-disable-gray bottom-btn" style="max-width: 414px;" id="agree-btn">
+                選擇預設信用卡
+            </button>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    //點擊新增信用卡事件：導向至bind-newcard供使用者選擇綁中信/非中信卡
+    function goAddNewCard() {
+    /*document.location.href = "/HotaiPayCtbc/BindNewCard/"*/
+        var URL =  "@ViewBag.reURL"+"HotaiPayCtbc/BindNewCard/";
+        window.location.href = URL;
+    }
+
+</script>

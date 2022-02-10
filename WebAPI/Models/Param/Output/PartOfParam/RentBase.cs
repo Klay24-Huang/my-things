@@ -28,19 +28,19 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public string RentalDate { set; get; } = "";
         /// <summary>
-        ///  實際租用時數 (time interval since 1970, 因為UI顯示x天y時z分, 保留未來彈性)
+        ///  實際租用時數
         /// </summary>
         public string RentalTimeInterval { set; get; } = "0";
         /// <summary>
-        /// 可折抵時數 (time interval since 1970, 因為UI顯示x天y時z分, 保留未來彈性)
+        /// 可折抵時數
         /// </summary>
         public string RedeemingTimeInterval { set; get; } = "0";
         /// <summary>
-        /// 可折抵時數(汽車) (time interval since 1970, 因為UI顯示x天y時z分, 保留未來彈性)
+        /// 可折抵時數(汽車)
         /// </summary>
         public string RedeemingTimeCarInterval { set; get; } = "0";
         /// <summary>
-        /// 可折抵時數(機車) (time interval since 1970, 因為UI顯示x天y時z分, 保留未來彈性)
+        /// 可折抵時數(機車)
         /// </summary>
         public string RedeemingTimeMotorInterval { set; get; } = "0";
         /// <summary>
@@ -101,5 +101,15 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// 安心服務費用(逾時)
         /// </summary>
         public int InsuranceExtPrice { set; get; } = 0;
+
+        /// <summary>
+        /// 預授權金額
+        /// </summary>
+        public int PreAmount { get; set; } = 0;
+
+        /// <summary>
+        /// 差額
+        /// </summary>
+        public int DiffAmount { get; set; } = 0;
     }
 }

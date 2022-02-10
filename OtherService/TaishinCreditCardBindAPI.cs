@@ -29,8 +29,10 @@ namespace OtherService
         protected static Logger logger = LogManager.GetCurrentClassLogger();
 
         private string apikey = ConfigurationManager.AppSettings["TaishinAPIKey"].ToString();
+        //20211213 ADD BY ADAM REASON.強制把換卡改到舊的商代，此目的在解決台新預授權用的商代在綁卡設定上有問題做的處置
+        private string oldapikey = ConfigurationManager.AppSettings["oldTaishinAPIKey"].ToString();
         private string BaseURL = ConfigurationManager.AppSettings["TaishinBaseURL"].ToString();                     //台新base網址
-        private string ECBaseURL= ConfigurationManager.AppSettings["TaishinECBaseURL"].ToString();
+        private string ECBaseURL = ConfigurationManager.AppSettings["TaishinECBaseURL"].ToString();
         private string GetCardPage = ConfigurationManager.AppSettings["GetCardPage"].ToString();                    //取得綁卡網址
         private string GetCreditCardStatus = ConfigurationManager.AppSettings["GetCreditCardStatus"].ToString();    //取得綁卡狀態
         private string DeleteCreditCardAuth = ConfigurationManager.AppSettings["DeleteCreditCardAuth"].ToString();  //刪除綁卡
@@ -40,6 +42,12 @@ namespace OtherService
         private string ECRefund = ConfigurationManager.AppSettings["ECRefund"].ToString();                          //退貨
         private string Auth = ConfigurationManager.AppSettings["Auth"].ToString();              //直接授權   
         private string AzureAPIBaseURL = ConfigurationManager.AppSettings["AzureAPIBaseUrl"].ToString();
+        private string CreditCardTest = ConfigurationManager.AppSettings["CreditCardTest"].ToString();
+        private string RelayBaseURL = ConfigurationManager.AppSettings["RelayBaseURL"].ToString();                  //中繼網址
+        private string RelayPostApi = ConfigurationManager.AppSettings["RelayPostApi"].ToString();                  //中繼API
+        private string RelayStatus = ConfigurationManager.AppSettings["RelayStatus"].ToString();                    //是否要啟用中繼
+        private string relayEnKey = ConfigurationManager.AppSettings["RelayEnKey"].ToString();                      //中繼加密key
+        private string relayEnSalt = ConfigurationManager.AppSettings["RelayEnSalt"].ToString();                    //中繼加密Salt
 
         private static MemoryCache _cache = MemoryCache.Default;
 
@@ -52,12 +60,13 @@ namespace OtherService
         /// <param name="errCode"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoBind(WebAPIInput_Base wsInput,ref string errCode,ref WebAPIOutput_Base output)
+        public bool DoBind(WebAPIInput_Base wsInput, ref string errCode, ref WebAPIOutput_Base output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            //string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);
             string checksum = GenerateSign(ori);
-            
+
             WebAPIInput_Bind Input = new WebAPIInput_Bind()
             {
                 ApiVer = wsInput.ApiVer,
@@ -65,12 +74,12 @@ namespace OtherService
                 Random = wsInput.Random,
                 RequestParams = wsInput.RequestParams,
                 CheckSum = checksum,
-                TimeStamp=wsInput.TimeStamp
+                TimeStamp = wsInput.TimeStamp
             };
-           
-            
+
+
             output = DoBindSend(Input).Result;
-            if (output.RtnCode=="1000")
+            if (output.RtnCode == "1000")
             {
                 //if (output.Data == null)
                 //{
@@ -104,7 +113,7 @@ namespace OtherService
             string Site = BaseURL + GetCardPage;
             Site = AzureAPIBaseURL + @"api/TestTaishiBU";
             //20201125紀錄接收資料
-            logger.Trace("DoBindSend:"+ Site);
+            logger.Trace("DoBindSend:" + Site);
             WebAPIOutput_Base output = null;
             DateTime MKTime = DateTime.Now;
             DateTime RTime = MKTime;
@@ -179,8 +188,8 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_Base()
                 {
-                    RtnCode="0",
-                    RtnMessage=ex.Message
+                    RtnCode = "0",
+                    RtnMessage = ex.Message
                 };
                 logger.Error(ex.Message);
             }
@@ -222,7 +231,7 @@ namespace OtherService
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
-            string checksum = GenerateSign(ori);          
+            string checksum = GenerateSign(ori);
 
             WebAPIInput_GetCreditCardList Input = new WebAPIInput_GetCreditCardList()
             {
@@ -232,7 +241,7 @@ namespace OtherService
                 RequestParams = wsInput.RequestParams,
                 CheckSum = checksum,
                 TimeStamp = wsInput.TimeStamp,
-                TransNo=wsInput.TransNo
+                TransNo = wsInput.TransNo
             };
 
             output = DoGetCreditCardListSend(Input).Result;
@@ -249,8 +258,8 @@ namespace OtherService
             }
             return flag;
         }
-        
-        public bool DoGetCreditCardListCache(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output,bool refresh=false)
+
+        public bool DoGetCreditCardListCache(PartOfGetCreditCardList wsInput, ref string errCode, ref WebAPIOutput_GetCreditCardList output, bool refresh = false)
         {
             bool flag = false;
             string cacheNm = "BankCardCache";
@@ -261,13 +270,13 @@ namespace OtherService
             var cItems = new List<BankCardCache>();
             var m = new BankCardCache();
 
-            string lastTime = DateTime.Now.AddMinutes(cacheMins*(-1)).ToString("yyyyMMddHHmmss"); 
+            string lastTime = DateTime.Now.AddMinutes(cacheMins * (-1)).ToString("yyyyMMddHHmmss");
 
             if (_cache != null && _cache[cacheNm] != null)
             {
                 cItems = (List<BankCardCache>)_cache[cacheNm];
-                if(cItems != null && cItems.Count()>0)
-                   cItems = cItems.Where(x => string.Compare(x.CacheTime, lastTime) >= 0).ToList();
+                if (cItems != null && cItems.Count() > 0)
+                    cItems = cItems.Where(x => string.Compare(x.CacheTime, lastTime) >= 0).ToList();
             }
 
             if (cItems != null && cItems.Count() > 0)
@@ -277,7 +286,7 @@ namespace OtherService
             {
                 if (_cache != null && _cache[cacheNm] != null)
                 {
-                    if(m != null)
+                    if (m != null)
                     {
                         reCall = false;
                         if (string.IsNullOrWhiteSpace(m.apiJson))
@@ -286,7 +295,7 @@ namespace OtherService
                         return true;
                     }
                     else
-                        reCall = true;                
+                        reCall = true;
                 }
                 else
                     reCall = true;
@@ -439,7 +448,7 @@ namespace OtherService
         public bool DoDeleteCreditCardAuth(PartOfDeleteCreditCardAuth wsInput, ref string errCode, ref WebAPIOutput_DeleteCreditCardAuth output)
         {
             bool flag = true;
-            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), oldapikey);//解綁鎖定在舊商代
             string checksum = GenerateSign(ori);
 
             WebAPIInput_DeleteCreditCardAuth Input = new WebAPIInput_DeleteCreditCardAuth()
@@ -812,49 +821,55 @@ namespace OtherService
                 RequestParams = wsInput.RequestParams,
                 CheckSum = checksum,
                 TimeStamp = wsInput.TimeStamp
-                
+
             };
-            string tmp="";
-            Int64 tmpOrder = 0;
-            int creditType = 99;
-    
-                if (Input.RequestParams.MerchantTradeNo.IndexOf("F_") > -1)
-                {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("F_");
-                    tmp = Input.RequestParams.MerchantTradeNo.Substring(0,Index);
-                    tmpOrder = Convert.ToInt64(tmp);
-                    creditType = 0;
-                }
-                else if (Input.RequestParams.MerchantTradeNo.IndexOf("P_") > -1)
-                {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("P_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0,Index);
-              //  tmpOrder = Convert.ToInt64(tmp);
-                    creditType = 1;
-                }
-                else if (Input.RequestParams.MerchantTradeNo.IndexOf("E_") > -1)
-                {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("E_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0,Index);
-               // tmpOrder = Convert.ToInt64(tmp);
-                    creditType = 2;
-                }
-                else if (Input.RequestParams.MerchantTradeNo.IndexOf("G_") > -1)
-                {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("G_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0,Index );
-              //  tmpOrder = Convert.ToInt64(tmp);
-                    creditType = 3;
-                }
-                SPInput_InsTrade SPInput = new SPInput_InsTrade()
-                {
-                    amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,
-                    OrderNo = tmpOrder,
-                    CreditType = creditType,
-                    LogID = 0,
-                    MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
-                    CardToken=Input.RequestParams.CardToken,
-                    MemberID=tmp
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            int creditType = orderInfo.creditType;
+            Int64 tmpOrder = orderInfo.OrderNo;
+            string tmp = orderInfo.OrderString;
+
+            //string tmp = "";
+            //Int64 tmpOrder = 0;
+            //int creditType = 99;
+
+            //if (Input.RequestParams.MerchantTradeNo.IndexOf("F_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("F_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 0;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("P_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("P_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    //  tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 1;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("E_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("E_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    // tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 2;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("G_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("G_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    //  tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 3;
+            //}
+            SPInput_InsTrade SPInput = new SPInput_InsTrade()
+            {
+                amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,
+                OrderNo = tmpOrder,
+                CreditType = creditType,
+                LogID = 0,
+                MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
+                CardToken = Input.RequestParams.CardToken,
+                MemberID = tmp
             };
             new WebAPILogCommon().InsCreditAuthData(SPInput, ref flag, ref errCode, ref lstError);
             if (flag)
@@ -872,7 +887,7 @@ namespace OtherService
                     flag = false;
                 }
             }
-          
+
             return flag;
         }
         /// <summary>
@@ -883,7 +898,7 @@ namespace OtherService
         /// <param name="errCode"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool DoCreditCardAuthV2(PartOfCreditCardAuth wsInput,string IDNO, ref string errCode, ref WebAPIOutput_Auth output)
+        public bool DoCreditCardAuthV2(PartOfCreditCardAuth wsInput, string IDNO, ref string errCode, ref WebAPIOutput_Auth output)
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
@@ -899,52 +914,58 @@ namespace OtherService
                 TimeStamp = wsInput.TimeStamp
 
             };
-            //string[] tmp;
-            string tmp="";
-            Int64 tmpOrder = 0;
-            int creditType = 99;
-            if (Input.RequestParams.MerchantTradeNo.IndexOf("F_") > -1)
-            {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("F_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                tmpOrder = Convert.ToInt64(tmp);
-                creditType = 0;
-            }
-            else if (Input.RequestParams.MerchantTradeNo.IndexOf("P_") > -1)
-            {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("P_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                //  tmpOrder = Convert.ToInt64(tmp);
-                creditType = 1;
-            }
-            else if (Input.RequestParams.MerchantTradeNo.IndexOf("E_") > -1)
-            {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("E_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                // tmpOrder = Convert.ToInt64(tmp);
-                creditType = 2;
-            }
-            else if (Input.RequestParams.MerchantTradeNo.IndexOf("G_") > -1)
-            {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("G_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                //  tmpOrder = Convert.ToInt64(tmp);
-                creditType = 3;
-            }
-            else if (Input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
-            {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("M_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                //  tmpOrder = Convert.ToInt64(tmp);
-                creditType = 4;
-            }
-            else if (Input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
-            {
-                int Index = Input.RequestParams.MerchantTradeNo.IndexOf("MA_");
-                tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                //  tmpOrder = Convert.ToInt64(tmp);
-                creditType = 5;
-            }
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            int creditType = orderInfo.creditType;
+            Int64 tmpOrder = orderInfo.OrderNo;
+            //string tmp = orderInfo.OrderString;
+
+            ////string[] tmp;
+            //string tmp = "";
+            //Int64 tmpOrder = 0;
+            //int creditType = 99;
+            //if (Input.RequestParams.MerchantTradeNo.IndexOf("F_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("F_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 0;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("P_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("P_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    //  tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 1;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("E_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("E_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    // tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 2;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("G_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("G_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    //  tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 3;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("M_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    //  tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 4;
+            //}
+            //else if (Input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
+            //{
+            //    int Index = Input.RequestParams.MerchantTradeNo.IndexOf("MA_");
+            //    tmp = Input.RequestParams.MerchantTradeNo.Substring(0, Index);
+            //    //  tmpOrder = Convert.ToInt64(tmp);
+            //    creditType = 5;
+            //}
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
             {
                 amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,        //台新奇妙的規則  金額都要除100才是正確的金額
@@ -954,11 +975,11 @@ namespace OtherService
                 MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
                 MemberID = IDNO,
                 CardToken = Input.RequestParams.CardToken
-                };
+            };
 
-                new WebAPILogCommon().InsCreditAuthData(SPInput, ref flag, ref errCode, ref lstError);
-            
-        
+            new WebAPILogCommon().InsCreditAuthData(SPInput, ref flag, ref errCode, ref lstError);
+
+
             if (flag)
             {
                 output = DoCreditCardAuthSend(Input).Result;
@@ -979,13 +1000,83 @@ namespace OtherService
         }
 
         /// <summary>
+        /// 2021/10/26 加入自動關帳邏輯
+        /// </summary>
+        /// <param name="wsInput"></param>
+        /// <param name="IDNO"></param>
+        /// <param name="AutoClosed"></param>
+        /// <param name="errCode"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool DoCreditCardAuthV3(PartOfCreditCardAuth wsInput, string IDNO, int AutoClosed, string funName, string InsUser, ref string errCode, ref WebAPIOutput_Auth output, int AuthType = 0)
+        {
+            bool flag = true;
+            string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
+            string checksum = GenerateSign(ori);
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            WebAPIInput_Auth Input = new WebAPIInput_Auth()
+            {
+                ApiVer = wsInput.ApiVer,
+                ApposId = wsInput.ApposId,
+                Random = wsInput.Random,
+                RequestParams = wsInput.RequestParams,
+                CheckSum = checksum,
+                TimeStamp = wsInput.TimeStamp
+
+            };
+            var payInfoApi = new PayInfoForCredit();
+            var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(Input.RequestParams.MerchantTradeNo);
+            int creditType = orderInfo.creditType;
+            Int64 tmpOrder = orderInfo.OrderNo;
+
+            SPInput_InsTradeForClose SPInput = new SPInput_InsTradeForClose()
+            {
+                amount = Convert.ToInt32(Input.RequestParams.TradeAmount) / 100,        //台新奇妙的規則  金額都要除100才是正確的金額
+                OrderNo = tmpOrder,
+                CreditType = creditType,
+                LogID = 0,
+                MerchantTradeNo = Input.RequestParams.MerchantTradeNo,
+                MemberID = IDNO,
+                CardToken = Input.RequestParams.CardToken,
+                AutoClose = AutoClosed,
+                AuthType = AuthType,
+                MerchantID = wsInput.ApposId,
+            };
+
+            new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);
+
+            if(!flag && errCode == "000000")
+            {
+                errCode = lstError?.Count > 0 ? lstError.FirstOrDefault()?.ErrorCode : "ERR913";
+            }
+
+            if (flag)
+            {
+                output = DoCreditCardAuthSendForClose(Input, AutoClosed, AuthType, funName, InsUser).Result;
+                if (output.RtnCode == "1000")
+                {
+                    //if (output.Data == null)
+                    //{
+                    //    flag = false;
+                    //}
+                }
+                else
+                {
+                    flag = false;
+                    errCode = output.RtnCode == "0" ? "ERR913" : errCode;
+                }
+            }
+
+            return flag;
+        }
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         public async Task<WebAPIOutput_Auth> DoCreditCardAuthSend(WebAPIInput_Auth input)
         {
-           
+
             string Site = ECBaseURL + Auth;
             WebAPIOutput_Auth output = null;
             DateTime MKTime = DateTime.Now;
@@ -1003,7 +1094,7 @@ namespace OtherService
             //}
             try
             {
-                
+
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
                 byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
@@ -1014,7 +1105,7 @@ namespace OtherService
                     reqStream.Dispose();
                 }
 
-                
+
 
                 //發出Request
                 string responseStr = "";
@@ -1101,6 +1192,28 @@ namespace OtherService
                     //  tmpOrder = Convert.ToInt64(tmp);
                     creditType = 3;
                 }
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("M_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("M_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 4;
+                }
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("MA_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("MA_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 5;
+                }
+                //20211116 ADD BY ADAM REASON.春節定金
+                else if (input.RequestParams.MerchantTradeNo.IndexOf("D_") > -1)
+                {
+                    int Index = input.RequestParams.MerchantTradeNo.IndexOf("D_");
+                    tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
+                    //  tmpOrder = Convert.ToInt64(tmp);
+                    creditType = 6;
+                }
                 SPInput_UpdTrade UpdInput = new SPInput_UpdTrade()
                 {
                     LogID = 0,
@@ -1116,11 +1229,11 @@ namespace OtherService
                     if (output.RtnCode == "1000")
                     {
                         DateTime process;
-                        DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate+ output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
+                        DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate + output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
                         if (output.ResponseParams.ResultCode == "1000")
                         {
                             UpdInput.IsSuccess = 1;
-                            
+
                         }
                         else
                         {
@@ -1136,7 +1249,7 @@ namespace OtherService
                         {
                             UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             UpdInput.AuthIdResp = 0;
                             logger.Trace("更新刷卡結果Param:" + JsonConvert.SerializeObject(output) + ",ExceptionMessage:" + ex.Message);
@@ -1164,9 +1277,210 @@ namespace OtherService
 
             return output;
         }
+
+
+        public async Task<WebAPIOutput_Auth> DoCreditCardAuthSendForClose(WebAPIInput_Auth input, int AutoClose, int AuthType, string FunName, string InsUser)
+        {
+            WebAPIOutput_Auth output = null;
+            string Site = RelayStatus == "0" ? $"{ECBaseURL}{Auth}" : $"{RelayBaseURL}{RelayPostApi}";
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            //request.KeepAlive = true;
+            request.KeepAlive = false;
+            SetHeaderValue(request.Headers, "Connection", "close");
+            request.Timeout = 60000;
+            //設定刷卡逾時設定15秒
+            //if (Site.ToUpper().Contains("AUTH"))
+            //{
+            //    request.Timeout = 15000;
+            //}
+            try
+            {
+                if (CreditCardTest == "0")
+                {
+                    System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                    string body = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                    string postBody = "";
+                    #region 中繼API啟用判斷
+                    if (RelayStatus == "0") // 0:不啟用
+                    {
+                        postBody = body;
+                    }
+                    else
+                    {
+                        WebAPIInput_RelayPost relayPostinput = new WebAPIInput_RelayPost()
+                        {
+                            BaseUrl = "TaishinECBaseURL",
+                            ApiUrl = "Auth",
+                            RequestData = new AESEncrypt().doEncrypt(relayEnKey, relayEnSalt, body)
+                        };
+                        
+                        postBody = JsonConvert.SerializeObject(relayPostinput);
+                    }
+                    #endregion
+
+                    byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                    using (Stream reqStream = request.GetRequestStream())
+                    {
+                        reqStream.Write(byteArray, 0, byteArray.Length);
+                        reqStream.Dispose();
+                    }
+                    //發出Request
+                    string responseStr = "";
+                    using (WebResponse response = request.GetResponse())
+                    {
+
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                        {
+                            responseStr = reader.ReadToEnd();
+                            RTime = DateTime.Now;
+
+                            if (RelayStatus == "0") // 0:不啟用
+                            {
+                                output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
+                            }
+                            else
+                            {
+                                var result = JsonConvert.DeserializeObject<WebAPIOutput_RelayPost>(responseStr);                               
+                                if (result.IsSuccess)
+                                {
+                                    responseStr = "";
+                                    responseStr = new AESEncrypt().doDecrypt(relayEnKey, relayEnSalt, result.ResponseData);
+                                    output = JsonConvert.DeserializeObject<WebAPIOutput_Auth>(responseStr);
+                                }
+                                else
+                                {
+                                    output = new WebAPIOutput_Auth()
+                                    {
+                                        RtnCode = "0",
+                                        RtnMessage = result.RtnMessage
+                                    };
+
+                                }
+                            }
+
+
+                            //20201125紀錄接收資料
+                            logger.Trace(responseStr);
+                            reader.Close();
+                            reader.Dispose();
+                        }
+
+                        //增加關閉連線的呼叫
+                        response.Close();
+                        response.Dispose();
+                    }
+                }
+                else
+                {
+                    output = ForTest(input.RequestParams.TradeAmount);
+                }
+            }
+
+
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_Auth()
+                {
+                    RtnCode = "0",
+                    RtnMessage = ex.Message
+
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "Auth",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = ECBaseURL + Auth
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+                #region 更新刷卡結果
+                var payInfoApi = new PayInfoForCredit();
+                var orderInfo = payInfoApi.GetOrderInfoFromMerchantTradeNo(input.RequestParams.MerchantTradeNo);
+                int creditType = orderInfo.creditType;
+                Int64 tmpOrder = orderInfo.OrderNo;
+
+                SPInput_UpdTradeForClose UpdInput = new SPInput_UpdTradeForClose()
+                {
+                    LogID = 0,
+                    OrderNo = tmpOrder,
+                    MerchantTradeNo = input.RequestParams.MerchantTradeNo,
+                    ChkClose = (AutoClose == 1) ? 1 : 0,
+                    CardType = 1,
+                    ProName = FunName,
+                    UserID = (InsUser == FunName) ? "" : ((InsUser.Length > 20) ? InsUser.Substring(0, 20) : InsUser),
+                    AuthType = AuthType
+
+                };
+                if (output.RtnCode == "0")
+                {
+                    UpdInput.IsSuccess = -2;
+                }
+                else
+                {
+                    if (output.RtnCode == "1000")
+                    {
+                        DateTime process;
+                        DateTime.TryParseExact(output.ResponseParams.ResultData.ServiceTradeDate + output.ResponseParams.ResultData.ServiceTradeTime, "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out process);
+                        if (output.ResponseParams.ResultCode == "1000")
+                        {
+                            UpdInput.IsSuccess = 1;
+                        }
+                        else
+                        {
+                            UpdInput.IsSuccess = -1;
+                        }
+                        UpdInput.MerchantMemberID = output.ResponseParams.ResultData.MemberId == null ? "" : output.ResponseParams.ResultData.MemberId;
+                        UpdInput.process_date = process;
+                        UpdInput.AUTHAMT = Convert.ToInt32(output.ResponseParams.ResultData.PayAmount) / 100;
+
+                        try
+                        {
+                            UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp == "" ? "0" : output.ResponseParams.ResultData.AuthIdResp);
+                        }
+                        catch (Exception ex)
+                        {
+                            UpdInput.AuthIdResp = 0;
+                            logger.Trace("更新刷卡結果Param:" + JsonConvert.SerializeObject(output) + ",ExceptionMessage:" + ex.Message);
+                        }
+                        UpdInput.CardNumber = output.ResponseParams.ResultData.CardNumber;
+                        UpdInput.RetCode = output.ResponseParams.ResultCode;
+                        //UpdInput.RetMsg = output.RtnMessage;
+                        UpdInput.RetMsg = output.ResponseParams.ResultMessage;      //20210106 ADD BY ADAM REASON.
+                        UpdInput.TaishinTradeNo = output.ResponseParams.ResultData.ServiceTradeNo;
+                    }
+                    else
+                    {
+                        UpdInput.IsSuccess = -2;
+                        UpdInput.RetCode = output.RtnCode;
+                        UpdInput.RetMsg = output.RtnMessage;
+                    }
+                    new WebAPILogCommon().UpdCreditAuthDataForClose(UpdInput, ref flag, ref errCode, ref lstError);
+                }
+                #endregion
+                //增加關閉Request的處理
+                request.Abort();
+            }
+            return output;
+        }
+
         #endregion
         #region 退貨（刷退）
-        public bool DoCreditRefund(PartOfECRefund wsInput,Int64 tmpOrder,string IDNO, ref string errCode,ref string errMsg, ref WebAPIOutput_ECRefund output)
+        public bool DoCreditRefund(PartOfECRefund wsInput, Int64 tmpOrder, string IDNO, ref string errCode, ref string errMsg, ref WebAPIOutput_ECRefund output)
         {
             bool flag = true;
             string ori = string.Format("request={0}&apikey={1}", Newtonsoft.Json.JsonConvert.SerializeObject(wsInput), apikey);
@@ -1181,7 +1495,7 @@ namespace OtherService
                 RequestParams = wsInput.RequestParams,
                 CheckSum = checksum,
                 TimeStamp = wsInput.TimeStamp
-                 
+
             };
             SPInput_InsTrade SPInput = new SPInput_InsTrade()
             {
@@ -1195,7 +1509,7 @@ namespace OtherService
 
             };
 
-           Int64 TradeRefundID= new WebAPILogCommon().InsCreditRefundDataNew(SPInput, ref flag, ref errCode, ref lstError);
+            Int64 TradeRefundID = new WebAPILogCommon().InsCreditRefundDataNew(SPInput, ref flag, ref errCode, ref lstError);
 
             output = DoCreditRefundSend(Input, TradeRefundID).Result;
             if (output.RtnCode == "1000")
@@ -1209,7 +1523,7 @@ namespace OtherService
                     flag = false;
                     errCode = output.ResponseParams.ResultCode;
                     errMsg = output.ResponseParams.ResultMessage;
-                    
+
                 }
                 //if (output.Data == null)
                 //{
@@ -1222,7 +1536,7 @@ namespace OtherService
             }
             return flag;
         }
-        public async Task<WebAPIOutput_ECRefund> DoCreditRefundSend(WebAPIInput_EC_Refund input,Int64 TradeRefundID)
+        public async Task<WebAPIOutput_ECRefund> DoCreditRefundSend(WebAPIInput_EC_Refund input, Int64 TradeRefundID)
         {
             string Site = ECBaseURL + ECRefund;
             bool CreditRefundFlag = true;
@@ -1300,14 +1614,14 @@ namespace OtherService
                 Int64 tmpOrder = 0;
                 int Index = input.RequestParams.MerchantTradeNo.IndexOf("R_");
                 string tmp = input.RequestParams.MerchantTradeNo.Substring(0, Index);
-                  tmpOrder = Convert.ToInt64(tmp);
+                tmpOrder = Convert.ToInt64(tmp);
                 int creditType = 66;
                 SPInput_UpdTrade UpdInput = new SPInput_UpdTrade()
                 {
                     LogID = 0,
                     OrderNo = tmpOrder,
                     MerchantTradeNo = input.RequestParams.MerchantTradeNo,
-                     TradeRefundID=TradeRefundID
+                    TradeRefundID = TradeRefundID
                 };
 
                 //更新刷退結果
@@ -1344,24 +1658,24 @@ namespace OtherService
                     else
                     {
                         CreditRefundFlag = false;
-                
-                        
-                        DateTime process=DateTime.Now;
-                        
+
+
+                        DateTime process = DateTime.Now;
+
                         UpdInput.IsSuccess = -2;
                         UpdInput.MerchantMemberID = "";
                         UpdInput.process_date = process;
-                        UpdInput.AUTHAMT =0;
+                        UpdInput.AUTHAMT = 0;
                         UpdInput.CardNumber = "";
                         UpdInput.RetCode = output.ResponseParams.ResultCode;
                         UpdInput.RetMsg = output.ResponseParams.ResultMessage;
                         UpdInput.TaishinTradeNo = "";
                         UpdInput.AuthIdResp = 0;
                     }
-               
+
                     //UpdInput.AuthIdResp = Convert.ToInt32(output.ResponseParams.ResultData.AuthIdResp);
-                
-                   
+
+
                 }
                 else
                 {
@@ -1387,10 +1701,10 @@ namespace OtherService
         public string GenerateCardDataIV(long Timestamp)
         {
             string ACode, BCode, CCode, DCode, ECode = "";
-            BCode = (Timestamp % 10000).ToString().PadLeft(4,'0'); //除10000取餘數，等同於抓最後四碼
+            BCode = (Timestamp % 10000).ToString().PadLeft(4, '0'); //除10000取餘數，等同於抓最後四碼
             CCode = Cal(BCode);
             DCode = Cal(CCode);
-            for (int i = 0; i <4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 int value = (Convert.ToInt32(BCode.Substring(i, 1)) + Convert.ToInt32(CCode.Substring(i, 1)) + Convert.ToInt32(DCode.Substring(i, 1))) % 10;
                 ECode += value.ToString();
@@ -1409,7 +1723,7 @@ namespace OtherService
         /// <param name="CardName">卡片名稱</param>
         /// <param name="Timestamp">用來產生電文的Timestamp（10碼）</param>
         /// <returns></returns>
-        public string GenerateCardData(CardData data,string IV)
+        public string GenerateCardData(CardData data, string IV)
         {
             AESEncrypt encrypt = new AESEncrypt();
             return encrypt.doEncrypt(apikey, IV, JsonConvert.SerializeObject(data));
@@ -1420,16 +1734,16 @@ namespace OtherService
             string output = "";
             int len = num.Length;
             int sum = 0;
-            for(int i = 0; i <len; i++)
+            for (int i = 0; i < len; i++)
             {
                 int baseValue = Convert.ToInt32(num.Substring(i, 1));
                 if (baseValue > 0)
                 {
                     sum += Convert.ToInt32(((Math.Pow(baseValue, 2)) % 10) * Math.Pow(10, 3 - i));
                 }
-                
+
             }
-            return sum.ToString().PadLeft(3,'0');
+            return sum.ToString().PadLeft(3, '0');
         }
         /// <summary>
         /// 產生簽章
@@ -1444,6 +1758,82 @@ namespace OtherService
             string sign = Convert.ToBase64String(hash).ToUpper();
             return sign;
         }
+
+        private WebAPIOutput_Auth ForTest(string TradeAmount)
+        {
+            return ForTestTrue(TradeAmount);
+            //Random rnd = new Random();
+            //int result = rnd.Next(1, 1);
+
+            //if (result == 0)
+            //{
+            //    return ForTestTrue(TradeAmount);
+            //}
+            //else
+            //{
+            //    return ForTestFalse(TradeAmount);
+            //}
+        }
+
+        private WebAPIOutput_Auth ForTestTrue(string TradeAmount)
+        {
+            WebAPIOutput_Auth output =
+            new WebAPIOutput_Auth()
+            {
+                RtnCode = "1000",
+                RtnMessage = "",
+
+                ResponseParams = new AuthResponseParams
+                {
+                    ResultCode = "1000",
+                    ResultMessage = "交易成功",
+                    ResultData = new Domain.WebAPI.output.Taishin.ResultData.AuthResultData
+                    {
+                        CardNumber = "****************",
+                        ServiceTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                        ServiceTradeTime = DateTime.Now.ToString("HHmmss"),
+                        ServiceTradeNo = Guid.NewGuid().ToString().Replace("-", ""),
+                        PayAmount = TradeAmount,
+                        AuthIdResp = "0"
+
+                    }
+                },
+
+            };
+
+            return output;
+
+        }
+
+        private WebAPIOutput_Auth ForTestFalse(string TradeAmount)
+        {
+            WebAPIOutput_Auth output =
+            new WebAPIOutput_Auth()
+            {
+                RtnCode = "100",
+                RtnMessage = "",
+
+                ResponseParams = new AuthResponseParams
+                {
+                    ResultCode = "100",
+                    ResultMessage = "交易失敗",
+                    ResultData = new Domain.WebAPI.output.Taishin.ResultData.AuthResultData
+                    {
+                        CardNumber = "****************",
+                        ServiceTradeDate = DateTime.Now.ToString("yyyyMMdd"),
+                        ServiceTradeTime = DateTime.Now.ToString("HHmmss"),
+                        ServiceTradeNo = Guid.NewGuid().ToString().Replace("-", ""),
+                        PayAmount = "0",
+                        AuthIdResp = "3"
+
+                    }
+                },
+
+            };
+
+            return output;
+
+        }
     }
 
 
@@ -1453,6 +1843,6 @@ namespace OtherService
         public string CacheTime { get; set; }//yyyyMMddHHmmss
         public string IDNO { get; set; }
         public string apiJson { get; set; }//回傳字串
-        public string errCode { get; set; }        
+        public string errCode { get; set; }
     }
 }

@@ -727,6 +727,7 @@ namespace WebAPI.Models.Enum
             UpdateOrderAuthReturnList,
             BE_Banner,//20210316唐加
             BE_InsertChargeParkingData,//20210511唐加
+            BE_BannerSort,
             /// <summary>
             /// 共同承租人邀請清單查詢
             /// </summary>
@@ -751,7 +752,6 @@ namespace WebAPI.Models.Enum
             /// 訂單安心服務資格及價格查詢
             /// </summary>
             GetOrderInsuranceInfo,
-            BE_BannerSort
         }
         /// <summary>
         /// 取出SPName
@@ -939,7 +939,7 @@ namespace WebAPI.Models.Enum
                     SPName = "usp_BE_ContactFinish";    // 20210907 UPD BY YEH SP已同步，指回原版本
                     break;
                 case SPType.DonePayBack:
-                    SPName = "usp_DonePayBack_V2";
+                    SPName = "usp_DonePayBack_V3";
                     break;
                 case SPType.PolygonListQuery:
                     SPName = "usp_PolygonListQuery";

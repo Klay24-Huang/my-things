@@ -34,6 +34,8 @@ using Domain.SP.Input.Member;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using NLog;
+using System.Data.SqlClient;
+using WebAPI.Models.Param.Input;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -51,8 +53,11 @@ namespace WebAPI.Models.BillFunc
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
 
         private MonSubsSp msp = new MonSubsSp();
-
+        
         protected static Logger logger = LogManager.GetCurrentClassLogger();
+
+        //20211106 ADD BY ADAM REASON.預授權
+        private const int CreditAutoClose = 1;
 
         public bool MonArrears_TSIBTrade(string IDNO, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
@@ -202,8 +207,11 @@ namespace WebAPI.Models.BillFunc
                                 WSAuthInput.RequestParams.Item.Add(item);
                                 trace.FlowList.Add("刷卡交易");
 
-                                flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, sour.IDNO, ref errCode, ref WSAuthOutput);                                
-                                trace.traceAdd("DoCreditCardAuthV2", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
+                                //flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, sour.IDNO, ref errCode, ref WSAuthOutput);
+                                //trace.traceAdd("DoCreditCardAuthV2", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
+                                //20211106 ADD BY ADAM REASON.預授權
+                                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, sour.IDNO, CreditAutoClose, "TSIBCardTrade", sour.IDNO, ref errCode, ref WSAuthOutput,8);
+                                trace.traceAdd("DoCreditCardAuthV3", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
 
                                 if (WSAuthOutput.RtnCode != "1000")
                                 {
@@ -295,13 +303,13 @@ namespace WebAPI.Models.BillFunc
                 AccountType = "2",
                 ApiVersion = "0.1.01",
                 CreateType = "1",
-                Email = sour.Email,
-                GUID = guid,
-                ID = sour.IDNO,
+                //ID = sour.IDNO,  //202210019 ADD BY AMBER REASON.非必填欄位避免檢核失敗
+                //Email = sour.Email,
+                //Name = sour.Name,
+                //PhoneNo = sour.PhoneNo, 
+                GUID = guid,             
                 MemberId = sour.MemberId,
-                MerchantId = MerchantId,
-                Name = sour.Name,
-                PhoneNo = sour.PhoneNo,
+                MerchantId = MerchantId,            
                 POSId = "",
                 SourceFrom = "9",
                 Amount = sour.Amount,
@@ -310,8 +318,7 @@ namespace WebAPI.Models.BillFunc
                 StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
                 StoreTransId = string.Format("{0}{1}", sour.IDNO, NowTime.ToString("MMddHHmmss")),
                 StoreId = "",
-                Bonus = 0,
-                BonusExpiredate = ""
+                Bonus = 0
             };
             var body = JsonConvert.SerializeObject(escrow);
             TaishinWallet WalletAPI = new TaishinWallet();
@@ -331,14 +338,17 @@ namespace WebAPI.Models.BillFunc
                     MemberID = sour.MemberId,
                     AccountID = output.Result.AccountId,
                     EcStatus = output.Result.Status,
-                    Email = output.Result.Email,
-                    PhoneNo = output.Result.PhoneNo,
+                    Email = sour.Email,
+                    PhoneNo = sour.PhoneNo,
                     Amount = sour.Amount,
                     TotalAmount = output.Result.Amount,
                     CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
                     LastStoreTransId = output.Result.StoreTransId,
                     LastTransId = output.Result.TransId,
-                    LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null)
+                    LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
+                    UseType = sour.UseType,
+                    MonthlyNo = sour.MonthlyNo,
+                    PRGID=sour.PRGID                  
                 };
                 msp.sp_InsEscrowHist(spin, ref errCode);
             }
@@ -400,6 +410,7 @@ namespace WebAPI.Models.BillFunc
                     spin.EscrowStatus = 1;
                     msp.sp_SetSubsBookingMonth(spin, ref errCode);
 
+                    int.TryParse(sour.OrderNo.ToString(), out int OrderNo);
                     var spIn2 = new SPInput_InsEscrowHist()
                     {
                         IDNO = sour.IDNO,
@@ -413,7 +424,10 @@ namespace WebAPI.Models.BillFunc
                         LastStoreTransId = output.Result.StoreTransId,
                         LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
                         LastTransId = output.Result.TransId,
-                        EcStatus = sour.EcStatus
+                        EcStatus = sour.EcStatus,
+                        UseType = 1,
+                        MonthlyNo = OrderNo,
+                        PRGID = sour.PRGID
                     };
                     msp.sp_InsEscrowHist(spIn2, ref errCode);
                 }
@@ -622,7 +636,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -670,7 +686,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -727,7 +745,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -788,7 +808,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -850,7 +872,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -1014,7 +1038,9 @@ namespace WebAPI.Models.BillFunc
                 string messageLevel = "";
                 string messageType = "";
 
-                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+                //20220129 ADD BY ADAM REASON.查詢轉到鏡像
+                ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetMirrorServerInfo(), SPName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
 
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
@@ -1084,7 +1110,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.CreateSubsMonth);
-            string spName = "usp_CreateSubsMonth_U1";
+            string spName = "usp_CreateSubsMonth_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1109,7 +1135,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.UpSubsMonth);
-            string spName = "usp_UpSubsMonth_U1";
+            string spName = "usp_UpSubsMonth_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1136,7 +1162,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
-            string spName = "usp_SetSubsNxt_U1";
+            string spName = "usp_SetSubsNxt_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SetSubsNxt();
@@ -1217,7 +1243,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.ArrearsPaySubs);
-            string spName = "usp_ArrearsPaySubs_U1";
+            string spName = "usp_ArrearsPaySubs_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOutBase = new SPOutput_Base();
@@ -1245,7 +1271,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
             //string spName = new ObjType().GetSPName(ObjType.SPType.InsEscrowHist);
-            string spName = "usp_InsEscrowHist_U1";
+            string spName = "usp_InsEscrowHist_U02";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_InsEscrowHist();
@@ -1590,6 +1616,42 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
+        public Dictionary<string, object> Sql_GetMonData(int monthlyRentID)
+        {
+            Dictionary<string, object> resultDic = new Dictionary<string, object>();
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["IRent"].ConnectionString))
+                {
+
+                    conn.Open();
+
+                    using (SqlCommand cmd = new SqlCommand("SP_MonthlyRentNowPeriod_Q01", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@MonthlyRentID", SqlDbType.Int).Value = monthlyRentID;
+
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            resultDic.Add("NowPeriod", reader["NowPeriod"]);
+                            resultDic.Add("StartDate", reader["StartDate"]);
+                            resultDic.Add("EndDate", reader["EndDate"]);
+                            resultDic.Add("IDNO", reader["IDNO"]);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ;
+            }
+            return resultDic;
+        }
+
         public List<SPOut_GetMonSetInfo> sp_GetMonSetInfo(SPInput_GetMonSetInfo spInput, ref string errCode)
         {
             var re = new List<SPOut_GetMonSetInfo>();
@@ -1774,7 +1836,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
 
-            string spName = "usp_SaveSubsInvno_U1";
+            string spName = "usp_SaveSubsInvno_U01";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SaveInvno();
@@ -1799,7 +1861,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
 
-            string spName = "usp_InsMonthlyInvErr_I01";
+            string spName = "usp_InsMonthlyInvErr_I02";
 
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SaveInvno();
@@ -1820,7 +1882,7 @@ namespace WebAPI.Models.BillFunc
         {
             bool flag = false;
 
-            string spName = "usp_BuyNowAddMonth_Q01";
+            string spName = "usp_BuyNowAddMonth_Q02";
             var lstError = new List<ErrorInfo>();
             var spOut = new SPOut_SaveInvno();
             SQLHelper<SPInput_BuyNowAddMonth_Q01, SPOut_SaveInvno> sqlHelp = new SQLHelper<SPInput_BuyNowAddMonth_Q01, SPOut_SaveInvno>(connetStr);
@@ -1836,6 +1898,42 @@ namespace WebAPI.Models.BillFunc
             return flag;
 
         }
+
+        /// <summary>
+        /// 訂閱制履保檢查
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_MonthlyRentEscrowCheck(IAPI_MonthlyPayInv spInput, ref string errCode)
+        {
+            bool flag = false;
+            var lstError = new List<ErrorInfo>();
+            string spName = "usp_MonthlyRentEscrowCheck_Q01";
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<IAPI_MonthlyPayInv, SPOutput_Base> sqlHelp = new SQLHelper<IAPI_MonthlyPayInv, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+            
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return flag;
+
+        }
+
     }
 
     /// <summary>

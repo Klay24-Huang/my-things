@@ -26,15 +26,17 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 還車起手式
+    /// 還車
     /// </summary>
     public class ReturnCarController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string ClosePolygonOpen = (ConfigurationManager.AppSettings["ClosePolygonOpen"] == null) ? "1" : ConfigurationManager.AppSettings["ClosePolygonOpen"].ToString();
         private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
-        public Dictionary<string, object> DoBookingCancel(Dictionary<string, object> value)
+        public Dictionary<string, object> DoReturnCar(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -114,24 +116,13 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
+            #region 還車前檢查
             //Other rule
             //這邊也可以先做取車機，做完判斷再做訂單的判斷
             //開始做還車前檢查
@@ -142,9 +133,11 @@ namespace WebAPI.Controllers
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    PhoneLat = apiInput.PhoneLat,
+                    PhoneLon = apiInput.PhoneLon
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarStatusByReturn);
+                string SPName = "usp_CheckCarStatusByReturn_V20220119";
                 SPOutput_CheckCarStatusByReturn spOut = new SPOutput_CheckCarStatusByReturn();
                 SQLHelper<SPInput_CheckCarByReturn, SPOutput_CheckCarStatusByReturn> sqlHelp = new SQLHelper<SPInput_CheckCarByReturn, SPOutput_CheckCarStatusByReturn>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
@@ -159,108 +152,227 @@ namespace WebAPI.Controllers
                     
                 }
             }
-
+            #endregion
             #endregion
             #region 車機
             if (flag)
             {
-                #region 汽車
-                if (IsMotor == 0)
+                if (isDebug == "0") // isDebug = 1，不送車機指令
                 {
-                    if (IsCens == 1)
+                    #region 汽車
+                    if (IsMotor == 0)
                     {
-                        #region 興聯車機
-                        CensWebAPI webAPI = new CensWebAPI();
-                        //取最新狀況
-                        WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
-                        flag = webAPI.GetInfo(CID, ref wsOutInfo);
-                        if (false == flag)
+                        if (IsCens == 1)
                         {
-                            errCode = wsOutInfo.ErrorCode;
+                            #region 興聯車機
+                            CensWebAPI webAPI = new CensWebAPI();
+                            //取最新狀況
+                            WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
+                            flag = webAPI.GetInfo(CID, ref wsOutInfo);
+                            if (false == flag)
+                            {
+                                errCode = wsOutInfo.ErrorCode;
+                            }
+                            else
+                            {
+                                if (wsOutInfo.data.CID != CID)
+                                {
+                                    flag = false;
+                                    errCode = "ERR400";
+                                }
+                            }
+                            #region 判斷是否熄火
+                            if (flag)
+                            {
+                                mil = wsOutInfo.data.Milage;
+                                if (wsOutInfo.data.PowOn == 1)
+                                {
+                                    flag = false;
+                                    errCode = "ERR186";
+                                }
+                            }
+                            #endregion
+                            #region 判斷是否關閉電源
+                            if (flag)
+                            {
+                                if (wsOutInfo.data.AccOn == 1)
+                                {
+                                    flag = false;
+                                    errCode = "ERR187";
+                                }
+                            }
+                            #endregion
+                            #region 判斷是否關燈
+                            if (flag)
+                            {
+                                if (wsOutInfo.data.IndoorLight == 1)
+                                {
+                                    flag = false;
+                                    errCode = "ERR439";
+                                }
+                            }
+                            #endregion
+                            #region 判斷是否在據點內
+                            if (flag)
+                            {
+                                Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                                {
+                                    Latitude = Convert.ToDouble(wsOutInfo.data.Lat),
+                                    Longitude = Convert.ToDouble(wsOutInfo.data.Lng)
+                                };
+                                flag = CheckInPolygon(Nowlatlng, StationID);
+                                #region 快樂模式
+                                //if (ClosePolygonOpen == "0")
+                                //{
+                                //    flag = true;
+                                //}
+                                #endregion
+                                if (false == flag)
+                                {
+                                    errCode = "ERR188";
+                                }
+                            }
+                            #endregion
+                            #region 檢查iButton
+                            if (flag && iButton == 1)
+                            {
+                                SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                                {
+                                    OrderNo = tmpOrder,
+                                    Token = Access_Token,
+                                    IDNO = IDNO,
+                                    LogID = LogID
+                                };
+                                string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                                SPOutput_Base SPOutputBase = new SPOutput_Base();
+                                SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                                baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                            }
+                            #endregion
+                            #endregion
                         }
                         else
                         {
-                            if (wsOutInfo.data.CID != CID)
+                            #region 遠傳車機
+                            //取最新狀況, 先送getlast之後從tb捉最近一筆
+                            FETCatAPI FetAPI = new FETCatAPI();
+                            string requestId = "";
+                            string CommandType = "";
+                            OtherService.Enum.MachineCommandType.CommandType CmdType;
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                            WSInput_Base<Params> input = new WSInput_Base<Params>()
                             {
-                                flag = false;
-                                errCode = "ERR400";
-                            }
-                        }
-                        #region 判斷是否熄火
-                        if (flag)
-                        {
-                            mil = wsOutInfo.data.Milage;
-                            if (wsOutInfo.data.PowOn == 1)
-                            {
-                                flag = false;
-                                errCode = "ERR186";
-                            }
-                        }
-                        #endregion
-                        #region 判斷是否關閉電源
-                        if (flag)
-                        {
-                            if (wsOutInfo.data.AccOn == 1)
-                            {
-                                flag = false;
-                                errCode = "ERR187";
-                            }
-                        }
-                        #endregion
-                        #region 判斷是否關燈
-                        if (flag)
-                        {
-                            if (wsOutInfo.data.IndoorLight == 1)
-                            {
-                                flag = false;
-                                errCode = "ERR439";
-                            }
-                        }
-                        #endregion
-                        #region 判斷是否在據點內
-                        if (flag)
-                        {
-                            Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                            {
-                                Latitude = Convert.ToDouble(wsOutInfo.data.Lat),
-                                Longitude = Convert.ToDouble(wsOutInfo.data.Lng)
+                                command = true,
+                                method = CommandType,
+                                requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                _params = new Params()
                             };
-                            flag = CheckInPolygon(Nowlatlng, StationID);
-                            #region 快樂模式
-                            //if (ClosePolygonOpen == "0")
-                            //{
-                            //    flag = true;
-                            //}
+                            requestId = input.requestId;
+                            string method = CommandType;
+                            flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                            if (flag)
+                            {
+                                flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                            }
+                            if (flag)
+                            {
+                                CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
+                                if (info != null)
+                                {
+                                    #region 判斷是否熄火
+                                    if (flag)
+                                    {
+                                        mil = info.Millage;
+                                        if (info.PowerONStatus == 1)
+                                        {
+                                            flag = false;
+                                            errCode = "ERR186";
+                                        }
+                                    }
+                                    #endregion
+                                    #region 判斷是否關閉電源
+                                    if (flag)
+                                    {
+                                        if (info.ACCStatus == 1)
+                                        {
+                                            flag = false;
+                                            errCode = "ERR187";
+                                        }
+                                    }
+                                    #endregion
+                                    #region 判斷是否關燈
+                                    if (flag)
+                                    {
+                                        if (info.IndoorLightStatus == 1)
+                                        {
+                                            flag = false;
+                                            errCode = "ERR439";
+                                        }
+                                    }
+                                    #endregion
+                                    #region 判斷是否在據點內
+                                    if (flag)
+                                    {
+                                        Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
+                                        {
+                                            Latitude = info.Latitude,
+                                            Longitude = info.Longitude
+                                        };
+                                        flag = CheckInPolygon(Nowlatlng, StationID);
+                                        #region 快樂模式
+                                        //if (ClosePolygonOpen == "0")
+                                        //{
+                                        //    flag = true;
+                                        //}
+                                        #endregion
+                                        if (false == flag)
+                                        {
+                                            errCode = "ERR188";
+                                        }
+                                    }
+                                    #endregion
+                                    #region 檢查iButton
+                                    if (flag && iButton == 1)
+                                    {
+                                        SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                                        {
+                                            OrderNo = tmpOrder,
+                                            Token = Access_Token,
+                                            IDNO = IDNO,
+                                            LogID = LogID
+                                        };
+                                        string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
+                                        SPOutput_Base SPOutputBase = new SPOutput_Base();
+                                        SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
+                                        flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
+                                        baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                                    }
+                                    #endregion
+                                    //遠傳車機五秒內相同指令會出問題，必須洗指令
+                                    //if (flag)
+                                    //{
+                                    //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo);
+                                    //    CmdType = OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo;
+                                    //    WSInput_Base<Params> input2 = new WSInput_Base<Params>()
+                                    //    {
+                                    //        command = true,
+                                    //        method = CommandType,
+                                    //        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    //        _params = new Params()
+                                    //    };
+                                    //    FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
+                                    //}
+                                }
+                            }
                             #endregion
-                            if (false == flag)
-                            {
-                                errCode = "ERR188";
-                            }
                         }
-                        #endregion
-                        #region 檢查iButton
-                        if (flag && iButton == 1)
-                        {
-                            SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
-                            {
-                                OrderNo = tmpOrder,
-                                Token = Access_Token,
-                                IDNO = IDNO,
-                                LogID = LogID
-                            };
-                            string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
-                            SPOutput_Base SPOutputBase = new SPOutput_Base();
-                            SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
-                            flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
-                        }
-                        #endregion
-                        #endregion
                     }
+                    #endregion
                     else
                     {
-                        #region 遠傳車機
-                        //取最新狀況, 先送getlast之後從tb捉最近一筆
+                        #region 機車
                         FETCatAPI FetAPI = new FETCatAPI();
                         string requestId = "";
                         string CommandType = "";
@@ -273,6 +385,7 @@ namespace WebAPI.Controllers
                             method = CommandType,
                             requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
                             _params = new Params()
+
                         };
                         requestId = input.requestId;
                         string method = CommandType;
@@ -281,39 +394,30 @@ namespace WebAPI.Controllers
                         {
                             flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                         }
+
                         if (flag)
                         {
-                            CarInfo info = new CarStatusCommon(connetStr).GetInfoByCar(CID);
+                            MotorInfo info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
                             if (info != null)
                             {
                                 #region 判斷是否熄火
                                 if (flag)
                                 {
                                     mil = info.Millage;
-                                    if (info.PowerONStatus == 1)
+                                    if (info.ACCStatus == 1)
                                     {
                                         flag = false;
                                         errCode = "ERR186";
                                     }
                                 }
                                 #endregion
-                                #region 判斷是否關閉電源
+                                #region 判斷是否關閉電池架
                                 if (flag)
                                 {
-                                    if (info.ACCStatus == 1)
+                                    if (info.deviceBat_Cover == 1)
                                     {
                                         flag = false;
-                                        errCode = "ERR187";
-                                    }
-                                }
-                                #endregion
-                                #region 判斷是否關燈
-                                if (flag)
-                                {
-                                    if (info.IndoorLightStatus == 1)
-                                    {
-                                        flag = false;
-                                        errCode = "ERR439";
+                                        errCode = "ERR189";
                                     }
                                 }
                                 #endregion
@@ -327,10 +431,10 @@ namespace WebAPI.Controllers
                                     };
                                     flag = CheckInPolygon(Nowlatlng, StationID);
                                     #region 快樂模式
-                                    //if (ClosePolygonOpen == "0")
-                                    //{
-                                    //    flag = true;
-                                    //}
+                                    if (ClosePolygonOpen == "0")
+                                    {
+                                        flag = true;
+                                    }
                                     #endregion
                                     if (false == flag)
                                     {
@@ -338,28 +442,22 @@ namespace WebAPI.Controllers
                                     }
                                 }
                                 #endregion
-                                #region 檢查iButton
-                                if (flag && iButton == 1)
+                                #region 檢核兩顆電池完整
+                                if (flag)
                                 {
-                                    SPInput_CheckCariButton spInput = new SPInput_CheckCariButton()
+                                    if (info.deviceLBA == -999 || info.deviceRBA == -999)
                                     {
-                                        OrderNo = tmpOrder,
-                                        Token = Access_Token,
-                                        IDNO = IDNO,
-                                        LogID = LogID
-                                    };
-                                    string SPName = new ObjType().GetSPName(ObjType.SPType.CheckCarIButton);
-                                    SPOutput_Base SPOutputBase = new SPOutput_Base();
-                                    SQLHelper<SPInput_CheckCariButton, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_CheckCariButton, SPOutput_Base>(connetStr);
-                                    flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref SPOutputBase, ref lstError);
-                                    baseVerify.checkSQLResult(ref flag, SPOutputBase.Error, SPOutputBase.ErrorCode, ref lstError, ref errCode);
+                                        flag = false;
+                                        errCode = "ERR230";
+                                    }
                                 }
                                 #endregion
-                                //遠傳車機五秒內相同指令會出問題，必須洗指令
+
                                 //if (flag)
                                 //{
-                                //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo);
-                                //    CmdType = OtherService.Enum.MachineCommandType.CommandType.QueryClientCardNo;
+                                //    //遠傳車機五秒內相同指令會出問題，必須洗指令
+                                //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
+                                //    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
                                 //    WSInput_Base<Params> input2 = new WSInput_Base<Params>()
                                 //    {
                                 //        command = true,
@@ -374,108 +472,6 @@ namespace WebAPI.Controllers
                         #endregion
                     }
                 }
-                #endregion
-                else
-                {
-                    #region 機車
-                    FETCatAPI FetAPI = new FETCatAPI();
-                    string requestId = "";
-                    string CommandType = "";
-                    OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    {
-                        command = true,
-                        method = CommandType,
-                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        _params = new Params()
-
-                    };
-                    requestId = input.requestId;
-                    string method = CommandType;
-                    flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
-                    if (flag)
-                    {
-                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    }
-
-                    if (flag)
-                    {
-                        MotorInfo info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
-                        if (info != null)
-                        {
-                            #region 判斷是否熄火
-                            if (flag)
-                            {
-                                mil = info.Millage;
-                                if (info.ACCStatus == 1)
-                                {
-                                    flag = false;
-                                    errCode = "ERR186";
-                                }
-                            }
-                            #endregion
-                            #region 判斷是否關閉電池架
-                            if (flag)
-                            {
-                                if (info.deviceBat_Cover == 1)
-                                {
-                                    flag = false;
-                                    errCode = "ERR189";
-                                }
-                            }
-                            #endregion
-                            #region 判斷是否在據點內
-                            if (flag)
-                            {
-                                Domain.Common.Polygon Nowlatlng = new Domain.Common.Polygon()
-                                {
-                                    Latitude = info.Latitude,
-                                    Longitude = info.Longitude
-                                };
-                                flag = CheckInPolygon(Nowlatlng, StationID);
-                                #region 快樂模式
-                                if (ClosePolygonOpen == "0")
-                                {
-                                    flag = true;
-                                }
-                                #endregion
-                                if (false == flag)
-                                {
-                                    errCode = "ERR188";
-                                }
-                            }
-                            #endregion
-                            #region 檢核兩顆電池完整
-                            if (flag)
-                            {
-                                if (info.deviceLBA == -999 || info.deviceRBA == -999)
-                                {
-                                    flag = false;
-                                    errCode = "ERR230";
-                                }
-                            }
-                            #endregion
-
-                            //if (flag)
-                            //{
-                            //    //遠傳車機五秒內相同指令會出問題，必須洗指令
-                            //    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
-                            //    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
-                            //    WSInput_Base<Params> input2 = new WSInput_Base<Params>()
-                            //    {
-                            //        command = true,
-                            //        method = CommandType,
-                            //        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                            //        _params = new Params()
-                            //    };
-                            //    FetAPI.DoSendCmd(deviceToken, CID, CmdType, input2, LogID);
-                            //}
-                        }
-                    }
-                    #endregion
-                }
             }
             //通過檢查，更新狀態
             if (flag)
@@ -488,7 +484,7 @@ namespace WebAPI.Controllers
                     Token = Access_Token,
                     NowMileage = Convert.ToSingle(mil)
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.ReturnCar);
+                string SPName = "usp_ReturnCar";
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_ReturnCar, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_ReturnCar, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
@@ -506,6 +502,8 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
+        #region 判斷是否在據點內
         private bool CheckInPolygon(Domain.Common.Polygon latlng, string StationID)
         {
             bool flag = false;
@@ -555,5 +553,6 @@ namespace WebAPI.Controllers
             flag = polygonFlag;
             return flag;
         }
+        #endregion
     }
 }

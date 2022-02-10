@@ -1,11 +1,11 @@
 ﻿using Domain.CarMachine;
 using Domain.Common;
 using Domain.SP.Input.Booking;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
+using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Booking;
-using Domain.SP.Output.Common;
+using Domain.SP.Output.Wallet;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
@@ -14,13 +14,14 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -31,12 +32,13 @@ namespace WebAPI.Controllers
     public class BookingStartMotorController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoBookingStartMotor(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -64,6 +66,9 @@ namespace WebAPI.Controllers
             int IsCens = 0;
             double mil = 0;
             List<CardList> lstCardList = new List<CardList>();
+            bool CreditFlag = true;     // 信用卡綁卡
+            bool WalletFlag = false;    // 綁定錢包
+            int WalletAmout = 0;        // 錢包餘額
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -113,47 +118,87 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
-            }
-            #region 檢查欠費
-            if (flag)
-            {
-                int TAMT = 0;
-                WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
-                flag = contract.CheckNPR330(IDNO, LogID, ref TAMT);
-                if (TAMT > 0)
-                {
-                    flag = false;
-                    errCode = "ERR234";
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
-            //取車判斷
+            #region 檢查信用卡是否綁卡、錢包是否開通
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.BeforeBookingStart);
+                #region 檢查信用卡是否綁卡
+                DataSet ds = Common.getBindingList(IDNO, ref flag, ref errCode, ref errMsg);
+                if (ds.Tables.Count == 0)
+                {
+                    CreditFlag = false;
+                }
+                else if (ds.Tables[0].Rows.Count == 0)
+                {
+                    CreditFlag = false;
+                }
+                ds.Dispose();
+                #endregion
+
+                #region 檢查錢包是否開通
+                string SPName = "usp_CreditAndWalletQuery_Q01";
+                SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
+                {
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
+                };
+                SPOut_CreditAndWalletQuery spOut = new SPOut_CreditAndWalletQuery();
+                SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                if (flag)
+                {
+                    WalletFlag = spOut.WalletStatus == "2" ? true : false;
+                    WalletAmout = spOut.WalletAmout;
+                }
+                #endregion
+
+                if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
+                {
+                    flag = false;
+                    errCode = "ERR290";
+                }
+                else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包
+                {
+                    if (WalletAmout < 50)   // 錢包餘額 < 50元 不給取車
+                    {
+                        flag = false;
+                        errCode = "ERR291";
+                    }
+                }
+            }
+            #region 檢查欠費 20220105路邊欠費查詢取消
+            //if (flag)
+            //{
+            //    int TAMT = 0;
+            //    WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
+            //    flag = contract.CheckNPR330(IDNO, LogID, ref TAMT);
+            //    if (TAMT > 0)
+            //    {
+            //        flag = false;
+            //        errCode = "ERR234";
+            //    }
+            //}
+            #endregion
+            #region 取車
+            if (flag)
+            {
+                string CheckTokenName = "usp_BeforeBookingStart_V20220119";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    PhoneLon = apiInput.PhoneLon,
+                    PhoneLat = apiInput.PhoneLat
                 };
                 SPOutput_BeforeBookingStart spOut = new SPOutput_BeforeBookingStart();
                 SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart> sqlHelp = new SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart>(connetStr);
@@ -171,58 +216,68 @@ namespace WebAPI.Controllers
                 //開始對車機做動作
                 if (flag)
                 {
-                    #region 取最新狀況, 先送getlast之後從tb捉最近一筆
                     FETCatAPI FetAPI = new FETCatAPI();
                     string requestId = "";
                     string CommandType = "";
                     OtherService.Enum.MachineCommandType.CommandType CmdType;
-                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
-                    CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
-                    WSInput_Base<Params> input = new WSInput_Base<Params>()
-                    {
-                        command = true,
-                        method = CommandType,
-                        requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                        _params = new Params()
-                    };
-                    requestId = input.requestId;
-                    string method = CommandType;
-                    //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
-                    //flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                    //if (flag)
-                    //{
-                    //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                    //}
+                    string method = "";
 
-                    if (flag)
+                    #region ReportNow
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
-                        info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
-                        if (info != null)
+                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
+                        CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
+                        WSInput_Base<Params> input = new WSInput_Base<Params>()
                         {
-                            mil = info.Millage;
+                            command = true,
+                            method = CommandType,
+                            requestId = string.Format("{0}_{1}", spOut.CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                            _params = new Params()
+                        };
+                        requestId = input.requestId;
+                        method = CommandType;
+                        //20210325 ADD BY ADAM REASON.車機指令優化取消REPORT NOW
+                        //flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                        //if (flag)
+                        //{
+                        //    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                        //}
+                        if (flag)
+                        {
+                            info = new CarStatusCommon(connetStr).GetInfoByMotor(CID);
+                            if (info != null)
+                            {
+                                mil = info.Millage;
+                            }
                         }
                     }
                     #endregion
                     #region 執行sp合約
-                    string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
-                    Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        OrderNo = tmpOrder,
-                        Token = Access_Token,
-                        NowMileage = Convert.ToSingle(mil),
-                        StopTime = "",
-                        Insurance = 0
-                    };
-                    SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
-                    SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
-                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
-                    #endregion
                     if (flag)
                     {
-                        string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
+                        //20211012 ADD BY ADAM REASON.增加手機定位點
+                        string BookingStartName = "usp_BookingStart";
+                        Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
+                        {
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            OrderNo = tmpOrder,
+                            Token = Access_Token,
+                            NowMileage = Convert.ToSingle(mil),
+                            StopTime = "",
+                            Insurance = 0
+                            //20211012 ADD BY ADAM REASON.增加手機定位點
+                            //PhoneLat = apiInput.PhoneLat,
+                            //PhoneLon = apiInput.PhoneLon
+                        };
+                        SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
+                        SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
+                        flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
+                    }
+                    if (flag)
+                    {
+                        string BookingControlName = "usp_BookingControl";
                         SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                         {
                             IDNO = IDNO,
@@ -235,90 +290,76 @@ namespace WebAPI.Controllers
                         flag = SQLBookingControlHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingControlOutput, ref lstError);
                         baseVerify.checkSQLResult(ref flag, ref SPBookingControlOutput, ref lstError, ref errCode);
                     }
+                    #endregion
                     //20210325 ADD BY ADAM REASON.車機指令優化
-                    #region 開啟電源 
-                    if (flag)
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
-                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
-                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
-                        input = new WSInput_Base<Params>()
-                        {
-                            command = true,
-                            method = CommandType,
-                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                            _params = new Params()
-
-                        };
-                        method = CommandType;
-                        requestId = input.requestId;
-                        flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, input, LogID);
+                        #region 開啟電源
                         if (flag)
                         {
-                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
-                        }
-                    }
-                    #endregion
-
-                    #region 20210514 開啟電源後須紀錄電量
-                    if (flag)
-                    {
-                        string SPInsMotorBattLogName = new ObjType().GetSPName(ObjType.SPType.InsMotorBattLog);
-                        SPInput_InsMotorBattLog SPInsMotorBattLogInput = new SPInput_InsMotorBattLog()
-                        {
-                            OrderNo = tmpOrder,
-                            EventCD = "1",  //取車電量
-                            LogID = LogID
-                        };
-                        SPOutput_Base SPInsMotorBattLogOutput = new SPOutput_Base();
-                        SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base> SQLInsMotorBattLogHelp = new SQLHelper<SPInput_InsMotorBattLog, SPOutput_Base>(connetStr);
-                        flag = SQLInsMotorBattLogHelp.ExecuteSPNonQuery(SPInsMotorBattLogName, SPInsMotorBattLogInput, ref SPInsMotorBattLogOutput, ref lstError);
-                        baseVerify.checkSQLResult(ref flag, ref SPInsMotorBattLogOutput, ref lstError, ref errCode);
-                    }
-                    #endregion
-
-                    #region 設定租約
-                    if (flag)
-                    {
-                        //租約再下租約應該沒關係
-                        //if (info.extDeviceStatus1 == 0)
-                        {
-                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent);
-                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent;
-                            WSInput_Base<BLECode> RentInput = new WSInput_Base<BLECode>()
+                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn);
+                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SwitchPowerOn;
+                            WSInput_Base<Params> PowerOnInput = new WSInput_Base<Params>()
                             {
                                 command = true,
                                 method = CommandType,
                                 requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                _params = new BLECode()
+                                _params = new Params()
                             };
-                            RentInput._params.BLE_Code = IDNO.Substring(0, 9);
-                            requestId = RentInput.requestId;
                             method = CommandType;
-                            flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, RentInput, LogID);
+                            requestId = PowerOnInput.requestId;
+                            flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, PowerOnInput, LogID);
                             if (flag)
                             {
                                 flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
                             }
-
-                            if (flag)
+                        }
+                        #endregion
+                        #region 設定租約
+                        if (flag)
+                        {
+                            //租約再下租約應該沒關係
+                            //if (info.extDeviceStatus1 == 0)
                             {
-                                Thread.Sleep(1000);
-                                //查ble
-                                BLEInfo ble = new CarCMDRepository(connetStr).GetBLEInfo(CID);
-                                if (ble != null)
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetMotorcycleRent;
+                                WSInput_Base<BLECode> RentInput = new WSInput_Base<BLECode>()
                                 {
-                                    outputApi.BLEDEVICEID = ble.BLE_Device;
-                                    outputApi.BLEDEVICEPWD = ble.BLE_PWD;
+                                    command = true,
+                                    method = CommandType,
+                                    requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                    _params = new BLECode()
+                                };
+                                RentInput._params.BLE_Code = IDNO.Substring(0, 9);
+                                requestId = RentInput.requestId;
+                                method = CommandType;
+                                flag = FetAPI.DoSendCmd(deviceToken, CID, CmdType, RentInput, LogID);
+                                if (flag)
+                                {
+                                    flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                }
+
+                                if (flag)
+                                {
+                                    Thread.Sleep(1000);
+                                    //查ble
+                                    BLEInfo ble = new CarCMDRepository(connetStr).GetBLEInfo(CID);
+                                    if (ble != null)
+                                    {
+                                        outputApi.BLEDEVICEID = ble.BLE_Device;
+                                        outputApi.BLEDEVICEPWD = ble.BLE_PWD;
+                                    }
+
                                 }
                             }
                         }
+                        
                     }
                     #endregion
-
                     #region 20210514 開啟電源後須紀錄電量 20210521 改為設定完租約再記錄電量
                     if (flag)
                     {
-                        string SPInsMotorBattLogName = new ObjType().GetSPName(ObjType.SPType.InsMotorBattLog);
+                        string SPInsMotorBattLogName = "usp_InsMotorBattLog";
                         SPInput_InsMotorBattLog SPInsMotorBattLogInput = new SPInput_InsMotorBattLog()
                         {
                             OrderNo = tmpOrder,
@@ -333,6 +374,7 @@ namespace WebAPI.Controllers
                     #endregion
                 }
             }
+            #endregion
             #region 寫取車照片到azure
             if (flag)
             {
@@ -357,9 +399,9 @@ namespace WebAPI.Controllers
                     }
                 }
             }
+                #endregion
             #endregion
             #endregion
-
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {

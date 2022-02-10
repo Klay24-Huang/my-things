@@ -18,6 +18,8 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using NLog;
+using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -28,6 +30,10 @@ namespace WebAPI.Controllers
     {
 
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        //補上hotaipay CONFIG
+        private static ConfigManager configManager = new ConfigManager("hotaipayment");
+        private string merID = configManager.GetKey("CTBCMerID");
+
         /// <summary>
         /// 【後台】短租補傳
         /// </summary>
@@ -126,6 +132,16 @@ namespace WebAPI.Controllers
                 {
                     retryMode = spOut.ReturnMode;
                 }
+                else
+                {
+                    //如果查不出來的情況再用INPUT的參數強制指定
+                    retryMode = apiInput.retryMode > 0 ? apiInput.retryMode : 0;
+                    if (retryMode > 0)
+                    {
+                        flag = true;
+                        errCode = "000000";
+                    }
+                }
 
                 if (flag)
                 {
@@ -154,7 +170,7 @@ namespace WebAPI.Controllers
                                 ODCUSTNM = obj.ODCUSTNM,
                                 ODDATE = obj.ODDATE,
                                 ORDAMT = obj.ORDAMT.ToString(),
-                                ORDNO = string.Format("H{0}", obj.OrderNo.ToString().PadLeft(7, '0')),
+                                ORDNO = string.Format("H{0}", obj.OrderNo.ToString().PadLeft(8, '0')),
                                 OUTBRNH = obj.OUTBRNH,
                                 PAYAMT = obj.PAYAMT.ToString(),
                                 PROCD = obj.PROCD,
@@ -225,7 +241,7 @@ namespace WebAPI.Controllers
                                 INVADDR = obj.INVADDR,
                                 INVKIND = obj.INVKIND.ToString(),
                                 INVTITLE = obj.INVTITLE,
-                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(7, '0')),
+                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(8, '0')),
                                 LOSSAMT2 = obj.LOSSAMT2.ToString(),
                                 NOCAMT = obj.NOCAMT.ToString(),
                                 NPOBAN = obj.NPOBAN,
@@ -308,7 +324,7 @@ namespace WebAPI.Controllers
                                 INVADDR = obj.INVADDR,
                                 INVKIND = obj.INVKIND.ToString(),
                                 INVTITLE = obj.INVTITLE,
-                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(7, '0')),
+                                IRENTORDNO = string.Format("H{0}", obj.IRENTORDNO.ToString().PadLeft(8, '0')),
                                 LOSSAMT2 = obj.LOSSAMT2.ToString(),
                                 NOCAMT = obj.NOCAMT.ToString(),
                                 NPOBAN = obj.NPOBAN,
@@ -341,37 +357,78 @@ namespace WebAPI.Controllers
 
                             if (obj.PAYAMT > 0)
                             {
-                                if (obj.eTag > 0)
+                                input.tbPaymentDetail = new PaymentDetail[obj.eTag > 0 ? ReturnControlList.Count+1: ReturnControlList.Count];
+
+                                for (int z = 0; z < ReturnControlList.Count; z++)
                                 {
-                                    input.tbPaymentDetail = new PaymentDetail[2];
-                                    input.tbPaymentDetail[0] = new PaymentDetail()
+                                    //最後一筆處理ETAG
+                                    if (obj.eTag > 0 && z == ReturnControlList.Count -1)
                                     {
-                                        PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                        PAYTYPE = "1",
-                                        PAYMENTTYPE = "1",
-                                        PAYMEMO = "租金",
-                                        PORDNO = obj.REMARK
-                                    };
-                                    input.tbPaymentDetail[1] = new PaymentDetail()
+                                        //先確認當下是否能處理
+                                        if (ReturnControlList[z].CloseAmout > obj.eTag)
+                                        {
+                                            //input.tbPaymentDetail = new PaymentDetail[2];
+                                            input.tbPaymentDetail[z] = new PaymentDetail()
+                                            {
+                                                //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                                PAYAMT = (ReturnControlList[z].CloseAmout - obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                                PAYTYPE = "1",
+                                                PAYMENTTYPE = "1",
+                                                PAYMEMO = "租金",
+                                                //PORDNO = obj.REMARK
+                                                PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                                OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
+                                            };
+                                        }
+                                        else
+                                        {
+                                            //遇到ETAG > 租金，先寫一筆空的進去
+                                            input.tbPaymentDetail[z] = new PaymentDetail()
+                                            {
+                                                PAYAMT = "0",
+                                                PAYTYPE = "",
+                                                PAYMENTTYPE = "",
+                                                PAYMEMO = "",
+                                                PORDNO = ""
+                                            };
+                                            int k = z;
+                                            while(k >= 0)
+                                            {
+                                                if (ReturnControlList[k].CloseAmout > obj.eTag)
+                                                {
+                                                    input.tbPaymentDetail[k].PAYAMT = (ReturnControlList[k].CloseAmout - obj.eTag).ToString();
+                                                    break;
+                                                }
+                                                k--;
+                                            }
+                                        }
+                                        //input.tbPaymentDetail[1] = new PaymentDetail()
+                                        input.tbPaymentDetail[z+1] = new PaymentDetail()
+                                        {
+                                            PAYAMT = (obj.eTag).ToString(),
+                                            PAYTYPE = "2",
+                                            PAYMENTTYPE = "1",
+                                            PAYMEMO = "eTag",
+                                            //PORDNO = obj.REMARK
+                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
+                                        };
+                                    }
+                                    else
                                     {
-                                        PAYAMT = (obj.eTag).ToString(),
-                                        PAYTYPE = "2",
-                                        PAYMENTTYPE = "1",
-                                        PAYMEMO = "eTag",
-                                        PORDNO = obj.REMARK
-                                    };
-                                }
-                                else
-                                {
-                                    input.tbPaymentDetail = new PaymentDetail[1];
-                                    input.tbPaymentDetail[0] = new PaymentDetail()
-                                    {
-                                        PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                        PAYTYPE = "1",
-                                        PAYMENTTYPE = "1",
-                                        PAYMEMO = "租金",
-                                        PORDNO = obj.REMARK
-                                    };
+                                        //input.tbPaymentDetail = new PaymentDetail[1];
+                                        //input.tbPaymentDetail[0] = new PaymentDetail()
+                                        input.tbPaymentDetail[z] = new PaymentDetail()
+                                        {
+                                            //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYAMT = ReturnControlList[z].CloseAmout.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYTYPE = "1",
+                                            PAYMENTTYPE = "1",
+                                            PAYMEMO = "租金",
+                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
+                                        };
+                                    }
                                 }
                             }
                             else
@@ -384,9 +441,49 @@ namespace WebAPI.Controllers
                                     PAYTYPE = "",
                                     PAYMENTTYPE = "",
                                     PAYMEMO = "",
-                                    PORDNO = ""
+                                    PORDNO = "",
+                                    OPERATOR = 0        //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                 };
                             }
+
+                            #region 20211221 安心服務轉短租
+                            //增加安心服務查詢
+                            string spName3 = "usp_BE_GetReturnCarControl_Q02";
+                            SPOutput_Base spOut3 = new SPOutput_Base();
+                            List<BE_SavePassenger> SavePassengerList = new List<BE_SavePassenger>();
+                            DataSet ds2 = new DataSet();
+                            SQLHelper<SPInput_BE_GetReturnCarControl, SPOutput_Base> sqlHelp3 = new SQLHelper<SPInput_BE_GetReturnCarControl, SPOutput_Base>(connetStr);
+                            flag = sqlHelp3.ExeuteSP(spName3, spInput2, ref spOut3, ref SavePassengerList, ref ds2, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, spOut3.Error, spOut3.ErrorCode, ref lstError, ref errCode);
+
+                            if (flag && SavePassengerList.Count>0)
+                            {
+                                input.tbSavePassenger = new SavePassenger[SavePassengerList.Count];
+
+                                for (int z = 0; z < SavePassengerList.Count; z++)
+                                {
+                                    input.tbSavePassenger[z] = new SavePassenger()
+                                    {
+                                        MEMIDNO = SavePassengerList[z].MEMIDNO,
+                                        MEMCNAME = SavePassengerList[z].MEMCNAME,
+                                        InsurancePerHours = SavePassengerList[z].InsurancePerHours
+                                    };
+                                }
+                            }
+                            else
+                            {
+                                input.tbSavePassenger = new SavePassenger[1];
+                                input.tbSavePassenger[0] = new SavePassenger()
+                                {
+                                    MEMIDNO = "",
+                                    MEMCNAME = "",
+                                    InsurancePerHours = 0
+                                };
+                            }
+                            #endregion
+
+                            //logger.Info(JsonConvert.SerializeObject(input));
+
                             WebAPIOutput_NPR130Save output = new WebAPIOutput_NPR130Save();
                             flag = WebAPI.NPR130Save(input, ref output);
                             if (flag)
@@ -485,6 +582,19 @@ namespace WebAPI.Controllers
             new CommonFunc().checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             return flag;
 
+        }
+
+        private int GetOperator(string MerchantID)
+        {
+            //目前 台新0 中信1
+            int Result = 0;
+            
+            if (MerchantID == merID)
+            {
+                Result = 1;
+            }
+
+            return Result;
         }
 
     }

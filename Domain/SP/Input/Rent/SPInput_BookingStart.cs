@@ -37,5 +37,14 @@ namespace Domain.SP.Input.Rent
         /// 加購安心服務(0:否;1:有)
         /// </summary>
         public int Insurance { get; set; }
+
+        /// <summary>
+        /// 手機的定位(經度) 20211012 ADD BY ADAM
+        /// </summary>
+        public double PhoneLon { get; set; }
+        /// <summary>
+        /// 手機的定位(緯度) 20211012 ADD BY ADAM
+        /// </summary>
+        public double PhoneLat { get; set; }
     }
 }

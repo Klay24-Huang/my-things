@@ -16,6 +16,7 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
@@ -23,23 +24,33 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Utils;
 using WebCommon;
 using Domain.WebAPI.output.HiEasyRentAPI;
+using Domain.SP.Output.Bill;
+using System.Linq;
+using WebAPI.Service;
+using WebAPI.Models.ComboFunc;
+using Domain.SP.Input.Notification;
+using WebAPI.Models.Param.Bill.Input;
+using WebAPI.Models.Param.Bill.Output;
+using WebAPI.Models.BillFunc;
 
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 取車
+    /// 汽車取車
     /// </summary>
     public class BookingStartController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoBookingStart(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -66,10 +77,15 @@ namespace WebAPI.Controllers
             int IsMotor = 0;
             int IsCens = 0;
             double mil = 0;
+            string error = "";
             DateTime StopTime;
             List<CardList> lstCardList = new List<CardList>();
+            OFN_CreditAuthResult AuthOutput = new OFN_CreditAuthResult();
+            SPOutput_BeforeBookingStart spOut = new SPOutput_BeforeBookingStart();
+
             #endregion
             #region 防呆
+
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -134,26 +150,13 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
             #region 檢查欠費
             if (flag)
             {
@@ -170,15 +173,16 @@ namespace WebAPI.Controllers
             //取車判斷
             if (flag)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.BeforeBookingStart);
+                string CheckTokenName = "usp_BeforeBookingStart_V20220119";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    PhoneLat = apiInput.PhoneLat,
+                    PhoneLon = apiInput.PhoneLon
                 };
-                SPOutput_BeforeBookingStart spOut = new SPOutput_BeforeBookingStart();
                 SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart> sqlHelp = new SQLHelper<SPInput_BeforeBookingStart, SPOutput_BeforeBookingStart>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spBeforeStart, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
@@ -191,14 +195,147 @@ namespace WebAPI.Controllers
                     List<ErrorInfo> lstCarError = new List<ErrorInfo>();
                     lstCardList = new CarCardCommonRepository(connetStr).GetCardListByCustom(IDNO, ref lstCarError);
                 }
-                //開始對車機做動作
-                if (flag)
+
+                #region 預授權機制 2021/12/16 因企劃拿掉預授權
+                //if (flag)
+                //{
+
+                //    int preAuthAmt = 0;
+                //    CommonService commonService = new CommonService();
+                //    SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(tmpOrder);
+                //    string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
+                //    //1.路邊 2.預授權不處理專案(長租客服月結E077)
+                //    if (orderData != null && orderData.ProjType == 3 && !notHandle.Contains(orderData.ProjID) && orderData.DoPreAuth == 1)
+                //    {
+                //        var trace = new TraceCom();
+                //        trace.traceAdd("apiIn", value);
+
+                //        #region 計算預授權金
+                //        DateTime.TryParse(apiInput.ED, out StopTime);
+                //        //有調整還車時間
+                //        if (DateTime.Compare(StopTime, orderData.ED) > 0)
+                //        {
+                //            EstimateData estimateData = new EstimateData()
+                //            {
+                //                ProjID = orderData.ProjID,
+                //                SD = orderData.SD,
+                //                ED = StopTime,
+                //                CarNo = orderData.CarNo,
+                //                CarTypeGroupCode = orderData.CarTypeGroupCode,
+                //                WeekdayPrice = orderData.PRICE,
+                //                HoildayPrice = orderData.PRICE_H,
+                //                Insurance = apiInput.Insurance,
+                //                InsurancePerHours = orderData.InsurancePerHours,
+                //                ProjType = orderData.ProjType
+                //            };
+                //            EstimateDetail estimateDetail;
+                //            commonService.EstimatePreAuthAmt(estimateData, out estimateDetail);
+                //            preAuthAmt = estimateDetail.estimateAmt - orderData.PreAuthAmt;
+
+                //            trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt });
+                //            trace.FlowList.Add("計算預授權金");
+                //        }
+                //        #endregion
+                //        #region 後續流程
+                //        if (preAuthAmt > 0)
+                //        {
+                //            CreditAuthComm creditAuthComm = new CreditAuthComm();
+                //            var AuthInput = new IFN_CreditAuthRequest
+                //            {
+                //                CheckoutMode = 4,
+                //                OrderNo = tmpOrder,
+                //                IDNO = IDNO,
+                //                Amount = preAuthAmt,
+                //                PayType = 0,
+                //                autoClose = 0,
+                //                funName = funName,
+                //                insUser = funName,
+                //                AuthType = 3
+                //            };
+                //            try
+                //            {
+                //                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                //            }
+                //            catch (Exception ex)
+                //            {
+                //                flag = false;
+                //                trace.BaseMsg = ex.Message;
+                //            }
+
+                //            trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
+                //            trace.FlowList.Add("刷卡授權");
+                //            if (!flag)
+                //            {
+                //                errCode = "ERR603";
+                //            }
+
+                //            #region 授權成功動作
+                //            if (flag)
+                //            {
+                //                #region 寫入預授權
+
+                //                SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
+                //                {
+                //                    IDNO = IDNO,
+                //                    LogID = LogID,
+                //                    Token = Access_Token,
+                //                    AuthType = 3,
+                //                    CardType = 1,
+                //                    final_price = preAuthAmt,
+                //                    OrderNo = tmpOrder,
+                //                    PRGName = funName,
+                //                    MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
+                //                    BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
+                //                    Status = 2
+                //                };
+                //                commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
+                //                trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
+                //                trace.FlowList.Add("寫入預授權");
+                //                #endregion
+                //                #region 新增推播訊息
+                //                string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0);
+                //                SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
+                //                {
+                //                    OrderNo = Convert.ToInt32(tmpOrder),
+                //                    IDNO = IDNO,
+                //                    LogID = LogID,
+                //                    NType = 19,
+                //                    STime = DateTime.Now.AddSeconds(10),
+                //                    Title = "取授權成功通知",
+                //                    imageurl = "",
+                //                    url = "",
+                //                    Message = $"已於{DateTime.Now.ToString("MM/dd HH:mm")}以末四碼{cardNo}信用卡延長預計還車時間取授權成功，金額 {preAuthAmt}，謝謝!"
+
+                //                };
+                //                commonService.sp_InsPersonNotification(input_Notification, ref error);
+                //                trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
+                //                trace.FlowList.Add("新增推播訊息");
+                //                #endregion
+                //            }
+                //            #endregion
+                //        }
+                //        #endregion
+
+
+                //        trace.traceAdd("TraceFinal", new { errCode, errMsg });
+                //        trace.OrderNo = tmpOrder;
+                //        var carRepo = new CarRentRepo();
+                //        carRepo.AddTraceLog(50, funName, trace, flag);
+                //    }
+                //}
+                #endregion
+            }
+
+            //開始對車機做動作
+            if (flag)
+            {
+                if (IsCens == 1)
                 {
-                    if (IsCens == 1)
+                    #region 興聯
+                    CensWebAPI webAPI = new CensWebAPI();
+                    #region 取最新狀況
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
-                        #region 興聯
-                        CensWebAPI webAPI = new CensWebAPI();
-                        //取最新狀況
                         WSOutput_GetInfo wsOutInfo = new WSOutput_GetInfo();
                         flag = webAPI.GetInfo(CID, ref wsOutInfo);
                         if (false == flag)
@@ -227,41 +364,52 @@ namespace WebAPI.Controllers
                                 errCode = "ERR468";
                             }
                         }
-                        
-                        //執行sp合約
-                        if (flag)
+                    }
+                    #endregion
+
+                    #region 執行sp合約
+                    if (flag)
+                    {
+                        //20211012 ADD BY ADAM REASON.增加手機定位點
+                        string BookingStartName = "usp_BookingStart";
+                        Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                         {
-                            string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
-                            Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
-                            {
-                                IDNO = IDNO,
-                                LogID = LogID,
-                                OrderNo = tmpOrder,
-                                Token = Access_Token,
-                                NowMileage = Convert.ToSingle(mil),
-                                StopTime = (string.IsNullOrWhiteSpace(apiInput.ED)) ? "" : apiInput.ED,
-                                Insurance = apiInput.Insurance
-                            };
-                            SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
-                            SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
-                            flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
-                        }
-                        if (flag)
+                            IDNO = IDNO,
+                            LogID = LogID,
+                            OrderNo = tmpOrder,
+                            Token = Access_Token,
+                            NowMileage = Convert.ToSingle(mil),
+                            StopTime = (string.IsNullOrWhiteSpace(apiInput.ED)) ? "" : apiInput.ED,
+                            Insurance = apiInput.Insurance
+                            //20211012 ADD BY ADAM REASON.增加手機定位點
+                            //PhoneLat = apiInput.PhoneLat,
+                            //PhoneLon = apiInput.PhoneLon
+                        };
+                        SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
+                        SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
+                        flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
+                    }
+                    if (flag)
+                    {
+                        string BookingControlName = "usp_BookingControl";
+                        SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                         {
-                            string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
-                            SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
-                            {
-                                IDNO = IDNO,
-                                OrderNo = tmpOrder,
-                                Token = Access_Token,
-                                LogID = LogID
-                            };
-                            SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
-                            SQLHelper<SPInput_BookingControl, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BookingControl, SPOutput_Base>(connetStr);
-                            flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingStartOutput, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
-                        }
+                            IDNO = IDNO,
+                            OrderNo = tmpOrder,
+                            Token = Access_Token,
+                            LogID = LogID
+                        };
+                        SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
+                        SQLHelper<SPInput_BookingControl, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BookingControl, SPOutput_Base>(connetStr);
+                        flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingStartOutput, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
+                    }
+                    #endregion
+
+                    #region 車機指令(設定租約、解防盜、寫入顧客卡)
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
+                    {
                         if (flag && webAPI.IsSupportCombineCmd(CID))
                         {
                             WSInput_CombineCmdGetCar wsInput = new WSInput_CombineCmdGetCar()
@@ -387,16 +535,23 @@ namespace WebAPI.Controllers
                             //    }
                             //}
                         }
-                        #endregion
                     }
-                    else
+                    #endregion
+                    #endregion
+                }
+                else
+                {
+                    #region 遠傳
+                    //取最新狀況, 先送getlast之後從tb捉最近一筆
+                    FETCatAPI FetAPI = new FETCatAPI();
+                    string requestId = "";
+                    string CommandType = "";
+                    OtherService.Enum.MachineCommandType.CommandType CmdType;
+                    string method = "";
+
+                    #region ReportNow
+                    if (isDebug == "0") // isDebug = 1，不送車機指令
                     {
-                        #region 遠傳
-                        //取最新狀況, 先送getlast之後從tb捉最近一筆
-                        FETCatAPI FetAPI = new FETCatAPI();
-                        string requestId = "";
-                        string CommandType = "";
-                        OtherService.Enum.MachineCommandType.CommandType CmdType;
                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.ReportNow);
                         CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
                         WSInput_Base<Params> input = new WSInput_Base<Params>()
@@ -407,7 +562,7 @@ namespace WebAPI.Controllers
                             _params = new Params()
                         };
                         requestId = input.requestId;
-                        string method = CommandType;
+                        method = CommandType;
                         flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
                         if (flag)
                         {
@@ -421,42 +576,51 @@ namespace WebAPI.Controllers
                                 mil = info.Millage;
                             }
                         }
+                    }
+                    #endregion
+
+                    if (flag)
+                    {
+                        #region 執行sp合約
+                        //執行sp合約
                         if (flag)
                         {
-                            //執行sp合約
-                            if (flag)
+                            string BookingStartName = "usp_BookingStart";
+                            Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                             {
-                                string BookingStartName = new ObjType().GetSPName(ObjType.SPType.BookingStart);
-                                Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
-                                {
-                                    IDNO = IDNO,
-                                    LogID = LogID,
-                                    OrderNo = tmpOrder,
-                                    Token = Access_Token,
-                                    NowMileage = Convert.ToSingle(mil),
-                                    StopTime = (string.IsNullOrWhiteSpace(apiInput.ED)) ? "" : apiInput.ED,
-                                    Insurance = apiInput.Insurance
-                                };
-                                SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
-                                SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
-                                flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
-                            }
-                            if (flag)
+                                IDNO = IDNO,
+                                LogID = LogID,
+                                OrderNo = tmpOrder,
+                                Token = Access_Token,
+                                NowMileage = Convert.ToSingle(mil),
+                                StopTime = (string.IsNullOrWhiteSpace(apiInput.ED)) ? "" : apiInput.ED,
+                                Insurance = apiInput.Insurance
+                            };
+                            SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
+                            SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<Domain.SP.Input.Rent.SPInput_BookingStart, SPOutput_Base>(connetStr);
+                            flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingStartName, SPBookingStartInput, ref SPBookingStartOutput, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
+                        }
+                        if (flag)
+                        {
+                            string BookingControlName = "usp_BookingControl";
+                            SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
                             {
-                                string BookingControlName = new ObjType().GetSPName(ObjType.SPType.BookingControl);
-                                SPInput_BookingControl SPBookingControlInput = new SPInput_BookingControl()
-                                {
-                                    IDNO = IDNO,
-                                    OrderNo = tmpOrder,
-                                    Token = Access_Token,
-                                    LogID = LogID
-                                };
-                                SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
-                                SQLHelper<SPInput_BookingControl, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BookingControl, SPOutput_Base>(connetStr);
-                                flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingStartOutput, ref lstError);
-                                baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
-                            }
+                                IDNO = IDNO,
+                                OrderNo = tmpOrder,
+                                Token = Access_Token,
+                                LogID = LogID
+                            };
+                            SPOutput_Base SPBookingStartOutput = new SPOutput_Base();
+                            SQLHelper<SPInput_BookingControl, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BookingControl, SPOutput_Base>(connetStr);
+                            flag = SQLBookingStartHelp.ExecuteSPNonQuery(BookingControlName, SPBookingControlInput, ref SPBookingStartOutput, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, ref SPBookingStartOutput, ref lstError, ref errCode);
+                        }
+                        #endregion
+
+                        #region 車機指令(設定租約、解防盜、寫入顧客卡)
+                        if (isDebug == "0") // isDebug = 1，不送車機指令
+                        {
                             if (flag && FetAPI.IsSupportCombineCmd(CID))
                             {
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.VehicleRentCombo);
@@ -597,39 +761,37 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
-                }
-                //送短租, 先pendding
-                if (flag)
-                {
-                    //預約的資料，似乎走排程比較好
-                    //由另外的JOB來呼叫執行，在BookingStart存檔那邊去處理狀態
+                    #endregion
                 }
             }
-            #endregion
             #region 寫取車照片到azure
             if (flag)
             {
-                OtherRepository otherRepository = new OtherRepository(connetStr);
-                List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
-                int PICLen = lstCarPIC.Count;
-                for (int i = 0; i < PICLen; i++)
+                if (isDebug == "0") // isDebug = 1，不寫azure
                 {
-                    try
+                    OtherRepository otherRepository = new OtherRepository(connetStr);
+                    List<CarPIC> lstCarPIC = otherRepository.GetCarPIC(tmpOrder, 0);
+                    int PICLen = lstCarPIC.Count;
+                    for (int i = 0; i < PICLen; i++)
                     {
-                        string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
-
-                        flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
-                        if (flag)
+                        try
                         {
-                            bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                            string FileName = string.Format("{0}_{1}_{2}.png", apiInput.OrderNo, (lstCarPIC[i].ImageType == 5) ? "Sign" : "PIC" + lstCarPIC[i].ImageType.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"));
+
+                            flag = new AzureStorageHandle().UploadFileToAzureStorage(lstCarPIC[i].Image, FileName, "carpic");
+                            if (flag)
+                            {
+                                bool DelFlag = otherRepository.HandleTempCarPIC(tmpOrder, 0, lstCarPIC[i].ImageType, FileName); //更新為azure的檔名
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        flag = true; //先bypass，之後補傳再刪
+                        catch (Exception ex)
+                        {
+                            flag = true; //先bypass，之後補傳再刪
+                        }
                     }
                 }
             }
+            #endregion
             #endregion
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)

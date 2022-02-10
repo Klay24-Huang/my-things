@@ -406,7 +406,16 @@ $(function () {
             console.log(errmsg);
         }
     });
+    $("#btnAdd").on("click", function () {
+        ShowLoading("資料處理中…");
+        Account = $("#Account").val();
+        var SendObj = new Object();
+        var Mobile = $("#Mobile").val();
+        SendObj.Mobile = Mobile;
+        SendObj.UserID = Account;
 
+        DoAjaxAfterGoBack(SendObj, "BE_InsBlackList", "審核發生錯誤");
+    });
     if (MobileLen > 0) {
         $('#btnCheckSameMobile').click();
     }
@@ -564,7 +573,7 @@ function change(NewKind) {
     return type;
 }
 
-function aa(detail, actionname) {
+function mileStoneDetail(detail, actionname) {
 
     //for (var i = 0; i< 100; i++) {
     //    document.getElementById("myTable").deleteRow(0);

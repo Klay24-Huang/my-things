@@ -1,9 +1,7 @@
 ﻿using Domain.CarMachine;
 using Domain.Common;
 using Domain.SP.Input.Booking;
-using Domain.SP.Input.Common;
 using Domain.SP.Output.Booking;
-using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.Input.CENS;
 using Domain.WebAPI.Input.FET;
@@ -17,7 +15,6 @@ using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
@@ -29,8 +26,8 @@ namespace WebAPI.Controllers
     public class SendLockController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string isDebug = (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["isDebug"])) ? "0" : ConfigurationManager.AppSettings["isDebug"].ToString();
-        private string CENSCID = (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MockCID"])) ? "90001" : ConfigurationManager.AppSettings["MockCID"].ToString();
+        private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoSendLock(Dictionary<string, object> value)
         {
@@ -123,24 +120,12 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
             //取車機
             if (flag)
             {
@@ -151,7 +136,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetCarMachineInfoCommon);
+                string SPName = "usp_GetCarMachineInfoCommon";
                 SPOutput_CarMachineCommon spOut = new SPOutput_CarMachineCommon();
                 SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon> sqlHelp = new SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
@@ -163,65 +148,61 @@ namespace WebAPI.Controllers
                     {
                         if (spOut.IsCens == 1)
                         {
-                            if (isDebug == "1")
-                            {
-                                CID = CENSCID;
-                            }
-                            else
-                            {
-                                CID = spOut.CID;
-                            }
-
                             #region 興聯車機
-                            CensWebAPI censWebAPI = new CensWebAPI();
-                            WSOutput_GetInfo output = new WSOutput_GetInfo();
-                            flag = censWebAPI.GetInfo(CID, ref output);
-                            if (flag)
+                            CID = spOut.CID;
+                            if (isDebug == "0") // isDebug = 1，不送車機指令
                             {
-                                if (output.data.doorStatus != "1111")
+                                CensWebAPI censWebAPI = new CensWebAPI();
+                                WSOutput_GetInfo output = new WSOutput_GetInfo();
+                                flag = censWebAPI.GetInfo(CID, ref output);
+                                if (flag)
                                 {
-                                    flag = false;
-                                    errCode = "ERR429"; //車門未關
-                                }
-                                //else
-                                //{
-                                //    if (output.data.CentralLock == 1 && apiInput.Lock == 1)
-                                //    {
-                                //        flag = false;
-                                //        errCode = "ERR427"; //已經是解鎖狀態
-                                //    }
-                                //    else if (output.data.CentralLock == 0 && apiInput.Lock == 0)
-                                //    {
-                                //        flag = false;
-                                //        errCode = "ERR428"; //已經是上鎖狀態
-                                //    }
-                                //}
-                                if (flag)//執行上解鎖
-                                {
-                                    int lockAction = (apiInput.Lock == 0) ? 2 : 3;      // apiInput.Lock 0:解鎖 1:上鎖
-                                    WSInput_SendLock wsInput = new WSInput_SendLock()
+                                    if (output.data.doorStatus != "1111")
                                     {
-                                        CID = CID,
-                                        CMD = lockAction
-                                    };
-                                    WSOutput_Base wsOutput = new WSOutput_Base();
-                                    flag = censWebAPI.SendLock(wsInput, ref wsOutput);
-                                    if (!flag || wsOutput.Result == 1)
+                                        flag = false;
+                                        errCode = "ERR429"; //車門未關
+                                    }
+                                    //else
+                                    //{
+                                    //    if (output.data.CentralLock == 1 && apiInput.Lock == 1)
+                                    //    {
+                                    //        flag = false;
+                                    //        errCode = "ERR427"; //已經是解鎖狀態
+                                    //    }
+                                    //    else if (output.data.CentralLock == 0 && apiInput.Lock == 0)
+                                    //    {
+                                    //        flag = false;
+                                    //        errCode = "ERR428"; //已經是上鎖狀態
+                                    //    }
+                                    //}
+                                    if (flag)//執行上解鎖
                                     {
-                                        errCode = wsOutput.ErrorCode;
-                                        errMsg = wsOutput.ErrMsg;
+                                        int lockAction = (apiInput.Lock == 0) ? 2 : 3;      // apiInput.Lock 0:解鎖 1:上鎖
+                                        WSInput_SendLock wsInput = new WSInput_SendLock()
+                                        {
+                                            CID = CID,
+                                            CMD = lockAction
+                                        };
+                                        WSOutput_Base wsOutput = new WSOutput_Base();
+                                        flag = censWebAPI.SendLock(wsInput, ref wsOutput);
+                                        if (!flag || wsOutput.Result == 1)
+                                        {
+                                            errCode = wsOutput.ErrorCode;
+                                            errMsg = wsOutput.ErrMsg;
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                errCode = output.ErrorCode;
-                                errMsg = output.ErrMsg;
+                                else
+                                {
+                                    errCode = output.ErrorCode;
+                                    errMsg = output.ErrMsg;
+                                }
                             }
                             #endregion
                         }
                         else
                         {
+                            #region 遠傳車機
                             CID = spOut.CID;
                             //20201202 直接下命令，不執行ReportNow
                             //取最新狀況, 先送getlast之後從tb捉最近一筆
@@ -261,50 +242,37 @@ namespace WebAPI.Controllers
                                 switch (apiInput.Lock)
                                 {
                                     case 0: //解鎖
-                                            //if (info.CentralLockStatus == 0)
-                                            //{
-                                            //    flag = false;
-                                            //    errCode = "ERR427"; //已經是解鎖狀態
-                                            //}
-                                            //else
-                                            //{
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Unlock);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.Unlock;
-                                        //}
                                         break;
                                     default: //上鎖
-                                             //if (info.CentralLockStatus == 1)
-                                             //{
-                                             //    flag = false;
-                                             //    errCode = "ERR428"; //已經是上鎖狀態
-
-                                        //}
-                                        //else
-                                        //{
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.Lock);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.Lock;
-                                        //}
                                         break;
                                 }
                                 if (flag)
                                 {
-                                    WSInput_Base<Params> Input = new WSInput_Base<Params>()
+                                    if (isDebug == "0") // isDebug = 1，不送車機指令
                                     {
-                                        command = true,
-                                        method = CommandType,
-                                        requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
-                                        _params = new Params()
-                                    };
+                                        WSInput_Base<Params> Input = new WSInput_Base<Params>()
+                                        {
+                                            command = true,
+                                            method = CommandType,
+                                            requestId = string.Format("{0}_{1}", CID, DateTime.Now.ToString("yyyyMMddHHmmssfff")),
+                                            _params = new Params()
+                                        };
 
-                                    requestId = Input.requestId;
-                                    method = CommandType;
-                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, Input, LogID);
-                                    if (flag)
-                                    {
-                                        flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                        requestId = Input.requestId;
+                                        method = CommandType;
+                                        flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, Input, LogID);
+                                        if (flag)
+                                        {
+                                            flag = FetAPI.DoWaitReceive(requestId, method, ref errCode);
+                                        }
                                     }
                                 }
                             }
+                            #endregion
                         }
                     }
                 }

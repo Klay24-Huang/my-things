@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.MemberData;
 using Domain.SP.Input.Member;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
@@ -14,7 +15,6 @@ using System.Data;
 using System.Linq;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
@@ -124,7 +124,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            #region Azure Storage
+            #region Azure Storage(上傳簽名檔)
             if (flag)
             {
                 try
@@ -140,8 +140,35 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region TB
-            //20201125 ADD BY ADAM REASON.寫入帳號前先去短租那邊取得MEMRFNBR
+            #region 判斷短租流水號
             if (flag)
+            {
+                string spName = "usp_GetMemberData_V20220121";
+                SPInput_GetMemberData spInput = new SPInput_GetMemberData
+                {
+                    IDNO = apiInput.IDNO,
+                    Token = "",
+                    CheckToken = 0,
+                    LogID = LogID
+                };
+                SPOutput_Base spOut = new SPOutput_Base();
+                SQLHelper<SPInput_GetMemberData, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMemberData, SPOutput_Base>(connetStr);
+                List<RegisterData> ListOut = new List<RegisterData>();
+                DataSet ds = new DataSet();
+                flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
+                {
+                    if (ListOut.Count > 0)
+                    {
+                        flag = int.TryParse(ListOut.FirstOrDefault().MEMRFNBR.Replace("ir", ""), out MEMRFNBR);
+                    }
+                }
+            }
+            #endregion
+            #region 取得MEMRFNBR
+            //20201125 ADD BY ADAM REASON.寫入帳號前先去短租那邊取得MEMRFNBR
+            if (flag && MEMRFNBR == 0)
             {
                 WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
                 HiEasyRentAPI wsAPI = new HiEasyRentAPI();
@@ -154,10 +181,11 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-
+            #endregion
+            #region 基本資料存檔
             if (flag)
             {
-                string spName = new ObjType().GetSPName(ObjType.SPType.RegisterMemberData);
+                string spName = "usp_RegisterMemberData";
                 SPInput_RegisterMemberData spInput = new SPInput_RegisterMemberData()
                 {
                     IDNO = apiInput.IDNO,
@@ -176,18 +204,20 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }
-
+            #endregion
+            #region 會員同意條款存檔
             // 20210812 UPD BY YEH REASON:增加會員同意條款存檔
             if (flag)
             {
-                string spName = new ObjType().GetSPName(ObjType.SPType.SetMemberCMK);
+                string spName = "usp_SetMemberCMK";
                 SPInput_SetMemberCMK spInput = new SPInput_SetMemberCMK()
                 {
                     IDNO = apiInput.IDNO,
-                    Source = "I",
-                    AgreeDate = DateTime.Now,
                     VerType = "Hims",
                     Version = "",   // 從DB抓
+                    SeqNo = 1,
+                    Source = "I",
+                    AgreeDate = DateTime.Now,
                     TEL = "Y",      // 預設Y
                     SMS = "Y",      // 預設Y
                     EMAIL = "Y",    // 預設Y
@@ -201,35 +231,45 @@ namespace WebAPI.Controllers
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
                 if (flag)
                 {
                     // 20210825 UPD BY YEH REASON:拋短租
-                    WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
-                    {
-                        IDNO = ListOut.FirstOrDefault().MEMIDNO,
-                        VERTYPE = ListOut.FirstOrDefault().VerType,
-                        VER = ListOut.FirstOrDefault().Version,
-                        VERSOURCE = ListOut.FirstOrDefault().Source,
-                        TEL = ListOut.FirstOrDefault().TEL,
-                        SMS = ListOut.FirstOrDefault().SMS,
-                        EMAIL = ListOut.FirstOrDefault().EMAIL,
-                        POST = ListOut.FirstOrDefault().POST,
-                        MEMO = "",
-                        COMPID = "EF",
-                        COMPNM = "和雲",
-                        PRGID = "iRent_6",
-                        USERID = "iRentUser"
-                    };
-                    WebAPIOutput_TransIRentMemCMK wsOutput = new WebAPIOutput_TransIRentMemCMK();
-                    HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                    // 20211105 UPD BY YEH REASON:改成迴圈拋多筆
+                    // 20211214 UPD BY YEH REASON:註冊不拋短租
+                    //foreach (var list in ListOut)
+                    //{
+                    //    if (flag)
+                    //    {
+                    //        WebAPIInput_TransIRentMemCMK wsInput = new WebAPIInput_TransIRentMemCMK
+                    //        {
+                    //            IDNO = list.MEMIDNO,
+                    //            VERTYPE = list.VerType,
+                    //            VER = list.Version,
+                    //            VERSOURCE = list.Source,
+                    //            TEL = list.TEL,
+                    //            SMS = list.SMS,
+                    //            EMAIL = list.EMAIL,
+                    //            POST = list.POST,
+                    //            MEMO = "",
+                    //            COMPID = "EF",
+                    //            COMPNM = "和雲",
+                    //            PRGID = "iRent_6",
+                    //            USERID = "iRentUser"
+                    //        };
+                    //        WebAPIOutput_TransIRentMemCMK wsOutput = new WebAPIOutput_TransIRentMemCMK();
+                    //        HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
 
-                    flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref wsOutput);
-                    if (flag == false)
-                    {
-                        errCode = "ERR776";
-                    }
+                    //        flag = hiEasyRentAPI.TransIRentMemCMK(wsInput, ref wsOutput);
+                    //        if (flag == false)
+                    //        {
+                    //            errCode = "ERR776";
+                    //        }
+                    //    }
+                    //}
                 }
             }
+            #endregion
             #endregion
             #region 產生加密及發信
             if (flag)

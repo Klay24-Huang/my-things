@@ -113,9 +113,12 @@ namespace WebAPI.Controllers
                     OrderNo = tmpOrder,
                     IDNO = IDNO,
                     LogID = LogID,
-                    Token = Access_Token
+                    Token = Access_Token,
+                    Descript = "",
+                    Cancel_Status_in = 0,
+                    CheckToken =1
                 };
-                string SPName = "usp_BookingCancel";
+                string SPName = "usp_BookingCancel_U01";
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_BookingCancel, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BookingCancel, SPOutput_Base>(connetStr);
                 List<SPOutput_BookingCancel> ListOut = new List<SPOutput_BookingCancel>();

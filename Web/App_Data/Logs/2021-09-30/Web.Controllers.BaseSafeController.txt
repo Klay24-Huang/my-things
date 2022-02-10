@@ -1,0 +1,1 @@
+2021-09-30 14:00:33.1471|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'Audit',IPAddr:'::1}

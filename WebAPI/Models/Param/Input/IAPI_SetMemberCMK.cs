@@ -8,5 +8,10 @@
         /// <para>N：不同意</para>
         /// </summary>
         public string CHKStatus { get; set; }
+
+        /// <summary>
+        /// 流水號 (對應TB_CMKDEF)
+        /// </summary>
+        public int SeqNo { get; set; } = 0;
     }
 }
