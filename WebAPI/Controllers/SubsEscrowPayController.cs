@@ -117,29 +117,44 @@ namespace WebAPI.Controllers
                             {        
                                 if(loop >0)
                                     Thread.Sleep(1000);
-                                try
+
+                                IAPI_MonthlyPayInv spInput = new IAPI_MonthlyPayInv()
                                 {
-                                    var outapi_in = new ICF_TSIB_Escrow_PayTransaction()
+                                    IdNo = f.IDNO,
+                                    MonthlyRentId = Convert.ToInt32(f.OrderNo)
+                                };
+
+                                var checkFlag = msp.sp_MonthlyRentEscrowCheck(spInput, ref errCode);
+                                trace.traceAdd("MonthlyRentEscrowCheck", new { checkFlag, spInput, errCode });
+                                trace.FlowList.Add("履保檢查");
+
+                                if (checkFlag)
+                                {
+                                    try
                                     {
-                                        IDNO = f.IDNO,
-                                        OrderNo = f.OrderNo,
-                                        MemberID = f.MemberID,
-                                        AccountId = f.AccountId,
-                                        Email = f.Email,
-                                        PhoneNo = f.PhoneNo,
-                                        Amount = Convert.ToInt16(Math.Floor(f.Amount)),
-                                        CreateDate = f.CreateDate,
-                                        EcStatus = f.Status,
-                                        PRGID=funName
-                                    };
-                                    mscom.TSIB_Escrow_PayTransaction(outapi_in, ref errCode);
-                                    trace.traceAdd("TSIB_Escrow_PayTransaction", new { outapi_in, errCode });                                  
-                                }
-                                catch(Exception ex)
-                                {
-                                    trace.traceAdd("Escrow_Exceptiom", new { ex });
+                                        var outapi_in = new ICF_TSIB_Escrow_PayTransaction()
+                                        {
+                                            IDNO = f.IDNO,
+                                            OrderNo = f.OrderNo,
+                                            MemberID = f.MemberID,
+                                            AccountId = f.AccountId,
+                                            Email = f.Email,
+                                            PhoneNo = f.PhoneNo,
+                                            Amount = Convert.ToInt16(Math.Floor(f.Amount)),
+                                            CreateDate = f.CreateDate,
+                                            EcStatus = f.Status,
+                                            PRGID = funName
+                                        };
+                                        mscom.TSIB_Escrow_PayTransaction(outapi_in, ref errCode);
+                                        trace.traceAdd("TSIB_Escrow_PayTransaction", new { outapi_in, errCode });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        trace.traceAdd("Escrow_Exceptiom", new { ex });
+                                    }
                                 }
 
+                              
                                 loop += 1;
                             }
                             trace.FlowList.Add("履保處理");
