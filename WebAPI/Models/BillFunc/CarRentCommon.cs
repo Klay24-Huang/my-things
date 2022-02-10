@@ -187,15 +187,13 @@ namespace WebAPI.Models.BillFunc
 
             trace.traceAdd("fnIn", sour);
 
-            bool isSpring = cr_com.isSpring(sour.SD, sour.ED);
-
-            //1.0 先還原這個單號使用的
-            re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
-            re.errCode = errCode;
-            int RateType = (sour.ProjType == 4) ? 1 : 0;
-
             if (sour != null && !string.IsNullOrWhiteSpace(sour.MonIds))
             {
+                // 20220210 UPD BY YEH REASON:有訂閱制才還原資料
+                //1.0 先還原這個單號使用的
+                re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
+                re.errCode = errCode;
+
                 monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
 
                 //假日優惠費率置換:只限汽車月租,只置換假日
