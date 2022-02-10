@@ -35,6 +35,7 @@ using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using NLog;
 using System.Data.SqlClient;
+using WebAPI.Models.Param.Input;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -1897,6 +1898,42 @@ namespace WebAPI.Models.BillFunc
             return flag;
 
         }
+
+        /// <summary>
+        /// 訂閱制履保檢查
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool sp_MonthlyRentEscrowCheck(IAPI_MonthlyPayInv spInput, ref string errCode)
+        {
+            bool flag = false;
+            var lstError = new List<ErrorInfo>();
+            string spName = "usp_MonthlyRentEscrowCheck_Q01";
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<IAPI_MonthlyPayInv, SPOutput_Base> sqlHelp = new SQLHelper<IAPI_MonthlyPayInv, SPOutput_Base>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
+            
+            if (flag)
+            {
+                if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
+                {
+                    flag = false;
+                    errCode = spOutput.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+
+            return flag;
+
+        }
+
     }
 
     /// <summary>
