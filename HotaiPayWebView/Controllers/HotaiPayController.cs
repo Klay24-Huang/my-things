@@ -127,6 +127,7 @@ namespace HotaiPayWebView.Controllers
                 ViewBag.PwdAlert = "iRent帳號過期，請重新登入。";
                 return View("Login");
             }
+
             HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
             if (ModelState.IsValid)
             {
@@ -261,26 +262,29 @@ namespace HotaiPayWebView.Controllers
         #region 更新會員條款
         public ActionResult MembershipTerms2(string intoType)
         {
-            Session["TermsWay"] = intoType;
-            if (Session["TermsWay"] == "UpdateVer")
+            if (!string.IsNullOrEmpty(intoType))
             {
-                WebAPIOutput_GetPrivacy checkVer = new WebAPIOutput_GetPrivacy();
-                string errCode = "";
-                var flag = hotaiAPI.DoGetPrivacy("", ref checkVer, ref errCode);
-
-                if (flag)
+                Session["TermsWay"] = intoType;
+                if (Session["TermsWay"].ToString() == "UpdateVer")
                 {
-                    if (!string.IsNullOrEmpty(checkVer.memberBenefits) || !string.IsNullOrEmpty(checkVer.privacyPolicy))
-                    {
-                        Session["Benefitsterms"] = checkVer.memberBenefits;
-                        Session["Policyterms"] = checkVer.privacyPolicy;
-                        ViewBag.Benefits = Session["Benefitsterms"].ToString();
-                        return View();
-                    }
-                    else
-                        return Redirect("RegisterStep1");
-                }
+                    WebAPIOutput_GetPrivacy checkVer = new WebAPIOutput_GetPrivacy();
+                    string errCode = "";
+                    var flag = hotaiAPI.DoGetPrivacy("", ref checkVer, ref errCode);
 
+                    if (flag)
+                    {
+                        if (!string.IsNullOrEmpty(checkVer.memberBenefits) || !string.IsNullOrEmpty(checkVer.privacyPolicy))
+                        {
+                            Session["Benefitsterms"] = checkVer.memberBenefits;
+                            Session["Policyterms"] = checkVer.privacyPolicy;
+                            ViewBag.Benefits = Session["Benefitsterms"].ToString();
+                            return View();
+                        }
+                        else
+                            return Redirect("RegisterStep1");
+                    }
+
+                }
             }
             else
             {
@@ -319,6 +323,7 @@ namespace HotaiPayWebView.Controllers
             {
                 if (Session["TermsWay"].ToString().Trim() == "UpdateVer")
                 {
+                    Session.Remove("TermsWay");
                     WebAPIInput_UpdateBenefitsAndPrivacyVersion input = new WebAPIInput_UpdateBenefitsAndPrivacyVersion
                     {
                         memberBenefitsVersion = Session["BenefitstermsVer"] == null ? "" : Session["BenefitstermsVer"].ToString(),
@@ -326,9 +331,9 @@ namespace HotaiPayWebView.Controllers
                     };
                     WebAPIOutput_BenefitsAndPrivacyVersion output = new WebAPIOutput_BenefitsAndPrivacyVersion();
 
-                    //flag = hotaiAPI.DoUpdateBenefitsAndPrivacyVersion(Session["hotai_access_token"].ToString().Trim(), input, ref output, ref errCode);
+                    flag = hotaiAPI.DoUpdateBenefitsAndPrivacyVersion(Session["hotai_access_token"].ToString().Trim(), input, ref output, ref errCode);
 
-                    flag = true;
+                    //flag = true;
                     if (flag)
                     {
                         WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
@@ -368,6 +373,7 @@ namespace HotaiPayWebView.Controllers
             {
                 if (Session["TermsWay"].ToString().Trim() == "UpdateVer")
                 {
+                    Session.Remove("TermsWay");
                     WebAPIInput_UpdateBenefitsAndPrivacyVersion input = new WebAPIInput_UpdateBenefitsAndPrivacyVersion
                     {
                         memberBenefitsVersion = Session["BenefitstermsVer"] == null ? "" : Session["BenefitstermsVer"].ToString(),
@@ -378,6 +384,7 @@ namespace HotaiPayWebView.Controllers
                     //flag = true;
                     if (flag)
                     {
+                        logger.Info($"更新會員條款成功: memberBenefitsVersion={input.memberBenefitsVersion},privacyPolicyVersion={input.privacyPolicyVersion},errCode={errCode}");
                         TempData["irent_access_token"] = Session["irent_access_token"];
                         return RedirectToRoute(new
                         {
@@ -391,6 +398,7 @@ namespace HotaiPayWebView.Controllers
                 else
                     return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep1" });
             }
+            
         }
 
         public ActionResult MembershipTerms1()
