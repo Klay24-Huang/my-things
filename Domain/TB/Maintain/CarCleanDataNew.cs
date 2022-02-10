@@ -107,5 +107,11 @@ namespace Domain.TB.Maintain
         /// <para>1:是</para>
         /// </summary>
         public int isNeedMaintenance { set; get; }
+        /// <summary>
+        /// 是否保修或清潔中
+        /// <para>0:否</para>
+        /// <para>1:是</para>
+        /// </summary>
+        public int OnMaintain { get; set; }
     }
 }
