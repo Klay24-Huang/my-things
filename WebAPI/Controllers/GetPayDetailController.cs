@@ -899,7 +899,7 @@ namespace WebAPI.Controllers
                         outputApi.FineOrderPrice = UseOrderPrice;//改罰金
 
                         //如果有春節訂金就要把罰金加上去
-                        xTotalRental += OrderPrice > 0 ? UseOrderPrice : 0;
+                        xTotalRental += ((OrderPrice > 0) ? UseOrderPrice : 0);
 
                         //if (xTotalRental < 0)
                         if (UseOrderPrice > 0)
