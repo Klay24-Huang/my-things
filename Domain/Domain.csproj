@@ -181,6 +181,7 @@
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetOrderInfo.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetProjectPriceBase.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_InsertOrderOtherFee.cs" />
     <Compile Include="SP\Input\Bill\SPInput_SetRewardResult.cs" />
     <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BeforeBookingStart.cs" />
