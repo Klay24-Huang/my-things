@@ -748,6 +748,7 @@
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetBarcode.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetTaishinToken.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_PayTransaction.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_Refund.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_StoredMoney.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_TransferStoredValueCreateAccount.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Auth.cs" />
@@ -892,6 +893,7 @@
     <Compile Include="WebAPI\output\Taishin\ResultData\DeleteCreditCardAuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\GetCreditCardResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\IHUBResHeader.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\RefundParam.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\ShortUrlRes.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\CvsPayInfoRes.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\BarcodeRes.cs" />
@@ -909,6 +911,7 @@
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetBarCode.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetTaishinToken.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_PayTransaction.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_Refund.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_StoreValueCreateAccount.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_TransferStoreValueCreateAccount.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Auth.cs" />
