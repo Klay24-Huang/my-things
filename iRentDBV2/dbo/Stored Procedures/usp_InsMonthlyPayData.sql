@@ -8,7 +8,17 @@
 * 撰寫日期 : 20210810
 * 修改日期 : 20210826 ADD BY ADAM REASON.補上兩期一付處理，跑過就好
              20220122 ADD BY AMBER REASON.補上六兄弟
+			 20220209 ADD BY AMBER REASON.新增SubsId條件避免同類型專案重複造成期數錯亂
+			 20220210 ADD BY AMBER REASON.不撈取TB_MonthlyPay ActualPay=1
 Example :
+BEGIN TRAN
+DECLARE @ErrorCode VARCHAR(6),@ErrorMsg NVARCHAR(100)
+EXEC usp_InsMonthlyPayData @ErrorCode OUTPUT,@ErrorMsg OUTPUT,'',''
+SELECT * FROM TB_OrderAuthMonthly WITH(NOLOCK) WHERE InvJob=0 AND AuthFlg=1 order by authSeq desc
+--SELECT * FROM TB_OrderAuthMonthly_Log WITH(NOLOCK)
+--SELECT * FROM TB_MonthlyPay WITH(NOLOCK) WHERE MonthlyRentId=9168;
+SELECT @ErrorCode,@ErrorMsg
+rollback TRAN
 *****************************************************************/
 CREATE PROCEDURE [dbo].[usp_InsMonthlyPayData]            
 　　@ErrorCode 				VARCHAR(6)		OUTPUT,	--回傳錯誤代碼
@@ -39,7 +49,7 @@ BEGIN TRY
 			DROP TABLE IF EXISTS #TB_MonthlyPayTmp;
 
 			SELECT
-			A.IDNO,A.MonProPeriod,A.ProjID,A.ShortDays  
+			A.IDNO,A.MonProPeriod,A.ProjID,A.ShortDays,A.SubsId 
 			INTO #MonthlyPayTmp
 			FROM SYN_MonthlyRent A WITH(NOLOCK) 
 			LEFT JOIN TB_MonthlyPay B WITH(NOLOCK) ON A.MonthlyRentId=B.MonthlyRentId
@@ -47,19 +57,20 @@ BEGIN TRY
 			WHERE CONVERT(VARCHAR,DATEADD(day,-1,A.StartDate),112)=CONVERT(VARCHAR,@NowTime,112)
 			AND A.useFlag=1 AND A.MonProPeriod >2 AND ISNULL(B.ActualPay,0)=0 
 			AND NOT EXISTS (SELECT 1 FROM TB_OrderAuthMonthly O WITH(NOLOCK) 
-			WHERE O.MonthlyRentId =A.MonthlyRentId);
+			WHERE O.MonthlyRentId =A.MonthlyRentId)
+			AND NOT EXISTS (SELECT 1 FROM TB_MonthlyPay P WITH(NOLOCK) 
+			WHERE P.MonthlyRentId=A.MonthlyRentId AND P.ActualPay=1); -- 20220210 ADD BY AMBER REASON.同MonthlyRentId可能有多筆(雷)
 	
 			
 			
 			SELECT * INTO #SeqMonthlyPayTmp FROM (
-		    SELECT ROW_NUMBER() OVER(PARTITION BY S.MonProPeriod,S.ProjID,S.ShortDays,S.IDNO ORDER BY S.startDate) AS NowPeriod,
+		    SELECT ROW_NUMBER() OVER(PARTITION BY S.SubsId ORDER BY S.startDate) AS NowPeriod,
 		    S.MonProPeriod,S.ProjID,S.ShortDays,S.IDNO,S.StartDate,S.EndDate,S.MonthlyRentId 
 		    FROM SYN_MonthlyRent S WITH(NOLOCK) 
-			JOIN #MonthlyPayTmp MPT ON S.IDNO=MPT.IDNO 
+			JOIN #MonthlyPayTmp MPT ON S.IDNO=MPT.IDNO AND S.SubsId=MPT.SubsId --20220209 ADD BY AMBER REASON.新增SubsId條件避免同類型專案重複造成期數錯亂
 			AND S.ProjID=MPT.ProjID  AND S.MonProPeriod=MPT.MonProPeriod AND S.ShortDays=MPT.ShortDays) T 	
 			--WHERE CONVERT(VARCHAR,DATEADD(day,-1,T.StartDate),112)=@SetDate;   
 			WHERE CONVERT(VARCHAR,DATEADD(day,-1,T.StartDate),112)=CONVERT(VARCHAR,@NowTime,112);
-
 			SELECT @hasData=COUNT(1) FROM #SeqMonthlyPayTmp SMPT ;
 
 			IF @hasData=0
@@ -182,6 +193,5 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_InsMonthlyPayData';
-
 
 
