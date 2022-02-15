@@ -7,14 +7,12 @@
 * 作    者 : AMBER
 * 撰寫日期 : 20211018
 * 修改日期 : 20211224 UPD BY AMBER 新增input參數
+             20220215 UPD BY AMBER 移除不必要參數
 Example :
 ***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_WalletStoredByCredit_I01]
     @IDNO                   VARCHAR(10),  --身分證
 	@MemberId               VARCHAR(20),  --商店會員編號
-	@Name                   NVARCHAR(10), --會員姓名
-	@PhoneNo                VARCHAR(10),  --手機號碼
-    @Email                  VARCHAR(50),  --Email
 	@AccountType			VARCHAR(1),   --帳戶類別(1:個人一類;2:個人二類(預設);3:個人三類;4:法人二類;5:法人三類)
 	@CreateType				VARCHAR(1),   --會員虛擬帳號建立來源(1:使用商店會員編號;2:由系統產生)
 	@AmountType				VARCHAR(1),   --金額類別(1:現金;2:信用卡;3:收款金額)
@@ -62,8 +60,8 @@ BEGIN TRY
 		SET @ErrorCode='ERR900'
 	  END
       IF NOT EXISTS (SELECT 1 FROM TB_TaishinWalletStoreValueErrorLog WHERE BankTradeNo=@BankTradeNo)
-	  INSERT INTO TB_TaishinWalletStoreValueErrorLog(ID,MemberId,[Name],PhoneNo,Email,AccountType,CreateType,AmountType,Amount,Bonus,BonusExpiredate,SourceFrom,StoreValueReleaseDate,GiftCardBarCode,ProcessStatus,ReturnCode,[Message],ExceptionData,MKTime,MKUser,MKPRGID,UPDTime,UPDUser,UPDPRGID,TradeType,MerchantTradeNo,BankTradeNo,CardNumber) 
-      VALUES(@IDNO,@MemberId,@Name,@PhoneNo,@Email,@AccountType,@CreateType,@AmountType,@Amount,@Bonus,@BonusExpiredate,@SourceFrom,@StoreValueReleaseDate,@GiftCardBarCode,0,@ReturnCode,@Message,@ExceptionData,@NowTime,@PRGName,@PRGName,@NowTime,@PRGName,@PRGName,@TradeType,@MerchantTradeNo,@BankTradeNo,@CardNumber);
+	  INSERT INTO TB_TaishinWalletStoreValueErrorLog(ID,MemberId,AccountType,CreateType,AmountType,Amount,Bonus,BonusExpiredate,SourceFrom,StoreValueReleaseDate,GiftCardBarCode,ProcessStatus,ReturnCode,[Message],ExceptionData,MKTime,MKUser,MKPRGID,UPDTime,UPDUser,UPDPRGID,TradeType,MerchantTradeNo,BankTradeNo,CardNumber) 
+      VALUES(@IDNO,@MemberId,@AccountType,@CreateType,@AmountType,@Amount,@Bonus,@BonusExpiredate,@SourceFrom,@StoreValueReleaseDate,@GiftCardBarCode,0,@ReturnCode,@Message,@ExceptionData,@NowTime,@PRGName,@PRGName,@NowTime,@PRGName,@PRGName,@TradeType,@MerchantTradeNo,@BankTradeNo,@CardNumber);
    END
 
  IF @Error=1
