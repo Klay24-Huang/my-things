@@ -139,6 +139,7 @@
     <Compile Include="Models\CreditCardChoose.cs" />
     <Compile Include="Models\GetBirthDate.cs" />
     <Compile Include="Models\Login.cs" />
+    <Compile Include="Models\MemberHotai.cs" />
     <Compile Include="Models\SignUpProfile.cs" />
     <Compile Include="Models\TangViewModel.cs" />
     <Compile Include="Models\UmekoTestViewModel.cs" />
