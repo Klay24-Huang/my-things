@@ -47,6 +47,7 @@ namespace OtherService
         private string WriteOffGuaranteeNoJunk = ConfigurationManager.AppSettings["WriteOffGuaranteeNoJunk"].ToString(); //履保/信託序號核銷/報廢
         private string CancelWriteOff = ConfigurationManager.AppSettings["CancelWriteOff"].ToString(); //履保/信託序號取消核銷
         private string ReturnStoreValue = ConfigurationManager.AppSettings["ReturnStoreValue"].ToString();
+        private string Refund = ConfigurationManager.AppSettings["WalletRefund"].ToString(); //交易退款
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         private string StoreShopBaseURL = ConfigurationManager.AppSettings["TaishinWalletStoreShopBaseURL"].ToString(); //超商錢包儲值BaseUrl
@@ -790,10 +791,36 @@ namespace OtherService
             output = DoGetTaishinApi<WSInput_ReturnStoreValue, WSOut_ReturnStoreValue>(wsInput, ClientId, utcTimeStamp, SignCode, url, "DoReturnStoreValue").Result;
             if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
             {
-                //if (output.Data == null)
-                //{
-                //    flag = false;
-                //}
+                SPInput_InsStoreValueCreateAccountLog spInput = new SPInput_InsStoreValueCreateAccountLog()
+                {
+                    LogID = 0,
+                    GUID = wsInput.GUID,
+                    MerchantId = wsInput.MerchantId,
+                    AccountId = wsInput.AccountId,
+                    POSId = wsInput.POSId,
+                    StoreId = wsInput.StoreId,
+                    StoreTransDate = wsInput.StoreTransDate,
+                    StoreTransId = wsInput.StoreTransId,
+                    TransDate = output.TransDate,
+                    TransId = output.TransId,
+                    SourceTransId = wsInput.StoreTransId,
+                    SourceFrom = wsInput.SourceFrom,
+                    TransType = "T007",
+                    AmountType = "3",
+                    Amount = output.RefundAmount,
+                    Bonus = output.Bonus,
+                    BonusExpiredate = "",
+                    BarCode = "",
+                    StoreValueReleaseDate = "",
+                    StoreValueExpireDate = "",
+                    GiftCardBarCode = "",
+                    TransmittalDate = "",
+                    AccountingStatus = "0"
+                };
+
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new TaishinWalletLog().InsStoreValueCreateAccountLog(spInput, ref flag, ref errCode, ref lstError);
+                logger.Trace(" InsReturnStoreValueLog : " + JsonConvert.SerializeObject(spInput));
             }
             else
             {
@@ -996,8 +1023,52 @@ namespace OtherService
             return output;
         }
 
+        #region 交易退款
+        public bool DoRefund(WebAPI_Refund wsInput, string ClientId, string utcTimeStamp, string SignCode, ref string errCode, ref WebAPIOutput_Refund output)
+        {
+            bool flag = false;
+            string url = BaseURL + Refund;
+            output = DoGetTaishinApi<WebAPI_Refund, WebAPIOutput_Refund>(wsInput, ClientId, utcTimeStamp, SignCode, url, "Refund").Result;
+            if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+            {
+                SPInput_InsPayTransactionLog spInput = new SPInput_InsPayTransactionLog()
+                {
+                    LogID = 0,
+                    GUID = wsInput.GUID,
+                    MerchantId = wsInput.MerchantId,
+                    AccountId = wsInput.AccountId,
+                    BarCode = wsInput.BarCode,
+                    POSId = wsInput.POSId,
+                    StoreId = wsInput.StoreId,
+                    StoreTransDate = wsInput.StoreTransDate,
+                    StoreTransId = wsInput.StoreTransId,
+                    TransmittalDate = "",
+                    TransDate = output.Result.TransDate,
+                    TransId = output.Result.TransId,
+                    SourceTransId = wsInput.TransId, //這參數是退款才需要用到
+                    TransType = "T002",
+                    BonusFlag = wsInput.BonusFlag,
+                    PriceCustody = wsInput.Custody,
+                    SmokeLiqueurFlag = wsInput.SmokeLiqueurFlag,
+                    Amount = wsInput.RefundAmount,
+                    ActualAmount = 0,
+                    Bonus = output.Result.Bonus,
+                    SourceFrom = wsInput.SourceFrom,
+                    AccountingStatus = "0",
+                    SmokeAmount = 0,
+                    ActualGiftCardAmount = 0,
+                };
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new TaishinWalletLog().InsPayTransactionLog(spInput, ref flag, ref errCode, ref lstError);
+                logger.Trace("InsRefundLog : " + JsonConvert.SerializeObject(spInput));
+                flag = true;
+            }
+            return flag;
+        }
         #endregion
-        
+
+        #endregion
+
 
         private string ByteToString(byte[] source)
         {

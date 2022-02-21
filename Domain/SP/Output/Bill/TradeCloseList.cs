@@ -8,6 +8,14 @@
         public int CloseID { get; set; }
 
         /// <summary>
+        /// 信用卡類別
+        /// <para>0:和泰</para>
+        /// <para>1:台新</para>
+        /// <para>2:錢包</para>
+        /// </summary>
+        public int CardType { get; set; }
+
+        /// <summary>
         /// 授權類別
         /// </summary>
         public int AuthType { get; set; }

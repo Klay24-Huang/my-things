@@ -276,12 +276,12 @@ namespace WebAPI.Controllers
                                 //ProcessedJobCount9.Inc();//唐加prometheus
                                 SetCount("NUM_CreditAuth_Fail_car_mgt_status_15");//已完成還車付款，請勿重覆付款
                             }
-                            //else if (OrderDataLists[0].car_mgt_status < 13) // 20220120 UPD BY YEH REASON:狀態非13不可還車
-                            //{
-                            //    flag = false;
-                            //    errCode = "ERR210";
-                            //    SetCount("NUM_CreditAuth_Fail_car_mgt_status_13");  //尚未完成還車步驟，無法還車付款
-                            //}
+                            else if (OrderDataLists[0].car_mgt_status < 13) // 20220120 UPD BY YEH REASON:狀態非13不可還車
+                            {
+                                flag = false;
+                                errCode = "ERR210";
+                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_13");  //尚未完成還車步驟，無法還車付款
+                            }
                             else if (OrderDataLists[0].car_mgt_status < 11)
                             {
                                 flag = false;
@@ -516,41 +516,11 @@ namespace WebAPI.Controllers
                         }
                         #endregion
 
-                        #region 錢包扣款
-                        if (flag)
-                        {
-                            //台新錢包扣款
-                            if (apiInput.CheckoutMode == 1 && PreAmount.DiffAmount > 0)
-                            {
-                                string TradeType = (OrderDataLists[0].ProjType == 4) ? "Pay_Motor" : "Pay_Car";
-                                var orderPayForWallet = PayWalletFlow(tmpOrder, PreAmount.DiffAmount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
-                                flag = orderPayForWallet.flag;
-                                trace.traceAdd("PayWalletFlow", new { flag, errCode });
-                            }
-                        }
-                        #endregion
-
                         #region 訂單存檔
                         //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題
                         //所以把存檔功能先提早完成再進行信用卡授權
                         if (flag)
                         {
-                            #region 原本存檔(MARK)
-                            //string SPName = "usp_DonePayRentBillNew_20210517";
-
-                            ////20201201 ADD BY ADAM REASON.換電獎勵
-                            //SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
-                            //SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint>(connetStr);
-                            //flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                            //baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
-                            //if (flag)
-                            //{
-                            //    RewardPoint = PayOutput.Reward;
-                            //}
-
-                            //trace.traceAdd("DonePayRentBill", new { flag, PayInput, PayOutput });
-                            #endregion
-
                             string SPName = "usp_CreditAuth_U01";
 
                             object[] objparms = new object[TradeCloseLists.Count == 0 ? 1 : TradeCloseLists.Count];
@@ -562,6 +532,7 @@ namespace WebAPI.Controllers
                                     objparms[i] = new
                                     {
                                         CloseID = TradeCloseLists[i].CloseID,
+                                        CardType = TradeCloseLists[i].CardType,
                                         AuthType = TradeCloseLists[i].AuthType,
                                         ChkClose = TradeCloseLists[i].ChkClose,
                                         CloseAmout = TradeCloseLists[i].CloseAmout,
@@ -574,6 +545,7 @@ namespace WebAPI.Controllers
                                 objparms[0] = new
                                 {
                                     CloseID = 0,
+                                    CardType = 0,
                                     AuthType = 0,
                                     ChkClose = 0,
                                     CloseAmout = 0,
