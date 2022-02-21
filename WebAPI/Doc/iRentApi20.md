@@ -214,6 +214,7 @@
 
 20210906 取得租金明細(GetPayDetail)欄位修正
 
+20210907 增加推播相關
 
 20210909 共同承租人回應邀請(JointRentIviteeFeedBack) Input欄位調整&錯誤代碼修正
 
@@ -275,6 +276,8 @@
 
 20211118 查詢綁卡跟錢包(CreditAndWalletQuery)新增和泰PAY相關欄位
 
+20211122 NormalRent跟GetProject 的IsRent=A調整
+
 20211201 錢包儲值-設定資訊(GetWalletStoredMoneySet) 調整StoreType參數
 
 20211209 新增會員解綁(MemberUnbind)
@@ -289,7 +292,7 @@
 | 裝置    | 正式環境                            | 測試環境                                 |
 | ------- | ----------------------------------- | ---------------------------------------- |
 | iOS     | https://irentcar-app.azurefd.net/   | https://irentcar-app-test.azurefd.net/   |
-| ANDROID | https://irent-app-jpw.ai-irent.net/ | https://irent-app-jpw-test.ai-irent.net/ |
+| ANDROID | https://irent-app-jpw.ai-irent.net/ | https://irentcar-app-test.azurefd.net/ |
 
 # Header參數相關說明
 
@@ -534,7 +537,7 @@
 | HasVaildEMail  | 是否已驗證EMAIL(0:否;1:是)                                   |  int   | 1                                                            |
 | Audit          | 審核狀態 0:未審核 1:審核通過 2:審核不通過                    |  int   | 1                                                            |
 | IrFlag         | 目前註冊進行至哪個步驟<br />-1驗證完手機 、0：設置密碼、1：其他 |  int   | 1                                                            |
-| PayMode        | 付費方式 0:信用卡                                            |  int   | 0                                                            |
+| PayMode        | 付費方式 0:信用卡 1:錢包 4:Hotaipay                                 |  int   | 0                                                            |
 | RentType       | 可租車類別<br />0:無法;1:汽車;2:機車;3:全部                  |  int   | 3                                                            |
 | ID_pic         | 身份證                                                       |  int   | 0                                                            |
 | DD_pic         | 汽車駕照                                                     |  int   | 0                                                            |
@@ -1410,7 +1413,6 @@
 
 ## GetBanner 取得廣告資訊
 
-
 ### [/api/GetBanner/]
 
 * 20210316發佈
@@ -1418,7 +1420,9 @@
 * ASP.NET Web API (REST API)
 
 * 傳送跟接收採JSON格式
+
 * 動作 [GET]
+
 * input傳入參數說明
 
 | 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
@@ -1556,6 +1560,7 @@
 * 20210315發佈
 
 * ASP.NET Web API (REST API)
+
 * 傳送跟接收採JSON格式
 
 * HEADER帶入AccessToken**(必填)**
@@ -1713,6 +1718,7 @@
 ### [/api/NormalRent/]
 
 * 20210324修改
+
 * 20210407修改 - input移除掉Seats 
 
 * ASP.NET Web API (REST API)
@@ -1775,7 +1781,7 @@
 | ContentForAPP       | 據點描述(app顯示用) | string |                   |
 | IsRequiredForReturn | 還車位置資訊必填    |  int   | 0:否 1:是         |
 | StationPic          | 據點照片            |  List  |                   |
-| IsRent              | 是否可租            | string | Y/N               |
+| IsRent              | 是否可租            | string | Y/N/A(魔鬼剋星)   |
 
 
 * StationPic參數說明
@@ -1883,6 +1889,7 @@
 | ------------- | -------------- | :--: | --------- |
 | IsFavStation  | 是否為常用據點 | int  | 0:否 1:是 |
 | GetCarTypeObj | 車型牌卡清單   | List |           |
+
 * GetCarTypeObj回傳參數說明
 
 | 參數名稱 | 參數說明     |  型態  | 範例 |
@@ -2033,7 +2040,7 @@
 | Content | 其他說明 | string | |
 | ContentForAPP | 據點描述(app顯示) | string | |
 | Mininum | 最低價 | int | 168 |
-| IsRent | 是否有車可租(BY據點) | string | Y/N |
+| IsRent | 是否有車可租(BY據點) | string | Y/N/A(魔鬼剋星) |
 | IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
 | IsShowCard | 是否顯示牌卡 | int | 0:否 1:是 |
 | ProjectObj | 專案清單 | List | |
@@ -2063,7 +2070,7 @@
 | HolidayPerHour | 假日每小時金額 | int | 168 |
 | CarOfArea | 站別類型 | string | 同站 |
 | Content | 其他備註 | string | ... |
-| IsRent | 是否可租 | string | Y/N |
+| IsRent | 是否可租 | string | Y/N/A(魔鬼剋星) |
 | IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
 | IsShowCard | 是否顯示牌卡 | int | 0:否 1:是 |
 | MonthlyRentId | 訂閱制月租ID			| int | 1234 |
@@ -2207,6 +2214,7 @@
         ]
     }
 }
+
 ```
 
 * 錯誤代碼清單
@@ -2894,6 +2902,7 @@
 - 20210531補上
 
 - ASP.NET Web API (REST API)
+
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
@@ -2916,6 +2925,7 @@
     "EDate":""
 }
 ```
+
 * output 回傳參數說明
 
 | 參數名稱     | 參數說明           |  型態  | 範例          |
@@ -3634,6 +3644,7 @@
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
+
 
 * Output範例
 
@@ -4669,6 +4680,7 @@
 ## CreditAuth 付款與還款
 
 ### [/api/CreditAuth/]
+
 * 20210909 補資料
 
 * ASP.NET Web API (REST API)
@@ -4676,6 +4688,10 @@
 * 傳送跟接收採JSON格式
 
 * HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
 
 | 參數名稱     | 參數說明                       | 必要 |  型態  | 範例     |
 | ------------ | ------------------------------ | :--: | :----: | -------- |
@@ -6858,6 +6874,7 @@
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
 
+
 * Output範例
 
 ```
@@ -7526,7 +7543,7 @@
 
 | 參數名稱     | 參數說明                                                     |  型態  | 範例     |
 | ------------ | ------------------------------------------------------------ | :----: | -------- |
-| PayMode      | 付費方式 (0:信用卡 1:和雲錢包)                               |  int   | 0        |
+| PayMode      | 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay)                    |  int   | 0        |
 | HasBind      | 是否有綁定(0:無,1有)                                         |  int   | 1        |
 | HasWallet    | 是否有錢包(0:無,1有)                                         |  int   | 0        |
 | TotalAmount  | 錢包剩餘金額                                                 |  int   | 0        |
@@ -7538,6 +7555,16 @@
 | AutoStored   | 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
 | HasHotaiPay  | 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
 | HotaiListObj | 和泰PAY卡清單                                                |  list  |          |
+
+* BindListObj 回傳參數說明
+
+| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
+| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
+| BankNo          | 銀行帳號                         | string |                                                       |
+| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
+| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
+| AvailableAmount | 剩餘額度                         | string |                                                       |
+| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
 
 * HotaiListObj 回傳參數說明
 
@@ -8004,10 +8031,12 @@
 | -------- | -------------------------- | ---------------------------------------- |
 | ERR730   | 查詢綁定卡號失敗           | 查詢綁定卡號失敗                         |
 | ERR197   | 刷卡授權失敗，請洽發卡銀行 | 刷卡授權發生錯誤                         |
+| ERR284   | 儲值金額不得低於下限       | 儲值金額不得低於100元                    |
 | ERR285   | 儲值金額超過上限           | 儲值金額不得大於5萬元                    |
 | ERR282   | 錢包金額超過上限           | 錢包現存餘額上限為5萬元(包括受贈)        |
 | ERR280   | 金流超過上限               | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
 | ERR918   | Api呼叫失敗                | 呼叫台新錢包儲值發生失敗                 |
+| ERR286   | 寫入錢包紀錄發生失敗       | 寫入錢包紀錄發生失敗                     |
 
 ## WalletStoreVisualAccount 錢包儲值-虛擬帳號
 
@@ -8223,7 +8252,7 @@
 
 | 參數名稱         | 參數說明                      | 型態 | 範例 |
 | ---------------- | ----------------------------- | :--: | ---- |
-| DefPayMode       | 預設付款方式(0:信用卡 1:錢包) | int  | 0    |
+| DefPayMode       | 預設付款方式(0:信用卡 1:錢包 4:Hotaipay) | int  | 0    |
 | PayModeBindCount | 已經綁定的付費方式數量        | int  | 1    |
 | PayModeList      | 付款方式清單                  | List |      |
 
@@ -8231,7 +8260,7 @@
 
 | 參數名稱      | 參數說明                      |  型態  | 範例                                     |
 | ------------- | ----------------------------- | :----: | ---------------------------------------- |
-| PayMode       | 付款方式(0:信用卡 1:錢包)     |  int   | 0                                        |
+| PayMode       | 付款方式(0:信用卡 1:錢包 4:Hotaipay)     |  int   | 0                                        |
 | PayModeName   | 付款方式名稱                  | string | 信用卡                                   |
 | HasBind       | 是否有綁定過開通(0:否1:是)    |  int   | 1                                        |
 | PayInfo       | 付款顯示資訊                  | string | *1234                                    |
@@ -8270,7 +8299,7 @@
                 "Balance":0
                 "AutoStoreFlag":0
                 "NotBindMsg":"未開通"
-                },
+			}
         ]   
 	}
 }
@@ -8321,6 +8350,7 @@
 
 | 參數名稱   | 參數說明              |  型態  | 範例             |
 | ---------- | --------------------- | :----: | ---------------- |
+
 
 * Output範例
 
