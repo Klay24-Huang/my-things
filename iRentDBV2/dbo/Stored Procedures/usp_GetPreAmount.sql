@@ -6,7 +6,7 @@
 * 程式功能 : 取得訂單差額、預授權金額
 * 作    者 : YEH
 * 撰寫日期 : 20211109
-* 修改日期 : 
+* 修改日期 : 20220217 UPD BY YEH REASON:預授權金額要抓信用卡及錢包
 
 * Example  : 
 ***********************************************************************************************/
@@ -75,8 +75,12 @@ BEGIN
 			-- 差額
 			SELECT ISNULL(DiffAmount,0) AS DiffAmount FROM TB_OrderExtinfo WITH(NOLOCK) WHERE order_number=@OrderNo;
 
-			-- TradeClose
-			SELECT CloseID,AuthType,CloseAmout,ChkClose FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo Order By AuthType;
+			-- 預授權
+			-- 20220217 UPD BY YEH REASON:預授權金額要抓信用卡及錢包
+			SELECT CloseID,CardType,AuthType,CloseAmout,ChkClose FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo
+			UNION
+			SELECT HistoryID AS CloseID,2 AS CardType,1 AS AuthType,Amount AS CloseAmout,1 AS ChkClose FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo	-- 錢包的CardType,AuthType先寫死
+			Order By ChkClose Desc,AuthType
 		END
 
 		-- 寫入錯誤訊息
@@ -100,5 +104,4 @@ BEGIN
 	--輸出系統訊息
 	SELECT @ErrorCode ErrorCode, @ErrorMsg ErrorMsg, @SQLExceptionCode SQLExceptionCode, @SQLExceptionMsg SQLExceptionMsg, @Error Error
 END
-
 GO
