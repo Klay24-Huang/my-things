@@ -26,7 +26,6 @@ using NLog;
 
 namespace WebAPI.Controllers
 {
-
     /// <summary>
     /// 查詢綁卡及錢包
     /// </summary>
@@ -244,7 +243,7 @@ namespace WebAPI.Controllers
                     apiOutput.CARRIERID = spOut.CARRIERID;
                     apiOutput.NPOBAN = spOut.NPOBAN;
                     apiOutput.AutoStored = spOut.AutoStored;
-                    //logger.Trace($"\n\tIDNO = {IDNO} \n\t HasWallet = {apiOutput.HasWallet} \n\t TSB_WalletBalance = {TSB_WalletBalance}\n\t spOut.WalletAmout ={spOut.WalletAmout}");
+                    apiOutput.MotorPreAmt = spOut.MotorPreAmt;      // 20220221 UPD BY YEH REASON:增加機車預扣款金額
                 }
             }
             #endregion
