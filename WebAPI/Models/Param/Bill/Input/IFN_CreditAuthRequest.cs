@@ -43,5 +43,25 @@ namespace WebAPI.Models.Param.Bill.Input
         /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款)
         /// </summary>
         public int AuthType { get; set; }
+        /// <summary>
+        /// 錢包用交易類型(tbWalletTradeMain)
+        /// </summary>
+        public string TradeType { get; set; } = "";
+
+        public Int64 LogID { get; set; } = 0;
+        /// <summary>
+        /// JWT TOKEN
+        /// </summary>
+        public string Token { get; set; } = "";
+        /// <summary>
+        /// 輸入來源(1:APP;2:Web)
+        /// 1:驗證Token/2:不驗證Token
+        /// </summary>
+        public short InputSource { get; set; } = 2;
+        /// <summary>
+        /// 專案類型(0:同站;3:路邊;4:機車)
+        /// </summary>
+        public int ProjType { get; set; } = -1;
+
     }
 }
