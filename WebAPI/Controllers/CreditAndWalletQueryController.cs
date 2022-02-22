@@ -220,7 +220,7 @@ namespace WebAPI.Controllers
             #region 回傳結果
             if (flag)
             {
-                string SPName = "usp_CreditAndWalletQuery_Q01";
+                string SPName = "usp_CreditAndWalletQuery_Q02";
                 SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
                 {
                     IDNO = IDNO,
