@@ -53,6 +53,7 @@
 - [OrderDetail 訂單明細](#OrderDetail)
 - [GetOrderInsuranceInfo 訂單安心服務資格及價格查詢](#GetOrderInsuranceInfo)
 - [GetCancelOrderList 取得取消訂單列表](#GetCancelOrderList)
+- [InsertOrderOtherFee 營損明細新增](#InsertOrderOtherFee)
 
 取還車跟車機操控相關
 
@@ -287,6 +288,8 @@
 20220121 補月租購買(BuyNowAddMonth)、月租升轉(BuyNowUpMonth)、欠費繳交(BuyNowPayArrs)、設定自動續約(SetSubsNxt)錯誤代碼
 
 20220207 新增月租購買(BuyNowToolAddMonth)、升轉工具(BuyNowToolUpMonth)
+
+20220222 新增營損明細(InsertOrderOtherFee)
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -4047,6 +4050,70 @@
     }
 }
 ```
+
+## InsertOrderOtherFee 營損匯入新增
+
+### [/api/InsertOrderOtherFee/]
+
+* 20220222新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| IRNETORDNO  | 訂單編號 |  Y   | string | H0002630 |
+| CNTRNO	| 短租合約編號 | Y | string | |
+| CarDispatch | 車輛調度費 | Y | int | 1000 |
+| DispatchRemark | 車輛調度費備註 |  | string | |
+| ParkingFee | 非配合停車場費 | Y | int | 0 |
+| ParkingFeeRemark | 非配合停車費備註 |  | string | |
+| UserID | 操作人員 | Y | string | 99998 |
+
+* input範例
+
+```
+{
+    "IRNETORDNO": "H0002630",
+	"CNTRNO":"X0II-00112345",
+	"CarDispatch":1000,
+	"DispatchRemark":"車輛調度費備註",
+	"ParkingFee":0,
+	"ParkingFeeRemark":"",
+	"UserID":"99998"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
 
 # 取還車跟車機操控相關
 
