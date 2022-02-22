@@ -104,7 +104,8 @@ namespace WebAPI.Controllers
                 */
 
                 //20201022 ADD BY ADAM REASON.改為SP呼叫
-                string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberData);
+                //string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberData);
+                string spName = "usp_GetMemberData_V20220121";
                 SPInput_GetMemberData spMemberDataInput = new SPInput_GetMemberData()
                 {
                     IDNO = IDNO,

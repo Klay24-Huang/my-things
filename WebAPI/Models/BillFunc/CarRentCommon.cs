@@ -187,15 +187,13 @@ namespace WebAPI.Models.BillFunc
 
             trace.traceAdd("fnIn", sour);
 
-            bool isSpring = cr_com.isSpring(sour.SD, sour.ED);
-
-            //1.0 先還原這個單號使用的
-            re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
-            re.errCode = errCode;
-            int RateType = (sour.ProjType == 4) ? 1 : 0;
-
             if (sour != null && !string.IsNullOrWhiteSpace(sour.MonIds))
             {
+                // 20220210 UPD BY YEH REASON:有訂閱制才還原資料
+                //1.0 先還原這個單號使用的
+                re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
+                re.errCode = errCode;
+
                 monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
 
                 //假日優惠費率置換:只限汽車月租,只置換假日
@@ -753,7 +751,7 @@ namespace WebAPI.Models.BillFunc
                         var Event = ProjectList.Where(x => x.Event == 1).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();     // 活動專案
                         var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();    // 一般專案
 
-                        if (Event.PROJID.Contains(sour.ProjID))
+                        if (Event != null && Event.PROJID.Contains(sour.ProjID))
                         {
                             if (Normal != null)
                             {
@@ -773,7 +771,7 @@ namespace WebAPI.Models.BillFunc
                         var Event = ProjectList.Where(x => x.Event == 1).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();     // 活動專案
                         var Normal = ProjectList.Where(x => x.Event == 0).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).FirstOrDefault();    // 一般專案
 
-                        if (Event.PROJID.Contains(sour.ProjID))
+                        if (Event != null && Event.PROJID.Contains(sour.ProjID))
                         {   // 所選專案 是 活動專案
                             if (Normal != null)
                             {
@@ -788,8 +786,18 @@ namespace WebAPI.Models.BillFunc
                         }
                         else
                         {
-                            xsour.PRICE = Normal.PRICE / 10;
-                            xsour.PRICE_H = Normal.PRICE_H / 10;
+                            //20220129 ADD BY ADAM REASON.春節路邊專案有可能取不到Normal專案
+                            if (Normal != null)
+                            {
+                                xsour.PRICE = Normal.PRICE / 10;
+                                xsour.PRICE_H = Normal.PRICE_H / 10;
+                            }
+                            else
+                            {
+                                // 撈不到就給原專案的價格
+                                xsour.PRICE = sour.ProDisPRICE;
+                                xsour.PRICE_H = sour.ProDisPRICE_H;
+                            }
                         }
                     }
                 }

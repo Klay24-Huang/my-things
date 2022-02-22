@@ -516,41 +516,11 @@ namespace WebAPI.Controllers
                         }
                         #endregion
 
-                        #region 錢包扣款
-                        if (flag)
-                        {
-                            //台新錢包扣款
-                            if (apiInput.CheckoutMode == 1 && PreAmount.DiffAmount > 0)
-                            {
-                                string TradeType = (OrderDataLists[0].ProjType == 4) ? "Pay_Motor" : "Pay_Car";
-                                var orderPayForWallet = PayWalletFlow(tmpOrder, PreAmount.DiffAmount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
-                                flag = orderPayForWallet.flag;
-                                trace.traceAdd("PayWalletFlow", new { flag, errCode });
-                            }
-                        }
-                        #endregion
-
                         #region 訂單存檔
                         //20201228 ADD BY ADAM REASON.因為目前授權太久會有回上一頁重新計算的問題
                         //所以把存檔功能先提早完成再進行信用卡授權
                         if (flag)
                         {
-                            #region 原本存檔(MARK)
-                            //string SPName = "usp_DonePayRentBillNew_20210517";
-
-                            ////20201201 ADD BY ADAM REASON.換電獎勵
-                            //SPOutput_GetRewardPoint PayOutput = new SPOutput_GetRewardPoint();
-                            //SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint> SQLPayHelp = new SQLHelper<SPInput_DonePayRent, SPOutput_GetRewardPoint>(connetStr);
-                            //flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                            //baseVerify.checkSQLResult(ref flag, PayOutput.Error, PayOutput.ErrorCode, ref lstError, ref errCode);
-                            //if (flag)
-                            //{
-                            //    RewardPoint = PayOutput.Reward;
-                            //}
-
-                            //trace.traceAdd("DonePayRentBill", new { flag, PayInput, PayOutput });
-                            #endregion
-
                             string SPName = "usp_CreditAuth_U01";
 
                             object[] objparms = new object[TradeCloseLists.Count == 0 ? 1 : TradeCloseLists.Count];
@@ -562,6 +532,7 @@ namespace WebAPI.Controllers
                                     objparms[i] = new
                                     {
                                         CloseID = TradeCloseLists[i].CloseID,
+                                        CardType = TradeCloseLists[i].CardType,
                                         AuthType = TradeCloseLists[i].AuthType,
                                         ChkClose = TradeCloseLists[i].ChkClose,
                                         CloseAmout = TradeCloseLists[i].CloseAmout,
@@ -574,6 +545,7 @@ namespace WebAPI.Controllers
                                 objparms[0] = new
                                 {
                                     CloseID = 0,
+                                    CardType = 0,
                                     AuthType = 0,
                                     ChkClose = 0,
                                     CloseAmout = 0,
@@ -694,7 +666,9 @@ namespace WebAPI.Controllers
                         #region 1:罰金/補繳
                         // 20210220;增加快取機制，當資料存在快取記憶體中，就不再執行並回錯誤訊息。
                         var KeyString = string.Format("{0}-{1}", "CreditAuthController", apiInput.OrderNo);
-                        var CacheString = Cache.StringGet("Key1").ToString();
+                        //var CacheString = Cache.StringGet("Key1").ToString();
+                        //20220211 ADD BY ADAM REASON.調整快取邏輯
+                        var CacheString = Cache.StringGet(KeyString).ToString();
 
                         if (string.IsNullOrEmpty(CacheString) || KeyString != CacheString)
                         {
@@ -747,6 +721,8 @@ namespace WebAPI.Controllers
                                     string AuthCode = "";
                                     string CardNo = "";
                                     string payCD = "1"; //短租付費類型 1.信用卡 2.錢包扣款
+                                    int CardType = 1;   //0:和泰PAY 1:台新(預設)  //20220206 ADD BY ADAM REASON.和泰pay
+                                    string MerchantID = ""; //TaishinAPPOS  
                                     //錢包扣款
                                     if (apiInput.CheckoutMode == 1)
                                     {
@@ -806,7 +782,7 @@ namespace WebAPI.Controllers
                                             TaishinTradeNo = AuthOutput?.BankTradeNo ?? "";
                                             RTNCODE = "1000";
                                             RESULTCODE = "1000";
-
+                                            CardType = AuthOutput.CardType; //20220206 ADD BY ADAM REASON.和泰pay
                                         }
                                     }
                                     if (RTNCODE == "1000")   //20210106 ADD BY ADAM REASON.有成功才呼叫
@@ -827,7 +803,8 @@ namespace WebAPI.Controllers
                                         WebAPIInput_NPR340Save wsInput = null;
                                         WebAPIOutput_NPR340Save wsOutput = new WebAPIOutput_NPR340Save();
                                         //string MerchantTradeNo = "";
-                                        string ServiceTradeNo = TaishinTradeNo;
+                                        //string ServiceTradeNo = TaishinTradeNo;
+                                        string ServiceTradeNo = CardType == 1 ? TaishinTradeNo : MerchantTradeNo;     //20220206 ADD BY ADAM REASON.和泰pay
                                         //string AuthCode = AuthOutput?.AuthIdResp ?? "0000";
                                         //string CardNo = AuthOutput?.CardNo ?? "XXXX-XXXX-XXXX-XXXX";
 
@@ -852,9 +829,10 @@ namespace WebAPI.Controllers
                                                 PAYMENTTYPE = Convert.ToInt64(sp_result[i].PAYMENTTYPE),
                                                 PAYDATE = DateTime.Now.ToString("yyyyMMdd"),
                                                 NORDNO = ServiceTradeNo,
-                                                CDTMAN = ""
+                                                CDTMAN = "",
+                                                OPERATOR = (CardType == 1 ? 0 : 1)      //0:台新 1:中信
                                             });
-                                            //錢包參數
+                                            //錢包參數(20220206上班前才發現，這個目前iRentService沒上)
                                             wsInput.tbNPR340PaymentDetail.Add(new NPR340PaymentDetail()
                                             {
                                                 CNTRNO = sp_result[i].CNTRNO,
@@ -863,6 +841,7 @@ namespace WebAPI.Controllers
                                                 PAYMEMO = "",
                                                 PORDNO = sp_result[i].IRENTORDNO,
                                                 PAYTCD = payCD
+                                                //OPERATOR = (CardType == 1 ? 0 : 1)      //0:台新 1:中信
                                             });
                                         }
 

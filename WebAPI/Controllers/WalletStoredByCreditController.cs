@@ -62,7 +62,6 @@ namespace WebAPI.Controllers
             string funName = "WalletStoredByCreditController";
             int apiId = 220;
 
-            Int16 Mode = 1;
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_WalletStoredByCredit apiInput = null;
@@ -178,10 +177,10 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("刷卡授權");
                 }
                 #endregion
-                #region 台新錢包儲值失敗
+                #region 台新錢包儲值
                 if (flag)
                 {
-                    switch (AuthOutput.CardType)
+                    switch (AuthOutput.CheckoutMode)
                     {
                         case 0:
                             TradeType = "Store_HotaiPay";
@@ -238,11 +237,7 @@ namespace WebAPI.Controllers
                         SPInput_InsTaishinStoredMoneyError spInput = new SPInput_InsTaishinStoredMoneyError()
                         {
                             IDNO = IDNO,
-                            IsForeign = baseVerify.regexStr(IDNO, CommonFunc.CheckType.FIDNO) ? 1 : 0,
                             MemberId = wallet.MemberId,
-                            Name = wallet.Name,
-                            PhoneNo = wallet.PhoneNo,
-                            Email = wallet.Email,
                             AccountType = wallet.AccountType,
                             CreateType = wallet.CreateType,
                             AmountType = wallet.AmountType,
@@ -296,7 +291,7 @@ namespace WebAPI.Controllers
                         TradeType = TradeType,
                         TradeKey = cardNo,
                         PRGName = funName,
-                        Mode = Mode,
+                        Mode = 1,
                         InputSource = 1,
                         Token = Access_Token,
                         LogID = LogID

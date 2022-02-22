@@ -16,30 +16,11 @@ namespace Domain.SP.Input.Wallet
         /// </summary>
         public string IDNO { get; set; } = "";
 
-        /// <summary>
-        /// IDNO是否為舊式居留證(0:否 1:是)
-        /// </summary>
-        public int IsForeign { get; set; } = 0;
 
         /// <summary>
         /// 商店會員編號，最長20碼
         /// </summary>
         public string MemberId { get; set; } = "";
-
-        /// <summary>
-        /// 會員姓名
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
-        /// 會員電話
-        /// </summary>
-        public string PhoneNo { get; set; } = "";
-
-        /// <summary>
-        /// 會員email
-        /// </summary>
-        public string Email { get; set; } = "";
 
         /// <summary>
         /// 帳戶類別，預設帶2

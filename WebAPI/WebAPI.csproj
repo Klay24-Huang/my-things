@@ -557,6 +557,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GeneralTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
@@ -876,10 +877,13 @@
     <None Include="Properties\PublishProfiles\iRentV2-App-Api2 - Web Deploy1.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-App-Api3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-api - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-api-STB - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Api2 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-api2-STB - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-api2-test - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-api2-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Api3 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-api3-STB - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Api4 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-backend-api-exp - FTP.pubxml" />

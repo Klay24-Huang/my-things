@@ -341,7 +341,7 @@ namespace WebAPI.Service
 
             return flag;
         }
-
+        
         /// <summary>
         /// 寫入開戶儲值錯誤LOG
         /// </summary>
@@ -468,6 +468,40 @@ namespace WebAPI.Service
                 }
             }
             return spOut;
+        }
+
+        /// <summary>
+        /// 取得付款方式 (不含和泰Pay)
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="LogID"></param>
+        /// <param name="Access_Token"></param>
+        /// <returns></returns>
+        public (bool flag, List<SPOutput_GetPayInfo> PayMode) sp_GetPayInfo(SPInput_GetPayInfo spInput, ref string errCode)
+        {
+            var lstError = new List<ErrorInfo>();
+            //string errMsg = "Success"; //預設成功
+            errCode = "000000"; //預設成功
+
+            (bool flag, List<SPOutput_GetPayInfo> PayMode) re = (false, new List<SPOutput_GetPayInfo>());
+
+            string SPName = "usp_GetPayInfo_Q1";
+
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_GetPayInfo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetPayInfo, SPOutput_Base>(connetStr);
+            List<SPOutput_GetPayInfo> PayMode = new List<SPOutput_GetPayInfo>();
+
+            DataSet ds = new DataSet();
+            bool flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref PayMode, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+            if (flag && PayMode.Count > 0)
+            {
+                re.flag = true;
+                re.PayMode = PayMode;
+            }
+
+            return re;
         }
     }
 

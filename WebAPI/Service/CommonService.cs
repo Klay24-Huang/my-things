@@ -410,5 +410,25 @@ namespace WebAPI.Service
             return Result;
         }
         #endregion
+
+        #region 寫入訂單備註
+        /// <summary>
+        /// 寫入訂單備註
+        /// </summary>
+        /// <param name="Input"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool InsertOrderExtInfo(SPInput_OrderExtInfo Input, ref string errCode, ref List<ErrorInfo> lstError)
+        {
+            string SPName = "usp_InsOrderExtinfo_I01";
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_OrderExtInfo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_OrderExtInfo, SPOutput_Base>(connetStr);
+
+            var flag = sqlHelp.ExecuteSPNonQuery(SPName, Input, ref spOut, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+            return flag;
+        }
+        #endregion
     }
 }

@@ -80,6 +80,7 @@ namespace WebAPI.Controllers
             int nowPeriod = 0;
 
 
+
             var mem = new Domain.MemberData.RegisterData();
             var InvData = new Domain.MemberData.InvoiceData();
 
@@ -108,17 +109,6 @@ namespace WebAPI.Controllers
                             flag = false;
                             errCode = "ERR900";
                             errMsg = "MonProjID、MonProPeriod、IDNO必填";
-                        }
-                    }
-
-                    //不開放訪客
-                    if (flag)
-                    {
-                        if (isGuest)
-                        {
-                            flag = false;
-                            errCode = "ERR101";
-                            errMsg = "不開放訪客";
                         }
                     }
 
@@ -211,7 +201,7 @@ namespace WebAPI.Controllers
                 }
                 #endregion
 
-                #region
+                #region 後續流程
                 if (flag)
                 {
                     #region 載入後續Api所需資料
@@ -483,11 +473,11 @@ namespace WebAPI.Controllers
                         errCode = "ERR247";
                         errMsg = "輸入參數格式不符";
                     }
-                    outputApi.PayResult = flag ? 1 : 0;
                 }
                 #endregion
 
                 #endregion
+                outputApi.PayResult = flag ? 1 : 0;
 
                 trace.traceAdd("outputApi", outputApi);
             }
@@ -577,18 +567,6 @@ namespace WebAPI.Controllers
                         }
                     }
 
-                    //不開放訪客
-                    if (flag)
-                    {
-                        if (isGuest)
-                        {
-                            flag = false;
-                            errCode = "ERR101";
-                            errMsg = "不開放訪客";
-
-                        }
-                    }
-
                     if (flag)
                     {
                         //不刷卡代表只補資料(需帶當初信用卡交易紀錄)
@@ -614,14 +592,6 @@ namespace WebAPI.Controllers
 
                 #endregion
 
-                #region Token判斷(註解)
-                //if (flag && isGuest == false)
-                //{
-                //    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
-                //    buyNxtCom.IDNO = IDNO;
-                //    trace.FlowList.Add("Token判斷");
-                //}
-                #endregion
 
                 #region TB
 
@@ -967,13 +937,12 @@ namespace WebAPI.Controllers
                         }
                         #endregion
                     }
-
-                    outputApi.PayResult = flag ? 1 : 0;
-
                 }
                 #endregion
 
                 #endregion
+
+                outputApi.PayResult = flag ? 1 : 0;
 
                 trace.traceAdd("outputApi", outputApi);
             }

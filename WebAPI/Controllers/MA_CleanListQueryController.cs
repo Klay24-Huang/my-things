@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
     /// </summary>
     public class MA_CleanListQueryController : ApiController
     {
-        private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private string connetStr = ConfigurationManager.ConnectionStrings["IRentMirror"].ConnectionString;
         [HttpPost]
         public Dictionary<string, object> DoMA_CleanListQuery(Dictionary<string, object> value)
         {

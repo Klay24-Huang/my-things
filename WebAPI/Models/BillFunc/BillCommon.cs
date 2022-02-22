@@ -695,8 +695,11 @@ namespace WebAPI.Models.BillFunc
                         if (m != null)
                             x.xRate = m.WorkDayRateForMoto;
                     }
+                    //20220120 ADD BY ADAM REASON.FLOAT轉DOUBLE會造成小數問題，故取小數點1位四捨五入
+                    x.xRate = Math.Round(x.xRate, 1);
                 });
                 //取GroupId
+                
                 dayPayList = GetDateGroup(norDates, "nor_", dayPayList);
             }
             #endregion
@@ -799,11 +802,12 @@ namespace WebAPI.Models.BillFunc
                         {
                             if (useDisc >= dayBaseMins) // 使用折抵 >= 基本分鐘數
                             {
-                                if (dayBasePrice > (dayBaseMins * x.xRate))//首6分鐘少1元":10-(1.5*6) = 1    // 基本消費 >  (基本分鐘 * 每分鐘金額)
-                                    dre -= (dayBasePrice - (dayBaseMins * x.xRate));    // 租金 = 租金 - 基本消費 - (基本分鐘 * 每分鐘金額)
+                                if (dayBasePrice > (dayBaseMins * x.xRate))     // 基本消費 >  (基本分鐘 * 每分鐘金額)
+                                    dre -= dayBasePrice - (dayBaseMins * x.xRate);    // 租金 = 租金 - 基本消費 - (基本分鐘 * 每分鐘金額)
                                 else
-                                    //dre += (dayBaseMins * x.xRate) - dayBasePrice;      // 租金 = 租金 + (基本分鐘 * 每分鐘金額) - 基本消費
-                                    x.useBaseMins += dayBaseMins;
+                                    dre += (dayBaseMins * x.xRate) - dayBasePrice;      // 租金 = 租金 + (基本分鐘 * 每分鐘金額) - 基本消費
+                                    
+                                x.useBaseMins += dayBaseMins;
                             }
                             else
                             {
@@ -3381,7 +3385,7 @@ namespace WebAPI.Models.BillFunc
                                     useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
                                     //f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceNmin;
                                     // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
-                                    f24Pay += dayBasePrice + (fdate.xMins - useDisc01) * priceNmin;
+                                    f24Pay += dayBasePrice + (f01_over6 - useDisc01) * priceNmin;
                                     wLastMins += (fdate.xMins - useDisc01);
                                     fdate.xMins -= useDisc01;
                                 }
@@ -3403,7 +3407,7 @@ namespace WebAPI.Models.BillFunc
                         {
                             hLastMins += fdate.xMins;
                             if (FreeMinute == 0)
-                                f24Pay += (fdate.xMins - dayBaseMins) * priceHmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
+                                f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
                             else
                                 f24Pay += fdate.xMins * priceNmin + dayBasePrice;   // 租金 = 使用分鐘數 * 每分鐘價格 + 基本消費
                         }
@@ -3421,9 +3425,10 @@ namespace WebAPI.Models.BillFunc
                                 if (f01_over6 > 0)
                                 {
                                     useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
+                                    //折扣小於基本分只能折扣超過基本分的部分
                                     //f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceHmin;
                                     // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
-                                    f24Pay += dayBasePrice + (fdate.xMins - useDisc01) * priceNmin;
+                                    f24Pay += dayBasePrice + (f01_over6 - useDisc01) * priceNmin;
                                     hLastMins += (fdate.xMins - useDisc01);
                                     fdate.xMins -= useDisc01;
                                 }

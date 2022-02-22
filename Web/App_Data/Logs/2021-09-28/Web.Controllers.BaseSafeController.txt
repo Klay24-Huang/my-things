@@ -1,4 +1,0 @@
-2021-09-28 10:16:48.1007|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'Audit',IPAddr:'::1}
-2021-09-28 10:16:51.8163|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'AuditDetail',IPAddr:'::1}
-2021-09-28 10:17:16.4558|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'Audit',IPAddr:'::1}
-2021-09-28 10:18:01.7853|TRACE|Web.Controllers.BaseSafeController|{ReportName:'程式使用紀錄',User:'唐瑋祁',Account:'80345',ActionName:'AuditDetail',IPAddr:'::1}
