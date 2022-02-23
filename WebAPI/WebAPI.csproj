@@ -233,6 +233,7 @@
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
     <Compile Include="Controllers\BE_SendEMailController.cs" />
+    <Compile Include="Controllers\BindQueryByEasyrentController.cs" />
     <Compile Include="Controllers\CTBCInquiryController.cs" />
     <Compile Include="Controllers\CTBCCapJobController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
@@ -499,6 +500,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\Input\IAPI_BeSendEMail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
@@ -550,6 +552,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetCardBindListByEasyrent.cs" />
     <Compile Include="Models\Param\Output\OAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />
@@ -817,6 +820,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CarRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindList.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindListByEasyrent.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\DetailData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\FeedBackKind.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetFullProjectVM.cs" />
