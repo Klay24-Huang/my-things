@@ -1,14 +1,12 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Bill;
 using Domain.SP.Input.Booking;
+using Domain.SP.Input.Notification;
+using Domain.SP.Input.Rent;
 using Domain.SP.Input.Subscription;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Wallet;
-using Domain.SP.Output;
 using Domain.SP.Output.Bill;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Wallet;
-using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
@@ -17,23 +15,18 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
-using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
-using WebAPI.Utils;
-using WebCommon;
 using WebAPI.Models.ComboFunc;
-using WebAPI.Service;
-using Domain.SP.Input.Rent;
-using Domain.SP.Input.Notification;
 using WebAPI.Models.Param.Bill.Input;
 using WebAPI.Models.Param.Bill.Output;
+using WebAPI.Models.Param.Input;
+using WebAPI.Models.Param.Output;
+using WebAPI.Service;
+using WebCommon;
 
 namespace WebAPI.Controllers
 {
@@ -249,7 +242,7 @@ namespace WebAPI.Controllers
                 #endregion
 
                 if (ProjType == 4)  // 4:機車
-                {                
+                {
                     int.TryParse(new CommonRepository(connetStr).GetCodeData("MotorPreAmt").FirstOrDefault().MapCode, out motoPreAmt);  //從TB_CODE抓取機車預扣金額
 
                     if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
@@ -345,7 +338,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                SPName = "usp_Booking_V20220118";
+                SPName = "usp_Booking";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
@@ -399,7 +392,6 @@ namespace WebAPI.Controllers
                 bool walletEnough = false;    //錢包餘額是否足夠
                 bool bookNDaysAgo = false;    //同站取車前6小時之前預約單(走排程授權)
 
-
                 #region 取得預設支付方式
                 SPInput_GetPayInfo getPayInfo = new SPInput_GetPayInfo()
                 {
@@ -432,7 +424,6 @@ namespace WebAPI.Controllers
                             ProjType = orderData.ProjType
                         };
 
-
                         if (ProjType == 0)
                         {
                             //同站取車前6小時前預約走排程授權
@@ -450,7 +441,6 @@ namespace WebAPI.Controllers
                         preAuthAmt = orderData.PreAuthAmt == 0 ? estimateDetail.estimateAmt : estimateDetail.estimateAmt - orderData.PreAuthAmt;
                         trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt, wallet.PayMode });
                         trace.FlowList.Add("計算預授權金");
-
                     }
                 }
                 string TradeType = ProjType == 4 ? "PreAuth_Motor" : "PreAuth_Car";
@@ -461,8 +451,7 @@ namespace WebAPI.Controllers
                 {
                     if (defaultPayMode == 1 && WalletAmout >= preAuthAmt) //預設錢包 餘額足
                     {
-
-                        payFlag = DoPreAuth(defaultPayMode, spOut.OrderNum, IDNO, preAuthAmt, funName, LogID,TradeType,ProjType,Access_Token,ref error, ref AuthOutput);
+                        payFlag = DoPreAuth(defaultPayMode, spOut.OrderNum, IDNO, preAuthAmt, funName, LogID, TradeType, ProjType, Access_Token, ref error, ref AuthOutput);
                         actualPayMode = AuthOutput?.CheckoutMode ?? -1;
                         walletEnough = payFlag;
 
@@ -495,7 +484,7 @@ namespace WebAPI.Controllers
                 #region 立即刷卡
                 if (authNow && preAuthAmt > 0)
                 {
-                    payFlag = DoPreAuth(4, spOut.OrderNum, IDNO, preAuthAmt, funName, LogID,TradeType,ProjType,Access_Token,ref errCode, ref AuthOutput); //和泰PAY為優先
+                    payFlag = DoPreAuth(4, spOut.OrderNum, IDNO, preAuthAmt, funName, LogID, TradeType, ProjType, Access_Token, ref errCode, ref AuthOutput); //和泰PAY為優先
                     actualPayMode = AuthOutput?.CheckoutMode ?? -1;
 
                     trace.traceAdd("DoPreAuth", new { payFlag, actualPayMode, AuthOutput, errCode });
@@ -512,7 +501,7 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         PRGID = funName,
                         OrderNo = spOut.OrderNum,
-                        CheckoutMode=-1,
+                        CheckoutMode = -1,
                         PreAuthMode = actualPayMode  //以最後支付的為主
                     };
                     commonService.InsertOrderExtInfo(spInput, ref error, ref lstError);
@@ -530,10 +519,10 @@ namespace WebAPI.Controllers
                         final_price = preAuthAmt,
                         OrderNo = spOut.OrderNum,
                         PRGName = funName,
-                        Status = payFlag? 2: bookNDaysAgo ? 0 : 2
+                        Status = payFlag ? 2 : bookNDaysAgo ? 0 : 2
                     };
 
-                    actualPayMode = bookNDaysAgo ? -1: actualPayMode;
+                    actualPayMode = bookNDaysAgo ? -1 : actualPayMode;
                     switch (actualPayMode)
                     {
                         case 0:
@@ -593,7 +582,7 @@ namespace WebAPI.Controllers
                 }
                 #endregion
                 #region 扣款失敗取消訂單
-                if (!bookNDaysAgo && !payFlag && preAuthAmt>0)
+                if (!bookNDaysAgo && !payFlag && preAuthAmt > 0)
                 {
                     SPInput_BookingCancel input_BookingCancel = new SPInput_BookingCancel()
                     {
@@ -623,7 +612,6 @@ namespace WebAPI.Controllers
                 var carRepo = new CarRentRepo();
                 carRepo.AddTraceLog(34, funName, trace, flag);
             }
-
             #endregion
             //預約成功
             if (flag && spOut.haveCar == 1)
@@ -743,7 +731,7 @@ namespace WebAPI.Controllers
         /// <param name="errCode">回傳訊息</param>
         /// <param name="PreAuthResult">回傳物件</param>
         /// <returns></returns>
-        bool DoPreAuth(int CheckoutMode, long OrderNo, string IDNO, int Amount, string funName, long LogID, string TradeType,int ProjType, string accessToken, ref string errCode, ref OFN_CreditAuthResult PreAuthResult)
+        bool DoPreAuth(int CheckoutMode, long OrderNo, string IDNO, int Amount, string funName, long LogID, string TradeType, int ProjType, string accessToken, ref string errCode, ref OFN_CreditAuthResult PreAuthResult)
         {
             CreditAuthComm creditAuthComm = new CreditAuthComm();
             var AuthInput = new IFN_CreditAuthRequest
@@ -757,11 +745,11 @@ namespace WebAPI.Controllers
                 funName = funName,
                 insUser = funName,
                 AuthType = 1,
-                InputSource=1,
-                Token= accessToken,
-                LogID= LogID,
-                TradeType=TradeType,
-                ProjType=ProjType
+                InputSource = 1,
+                Token = accessToken,
+                LogID = LogID,
+                TradeType = TradeType,
+                ProjType = ProjType
             };
 
             bool flag;
