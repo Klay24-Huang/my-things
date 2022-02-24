@@ -176,6 +176,7 @@ namespace WebAPI.Controllers
                 //}
                 #endregion
             }
+            #endregion
             #region 檢查欠費 20220105路邊欠費查詢取消
             //if (flag)
             //{
@@ -192,7 +193,7 @@ namespace WebAPI.Controllers
             #region 取車
             if (flag)
             {
-                string CheckTokenName = "usp_BeforeBookingStart_V20220119";
+                string CheckTokenName = "usp_BeforeBookingStart";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
@@ -355,9 +356,8 @@ namespace WebAPI.Controllers
                                 }
                             }
                         }
-                        
+                        #endregion
                     }
-                    #endregion
                     #region 20210514 開啟電源後須紀錄電量 20210521 改為設定完租約再記錄電量
                     if (flag)
                     {
@@ -401,7 +401,6 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-                #endregion
             #endregion
             #endregion
             #region 寫入錯誤Log

@@ -342,6 +342,7 @@ namespace WebAPI.Service
                             var TmpList = new TradeCloseList
                             {
                                 CloseID = Convert.ToInt32(dr["CloseID"]),
+                                CardType = Convert.ToInt32(dr["CardType"]),
                                 AuthType = Convert.ToInt32(dr["AuthType"]),
                                 CloseAmout = Convert.ToInt32(dr["CloseAmout"]),
                                 ChkClose = Convert.ToInt32(dr["ChkClose"])

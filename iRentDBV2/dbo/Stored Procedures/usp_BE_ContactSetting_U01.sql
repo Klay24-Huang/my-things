@@ -6,9 +6,14 @@
 * 程式功能 : 後台強還存檔
 * 作    者 : YEH
 * 撰寫日期 : 20211109
-* 修改日期 : 
-
-* Example  : 
+* 修改日期 : 20211202 UPD BY YEH REASON:整筆退才寫TB_OrderAuthReturn
+			 20211216 ADD BY ADAM REASON.增加isnull判斷
+			 20211217 UPD BY YEH REASON:增加信用卡類別(0:和泰;1:台新)
+			 20211229 UPD BY YEH REASON:信用卡類別用付款方式區分
+			 20220216 UPD BY YEH REASON:增加更新A_PRGID,U_PRGID
+			 20220223 UPD BY YEH REASON:增加錢包退款
+			 20220223 UPD BY YEH REASON:PAYAMT = 關帳檔總金額 + 錢包扣款總金額 - 錢包退款總金額
+* Example  :
 ***********************************************************************************************/
 
 CREATE PROCEDURE [dbo].[usp_BE_ContactSetting_U01]
@@ -63,6 +68,8 @@ BEGIN
 	DECLARE @DiffAmount INT;	-- 尾款
 	DECLARE @final_price INT;	-- 總計
 	DECLARE @NoPreAuth INT;		-- 預授權不處理專案 (0:要處理 1:不處理)
+	DECLARE @PayMode INT;		-- 付款方式
+	DECLARE @CardType INT;		-- 信用卡類別(0:和泰; 1:台新)
 
 	/*初始設定*/
 	SET @Error=0;
@@ -89,6 +96,7 @@ BEGIN
 	SET @DiffAmount=0;
 	SET @final_price=0;
 	SET @NoPreAuth=0;
+	SET @CardType=1;	-- 信用卡類別(預設台新信用卡)
 
 	BEGIN TRY
 		IF @IDNO='' OR @OrderNo=0 OR @UserID=''
@@ -216,8 +224,9 @@ BEGIN
 					--有可能寫入失敗
 					IF NOT EXISTS(SELECT SEQNO FROM TB_MotorChangeBattLOG WITH(NOLOCK) WHERE order_number=@OrderNo AND EventCD='1')
 					BEGIN
+						--20211216 ADD BY ADAM REASON.增加isnull判斷
 						INSERT INTO TB_MotorChangeBattLOG(order_number,CarNo,EventCD,RSOC,LBA,RBA,MKTime,CHKCD,REFNO)
-						SELECT @OrderNo,@CarNo,'1',P_TBA,P_LBA,P_RBA,MKTime,0,0 FROM TB_OrderDataByMotor WITH(NOLOCK) WHERE OrderNo=@OrderNo
+						SELECT @OrderNo,@CarNo,'1',P_TBA,ISNULL(P_LBA,0),ISNULL(P_RBA,0),MKTime,0,0 FROM TB_OrderDataByMotor WITH(NOLOCK) WHERE OrderNo=@OrderNo
 					END
 
 					DROP TABLE IF EXISTS #TB_MotorChangeBattLog;
@@ -236,7 +245,8 @@ BEGIN
 					FETCH NEXT FROM ChangeBattCur INTO @CHKSEQNO,@CHKCarNo,@CHKDT
 					WHILE @@FETCH_STATUS <> -1
 					BEGIN
-						SELECT TOP 1 @RSOC1= deviceRSOC,@RBA=deviceRBA,@LBA=deviceLBA FROM TB_CarRawData WITH(NOLOCK) WHERE CarNo=@CHKCarNo AND GPSTime > @CHKDT AND deviceRSOC is not null and deviceRSOC<>'' AND deviceRSOC<>'NA';
+						--20211216 ADD BY ADAM REASON.增加isnull判斷
+						SELECT TOP 1 @RSOC1= deviceRSOC,@RBA=ISNULL(deviceRBA,0),@LBA=ISNULL(deviceLBA,0) FROM TB_CarRawData WITH(NOLOCK) WHERE CarNo=@CHKCarNo AND GPSTime > @CHKDT AND deviceRSOC is not null and deviceRSOC<>'' AND deviceRSOC<>'NA';
 
 						--20210616 ADD BY ADAM REASON.取不到值就以3TBA為主
 						IF @RSOC1 IS NULL
@@ -244,8 +254,9 @@ BEGIN
 							SELECT TOP 1 @RSOC1=device3TBA FROM TB_CarRawData WITH(NOLOCK) WHERE CarNo=@CHKCarNo AND GPSTime > @CHKDT AND device3TBA>0;
 						END
 
-						UPDATE TB_MotorChangeBattLOG SET RSOC=@RSOC1,LBA=@LBA,RBA=@RBA,CHKCD=1 WHERE SEQNO=@CHKSEQNO;
-						UPDATE #TB_MotorChangeBattLOG SET RSOC=@RSOC1,LBA=@LBA,RBA=@RBA,CHKCD=1 WHERE SEQNO=@CHKSEQNO;
+						--20211216 ADD BY ADAM REASON.增加isnull判斷
+						UPDATE TB_MotorChangeBattLOG SET RSOC=ISNULL(@RSOC1,0),LBA=ISNULL(@LBA,0),RBA=ISNULL(@RBA,0),CHKCD=1 WHERE SEQNO=@CHKSEQNO;
+						UPDATE #TB_MotorChangeBattLOG SET RSOC=ISNULL(@RSOC1,0),LBA=ISNULL(@LBA,0),RBA=ISNULL(@RBA,0),CHKCD=1 WHERE SEQNO=@CHKSEQNO;
 
 						FETCH NEXT FROM ChangeBattCur INTO @CHKSEQNO,@CHKCarNo,@CHKDT
 					END
@@ -308,7 +319,7 @@ BEGIN
 			ELSE	-- 路邊汽車
 			BEGIN
 				UPDATE TB_BookingStatusOfUser
-				SET AnyRentBookingNowCount=AnyRentBookingNowCount-1,
+				SET AnyRentBookingNowCount=CASE WHEN AnyRentBookingNowCount-1 < 0 THEN 0 ELSE AnyRentBookingNowCount - 1 END,
 					RentNowActiveType=5,
 					NowActiveOrderNum=0,
 					AnyRentBookingFinishCount=AnyRentBookingFinishCount+1,
@@ -345,6 +356,23 @@ BEGIN
 			--寫入一次性開門的deadline
 			--INSERT INTO TB_OpenDoor(OrderNo,DeadLine)VALUES(@OrderNo,DATEADD(MINUTE,15,@NowTime));
 
+			-- 取得付款方式
+			SELECT @PayMode=PayMode FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO;
+
+			-- 20211229 UPD BY YEH REASON:信用卡類別用付款方式區分
+			IF @PayMode = 0	-- 台新信用卡
+			BEGIN
+				SET @CardType = 1;
+			END
+			ELSE IF @PayMode = 4	-- 和泰PAY
+			BEGIN
+				SET @CardType = 0;
+			END
+			ELSE IF @PayMode = 1	-- 錢包
+			BEGIN
+				SET @CardType = 2;
+			END
+
 			-- 取得尾款金額，(>0:補授權 ; =0:僅作關帳 ; <0:調整授權金
 			SELECT @DiffAmount=DiffAmount FROM TB_OrderExtinfo WITH(NOLOCK) WHERE order_number=@OrderNo;
 
@@ -361,14 +389,29 @@ BEGIN
 					U_USERID=@IDNO,
 					U_SYSDT=@NowTime
 				FROM @TradeClose A
-				INNER JOIN TB_TradeClose B ON B.CloseID=A.CloseID;
+				INNER JOIN TB_TradeClose B ON B.CloseID=A.CloseID
+				WHERE A.CardType <> 2;	-- 20220223 UPD BY YEH REASON:只有信用卡才更新
 
 				-- 有退款金額寫TB_OrderAuthReturn
-				INSERT INTO TB_OrderAuthReturn (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,order_number,returnAmt,IDNO,AuthFlg,AuthCode,AuthMessage,transaction_no,ori_transaction_no)
-				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.MerchantTradeNo
+				-- 退款要拆成信用卡(台新/中信)/錢包兩種來看，信用卡整筆退款才寫入TB_OrderAuthReturn，錢包則是有退款就寫入TB_OrderAuthReturn
+
+				-- 有退款金額寫TB_OrderAuthReturn
+				-- 20211217 UPD BY YEH REASON:增加信用卡類別(0:和泰;1:台新)
+				INSERT INTO TB_OrderAuthReturn (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,order_number,returnAmt,IDNO,AuthFlg,AuthCode,AuthMessage,transaction_no,ori_transaction_no,CardType)
+				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.MerchantTradeNo,B.CardType
 				FROM @TradeClose A
 				INNER JOIN TB_TradeClose B ON B.CloseID=A.CloseID
-				WHERE A.RefundAmount > 0;
+				WHERE A.RefundAmount > 0
+				AND A.ChkClose = 2		-- 20211202 UPD BY YEH REASON:整筆退才寫TB_OrderAuthReturn
+				AND A.CardType <> 2;	-- 20220223 UPD BY YEH REASON:信用卡
+
+				-- 20220223 UPD BY YEH REASON:增加錢包退款
+				INSERT INTO TB_OrderAuthReturn (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,order_number,returnAmt,IDNO,AuthFlg,AuthCode,AuthMessage,transaction_no,ori_transaction_no,CardType)
+				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.StoreTransId,A.CardType
+				FROM @TradeClose A
+				INNER JOIN TB_WalletHistory B ON B.HistoryID=A.CloseID
+				WHERE A.RefundAmount > 0
+				AND A.CardType = 2;
 			END
 
 			--準備傳送合約
@@ -376,13 +419,15 @@ BEGIN
 			BEGIN
 				IF (@NoPreAuth = 1 OR @final_price = 0 OR @DiffAmount <= 0)
 				BEGIN
-					DROP TABLE IF EXISTS #TradeClose;
+					DECLARE @TradeCloseAmount INT = 0;	-- 關帳檔總金額
+					DECLARE @WalletAmount INT = 0;		-- 錢包扣款總金額
+					DECLARE @WalletReturn INT = 0;		-- 錢包退款總金額
 
-					-- 用訂單編號將關帳金額加總起來
-					SELECT OrderNo,SUM(CloseAmout) AS TotalAmout
-					INTO #TradeClose
-					FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1 GROUP BY OrderNo;
+					SELECT @TradeCloseAmount=ISNULL(SUM(CloseAmout),0) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1;
+					SELECT @WalletAmount=ISNULL(SUM(Amount),0) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0;
+					SELECT @WalletReturn=ISNULL(SUM(returnAmt),0) FROM TB_OrderAuthReturn WITH(NOLOCK) WHERE order_number=@OrderNo AND CardType=2;
 
+					-- 20220216 UPD BY YEH REASON:增加更新A_PRGID,U_PRGID
 					INSERT INTO TB_ReturnCarControl
 					(
 						PROCD, ORDNO, CNTRNO, IRENTORDNO, CUSTID, CUSTNM, BIRTH, 
@@ -392,9 +437,11 @@ BEGIN
 						OVERAMT2, RNTAMT, 
 						RENTAMT, 
 						LOSSAMT2, PROJID, REMARK, 
-						INVKIND, UNIMNO, INVTITLE, INVADDR, GIFT, GIFT_MOTO, 
-						CARDNO, PAYAMT, AUTHCODE, isRetry, RetryTimes, eTag, 
-						CARRIERID, NPOBAN, NOCAMT, PARKINGAMT2, MKTime, UPDTime
+						INVKIND, UNIMNO, INVTITLE, INVADDR, GIFT, GIFT_MOTO, CARDNO,
+						PAYAMT, 
+						AUTHCODE, isRetry, RetryTimes, eTag, 
+						CARRIERID, NPOBAN, NOCAMT, PARKINGAMT2, 
+						MKTime, UPDTime, A_PRGID, U_PRGID
 					)
 					SELECT PROCD='A', C.ORDNO, C.CNTRNO, A.order_number, C.CUSTID, C.CUSTNM, C.BIRTH,
 						C.CUSTTYPE, C.ODCUSTID, C.CARTYPE, CASRNO=A.CarNo, C.TSEQNO, C.GIVEDATE,
@@ -403,13 +450,14 @@ BEGIN
 						B.fine_price, RNTAMT=(B.fine_price+B.mileage_price),
 						RENTAMT=CASE WHEN (pure_price- CASE WHEN TransDiscount>0 THEN TransDiscount ELSE 0 END) > 0 THEN (pure_price- CASE WHEN TransDiscount>0 THEN TransDiscount ELSE 0 END) ELSE 0 END,	--20201229 租金要扣掉轉乘優惠
 						mileage_price, A.ProjID, C.REMARK,
-						A.bill_option, A.unified_business_no, '', A.invoiceAddress, B.gift_point, B.gift_motor_point,
-						CARDNO='', PAYAMT=ISNULL(D.TotalAmout,0), AUTHCODE='', isRetry=1, RetryTimes=0, B.Etag,
-						C.CARRIERID, C.NPOBAN, B.Insurance_price, ISNULL(B.parkingFee,0) AS PARKINGAMT2, @NowTime, @NowTime	--20210506;UPD BY YEH REASON.PARKINGAMT2改抓OrderDetail的parkingFee
+						A.bill_option, A.unified_business_no, '', A.invoiceAddress, B.gift_point, B.gift_motor_point, CARDNO='', 
+						PAYAMT = (@TradeCloseAmount + @WalletAmount - @WalletReturn),		-- 20220223 UPD BY YEH REASON:PAYAMT = 關帳檔總金額 + 錢包扣款總金額 - 錢包退款總金額
+						AUTHCODE='', isRetry=1, RetryTimes=0, B.Etag,
+						C.CARRIERID, C.NPOBAN, B.Insurance_price, ISNULL(B.parkingFee,0) AS PARKINGAMT2,	--20210506;UPD BY YEH REASON.PARKINGAMT2改抓OrderDetail的parkingFee
+						@NowTime, @NowTime, @FunName, @FunName
 					FROM TB_OrderMain A WITH(NOLOCK)
 					INNER JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 					INNER JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
-					LEFT JOIN #TradeClose D ON D.OrderNo=A.order_number
 					WHERE A.order_number=@OrderNo;
 
 					-- 20210707;ADD BY YEH REASON:計算徽章成就
@@ -417,8 +465,6 @@ BEGIN
 
 					-- 20210707 ADD BY YEH REASON:計算會員積分
 					EXEC usp_CalOrderScore @OrderNo,'C',0,0,@FunName,@LogID,'','','','';
-
-					DROP TABLE IF EXISTS #TradeClose;
 				END
 				ELSE
 				BEGIN
@@ -426,7 +472,7 @@ BEGIN
 					IF NOT EXISTS (SELECT order_number FROM TB_OrderAuth WITH(NOLOCK) WHERE order_number=@OrderNo AND AuthType=7)
 					BEGIN
 						INSERT INTO TB_OrderAuth (A_PRGID, A_USERID, A_SYSDT, U_PRGID, U_USERID, U_SYSDT, order_number, IDNO , final_price, AuthFlg, AuthMessage, CardType, AuthType, AutoClose)
-						SELECT @FunName, @IDNO, @NowTime, @FunName, @IDNO, @NowTime, order_number, IDNO, @DiffAmount, 0, '', 1, 7, 1
+						SELECT @FunName, @IDNO, @NowTime, @FunName, @IDNO, @NowTime, order_number, IDNO, @DiffAmount, 0, '', @CardType, 7, 1
 						FROM VW_GetOrderData WITH(NOLOCK) WHERE IDNO=@IDNO AND order_number=@OrderNo;
 					END
 				END
