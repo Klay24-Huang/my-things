@@ -17,6 +17,8 @@ CREATE PROCEDURE [dbo].[usp_BeforeBookingStart]
 	@OrderNo				BIGINT                ,	--訂單編號
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
+	@PhoneLon               DECIMAL(9,6)          ,  --回傳手機經度
+	@PhoneLat               DECIMAL(9,6)          ,  --回傳手機緯度
 	@CID                    VARCHAR(10)     OUTPUT, --車機編號
 	@IsCens                 INT             OUTPUT, --是否為興聯車機
 	@IsMotor                INT             OUTPUT, --是否為機車車機
@@ -143,6 +145,9 @@ BEGIN TRY
 			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
 			VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
 
+			--寫入GPS記錄
+			EXEC usp_InsOrderGEO @OrderNo,1,@PhoneLon,@PhoneLat
+
 			COMMIT TRAN;
 
 			-- 回傳資料
@@ -230,6 +235,4 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_BeforeBookingStart';
-
-
-
+GO
