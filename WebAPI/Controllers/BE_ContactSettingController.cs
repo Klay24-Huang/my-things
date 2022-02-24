@@ -406,30 +406,6 @@ namespace WebAPI.Controllers
                                             #endregion
 
                                             #region SP存檔
-                                            #region 原本存檔(MARK)
-                                            ////已經付完款，直接更改狀態
-                                            //SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
-                                            //{
-                                            //    IDNO = IDNO,
-                                            //    OrderNo = tmpOrder,
-                                            //    UserID = apiInput.UserID,
-                                            //    transaction_no = "",
-                                            //    ReturnDate = ReturnDate,
-                                            //    bill_option = apiInput.bill_option,
-                                            //    CARRIERID = apiInput.CARRIERID,
-                                            //    NPOBAN = apiInput.NPOBAN,
-                                            //    unified_business_no = apiInput.unified_business_no,
-                                            //    ParkingSpace = apiInput.parkingSpace,
-                                            //    Mode = apiInput.Mode,
-                                            //    LogID = LogID
-                                            //};
-                                            //string SPName = "usp_BE_ContactFinish";
-                                            //SPOutput_Base PayOutput = new SPOutput_Base();
-                                            //SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base>(connetStr);
-                                            //flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                                            //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
-                                            #endregion
-
                                             if (flag)
                                             {
                                                 string spName = "usp_BE_ContactSetting_U01";
@@ -443,6 +419,7 @@ namespace WebAPI.Controllers
                                                         objparms[i] = new
                                                         {
                                                             CloseID = TradeCloseLists[i].CloseID,
+                                                            CardType = TradeCloseLists[i].CardType,
                                                             AuthType = TradeCloseLists[i].AuthType,
                                                             ChkClose = TradeCloseLists[i].ChkClose,
                                                             CloseAmout = TradeCloseLists[i].CloseAmout,
@@ -455,6 +432,7 @@ namespace WebAPI.Controllers
                                                     objparms[0] = new
                                                     {
                                                         CloseID = 0,
+                                                        CardType = 0,
                                                         AuthType = 0,
                                                         ChkClose = 0,
                                                         CloseAmout = 0,
@@ -1212,7 +1190,7 @@ namespace WebAPI.Controllers
                     SD = Convert.ToDateTime(item.final_start_time);
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
                                                         
-                    if (!string.IsNullOrWhiteSpace(item.fine_Time) && Convert.ToDateTime(item.fine_Time) > Convert.ToDateTime("1911 -01-01 00:00:00"))
+                    if (!string.IsNullOrWhiteSpace(item.fine_Time) && Convert.ToDateTime(item.fine_Time) > Convert.ToDateTime("1911-01-01 00:00:00"))
                     {
                         FineDate = Convert.ToDateTime(item.fine_Time);
                         FineDate = FineDate.Value.AddSeconds(ED.Second * -1); //去秒數
