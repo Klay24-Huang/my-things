@@ -84,5 +84,10 @@ namespace WebAPI.Models.Param.Output
         /// 和泰PAY卡清單
         /// </summary>
         public List<HotaiCardInfo> HotaiListObj { get; set; }
+
+        /// <summary>
+        /// 機車預扣款金額
+        /// </summary>
+        public int MotorPreAmt { get; set; }
     }
 }

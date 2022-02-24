@@ -1034,14 +1034,14 @@ namespace OtherService
                 SPInput_InsPayTransactionLog spInput = new SPInput_InsPayTransactionLog()
                 {
                     LogID = 0,
-                    GUID = wsInput.GUID,
-                    MerchantId = wsInput.MerchantId,
-                    AccountId = wsInput.AccountId,
+                    GUID = output.Result.GUID,  
+                    MerchantId = output.Result.MerchantId,
+                    AccountId = output.Result.AccountId,
                     BarCode = wsInput.BarCode,
                     POSId = wsInput.POSId,
                     StoreId = wsInput.StoreId,
                     StoreTransDate = wsInput.StoreTransDate,
-                    StoreTransId = wsInput.StoreTransId,
+                    StoreTransId = output.Result.StoreTransId, 
                     TransmittalDate = "",
                     TransDate = output.Result.TransDate,
                     TransId = output.Result.TransId,
@@ -1061,7 +1061,6 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new TaishinWalletLog().InsPayTransactionLog(spInput, ref flag, ref errCode, ref lstError);
                 logger.Trace("InsRefundLog : " + JsonConvert.SerializeObject(spInput));
-                flag = true;
             }
             return flag;
         }

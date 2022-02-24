@@ -55,5 +55,10 @@
         /// <para>1:同意</para>
         /// </summary>
         public int AutoStored { get; set; }
+
+        /// <summary>
+        /// 機車預扣款金額
+        /// </summary>
+        public int MotorPreAmt { get; set; }
     }
 }
