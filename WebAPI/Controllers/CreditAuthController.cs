@@ -269,6 +269,7 @@ namespace WebAPI.Controllers
                         }
                         if (flag)
                         {
+                            trace.OrderNo = OrderDataLists[0].OrderNo;
                             if (OrderDataLists[0].car_mgt_status >= 15)
                             {
                                 flag = false;
@@ -504,6 +505,7 @@ namespace WebAPI.Controllers
                             PreAmount = commonService.GetPreAmount(IDNO, Access_Token, tmpOrder, "Y", LogID, ref flag, ref errCode);
 
                             trace.traceAdd("GetPreAmount", new { flag, errCode });
+                            trace.traceAdd("PreAmountData", PreAmount);
                         }
                         #endregion
 
@@ -513,6 +515,7 @@ namespace WebAPI.Controllers
                             TradeCloseLists = commonService.DoPreAmount(PreAmount, Amount);
 
                             trace.traceAdd("DoPreAmount", new { flag, errCode });
+                            trace.traceAdd("TradeCloseLists", TradeCloseLists);
                         }
                         #endregion
 
@@ -590,6 +593,7 @@ namespace WebAPI.Controllers
                                     }
                                 }
                             }
+                            trace.traceAdd("CreditAuth_SaveObject", parms1);
                             trace.traceAdd("usp_CreditAuth_U01", new { flag, errCode });
                         }
                         #endregion
