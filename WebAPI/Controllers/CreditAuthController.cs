@@ -863,7 +863,8 @@ namespace WebAPI.Controllers
                                                 PAYDATE = DateTime.Now.ToString("yyyyMMdd"),
                                                 NORDNO = ServiceTradeNo,
                                                 CDTMAN = "",
-                                                OPERATOR = (CardType == 1 ? 0 : 1)      //0:台新 1:中信
+                                                //OPERATOR = (CardType == 1 ? 0 : 1)      //0:台新 1:中信
+                                                OPERATOR = GetNPR340Operator(CardType)  
                                             });
                                             //錢包參數(20220206上班前才發現，這個目前iRentService沒上)
                                             wsInput.tbNPR340PaymentDetail.Add(new NPR340PaymentDetail()
@@ -1623,5 +1624,25 @@ namespace WebAPI.Controllers
         //    return payAmount >= baseAmount;
         //}
         #endregion
+
+        /// <summary>
+        /// 取得短租Operator
+        /// </summary>
+        /// <param name="CardType"></param>
+        /// <returns></returns>
+        private int GetNPR340Operator(int CardType)
+        {
+            //0:台新信用卡 1:中信信用卡 2:台新錢包
+            switch (CardType)
+            {
+                case 0:
+                    return 1;
+                case 2:
+                    return 2;
+                case 1:
+                default:
+                    return 0;
+            }
+        }
     }
 }
