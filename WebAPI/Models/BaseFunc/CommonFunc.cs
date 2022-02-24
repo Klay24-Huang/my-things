@@ -1368,5 +1368,33 @@ namespace WebAPI.Models.BaseFunc
             }
         }
         #endregion
+
+        /// <summary>
+        /// 使用ID 取出TOKEN
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="Access_Token"></param>
+        /// <param name="lstError"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool GetTokenFromID(string IDNO, ref string Access_Token, ref string errCode)
+        {
+            bool flag = true;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string SPName = "usp_IDReturnToken_Q01";
+            SPInput_IDReturnToken spCheckTokenInput = new SPInput_IDReturnToken()
+            {
+                IDNO = IDNO
+            };
+            SPOutput_IDReturnToken spOut = new SPOutput_IDReturnToken();
+            SQLHelper<SPInput_IDReturnToken, SPOutput_IDReturnToken> sqlHelp = new SQLHelper<SPInput_IDReturnToken, SPOutput_IDReturnToken>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(SPName, spCheckTokenInput, ref spOut, ref lstError);
+            checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            if (flag)
+            {
+                Access_Token = spOut.Token;
+            }
+            return flag;
+        }
     }
 }

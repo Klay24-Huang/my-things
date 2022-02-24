@@ -360,7 +360,9 @@ namespace Domain.SP.Output.OrderList
 
         public int isRetry { get; set; }
 
-        public string Mobile { get; set; }      
+        public string Mobile { get; set; }
+
+        public int ProjType { get; set; }
     }
 
     /// <summary>

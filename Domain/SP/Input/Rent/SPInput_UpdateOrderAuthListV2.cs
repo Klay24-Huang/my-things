@@ -61,5 +61,9 @@ namespace Domain.SP.Input.Rent
         /// </summary>
         public string ProName { get; set; }
 
+        /// <summary>
+        /// 付費方式
+        /// </summary>
+        public int CardType { get; set; }
     }
 }

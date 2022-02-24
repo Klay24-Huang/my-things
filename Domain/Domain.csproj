@@ -59,6 +59,7 @@
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiFastAddCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiPaymentAuth.cs" />
+    <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_GetCTBCInquiryList.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCInquiry.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCap.cs" />
@@ -73,13 +74,16 @@
     <Compile Include="SP\Input\Hotai\SP_Input_HotaiTranStep4.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletPayGetTransId.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderExtInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoredErrorHandle.cs" />
+    <Compile Include="SP\Output\Common\SPOutput_IDReturnToken.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_MemberUnBind.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_CTBCCapList.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiTranStep1.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletStoredErrorList.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_WalletPayGetTransId.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />
     <Compile Include="TB\Hotai\HotaiCardInfo.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCardList.cs" />
