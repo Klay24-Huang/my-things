@@ -494,21 +494,7 @@ namespace WebAPI.Controllers
                 #region 更新資料
                 if (preAuthAmt > 0)
                 {
-                    #region 寫入訂單備註
-                    SPInput_OrderExtInfo spInput = new SPInput_OrderExtInfo()
-                    {
-                        IDNO = IDNO,
-                        LogID = LogID,
-                        PRGID = funName,
-                        OrderNo = spOut.OrderNum,
-                        CheckoutMode = -1,
-                        PreAuthMode = actualPayMode  //以最後支付的為主
-                    };
-                    commonService.InsertOrderExtInfo(spInput, ref error, ref lstError);
-                    trace.traceAdd("InsertOrderExtInfo", new { spInput, error });
-                    trace.FlowList.Add("寫入訂單備註");
-                    #endregion
-
+                   
                     #region 寫入預授權
                     SPInput_InsOrderAuthAmount input_AuthAmt = new SPInput_InsOrderAuthAmount()
                     {
@@ -545,6 +531,21 @@ namespace WebAPI.Controllers
 
                     trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmt, error });
                     trace.FlowList.Add("寫入預授權");
+                    #endregion
+
+                    #region 寫入訂單備註
+                    SPInput_OrderExtInfo spInput = new SPInput_OrderExtInfo()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        PRGID = funName,
+                        OrderNo = spOut.OrderNum,
+                        CheckoutMode = -1,
+                        PreAuthMode = defaultPayMode  //預設支付方式
+                    };
+                    commonService.InsertOrderExtInfo(spInput, ref error, ref lstError);
+                    trace.traceAdd("InsertOrderExtInfo", new { spInput, error });
+                    trace.FlowList.Add("寫入訂單備註");
                     #endregion
                 }
                 #endregion
