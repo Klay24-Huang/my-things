@@ -1,9 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Car;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.Rent;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
@@ -67,7 +65,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-            
+
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -137,7 +135,7 @@ namespace WebAPI.Controllers
                     PhoneLat = apiInput.PhoneLat,
                     PhoneLon = apiInput.PhoneLon
                 };
-                string SPName = "usp_CheckCarStatusByReturn_V20220119";
+                string SPName = "usp_CheckCarStatusByReturn";
                 SPOutput_CheckCarStatusByReturn spOut = new SPOutput_CheckCarStatusByReturn();
                 SQLHelper<SPInput_CheckCarByReturn, SPOutput_CheckCarStatusByReturn> sqlHelp = new SQLHelper<SPInput_CheckCarByReturn, SPOutput_CheckCarStatusByReturn>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
@@ -149,7 +147,6 @@ namespace WebAPI.Controllers
                     IsCens = spOut.IsCens;
                     IsMotor = spOut.IsMotor;
                     deviceToken = spOut.deviceToken;
-                    
                 }
             }
             #endregion
