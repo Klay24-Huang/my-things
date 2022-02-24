@@ -739,6 +739,9 @@ namespace WebAPI.Controllers
                                         funName = funName,
                                         insUser = funName,
                                         AuthType = 6,
+                                        InputSource = 1,
+                                        Token = Access_Token,
+                                        LogID = LogID
                                     };
 
                                     //錢包扣款
