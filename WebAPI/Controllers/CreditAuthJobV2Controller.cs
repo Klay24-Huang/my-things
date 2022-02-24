@@ -131,11 +131,11 @@ namespace WebAPI.Controllers
                         AutoClosed = OrderAuth.AutoClosed,
                         final_price = OrderAuth.final_price,
                         ProName = "CreditAuthJobV2",
+                        CardType = OrderAuth.CardType,
                     };
 
                     try
                     {
-
                         Amount = OrderAuth.final_price;
                         var payStatus = true;
                         var AuthOutput = new OFN_CreditAuthResult();
@@ -144,7 +144,7 @@ namespace WebAPI.Controllers
                             var creditAuthComm = new CreditAuthComm();
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                CheckoutMode = (OrderAuth.CardType == 1) ? 0 : -1,
+                                CheckoutMode = creditAuthComm.GetCheckoutModeByCardType(OrderAuth.CardType),
                                 OrderNo = OrderAuth.order_number,
                                 IDNO = OrderAuth.IDNO,
                                 Amount = Amount,
@@ -152,7 +152,10 @@ namespace WebAPI.Controllers
                                 autoClose = OrderAuth.AutoClosed,
                                 funName = funName,
                                 insUser = funName,
-                                AuthType = OrderAuth.AuthType
+                                AuthType = OrderAuth.AuthType,
+                                InputSource = 2,
+                                ProjType = OrderAuth.ProjType,
+                                TradeType = (OrderAuth.CardType == 2) ? GetWalletTradeType(OrderAuth.ProjType, OrderAuth.AuthType) : "",
                             };
 
                             payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
@@ -164,6 +167,7 @@ namespace WebAPI.Controllers
                             UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage;
                             UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no;
                             UpdateOrderAuthList.CardNumber = AuthOutput.CardNo;
+                            UpdateOrderAuthList.CardType = AuthOutput.CardType;
                         }
                         else
                         {
@@ -293,6 +297,55 @@ namespace WebAPI.Controllers
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
             return flag;
+        }
+
+        private string GetWalletTradeType(int projType, int authType)
+        {
+            string tradeType = "";
+
+            /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款)
+            ///
+            //新增TradeType： PreAuth_Motor、PreAuth_Car
+            /*case "Pay_Arrear":
+                   return 5;
+               case "pay_Car":
+               case "Pay_Motor":
+               default:
+               */
+
+            string carType = "";
+
+            switch (projType)
+            {
+                case 0:
+                case 3:
+                    carType = "Car";
+                    break;
+                case 4:
+                    carType = "Motor";
+                    break;
+                default:
+                    carType = "";
+                    break;
+            }
+            switch (authType)
+            {
+                case 1:
+                    tradeType = $"PreAuth_{carType}";
+                    break;
+                case 6:
+                    tradeType = $"Pay_Arrear";
+                    break;
+                case 7:
+                    tradeType = $"Pay_{carType}";
+                    break;
+                default:
+                    tradeType = "";
+                    break;
+            }
+
+
+            return tradeType;
         }
     }
 }
