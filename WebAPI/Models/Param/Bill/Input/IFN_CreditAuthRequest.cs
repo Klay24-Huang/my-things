@@ -59,9 +59,9 @@ namespace WebAPI.Models.Param.Bill.Input
         /// </summary>
         public short InputSource { get; set; } = 2;
         /// <summary>
-        /// 專案類型(0:同站;3:路邊;4:機車)
+        /// 專案類型(0:同站;3:路邊;4:機車;99:初始)
         /// </summary>
-        public int ProjType { get; set; } = -1;
+        public int ProjType { get; set; } = 99;
 
     }
 }
