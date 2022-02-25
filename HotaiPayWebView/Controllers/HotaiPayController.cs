@@ -127,6 +127,7 @@ namespace HotaiPayWebView.Controllers
                 ViewBag.PwdAlert = "iRent帳號過期，請重新登入。";
                 return View("Login");
             }
+
             HotaiMemberAPI hotaiAPI = new HotaiMemberAPI();
             if (ModelState.IsValid)
             {
@@ -151,7 +152,8 @@ namespace HotaiPayWebView.Controllers
 
                     Session["phone"] = loginValue.Phone.Trim();
                     Session["hotai_access_token"] = apioutput.access_token;
-                    Session["refresh_token"] = apioutput.refresh_token;
+                    Session["hotai_refresh_token"] = apioutput.refresh_token;
+                    Session["memberState"] = apioutput.memberState;
                     if (apioutput.memberState == "1" || apioutput.memberState == "2")
                         return RedirectToRoute(new { controller = "HotaiPay", action = "Supplememtary" });
                     else
@@ -196,8 +198,17 @@ namespace HotaiPayWebView.Controllers
 
                                     //Session["oneID"] = "";//getOneID.memberSeq;//唐寫死，等和泰開通安康防火牆再弄
                                     Session["oneID"] = getOneID.memberSeq;
-
-                                    errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, apioutput.access_token, apioutput.refresh_token);
+                                    MemberHotai memberHotai = new MemberHotai()
+                                    {
+                                        IDNO = Session["id"].ToString(),
+                                        OneID = getOneID.memberSeq,
+                                        AccessToken = apioutput.access_token,
+                                        RefreshToken = apioutput.refresh_token,
+                                        ProfileStatus = 0,
+                                        MbrStatus = Session["memberState"]==null? 0 : Convert.ToInt32(Session["memberState"]),
+                                        DataType = "L"
+                                    };
+                                    errCode = InsertMemberDataToDB(memberHotai);
 
                                     if (errCode == "0000")
                                     {
@@ -261,14 +272,33 @@ namespace HotaiPayWebView.Controllers
         #region 更新會員條款
         public ActionResult MembershipTerms2(string intoType)
         {
-            if (intoType == "UpdateVer")
+            if (!string.IsNullOrEmpty(intoType))
             {
-                TempData["TermsWay"] = "UpdateVer";
-                @ViewBag.Privacy = Session["Policyterms"].ToString();
+                Session["TermsWay"] = intoType;
+                if (Session["TermsWay"].ToString() == "UpdateVer")
+                {
+                    WebAPIOutput_GetPrivacy checkVer = new WebAPIOutput_GetPrivacy();
+                    string errCode = "";
+                    var flag = hotaiAPI.DoGetPrivacy("", ref checkVer, ref errCode);
+
+                    if (flag)
+                    {
+                        if (!string.IsNullOrEmpty(checkVer.memberBenefits) || !string.IsNullOrEmpty(checkVer.privacyPolicy))
+                        {
+                            Session["Benefitsterms"] = checkVer.memberBenefits;
+                            Session["Policyterms"] = checkVer.privacyPolicy;
+                            ViewBag.Benefits = Session["Benefitsterms"].ToString();
+                            return View();
+                        }
+                        else
+                            return Redirect("RegisterStep1");
+                    }
+
+                }
             }
             else
             {
-                TempData["TermsWay"] = "NewUser";
+                Session["TermsWay"] = "NewUser";
                 WebAPIOutput_GetPrivacy checkVer = new WebAPIOutput_GetPrivacy();
 
                 string errCode = "";
@@ -299,53 +329,83 @@ namespace HotaiPayWebView.Controllers
         {
             string errCode = "";
             bool flag = false;
-            if (Session["BenefitstermsVer"] == null || Session["PolicytermsVer"] == null)
+            if (Session["BenefitstermsVer"] != null || Session["PolicytermsVer"] != null)
             {
-                if (TempData["TermsWay"].ToString().Trim() == "UpdateVer")
+                if (Session["TermsWay"].ToString().Trim() == "UpdateVer")
                 {
+                    Session.Remove("TermsWay");
+                    WebAPIInput_UpdateBenefitsAndPrivacyVersion input = new WebAPIInput_UpdateBenefitsAndPrivacyVersion
+                    {
+                        memberBenefitsVersion = Session["BenefitstermsVer"] == null ? "" : Session["BenefitstermsVer"].ToString(),
+                        privacyPolicyVersion = Session["PolicytermsVer"] == null ? "" : Session["PolicytermsVer"].ToString()
+                    };
+                    WebAPIOutput_BenefitsAndPrivacyVersion output = new WebAPIOutput_BenefitsAndPrivacyVersion();
 
-                    WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
-                    flag = hotaiAPI.DoGetMobilePhoneToOneID(Session["phone"].ToString().Trim(), ref getOneID, ref errCode);
+                    flag = hotaiAPI.DoUpdateBenefitsAndPrivacyVersion(Session["hotai_access_token"].ToString().Trim(), input, ref output, ref errCode);
+
+                    //flag = true;
                     if (flag)
                     {
-                        Session["oneID"] = getOneID.memberSeq;
-
-                        errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, Session["irent_access_token"].ToString().Trim(), Session["refresh_token"].ToString().Trim());
-                        if (errCode == "0000")
+                        WebAPIOutput_GetMobilePhoneToOneID getOneID = new WebAPIOutput_GetMobilePhoneToOneID();
+                        flag = hotaiAPI.DoGetMobilePhoneToOneID(Session["phone"].ToString().Trim(), ref getOneID, ref errCode);
+                        if (flag)
                         {
-                            TempData["irent_access_token"] = Session["irent_access_token"];
-                            return RedirectToRoute(new
+                            Session["oneID"] = getOneID.memberSeq;
+
+                            MemberHotai memberHotai = new MemberHotai()
                             {
-                                controller = "HotaiPayCtbc",
-                                action = "NoCreditCard"
-                            });
-                            //以下取得信用卡列表流程
+                                IDNO = Session["id"].ToString(),
+                                OneID = getOneID.memberSeq,
+                                AccessToken = Session["hotai_access_token"].ToString().Trim(),
+                                RefreshToken = Session["hotai_refresh_token"].ToString().Trim(),
+                                ProfileStatus = 1,
+                                MbrStatus = Session["memberState"] == null ? 0 : Convert.ToInt32(Session["memberState"]),
+                                DataType = "L"
+                            };
+
+                            errCode = InsertMemberDataToDB(memberHotai);
+                            if (errCode == "0000")
+                            {
+                                TempData["irent_access_token"] = Session["irent_access_token"];
+                                
+                                //以下取得信用卡列表流程
+                            }
+                            else
+                                return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
                         }
                         else
+                            return RedirectToRoute(new { controller = "HotaiPay", action = "MembershipTerms1" });
+
+                        return RedirectToRoute(new
                         {
-                            return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
-                        }
+                            controller = "HotaiPayCtbc",
+                            action = "NoCreditCard"
+                        });
                     }
                     else
-                        return RedirectToRoute(new { controller = "HotaiPay", action = "MembershipTerms1" });
+                        return RedirectToRoute(new { controller = "HotaiPay", action = "BindCardFailed" });
+
+
                 }
                 else
                     return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep1" });
             }
             else
             {
-                if (TempData["TermsWay"].ToString().Trim() == "UpdateVer")
+                if (Session["TermsWay"].ToString().Trim() == "UpdateVer")
                 {
+                    Session.Remove("TermsWay");
                     WebAPIInput_UpdateBenefitsAndPrivacyVersion input = new WebAPIInput_UpdateBenefitsAndPrivacyVersion
                     {
-                        memberBenefitsVersion = Session["BenefitstermsVer"].ToString().Trim(),
-                        privacyPolicyVersion = Session["PolicytermsVer"].ToString().Trim()
+                        memberBenefitsVersion = Session["BenefitstermsVer"] == null ? "" : Session["BenefitstermsVer"].ToString(),
+                        privacyPolicyVersion =Session["PolicytermsVer"]==null?"": Session["PolicytermsVer"].ToString()
                     };
                     WebAPIOutput_BenefitsAndPrivacyVersion output = new WebAPIOutput_BenefitsAndPrivacyVersion();
                     flag = hotaiAPI.DoUpdateBenefitsAndPrivacyVersion(Session["hotai_access_token"].ToString().Trim(), input, ref output, ref errCode);
-
+                    //flag = true;
                     if (flag)
                     {
+                        logger.Info($"更新會員條款成功: memberBenefitsVersion={input.memberBenefitsVersion},privacyPolicyVersion={input.privacyPolicyVersion},errCode={errCode}");
                         TempData["irent_access_token"] = Session["irent_access_token"];
                         return RedirectToRoute(new
                         {
@@ -359,11 +419,12 @@ namespace HotaiPayWebView.Controllers
                 else
                     return RedirectToRoute(new { controller = "HotaiPay", action = "RegisterStep1" });
             }
+            
         }
 
         public ActionResult MembershipTerms1()
         {
-            ViewBag.Privacy = Session["Policyterms"].ToString();
+            ViewBag.Privacy = Session["Policyterms"];
             return View();
         }
 
@@ -462,7 +523,18 @@ namespace HotaiPayWebView.Controllers
                                 {
                                     Session["oneID"] = getOneID.memberSeq;
 
-                                    errCode = InsertMemberDataToDB(Session["id"].ToString(), getOneID.memberSeq, Session["hotai_access_token"].ToString().Trim(), Session["refresh_token"].ToString().Trim());
+                                    MemberHotai memberHotai = new MemberHotai()
+                                    {
+                                        IDNO = Session["id"].ToString(),
+                                        OneID = getOneID.memberSeq,
+                                        AccessToken = Session["hotai_access_token"].ToString().Trim(),
+                                        RefreshToken = Session["hotai_refresh_token"].ToString().Trim(),
+                                        ProfileStatus = 1,
+                                        MbrStatus = 3,
+                                        DataType = "L"
+                                    };
+
+                                    errCode = InsertMemberDataToDB(memberHotai);
                                     if (errCode == "0000")
                                     {
                                         TempData["irent_access_token"] = Session["irent_access_token"];
@@ -738,7 +810,19 @@ namespace HotaiPayWebView.Controllers
                     if (flag)
                     {
                         Session["oneID"] = getOneID.memberSeq;
-                        errCode = InsertMemberDataToDB(signUpProfile.CustID.Trim(), Session["oneID"].ToString().Trim(), Session["hotai_access_token"].ToString().Trim(), Session["hotai_refresh_token"].ToString().Trim());
+
+                        MemberHotai memberHotai = new MemberHotai()
+                        {
+                            IDNO = Session["id"].ToString(),
+                            OneID = getOneID.memberSeq,
+                            AccessToken = Session["hotai_access_token"].ToString().Trim(),
+                            RefreshToken = Session["hotai_refresh_token"].ToString().Trim(),
+                            ProfileStatus = 0,
+                            MbrStatus = 3,
+                            DataType = "R"
+                        };
+
+                        errCode = InsertMemberDataToDB(memberHotai);
                         if (errCode == "0000")
                         {
                             TempData["irent_access_token"] = Session["irent_access_token"];
@@ -914,7 +998,7 @@ namespace HotaiPayWebView.Controllers
         }
         #endregion
 
-        public string InsertMemberDataToDB(string id, string oneID, string accessToken, string refreshToken)
+        public string InsertMemberDataToDB(MemberHotai memberHotai)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
             var logID = 999;
@@ -922,10 +1006,13 @@ namespace HotaiPayWebView.Controllers
             {
                 SqlCommand cmd = new SqlCommand("usp_InsHotaiMember_I01", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add("@IDNO", SqlDbType.VarChar, 10).Value = id;
-                cmd.Parameters.Add("@OneID", SqlDbType.VarChar, 50).Value = oneID;
-                cmd.Parameters.Add("@RefreshToken", SqlDbType.VarChar, 50).Value = refreshToken;
-                cmd.Parameters.Add("@AccessToken", SqlDbType.VarChar, 1000).Value = accessToken;
+                cmd.Parameters.Add("@IDNO", SqlDbType.VarChar, 10).Value = memberHotai.IDNO;
+                cmd.Parameters.Add("@OneID", SqlDbType.VarChar, 50).Value = memberHotai.OneID;
+                cmd.Parameters.Add("@RefreshToken", SqlDbType.VarChar, 50).Value = memberHotai.RefreshToken;
+                cmd.Parameters.Add("@AccessToken", SqlDbType.VarChar, 1000).Value = memberHotai.AccessToken;
+                cmd.Parameters.Add("@ProfileStatus", SqlDbType.TinyInt).Value = memberHotai.ProfileStatus;
+                cmd.Parameters.Add("@MbrStatus", SqlDbType.TinyInt).Value = memberHotai.MbrStatus;
+                cmd.Parameters.Add("@DataType", SqlDbType.VarChar, 1).Value = memberHotai.DataType;
                 cmd.Parameters.Add("@LogID", SqlDbType.BigInt).Value = logID;
                 cmd.Parameters.Add("@ErrorCode", SqlDbType.VarChar, 8);
                 cmd.Parameters["@ErrorCode"].Direction = ParameterDirection.Output;
@@ -945,7 +1032,6 @@ namespace HotaiPayWebView.Controllers
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
             }

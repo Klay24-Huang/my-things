@@ -868,7 +868,7 @@ namespace OtherService
             string encrypt = AESEncrypt.DecryptAES128(encryptData, Key, IV, CipherMode.CBC, PaddingMode.PKCS7);
             return encrypt;
         }
-
+        
         /// <summary>
         /// 回傳錯誤代碼Mapping
         /// </summary>
