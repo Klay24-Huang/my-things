@@ -385,9 +385,9 @@ BEGIN
 
 				-- 20220218 UPD BY YEH REASON:增加錢包退款
 				INSERT INTO TB_OrderAuthReturn (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,order_number,returnAmt,IDNO,AuthFlg,AuthCode,AuthMessage,transaction_no,ori_transaction_no,CardType)
-				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.MerchantTradeNo,B.CardType
+				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.StoreTransId,A.CardType
 				FROM @TradeClose A
-				INNER JOIN TB_TradeClose B ON B.CloseID=A.CloseID
+				INNER JOIN TB_WalletHistory B ON B.HistoryID=A.CloseID
 				WHERE A.RefundAmount > 0
 				AND A.CardType = 2;
 			END
@@ -401,9 +401,9 @@ BEGIN
 					DECLARE @WalletAmount INT = 0;		-- 錢包扣款總金額
 					DECLARE @WalletReturn INT = 0;		-- 錢包退款總金額
 
-					SELECT @TradeCloseAmount=SUM(CloseAmout) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1;
-					SELECT @WalletAmount=SUM(Amount) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0;
-					SELECT @WalletReturn=SUM(returnAmt) FROM TB_OrderAuthReturn WITH(NOLOCK) WHERE order_number=@OrderNo AND CardType=2;
+					SELECT @TradeCloseAmount=ISNULL(SUM(CloseAmout),0) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1;
+					SELECT @WalletAmount=ISNULL(SUM(Amount),0) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0;
+					SELECT @WalletReturn=ISNULL(SUM(returnAmt),0) FROM TB_OrderAuthReturn WITH(NOLOCK) WHERE order_number=@OrderNo AND CardType=2;
 
 					INSERT INTO TB_ReturnCarControl
 					(

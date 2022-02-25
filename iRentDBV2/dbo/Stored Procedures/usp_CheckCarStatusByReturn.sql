@@ -1,53 +1,23 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_CheckCarStatusByReturn]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_CheckCarStatusByReturn
+* 系    統 : IRENT
+* 程式功能 : 還車前檢查
+* 作    者 : Eric
+* 撰寫日期 : 20201004
+* 修改日期 : 20220224 UPD BY YEH REASON:版本合併
 
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_CheckCarStatusByReturn]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:Eric 
-** Date:2020/10/4 下午 01:19:03 
-**
-*****************************************************************
-** Change History
-*****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/10/4 下午 01:19:03    |  Eric|          First Release
-**			 |			  |
-*****************************************************************/
+* Example  : 
+***********************************************************************************************/
+
 CREATE PROCEDURE [dbo].[usp_CheckCarStatusByReturn]
 	@IDNO                   VARCHAR(10)           ,	--帳號
 	@OrderNo				BIGINT                ,	--訂單編號
 	@Token                  VARCHAR(1024)         ,
 	@LogID                  BIGINT                ,
+	@PhoneLon               DECIMAL(9,6)          ,  --回傳手機經度
+	@PhoneLat               DECIMAL(9,6)          ,  --回傳手機緯度
 	@CID                    VARCHAR(10)     OUTPUT, --車機編號
 	@StationID              VARCHAR(10)     OUTPUT,
 	@IsCens                 INT             OUTPUT, --是否為興聯車機
@@ -81,7 +51,6 @@ SET @SQLExceptionMsg='';
 SET @FunName='usp_CheckCarStatusByReturn';
 SET @IsSystem=0;
 SET @ErrorType=0;
-SET @IsSystem=0;
 SET @hasData=0;
 SET @Descript=N'使用者操作【還車前判斷車況】';
 SET @car_mgt_status=0;
@@ -122,25 +91,6 @@ BEGIN TRY
 		END
 	END
 
-	--跨年交通管制，X0IU、X0IF、X0LL、X1Q9這四站12/31 12:00-1/1 05:00，這區間內限制無法取車
-	--IF @Error=0
-	--BEGIN
-	--	DECLARE @SDATE DATETIME;
-	--	DECLARE @EDATE DATETIME;
-
-	--	SELECT @StationID=lend_place,@SDATE=start_time,@EDATE=stop_time FROM TB_OrderMain WITH(NOLOCK) WHERE order_number=@OrderNo;
-
-	--	IF (@SDATE>=CAST('2020-12-31 12:00:00' AS DATETIME) AND @SDATE<=CAST('2021-01-01 05:00:00' AS DATETIME)) OR
-	--		(@EDATE>=CAST('2020-12-31 12:00:00' AS DATETIME) AND @EDATE<=CAST('2021-01-01 05:00:00' AS DATETIME))
-	--	BEGIN
-	--		IF @StationID='X0IU' OR @StationID='X0IF' OR @StationID='X0LL' OR @StationID='X1Q9'
-	--		BEGIN
-	--			SET @Error=1
-	--			SET @ErrorCode='ERR185'
-	--		END
-	--	END
-	--END
-
 	IF @Error=0
 	BEGIN
 		BEGIN TRAN
@@ -157,6 +107,10 @@ BEGIN TRY
 					
 			INSERT INTO TB_OrderHistory(OrderNum,cancel_status,car_mgt_status,booking_status,Descript)
 			VALUES(@OrderNo,@cancel_status,@car_mgt_status,@booking_status,@Descript);
+
+			--寫入GPS記錄
+			EXEC usp_InsOrderGEO @OrderNo,2,@PhoneLon,@PhoneLat
+
 			COMMIT TRAN;
 			SELECT @deviceToken=ISNULL(deviceToken,''),@CID=CID,@IsCens=IsCens,@IsMotor=IsMotor FROM TB_CarInfo WITH(NOLOCK) WHERE CarNo=@CarNo; 
 		END
@@ -193,19 +147,4 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
-
-
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'還車檢查前判斷車況', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_CheckCarStatusByReturn';

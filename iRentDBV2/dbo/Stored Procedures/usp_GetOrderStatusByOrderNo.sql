@@ -80,8 +80,8 @@ BEGIN TRY
 		DECLARE @CreditAmount INT = 0;	-- 信用卡預授權金額
 		DECLARE @WalletAmount INT = 0;	-- 錢包預授權金額
 
-		SELECT @CreditAmount=SUM(CloseAmout) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo;
-		SELECT @WalletAmount=SUM(Amount) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0;
+		SELECT @CreditAmount=ISNULL(SUM(CloseAmout),0) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo;
+		SELECT @WalletAmount=ISNULL(SUM(Amount),0) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0;
 
 		SELECT VW.order_number AS OrderNo,
 		       VW.lend_place AS StationID,
