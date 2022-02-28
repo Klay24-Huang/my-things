@@ -14,6 +14,7 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
 using WebCommon;
+using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -47,15 +48,16 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
             #endregion
-            
+
             #region 防呆
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, false);
+
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, true);
 
             if (flag)
             {
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Access_Token, ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
             }
 
             #endregion
@@ -63,6 +65,8 @@ namespace WebAPI.Controllers
             #region 參數解碼
             if (flag)
             {
+                apiInput = JsonConvert.DeserializeObject<IAPI_BindListQueryByEasyrent>(Contentjson);
+
                 string KEY = ConfigurationManager.AppSettings["AES128KEY"].Trim();
                 string IV = ConfigurationManager.AppSettings["AES128IV"].Trim();
                 string ReqParam = AESEncrypt.DecryptAES128(apiInput.P, KEY, IV);
