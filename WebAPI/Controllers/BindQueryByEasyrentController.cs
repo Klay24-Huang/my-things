@@ -101,21 +101,28 @@ namespace WebAPI.Controllers
                         HasBind = (ds.Tables[0].Rows.Count == 0) ? 0 : 1,
                         BindListObj = new List<Models.Param.Output.PartOfParam.CreditCardBindListByEasyrent>()
                     };
-                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    try
                     {
-                        Models.Param.Output.PartOfParam.CreditCardBindListByEasyrent obj = new Models.Param.Output.PartOfParam.CreditCardBindListByEasyrent()
+                        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                         {
-                            //AvailableAmount = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["AvailableAmount"].ToString()),
-                            BankNo = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["BankNo"].ToString()),
-                            CardName = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardName"].ToString()),
-                            CardNumber = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardNumber"].ToString()),
-                            CardToken = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardToken"].ToString()),
-                            CardHash = "",
-                            ExpDate = "",
-                            CardType = "",
-                            IDX = i+1
-                        };
-                        apiOutput.BindListObj.Add(obj);
+                            Models.Param.Output.PartOfParam.CreditCardBindListByEasyrent obj = new Models.Param.Output.PartOfParam.CreditCardBindListByEasyrent()
+                            {
+                                //AvailableAmount = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["AvailableAmount"].ToString()),
+                                BankNo = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["BankNo"].ToString()),
+                                CardName = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardName"].ToString()),
+                                CardNumber = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardNumber"].ToString()),
+                                CardToken = baseVerify.BaseCheckString(ds.Tables[0].Rows[i]["CardToken"].ToString()),
+                                CardHash = "",
+                                ExpDate = "",
+                                CardType = "",
+                                IDX = i + 1
+                            };
+                            apiOutput.BindListObj.Add(obj);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        apiOutput.HasBind = 0;
                     }
                 }
                 ds.Dispose();
