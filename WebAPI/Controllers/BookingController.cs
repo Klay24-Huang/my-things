@@ -455,7 +455,8 @@ namespace WebAPI.Controllers
                         actualPayMode = AuthOutput?.CheckoutMode ?? -1;
                         walletEnough = payFlag;
 
-                        trace.traceAdd("DoWalletPay", new { defaultPayMode, payFlag, AuthOutput, actualPayMode, error });
+                        OFN_CreditAuthResult walletPayOut = AuthOutput;
+                        trace.traceAdd("DoWalletPay", new { defaultPayMode, payFlag, walletPayOut, actualPayMode, error });
                         trace.FlowList.Add("錢包預扣款");
                     }
 
