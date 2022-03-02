@@ -661,7 +661,7 @@ namespace WebAPI.Models.ComboFunc
             int checkoutMode = 1;
 
             //var orderPayForWallet = PayWalletFlow(AuthInput.OrderNo, AuthInput.Amount, AuthInput.IDNO, AuthInput.TradeType, true, AuthInput.funName,AuthInput.LogID, AuthInput.Token, AuthInput.InputSource,AuthInput.PayType, ref errCode);
-            var orderPayForWallet = PayWalletFlow(AuthInput, true, ref errCode);
+            var orderPayForWallet = PayWalletFlow(AuthInput, AuthInput.AutoStore, ref errCode);
             logger.Trace($"DoWalletAuth | Start: AuthInput:{ JsonConvert.SerializeObject(AuthInput)} | orderPayForWallet {JsonConvert.SerializeObject(orderPayForWallet)}");
 
             flag = orderPayForWallet.flag;
