@@ -697,6 +697,36 @@ namespace Reposotory.Implement
 
             return lstData;
         }
+
+        /// <summary>
+        /// 取得MAIL收件人清單
+        /// </summary>
+        /// <param name="PrgID"></param>
+        /// <returns></returns>
+        public List<CodeMailRecv> GetCodeMailRecv(string PrgID)
+        {
+            bool flag = false;
+            List<CodeMailRecv> lstData = null;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            int nowCount = 0;
+            string SQL = "SELECT Mail,RecvName FROM TB_CodeMail c JOIN TB_CodeMailRecv r ON c.PrgID=r.PrgID WHERE c.[Status]=1 ";
+            SqlParameter[] para = new SqlParameter[1];
+            string term = "";
+            term = " c.PrgID=@PrgID";
+            para[nowCount] = new SqlParameter("@PrgID", SqlDbType.VarChar, 50);
+            para[nowCount].Value = PrgID;
+            para[nowCount].Direction = ParameterDirection.Input;
+            nowCount++;
+
+            if (term != "")
+            {
+                SQL += " AND " + term;
+            }
+
+            lstData = GetObjList<CodeMailRecv>(ref flag, ref lstError, SQL, para, term);
+
+            return lstData;
+        }
     }
 }
 

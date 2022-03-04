@@ -238,6 +238,7 @@
     <Compile Include="Controllers\CTBCCapJobController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
+    <Compile Include="Controllers\WalletTransferJobController.cs" />
     <Compile Include="Controllers\WalletReturnJobController.cs" />
     <Compile Include="Controllers\WalletStoredErrorHandleController.cs" />
     <Compile Include="Controllers\WalletWithdrowInvoiceController.cs" />

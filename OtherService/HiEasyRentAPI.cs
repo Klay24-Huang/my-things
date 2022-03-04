@@ -51,6 +51,7 @@ namespace OtherService
         protected string TransIRentMemCMKURL; // 會員條款更新至官網 20210824 ADD BY YEH
         protected string connetStr;
         protected string NPR138SaveURL;  //春節定金收款發票
+        protected string NPR420SaveURL;  //錢包介面轉檔
 
         /// <summary>
         /// 建構式
@@ -96,6 +97,7 @@ namespace OtherService
             TransIRentMemCMKURL = (ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL") == null) ? "" : ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL").ToString();
 
             NPR138SaveURL = (ConfigurationManager.AppSettings.Get("NPR138SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR138SaveURL").ToString();
+            NPR420SaveURL = (ConfigurationManager.AppSettings.Get("NPR420SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR420SaveURL").ToString();
         }
 
         #region 產生簽章
@@ -2542,6 +2544,85 @@ namespace OtherService
                     WebAPIName = "NPR138Save",
                     WebAPIOutput = JsonConvert.SerializeObject(output),
                     WebAPIURL = BaseURL + NPR138SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+        #endregion
+        #region 錢包介面轉檔
+        public bool NPR420Save(WebAPIInput_NPR420Save input, ref WebAPIOutput_NPR420Save output)
+        {
+            bool flag = false;
+
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
+            output = DoNPR420Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_NPR420Save> DoNPR420Save(WebAPIInput_NPR420Save input)
+        {
+            WebAPIOutput_NPR420Save output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            string URL = BaseURL + NPR420SaveURL;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR420Save>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR420Save()
+                {
+                    Result = false,
+                    RtnCode = "-2",
+                    Message = $"發生異常錯誤 : {ex.Message}",
+
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR420Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = URL
                 };
                 bool flag = true;
                 string errCode = "";

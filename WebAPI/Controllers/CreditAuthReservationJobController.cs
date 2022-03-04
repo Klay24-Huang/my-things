@@ -143,6 +143,11 @@ namespace WebAPI.Controllers
                                 TradeType = (OrderAuth.CardType == 2) ? GetWalletTradeType(OrderAuth.ProjType, OrderAuth.AuthType) : "",
                             };
 
+                            if (AuthInput.CheckoutMode == 1 && AuthInput.AuthType == 7)
+                            {
+                                AuthInput.AutoStore = true;
+                            }
+
                             payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                             logger.Trace("OrderAuthReservationList Result:" + JsonConvert.SerializeObject(AuthOutput));
                             List<string> exCodeList = new List<string> { "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
