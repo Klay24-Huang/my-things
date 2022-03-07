@@ -235,5 +235,9 @@ namespace Domain.TB.BackEnd
         /// 刷卡的訂單編號(專給中信使用)
         /// </summary>
         public string MerchantTradeNo { get; set; }
+        /// <summary>
+        /// 錢包支付金額 20220307 ADD BY ADAM 
+        /// </summary>
+        public int WalletAmount { get; set; }
     }
 }
