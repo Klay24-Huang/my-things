@@ -355,9 +355,10 @@ namespace WebAPI.Models.ComboFunc
 
                 };
                 WSAuthInput.RequestParams.Item.Add(item);
+                logger.Trace(string.Format("DoCreditCardAuth Start | input:{0}", JsonConvert.SerializeObject(WSAuthInput)));
                 WebAPIOutput_Auth WSAuthOutput = new WebAPIOutput_Auth();
                 flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, IDNO, autoClose, funName, insUser, ref errCode, ref WSAuthOutput, AuthInput.AuthType);
-                logger.Trace("DoCreditCardAuth:" + JsonConvert.SerializeObject(WSAuthOutput));
+                logger.Trace(string.Format("DoCreditCardAuth End | flag:{0} errCode:{1} Result:{2}", flag, errCode, JsonConvert.SerializeObject(WSAuthOutput)));
                 if (flag)
                 {
                     if (WSAuthOutput.RtnCode != "1000")
@@ -373,11 +374,8 @@ namespace WebAPI.Models.ComboFunc
                     }
                 }
 
-                AuthOutput.AuthCode =
-                    (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultCode : WSAuthOutput.RtnCode ?? "";
-                AuthOutput.AuthMessage =
-                    (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultMessage : WSAuthOutput.RtnMessage ?? "";
-
+                AuthOutput.AuthCode = (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultCode : WSAuthOutput.RtnCode ?? "";
+                AuthOutput.AuthMessage = (WSAuthOutput.RtnCode == "1000") ? WSAuthOutput.ResponseParams.ResultMessage : WSAuthOutput.RtnMessage ?? "";
                 AuthOutput.CardType = CardType;
                 AuthOutput.CheckoutMode = CheckoutMode;
                 AuthOutput.Transaction_no = WSAuthInput.RequestParams.MerchantTradeNo;
@@ -502,7 +500,7 @@ namespace WebAPI.Models.ComboFunc
                     break;
             }
 
-            logger.Trace("DoAuthV4 | End:" + JsonConvert.SerializeObject(AuthOutput));
+            logger.Trace(string.Format("DoAuthV4 | End: flag:{0} errCode:{1} Result:{2}",flag,errCode, JsonConvert.SerializeObject(AuthOutput)));
             return flag;
         }
 
@@ -744,7 +742,7 @@ namespace WebAPI.Models.ComboFunc
                     {
                         errCode = "000000";
                         return PayWalletFlow(AuthInput, true, ref errCode);
-                            //PayWalletFlow(OrderNo, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
+                        //PayWalletFlow(OrderNo, Amount, IDNO, TradeType, true, funName, LogID, Access_Token, ref errCode);
                     }
                     else
                     {
@@ -843,7 +841,7 @@ namespace WebAPI.Models.ComboFunc
                 return result;
             }
 
-            WebAPI_PayTransaction wallet = SetForWalletPay(AuthInputint.IDNO, AuthInputint.OrderNo, Amount, NowTime, AuthInputint.PayType,accountId, storeTransId);
+            WebAPI_PayTransaction wallet = SetForWalletPay(AuthInputint.IDNO, AuthInputint.OrderNo, Amount, NowTime, AuthInputint.PayType, accountId, storeTransId);
             WebAPIOutput_PayTransaction taishinResponse = null;
 
             if (result.flag)
@@ -869,7 +867,7 @@ namespace WebAPI.Models.ComboFunc
                 SPInput_WalletPay spInput = SetForWalletPayLog(wallet, taishinResponse, AuthInputint, NowTime);
 
                 result.flag = wsp.sp_WalletPay(spInput, ref errCode);
-                
+
             }
             else
             {
@@ -955,7 +953,7 @@ namespace WebAPI.Models.ComboFunc
         /// <param name="Amount"></param>
         /// <param name="NowTime"></param>
         /// <returns></returns>
-        private WebAPI_PayTransaction SetForWalletPay(string IDNO, long OrderNo, int Amount, DateTime NowTime, int PayType,string AccountId,string StoreTransId)
+        private WebAPI_PayTransaction SetForWalletPay(string IDNO, long OrderNo, int Amount, DateTime NowTime, int PayType, string AccountId, string StoreTransId)
         {
             string guid = Guid.NewGuid().ToString().Replace("-", "");
 
@@ -1055,13 +1053,13 @@ namespace WebAPI.Models.ComboFunc
         public bool WalletStoreByCredit(int storeMoney, string accessToken, string funName, ref string errCode)
         {
             bool flag = false;
-            if(!string.IsNullOrWhiteSpace(accessToken))
+            if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                IAPI_WalletStoredByCredit Input = new IAPI_WalletStoredByCredit { StoreMoney = storeMoney,StoreType = 4 };
+                IAPI_WalletStoredByCredit Input = new IAPI_WalletStoredByCredit { StoreMoney = storeMoney, StoreType = 4 };
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 DateTime MKTime = DateTime.Now;
                 DateTime RTime = MKTime;
-            
+
                 string url = $@"{AzureAPIBaseURL}api/WalletStoredByCredit";
                 var resault = ApiPost.DoApiPost<JObject, IAPI_WalletStoredByCredit>(Input, url, accessToken);
 
