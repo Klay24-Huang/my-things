@@ -1,6 +1,8 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Bill;
 using Domain.SP.Output;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,6 +15,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
+using OtherService;
 
 namespace WebAPI.Controllers
 {
@@ -121,6 +124,29 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
 
+            }
+
+            //寫入IRENT後台資料後，也要轉入短租的IRENT_BUSINESS_LOSS
+            if (flag)
+            {
+                HiEasyRentAPI webAPI = new HiEasyRentAPI();
+
+                WebAPIInput_NPR136V2Save wsInput = null;
+                WebAPIOutput_NPR136Save wsOutput = new WebAPIOutput_NPR136Save();
+
+                wsInput = new WebAPIInput_NPR136V2Save()
+                {
+                    USERID = apiInput.UserID,
+                    CNTRNO = apiInput.CNTRNO,
+                    IRENTORDNO = apiInput.IRENTORDNO,
+                    CarDispatch = apiInput.CarDispatch,
+                    DispatchRemark = apiInput.DispatchRemark,
+                    ParkingFee = apiInput.ParkingFee,
+                    ParkingFeeRemark = apiInput.ParkingFeeRemark
+
+                };
+
+                flag = webAPI.NPR136V2Save(wsInput, ref wsOutput);
             }
             #endregion
 

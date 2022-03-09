@@ -49,6 +49,7 @@ namespace OtherService
         protected string ETAG020QueryURL;//ETAG查詢(身份證)
         protected string ETAG031SaveURL; //ETAG沖銷
         protected string TransIRentMemCMKURL; // 會員條款更新至官網 20210824 ADD BY YEH
+        protected string NPR136V2SaveURL;   //20220309 ADD BY ADAM REASON.營損匯入使用
         protected string connetStr;
         protected string NPR138SaveURL;  //春節定金收款發票
         protected string NPR420SaveURL;  //錢包介面轉檔
@@ -97,6 +98,8 @@ namespace OtherService
             TransIRentMemCMKURL = (ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL") == null) ? "" : ConfigurationManager.AppSettings.Get("TransIRentMemCMKURL").ToString();
 
             NPR138SaveURL = (ConfigurationManager.AppSettings.Get("NPR138SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR138SaveURL").ToString();
+            //20220309 ADD BY ADAM REASON.營損匯入使用
+            NPR136V2SaveURL = (ConfigurationManager.AppSettings.Get("NPR136V2SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR136V2SaveURL").ToString();
             NPR420SaveURL = (ConfigurationManager.AppSettings.Get("NPR420SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR420SaveURL").ToString();
         }
 
@@ -2633,5 +2636,101 @@ namespace OtherService
             return output;
         }
         #endregion
+
+
+        #region 營損匯入 20220309 ADD BY ADAM
+        public bool NPR136V2Save(WebAPIInput_NPR136V2Save input, ref WebAPIOutput_NPR136Save output)
+        {
+            bool flag = false;
+
+            input.user_id = userid;
+            input.sig = GenerateSig();
+
+            output = DoNPR136V2Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        /// <summary>
+        /// 136修改合約
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_NPR136Save> DoNPR136V2Save(WebAPIInput_NPR136V2Save input)
+        {
+            WebAPIOutput_NPR136Save output = null;
+            Int16 IsSuccess = 0;
+            string ORDNO = "";
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR136V2SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR136Save>(responseStr);
+                        if (output.Result)
+                        {
+                            IsSuccess = 1;
+                            //  ORDNO = output.Data[0].ORDNO;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR136Save()
+                {
+
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR136V2Save",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR136SaveURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+
+            }
+
+
+            return output;
+        }
+        #endregion
+
     }
 }
