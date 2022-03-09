@@ -143,7 +143,7 @@ namespace WebAPI.Controllers
             #region 判斷短租流水號
             if (flag)
             {
-                string spName = "usp_GetMemberData_V20220121";
+                string spName = "usp_GetMemberData";
                 SPInput_GetMemberData spInput = new SPInput_GetMemberData
                 {
                     IDNO = apiInput.IDNO,
