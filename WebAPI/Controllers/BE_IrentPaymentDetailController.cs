@@ -15,6 +15,8 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.BackEnd.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace WebAPI.Controllers
 {
@@ -43,6 +45,15 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             //Int16 APPKind = 2;
             string Contentjson = "";
+
+            //iRentService認證
+            string EncryptStr = "";
+            string sourceStr = ConfigurationManager.AppSettings["HLCkey"] + ConfigurationManager.AppSettings["userid"] + System.DateTime.Now.ToString("yyyyMMdd");
+            ASCIIEncoding enc = new ASCIIEncoding();
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] shaHash = sha.ComputeHash(enc.GetBytes(sourceStr));
+            EncryptStr = System.BitConverter.ToString(shaHash).Replace("-", string.Empty);
+
             #endregion
 
             #region 防呆
@@ -76,7 +87,9 @@ namespace WebAPI.Controllers
                     SPED2 = apiInput.SPED2,
                     SPSD3 = apiInput.SPSD3,
                     SPED3 = apiInput.SPED3,
-                    MEMACCOUNT = apiInput.MEMACCOUNT
+                    MEMACCOUNT = apiInput.MEMACCOUNT,
+                    sig = EncryptStr,
+                    user_id = ConfigurationManager.AppSettings["userid"]
                 };
                 flag = hiEasyRentAPI.NPR390Query(spInput, ref wsOutput);
 
