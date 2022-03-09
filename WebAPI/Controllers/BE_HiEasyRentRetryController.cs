@@ -428,7 +428,7 @@ namespace WebAPI.Controllers
                                         input.tbPaymentDetail[z] = new PaymentDetail()
                                         {
                                             //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                            PAYAMT = ReturnControlList[z].CloseAmout.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYAMT = (ReturnControlList[z].CloseAmout + ReturnControlList[z].WalletAmount).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                             PAYTYPE = "1",
                                             PAYMENTTYPE = (ReturnControlList[z].WalletAmount > 0 ? "2" : "1"),
                                             PAYMEMO = "租金",
