@@ -8,6 +8,7 @@
 * 撰寫日期 : 20201005
 * 修改日期 : 20210903 UPD BY YEH REASON:增加副承租人每小時費率總和
 			 20211026 UPD BY YEH REASON:增加預授權金額
+			 20220214 UPD BY YEH REASON:預授權金額=信用卡(台新/中信)+錢包
 
 * Example  : 
 ***********************************************************************************************/
@@ -27,12 +28,7 @@ DECLARE @IsSystem TINYINT;
 DECLARE @FunName VARCHAR(50);
 DECLARE @ErrorType TINYINT;
 DECLARE @hasData TINYINT;
-DECLARE @car_mgt_status TINYINT;
-DECLARE @cancel_status TINYINT;
-DECLARE @booking_status TINYINT;
 DECLARE @NowTime DATETIME;
-DECLARE @CarNo VARCHAR(10);
-DECLARE @ProjType INT;
 
 /*初始設定*/
 SET @Error=0;
@@ -45,12 +41,7 @@ SET @IsSystem=0;
 SET @ErrorType=0;
 SET @hasData=0;
 
-SET @car_mgt_status=0;
-SET @cancel_status =0;
-SET @booking_status=0;
 SET @NowTime=DATEADD(HOUR,8,GETDATE());
-SET @CarNo='';
-SET @ProjType=5;
 SET @IDNO=ISNULL (@IDNO,'');
 SET @OrderNo=ISNULL (@OrderNo,0);
 SET @Token=ISNULL (@Token,'');
@@ -85,6 +76,13 @@ BEGIN TRY
 
 	IF @Error=0
 	BEGIN
+		-- 20220214 UPD BY YEH REASON:預授權金額=信用卡(台新/中信)+錢包
+		DECLARE @CreditAmount INT = 0;	-- 信用卡預授權金額
+		DECLARE @WalletAmount INT = 0;	-- 錢包預授權金額
+
+		SELECT @CreditAmount=ISNULL(SUM(CloseAmout),0) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo;
+		SELECT @WalletAmount=ISNULL(SUM(Amount),0) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0;
+
 		SELECT VW.order_number AS OrderNo,
 		       VW.lend_place AS StationID,
 			   VW.StationName,
@@ -110,8 +108,8 @@ BEGIN TRY
 			   VW.PRONAME,		--專案基本資料
 			   IIF(VW.PayMode=0, VW.PRICE / 10, VW.PRICE) AS PRICE, --平日每小時價 20201003 ADD BY ADAM
 			   IIF(VW.PayMode=0, VW.PRICE_H / 10, VW.PRICE_H) AS PRICE_H, --假日每小時價 20201003 ADD BY ADAM
-			   OrderPrice = 0, --ISNULL(NYP.PAYAMT,0),		--春節訂金
-			   UseOrderPrice = 0, --ISNULL(NYP.PAYAMT,0) - dbo.FN_UnUseOrderPrice(ISNULL(NYP.PAYAMT,0),VW.start_time,VW.stop_time,VW.final_start_time,VW.final_stop_time),--使用訂金
+			   OrderPrice = ISNULL(NYP.PAYAMT,0),		--春節訂金
+			   UseOrderPrice = dbo.FN_UnUseOrderPrice(ISNULL(NYP.PAYAMT,0),VW.start_time,VW.stop_time,VW.final_start_time,VW.final_stop_time),--提早還車罰金
 			   LastOrderPrice = 0,--剩餘訂金
 			   VW.BaseMinutes,
 			   VW.BaseMinutesPrice,
@@ -146,13 +144,13 @@ BEGIN TRY
 			   VW.HoildayPrice, --汽車租金牌價 20201117 eason
 			   VW.FirstFreeMins, --前n分鐘免費 eason
 			   JointInsurancePerHour = ISNULL((SELECT SUM(InsurancePerHours) FROM TB_SavePassenger SP WITH(NOLOCK) WHERE SP.Order_number=VW.order_number),0),	-- 20210903 UPD BY YEH REASON:增加副承租人每小時費率總和
-			   PreAmount = ISNULL((SELECT SUM(CloseAmout) FROM TB_TradeClose T WITH(NOLOCK) WHERE T.OrderNo=VW.order_number), 0)	-- 20211026 UPD BY YEH REASON:增加預授權金額
+			   PreAmount = @CreditAmount + @WalletAmount	-- 20211026 UPD BY YEH REASON:增加預授權金額
 		FROM VW_GetOrderData AS VW 	WITH(NOLOCK)
 		LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
-		--LEFT JOIN TB_NYPayList NYP WITH(NOLOCK) ON VW.order_number=NYP.order_number
+		LEFT JOIN TB_NYPayList NYP WITH(NOLOCK) ON VW.order_number=NYP.order_number
 		WHERE VW.IDNO=@IDNO AND VW.order_number=@OrderNo AND cancel_status=0
 		ORDER BY start_time ASC
 	END
@@ -184,4 +182,3 @@ RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetOrderStatusByOrderNo';
 GO
-

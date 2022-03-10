@@ -1,37 +1,22 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Bill;
-using Domain.SP.Input.Car;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
-using Domain.SP.Output.Bill;
 using Domain.SP.Output.OrderList;
-using Domain.TB;
-using Domain.WebAPI.Input.HiEasyRentAPI;
-using Domain.WebAPI.Input.Taishin;
-using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using Domain.WebAPI.output.Taishin;
 using Newtonsoft.Json;
 using NLog;
-using OtherService;
-using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.ComboFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Bill.Input;
 using WebAPI.Models.Param.Bill.Output;
 using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
-using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
@@ -131,11 +116,11 @@ namespace WebAPI.Controllers
                         AutoClosed = OrderAuth.AutoClosed,
                         final_price = OrderAuth.final_price,
                         ProName = "CreditAuthJobV2",
+                        CardType = OrderAuth.CardType,
                     };
 
                     try
                     {
-
                         Amount = OrderAuth.final_price;
                         var payStatus = true;
                         var AuthOutput = new OFN_CreditAuthResult();
@@ -144,7 +129,7 @@ namespace WebAPI.Controllers
                             var creditAuthComm = new CreditAuthComm();
                             var AuthInput = new IFN_CreditAuthRequest
                             {
-                                CheckoutMode = (OrderAuth.CardType == 1) ? 0 : -1,
+                                CheckoutMode = creditAuthComm.GetCheckoutModeByCardType(OrderAuth.CardType),
                                 OrderNo = OrderAuth.order_number,
                                 IDNO = OrderAuth.IDNO,
                                 Amount = Amount,
@@ -152,18 +137,27 @@ namespace WebAPI.Controllers
                                 autoClose = OrderAuth.AutoClosed,
                                 funName = funName,
                                 insUser = funName,
-                                AuthType = OrderAuth.AuthType
+                                AuthType = OrderAuth.AuthType,
+                                InputSource = 2,
+                                ProjType = OrderAuth.ProjType,
+                                TradeType = (OrderAuth.CardType == 2) ? GetWalletTradeType(OrderAuth.ProjType, OrderAuth.AuthType) : "",
                             };
 
-                            payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                            logger.Trace("OrderAuthList Result:" + JsonConvert.SerializeObject(AuthOutput));
-                            List<string> exCodeList = new List<string>{ "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
+                            if (AuthInput.CheckoutMode == 1 && AuthInput.AuthType == 7)
+                            {
+                                AuthInput.AutoStore = true;
+                            }
 
-                            UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p=>p== errCode) ?-9:- 1);
+                            payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                            logger.Trace(string.Format("OrderAuthList payStatus:{0} errCode:{1} Result:{2}", payStatus, errCode, JsonConvert.SerializeObject(AuthOutput)));
+                            List<string> exCodeList = new List<string> { "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
+
+                            UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p => p == errCode) ? -9 : -1);
                             UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode;
                             UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage;
                             UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no;
                             UpdateOrderAuthList.CardNumber = AuthOutput.CardNo;
+                            UpdateOrderAuthList.CardType = AuthOutput.CardType;
                         }
                         else
                         {
@@ -171,7 +165,7 @@ namespace WebAPI.Controllers
                             UpdateOrderAuthList.AuthCode = "1000";
                             UpdateOrderAuthList.AuthMessage = "金額為0免刷卡";
                         }
-                        
+
 
                         //SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
                         //{
@@ -284,7 +278,7 @@ namespace WebAPI.Controllers
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_UpdateOrderAuthListV2, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_UpdateOrderAuthListV2, SPOutput_Base>(connetStr);
             var flag = SQLPayHelp.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
-            
+
             if (flag == false)
             {
                 logger.Trace("UpdateOrderAuthList Params:" + JsonConvert.SerializeObject(input));
@@ -293,6 +287,55 @@ namespace WebAPI.Controllers
             baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
             return flag;
+        }
+
+        private string GetWalletTradeType(int projType, int authType)
+        {
+            string tradeType = "";
+
+            /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款)
+            ///
+            //新增TradeType： PreAuth_Motor、PreAuth_Car
+            /*case "Pay_Arrear":
+                   return 5;
+               case "pay_Car":
+               case "Pay_Motor":
+               default:
+               */
+
+            string carType = "";
+
+            switch (projType)
+            {
+                case 0:
+                case 3:
+                    carType = "Car";
+                    break;
+                case 4:
+                    carType = "Motor";
+                    break;
+                default:
+                    carType = "";
+                    break;
+            }
+            switch (authType)
+            {
+                case 1:
+                    tradeType = $"PreAuth_{carType}";
+                    break;
+                case 6:
+                    tradeType = $"Pay_Arrear";
+                    break;
+                case 7:
+                    tradeType = $"Pay_{carType}";
+                    break;
+                default:
+                    tradeType = "";
+                    break;
+            }
+
+
+            return tradeType;
         }
     }
 }

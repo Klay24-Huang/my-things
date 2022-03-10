@@ -7,6 +7,7 @@
 * 作    者 : YEH
 * 撰寫日期 : 20210922
 * 修改日期 : 20210923 UPD BY YEH REASON:增加是否同意自動儲值
+			 20220221 UPD BY YEH REASON:增加機車預扣款金額
 
 * Example  : 
 ***********************************************************************************************/
@@ -23,6 +24,7 @@ CREATE PROCEDURE [dbo].[usp_CreditAndWalletQuery_Q01]
 	@CARRIERID			VARCHAR(20)		OUTPUT	,	-- 手機條碼
 	@NPOBAN				VARCHAR(20)		OUTPUT	,	-- 愛心碼
 	@AutoStored			INT				OUTPUT	,	-- 是否同意自動儲值(0:不同意，1:同意)
+	@MotorPreAmt		INT				OUTPUT	,	-- 機車預扣款金額
 	@ErrorCode			VARCHAR(6)		OUTPUT	,	-- 回傳錯誤代碼
 	@ErrorMsg			NVARCHAR(100)	OUTPUT	,	-- 回傳錯誤訊息
 	@SQLExceptionCode	VARCHAR(10)		OUTPUT	,	-- 回傳sqlException代碼
@@ -94,6 +96,9 @@ BEGIN TRY
 			@WalletAmout=WalletBalance
 		FROM TB_UserWallet WITH(NOLOCK)
 		WHERE IDNO=@IDNO;
+
+		-- 20220221 UPD BY YEH REASON:增加機車預扣款金額
+		SELECT @MotorPreAmt=MapCode FROM TB_Code WITH(NOLOCK) WHERE CodeGroup = 'MotorPreAmt';
 	END
 		
 	--寫入錯誤訊息
@@ -120,7 +125,4 @@ BEGIN CATCH
 	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 END CATCH
 RETURN @Error
-
-EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetAnyRentCar_ForTest';
 GO
-

@@ -1616,7 +1616,7 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
-        public Dictionary<string, object> Sql_GetMonData(int monthlyRentID)
+        public Dictionary<string,object> Sql_GetMonData(int monthlyRentID)
         {
             Dictionary<string, object> resultDic = new Dictionary<string, object>();
             try

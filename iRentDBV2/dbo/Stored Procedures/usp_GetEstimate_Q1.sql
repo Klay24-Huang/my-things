@@ -70,7 +70,7 @@ BEGIN
 			IF @OrderNo > 0
 			BEGIN
 				-- 有訂單編號就用TB_OrderMain去關聯
-				SELECT G.PROJID, G.PROJTYPE, E.CarTypeGroupCode, H.PRICE, H.PRICE_H, G.Event
+				SELECT G.PROJID, G.PROJTYPE, E.CarTypeGroupCode, H.PRICE, H.PRICE_H--, G.Event
 				FROM TB_OrderMain A WITH(NOLOCK)
 				INNER JOIN TB_Car B WITH(NOLOCK) ON B.CarNo = A.CarNo
 				INNER JOIN TB_CarType C WITH(NOLOCK) ON C.CarType = B.CarType
@@ -89,7 +89,7 @@ BEGIN
 			ELSE
 			BEGIN
 				-- 沒訂單編號就用車型代碼、據點代碼、專案類型、專案代碼當條件取結果
-				SELECT DISTINCT A.PROJID, A.PROJTYPE, G.CarTypeGroupCode, C.PRICE, C.PRICE_H, A.Event
+				SELECT DISTINCT A.PROJID, A.PROJTYPE, G.CarTypeGroupCode, C.PRICE, C.PRICE_H--, A.Event
 				FROM TB_Project A
 				INNER JOIN TB_ProjectStation B ON B.PROJID = A.PROJID AND B.IOType = 'O'
 				INNER JOIN TB_ProjectDiscount C ON C.ProjID = A.PROJID

@@ -406,30 +406,6 @@ namespace WebAPI.Controllers
                                             #endregion
 
                                             #region SP存檔
-                                            #region 原本存檔(MARK)
-                                            ////已經付完款，直接更改狀態
-                                            //SPInput_BE_ContactFinish PayInput = new SPInput_BE_ContactFinish()
-                                            //{
-                                            //    IDNO = IDNO,
-                                            //    OrderNo = tmpOrder,
-                                            //    UserID = apiInput.UserID,
-                                            //    transaction_no = "",
-                                            //    ReturnDate = ReturnDate,
-                                            //    bill_option = apiInput.bill_option,
-                                            //    CARRIERID = apiInput.CARRIERID,
-                                            //    NPOBAN = apiInput.NPOBAN,
-                                            //    unified_business_no = apiInput.unified_business_no,
-                                            //    ParkingSpace = apiInput.parkingSpace,
-                                            //    Mode = apiInput.Mode,
-                                            //    LogID = LogID
-                                            //};
-                                            //string SPName = "usp_BE_ContactFinish";
-                                            //SPOutput_Base PayOutput = new SPOutput_Base();
-                                            //SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_BE_ContactFinish, SPOutput_Base>(connetStr);
-                                            //flag = SQLPayHelp.ExecuteSPNonQuery(SPName, PayInput, ref PayOutput, ref lstError);
-                                            //baseVerify.checkSQLResult(ref flag, ref PayOutput, ref lstError, ref errCode);
-                                            #endregion
-
                                             if (flag)
                                             {
                                                 string spName = "usp_BE_ContactSetting_U01";
@@ -443,6 +419,7 @@ namespace WebAPI.Controllers
                                                         objparms[i] = new
                                                         {
                                                             CloseID = TradeCloseLists[i].CloseID,
+                                                            CardType = TradeCloseLists[i].CardType,
                                                             AuthType = TradeCloseLists[i].AuthType,
                                                             ChkClose = TradeCloseLists[i].ChkClose,
                                                             CloseAmout = TradeCloseLists[i].CloseAmout,
@@ -455,6 +432,7 @@ namespace WebAPI.Controllers
                                                     objparms[0] = new
                                                     {
                                                         CloseID = 0,
+                                                        CardType = 0,
                                                         AuthType = 0,
                                                         ChkClose = 0,
                                                         CloseAmout = 0,
@@ -1077,8 +1055,7 @@ namespace WebAPI.Controllers
             #region 初始宣告
             #region API共用
             bool flag = true;
-            string APIName = "BE_ContactSettingController";
-            string funName = "DoReCalRent";
+            string funName = "BE_ContactSettingController";
             float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -1159,7 +1136,7 @@ namespace WebAPI.Controllers
                 returnDate = returnDate,
                 errCode = errCode
             };
-            trace.objs.Add(nameof(funInput), funInput);
+            trace.traceAdd(nameof(funInput), funInput);
             #endregion
             try
             {
@@ -1195,7 +1172,7 @@ namespace WebAPI.Controllers
                 
                 if (flag)
                 {
-                    trace.objs.Add(nameof(OrderDataLists), OrderDataLists);
+                    trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
 
                     item = OrderDataLists[0];
                     motoBaseMins = item.BaseMinutes > 0 ? item.BaseMinutes : motoBaseMins;
@@ -1205,14 +1182,15 @@ namespace WebAPI.Controllers
                     ProjID = item.ProjID;
                     PreAmount = item.PreAmount;
                 }
-                
-                //取得專案狀態
+                #endregion
+
+                #region 日期判斷
                 if (flag)
                 {
                     SD = Convert.ToDateTime(item.final_start_time);
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
-                                                        
-                    if (!string.IsNullOrWhiteSpace(item.fine_Time) && Convert.ToDateTime(item.fine_Time) > Convert.ToDateTime("1911 -01-01 00:00:00"))
+
+                    if (!string.IsNullOrWhiteSpace(item.fine_Time) && Convert.ToDateTime(item.fine_Time) > Convert.ToDateTime("1911-01-01 00:00:00"))
                     {
                         FineDate = Convert.ToDateTime(item.fine_Time);
                         FineDate = FineDate.Value.AddSeconds(ED.Second * -1); //去秒數
@@ -1258,15 +1236,17 @@ namespace WebAPI.Controllers
                     {
                         SD = SD,
                         ED = ED,
+                        FED = FED,
                         FineDate = FineDate,
-                        hasFine = hasFine
+                        hasFine = hasFine,
+                        lstHoliday = lstHoliday
                     };
-                    trace.objs.Add(nameof(timeMark), timeMark);
-                    trace.FlowList.Add("SD,ED,FD計算");
+                    trace.traceAdd(nameof(timeMark), timeMark);
+                    trace.FlowList.Add("SD,ED,FD判斷");
                     #endregion
                 }
                 #endregion
-
+                
                 #region 取得使用中訂閱制月租
                 //取得使用中訂閱制月租
                 if (flag)
@@ -1286,6 +1266,8 @@ namespace WebAPI.Controllers
                         {
                             List<string> mIds = sp_list.Select(x => x.MonthlyRentId.ToString()).ToList();
                             MonIds = string.Join(",", mIds);
+                            trace.traceAdd("UseMonthList", sp_list);
+                            trace.FlowList.Add("取得使用中訂閱制月租");
                         }
                     }
                 }
@@ -1341,6 +1323,14 @@ namespace WebAPI.Controllers
                             End_Mile = SPOut.Millage;
                         }
                     }
+                    trace.FlowList.Add("取還車里程");
+                    var TraceObject = new
+                    {
+                        flag = flag,
+                        errCode = errCode,
+                        End_Mile = End_Mile
+                    };
+                    trace.traceAdd("End_Mile", TraceObject);
                 }
                 #endregion
 
@@ -1449,7 +1439,7 @@ namespace WebAPI.Controllers
                                 item.PRICE_H = Convert.ToInt32(Math.Floor(vmonRe.PRICE_H));
                             }
 
-                            trace.objs.Add(nameof(vmonRe), vmonRe);
+                            trace.traceAdd(nameof(vmonRe), vmonRe);
                             trace.FlowList.Add("新增虛擬月租");
                         }
                     }
@@ -1494,14 +1484,12 @@ namespace WebAPI.Controllers
                             if (car_re != null)
                             {
                                 trace.traceAdd(nameof(car_re), car_re);
-
                                 car_payAllMins += car_re.RentInMins;
                                 car_payInMins = car_re.RentInMins;
                                 car_inPrice = car_re.RentInPay;
                                 nor_car_PayDisc = car_re.useDisc;
                             }
                         }
-
                         trace.FlowList.Add("汽車計費資訊(非月租)");
                     }
                 }
@@ -1517,7 +1505,7 @@ namespace WebAPI.Controllers
                     var re270 = cr_com.NPR270Query(inp);
                     if (re270 != null)
                     {
-                        trace.objs.Add(nameof(re270), re270);
+                        trace.traceAdd("NPR270", re270);
                         flag = re270.flag;
                         MotorPoint = re270.MotorPoint;
                         CarPoint = re270.CarPoint;
@@ -1584,7 +1572,7 @@ namespace WebAPI.Controllers
                     var etag_re = cr_com.ETagCk(input);
                     if (etag_re != null)
                     {
-                        trace.objs.Add(nameof(etag_re), etag_re);
+                        trace.traceAdd(nameof(etag_re), etag_re);
                         flag = etag_re.flag;
                         errCode = etag_re.errCode;
                         etagPrice = etag_re.etagPrice;
@@ -1665,7 +1653,7 @@ namespace WebAPI.Controllers
                         var magi_Re = cr_com.CarMagi(input);
                         if (magi_Re != null)
                         {
-                            trace.objs.Add(nameof(magi_Re), magi_Re);
+                            trace.traceAdd(nameof(magi_Re), magi_Re);
                             flag = magi_Re.flag;
                             outputApi.Rent.ParkingFee = magi_Re.ParkingFee;
                         }
@@ -1741,10 +1729,12 @@ namespace WebAPI.Controllers
                     if (visMons != null && visMons.Count() > 0)
                         input.VisMons = visMons;
 
+                    trace.traceAdd("monIn", input);
+
                     var mon_re = cr_com.MonthRentSave(input);
                     if (mon_re != null)
                     {
-                        trace.objs.Add(nameof(mon_re), mon_re);
+                        trace.traceAdd(nameof(mon_re), mon_re);
                         flag = mon_re.flag;
                         UseMonthMode = mon_re.UseMonthMode;
                         outputApi.IsMonthRent = mon_re.IsMonthRent;
@@ -1902,6 +1892,8 @@ namespace WebAPI.Controllers
 
                     xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                     outputApi.Rent.TotalRental = xTotalRental;
+                    outputApi.Rent.PreAmount = PreAmount;
+                    outputApi.Rent.DiffAmount = DiffAmount;
                     trace.FlowList.Add("總價計算");
                     #endregion
 
@@ -2011,7 +2003,7 @@ namespace WebAPI.Controllers
                         TransDiscount = outputApi.Rent.TransferPrice,
                         EndMile = End_Mile,
                         DiffAmount = DiffAmount,
-                        APIName = APIName,
+                        APIName = funName,
                         LogID = LogID
                     };
 
@@ -2021,13 +2013,11 @@ namespace WebAPI.Controllers
                     baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
 
                     #region trace
-                    trace.objs.Add(nameof(TotalRentMinutes), TotalRentMinutes);
-                    trace.objs.Add(nameof(Discount), Discount);
-                    trace.objs.Add(nameof(CarPoint), CarPoint);
-                    trace.objs.Add(nameof(MotorPoint), MotorPoint);
-                    trace.objs.Add(nameof(SPInput), SPInput);
-                    trace.objs.Add(nameof(outputApi), outputApi);
-                    trace.objs.Add(nameof(carInfo), carInfo);
+                    trace.traceAdd(nameof(TotalRentMinutes), TotalRentMinutes);
+                    trace.traceAdd(nameof(Discount), Discount);
+                    trace.traceAdd(nameof(SPInput), SPInput);
+                    trace.traceAdd(nameof(carInfo), carInfo);
+                    trace.traceAdd(nameof(outputApi), outputApi);
                     #endregion
 
                     trace.FlowList.Add("sp存檔");
@@ -2039,39 +2029,29 @@ namespace WebAPI.Controllers
                 if (!flag)
                 {
                     trace.objs.Add(nameof(errCode), errCode);
-                    trace.objs.Add(nameof(TotalPoint), TotalPoint);
-                    trace.objs.Add(nameof(TransferPrice), TransferPrice);
-
-                    string traceMsg = JsonConvert.SerializeObject(trace);
-                    var errItem = new TraceLogVM()
-                    {
-                        ApiId = 127,
-                        ApiMsg = traceMsg,
-                        ApiNm = funName,
-                        CodeVersion = trace.codeVersion,
-                        FlowStep = trace.FlowStep(),
-                        OrderNo = trace.OrderNo,
-                        TraceType = !flag ? eumTraceType.followErr : eumTraceType.mark
-                    };
-                    carRepo.AddTraceLog(errItem);
                 }
                 #endregion
             }
             catch (Exception ex)
             {
                 trace.BaseMsg = ex.Message;
+                flag = false;
+                errCode = "ERR902";
+            }
+            finally
+            {
+                trace.objs = trace.getObjs();
                 var errItem = new TraceLogVM()
                 {
                     ApiId = 127,
                     ApiMsg = JsonConvert.SerializeObject(trace),
                     ApiNm = funName,
                     CodeVersion = trace.codeVersion,
-                    FlowStep = JsonConvert.SerializeObject(trace.FlowStep()),
+                    FlowStep = trace.FlowStep(),
                     OrderNo = trace.OrderNo,
-                    TraceType = eumTraceType.exception
+                    TraceType = string.IsNullOrWhiteSpace(trace.BaseMsg) ? (flag ? eumTraceType.mark : eumTraceType.followErr) : eumTraceType.exception
                 };
                 carRepo.AddTraceLog(errItem);
-                throw;
             }
 
             return flag;

@@ -62,7 +62,6 @@ namespace WebAPI.Controllers
             string funName = "WalletStoredByCreditController";
             int apiId = 220;
 
-            Int16 Mode = 1;
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_WalletStoredByCredit apiInput = null;
@@ -77,6 +76,7 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
             string TradeType = ""; ///交易類別
+            string exMsg = "";
 
 
             #endregion
@@ -159,7 +159,10 @@ namespace WebAPI.Controllers
                         autoClose = 1,
                         funName = funName,
                         insUser = funName,
-                        AuthType = 9
+                        AuthType = 9,
+                        InputSource=1,
+                        LogID=LogID,
+                        Token=Access_Token
                     };
                    
                     try
@@ -178,21 +181,10 @@ namespace WebAPI.Controllers
                     trace.FlowList.Add("刷卡授權");
                 }
                 #endregion
-                #region 台新錢包儲值失敗
+                #region 台新錢包儲值
                 if (flag)
                 {
-                    switch (AuthOutput.CardType)
-                    {
-                        case 0:
-                            TradeType = "Store_HotaiPay";
-                            break;
-                        case 4:
-                        default:
-                            TradeType = "Store_Credit";
-                            break;
-                    }
-
-
+                    TradeType = AuthOutput.CheckoutMode == 4 ? "Store_HotaiPay" : "Store_Credit";
                     DateTime NowTime = DateTime.Now;
                     int nowCount = 1;
                     WebAPI_CreateAccountAndStoredMoney wallet = new WebAPI_CreateAccountAndStoredMoney()
@@ -226,23 +218,20 @@ namespace WebAPI.Controllers
                     catch (Exception ex)
                     {
                         flag = false;
+                        exMsg = ex.Message;
                         trace.BaseMsg = ex.Message;
                     }
 
                     trace.traceAdd("DoStoreValueCreateAccount", new { flag, wallet, output, errCode });
                     trace.FlowList.Add("錢包儲值");
 
-                    if (!flag && (output.ReturnCode == "9999" || output.ReturnCode != "0000" || output.ReturnCode != "M000"))
+                    if (!flag)
                     {
                         #region 寫入開戶儲值錯誤LOG
                         SPInput_InsTaishinStoredMoneyError spInput = new SPInput_InsTaishinStoredMoneyError()
                         {
                             IDNO = IDNO,
-                            IsForeign = baseVerify.regexStr(IDNO, CommonFunc.CheckType.FIDNO) ? 1 : 0,
                             MemberId = wallet.MemberId,
-                            Name = wallet.Name,
-                            PhoneNo = wallet.PhoneNo,
-                            Email = wallet.Email,
                             AccountType = wallet.AccountType,
                             CreateType = wallet.CreateType,
                             AmountType = wallet.AmountType,
@@ -254,9 +243,9 @@ namespace WebAPI.Controllers
                             GiftCardBarCode = wallet.GiftCardBarCode,
                             PRGName = funName,
                             LogID = LogID,
-                            ReturnCode = output.ReturnCode,
-                            ExceptionData = output.ExceptionData,
-                            Message = output.Message,
+                            ReturnCode = output?.ReturnCode ?? "-1",
+                            ExceptionData = output?.ExceptionData ?? exMsg ?? "",
+                            Message = output?.Message?? "",
                             BankTradeNo = AuthOutput?.BankTradeNo ?? "",
                             CardNumber = AuthOutput?.CardNo ?? "",
                             MerchantTradeNo = AuthOutput?.Transaction_no ?? "",
@@ -269,7 +258,6 @@ namespace WebAPI.Controllers
                         #endregion
 
                         errCode = "ERR918"; //Api呼叫失敗
-                        errMsg = output.Message;
                     }
                 }
                 #endregion
@@ -277,7 +265,7 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     string formatString = "yyyyMMddHHmmss";
-                    string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);       
+                    string cardNum = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);       
                     SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
                     {
                         IDNO = IDNO,
@@ -294,9 +282,9 @@ namespace WebAPI.Controllers
                         LastTransId = output.Result.TransId,
                         TaishinNO = AuthOutput?.BankTradeNo ?? "",
                         TradeType = TradeType,
-                        TradeKey = cardNo,
+                        TradeKey = cardNum,
                         PRGName = funName,
-                        Mode = Mode,
+                        Mode = 1,
                         InputSource = 1,
                         Token = Access_Token,
                         LogID = LogID

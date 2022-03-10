@@ -239,6 +239,8 @@
     <Compile Include="Controllers\CTBCCapJobController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
+    <Compile Include="Controllers\WalletTransferJobController.cs" />
+    <Compile Include="Controllers\WalletReturnJobController.cs" />
     <Compile Include="Controllers\WalletStoredErrorHandleController.cs" />
     <Compile Include="Controllers\WalletWithdrowInvoiceController.cs" />
     <Compile Include="Controllers\BE_HandleCarMachineController.cs" />
@@ -303,6 +305,7 @@
     <Compile Include="Controllers\MonthlyPayInvJobController.cs" />
     <Compile Include="Controllers\MonthlyPayJobController.cs" />
     <Compile Include="Controllers\GetOrderInsuranceInfoController.cs" />
+    <Compile Include="Controllers\InsertOrderOtherFeeController.cs" />
     <Compile Include="Controllers\GetPreCreditAuthJobController.cs" />
     <Compile Include="Controllers\JointRentInvitationController.cs" />
     <Compile Include="Controllers\JointRentInviteeModifyController.cs" />
@@ -651,6 +654,7 @@
     <Compile Include="Models\Param\Input\IAPI_GetSubsHist.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetUpSubsList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetWalletStoredMoneySet.cs" />
+    <Compile Include="Models\Param\Input\IAPI_InsertOrderOtherFee.cs" />
     <Compile Include="Models\Param\Input\IAPI_InvoiceSetting.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentInviteeVerify.cs" />
     <Compile Include="Models\Param\Input\IAPI_JointRentIviteeFeedBack.cs" />

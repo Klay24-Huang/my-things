@@ -1045,7 +1045,7 @@ namespace OtherService
 
             new WebAPILogCommon().InsCreditAuthDataforClose(SPInput, ref flag, ref errCode, ref lstError);
 
-            if(!flag && errCode == "000000")
+            if (!flag && errCode == "000000")
             {
                 errCode = lstError?.Count > 0 ? lstError.FirstOrDefault()?.ErrorCode : "ERR913";
             }
@@ -1317,7 +1317,7 @@ namespace OtherService
                             ApiUrl = "Auth",
                             RequestData = new AESEncrypt().doEncrypt(relayEnKey, relayEnSalt, body)
                         };
-                        
+
                         postBody = JsonConvert.SerializeObject(relayPostinput);
                     }
                     #endregion
@@ -1329,11 +1329,11 @@ namespace OtherService
                         reqStream.Write(byteArray, 0, byteArray.Length);
                         reqStream.Dispose();
                     }
+                    logger.Trace(string.Format("DoCreditCardAuthSendForClose input:{0}", body));
                     //發出Request
                     string responseStr = "";
                     using (WebResponse response = request.GetResponse())
                     {
-
                         using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                         {
                             responseStr = reader.ReadToEnd();
@@ -1345,7 +1345,7 @@ namespace OtherService
                             }
                             else
                             {
-                                var result = JsonConvert.DeserializeObject<WebAPIOutput_RelayPost>(responseStr);                               
+                                var result = JsonConvert.DeserializeObject<WebAPIOutput_RelayPost>(responseStr);
                                 if (result.IsSuccess)
                                 {
                                     responseStr = "";
@@ -1359,17 +1359,13 @@ namespace OtherService
                                         RtnCode = "0",
                                         RtnMessage = result.RtnMessage
                                     };
-
                                 }
                             }
-
-
                             //20201125紀錄接收資料
-                            logger.Trace(responseStr);
+                            logger.Trace(string.Format("DoCreditCardAuthSendForClose Result:{0}", responseStr));
                             reader.Close();
                             reader.Dispose();
                         }
-
                         //增加關閉連線的呼叫
                         response.Close();
                         response.Dispose();
@@ -1380,8 +1376,6 @@ namespace OtherService
                     output = ForTest(input.RequestParams.TradeAmount);
                 }
             }
-
-
             catch (Exception ex)
             {
                 RTime = DateTime.Now;
@@ -1389,7 +1383,6 @@ namespace OtherService
                 {
                     RtnCode = "0",
                     RtnMessage = ex.Message
-
                 };
             }
             finally

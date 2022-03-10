@@ -270,6 +270,7 @@
 20211103 新增取得取消訂單列表(GetCancelOrderList)
 
 20211104 資費明細(預估租金)補上，WalletTransferStoredValue,WalletStoredByCredit,WalletStoreVisualAccount,WalletStoreShop 移除掉Data內的Result
+20220121 補月租購買(BuyNowAddMonth)、月租升轉(BuyNowUpMonth)、欠費繳交(BuyNowPayArrs)、設定自動續約(SetSubsNxt)錯誤代碼
 
 20211116 錢包儲值-信用卡(WalletStoredByCredit)新增API Input參數，錢包儲值-商店條碼 虛擬帳號  調整輸出參數
 
@@ -289,7 +290,12 @@
 
 20220207 新增月租購買(BuyNowToolAddMonth)、升轉工具(BuyNowToolUpMonth)
 
-20220222 新增營損明細(InsertOrderOtherFee)
+20220221 查詢綁卡跟錢包(CreditAndWalletQuery)新增機車預扣款金額
+
+20220222 預約(Booking)新增機車錢包餘額不足錯誤代碼
+
+20220301 機車取車(BookingStartMotor)補上output參數說明&錯誤代碼、預約(Booking)移除ERR294錯誤代碼
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -3280,7 +3286,7 @@
 | ERR905   | 11/10 02:00~06:00系統維護暫停服務                          | 定維時使用                                                 |
 | ERR602   | 因取授權失敗未完成預約，請檢查卡片餘額或是重新綁卡         | 因取授權失敗未完成預約                                     |
 | ERR292   | 請先設定支付方式，才可以預約機車哦！                       | 請先設定支付方式，才可以預約機車哦！                       |
-| ERR294   | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約。 | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約   |
+| ERR934   | 錢包餘額不足                                               | 錢包餘額不足                                               |
 
 ------
 
@@ -4300,6 +4306,13 @@
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
 
+- Data參數說明
+
+| 參數名稱     | 參數說明        |  型態  | 範例         |
+| ------------ | --------------- | :----: | ------------ |
+| BLEDEVICEID  | 藍芽device name | string | iMoto_bd21   |
+| BLEDEVICEPWD | 藍芽密碼        | string | QUEzMDE3ODUy |
+
 * Output範例
 
 ```
@@ -4309,9 +4322,22 @@
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-    "Data": {}
+    "Data": {
+       "BLEDEVICEID":"iMoto_bd21",
+       "BLEDEVICEPWD":"QUEzMDE3ODUy"    
+    }
 }
 ```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                 | 說明                                     |
+| -------- | ---------------------------------------- | ---------------------------------------- |
+| ERR171   | 超過取車時間或此訂單已失效               | 取車時超過取車時效或已被取消             |
+| ERR239   | 會員狀態審核不通過不可取車               | 會員狀態審核不通過不可取車               |
+| ERR240   | 前車未還，請聯絡客服                     | 前車未還，請聯絡客服                     |
+| ERR287   | 你的會員積分低於50分，故暫時無法租用車輛 | 你的會員積分低於50分，故暫時無法租用車輛 |
+| ERR292   | 請先設定支付方式，才可以預約機車哦！     | 請先設定支付方式，才可以預約機車哦！     |
 
 ## BookingExtend延長用車
 
@@ -7382,6 +7408,19 @@
 
 * 20210819新增
 
+| 錯誤代碼 | 錯誤訊息                                   | 說明                                       |
+| -------- | ------------------------------------------ | ------------------------------------------ |
+| ERR168   | 找不到符合的訂單                           | 取消訂單時找不到可取消的訂單               |
+| ERR919   | 對方不能租車，請對方確認會員狀態哦！       | 對方不能租車，請對方確認會員狀態哦！       |
+| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+| ERR936   | 格式不符，請重新輸入哦！                   | 輸入格式不符                               |
+
+## JointRentInvitation 案件共同承租人邀請
+
+### [/api/JointRentInvitation/]
+
+* 20210819新增
+
 * ASP.NET Web API (REST API)
 
 * 傳送跟接收採JSON格式
@@ -7622,6 +7661,17 @@
 | AutoStored   | 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
 | HasHotaiPay  | 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
 | HotaiListObj | 和泰PAY卡清單                                                |  list  |          |
+| MotorPreAmt  | 機車預扣款金額                                               |  int   | 50       |
+
+* BindListObj 回傳參數說明
+
+| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
+| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
+| BankNo          | 銀行帳號                         | string |                                                       |
+| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
+| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
+| AvailableAmount | 剩餘額度                         | string |                                                       |
+| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
 
 * BindListObj 回傳參數說明
 
@@ -7684,7 +7734,8 @@
                 "CardNumber": "****-****-****-5278",
                 "IsDefault": 1
             }
-        ]
+        ],
+        "MotorPreAmt": 50
     }
 }
 ```

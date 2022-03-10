@@ -341,7 +341,7 @@ namespace WebAPI.Service
 
             return flag;
         }
-
+        
         /// <summary>
         /// 寫入開戶儲值錯誤LOG
         /// </summary>
@@ -469,6 +469,85 @@ namespace WebAPI.Service
             }
             return spOut;
         }
+
+        /// <summary>
+        /// 取得付款方式 (不含和泰Pay)
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="LogID"></param>
+        /// <param name="Access_Token"></param>
+        /// <returns></returns>
+        public (bool flag, List<SPOutput_GetPayInfo> PayMode) sp_GetPayInfo(SPInput_GetPayInfo spInput, ref string errCode)
+        {
+            var lstError = new List<ErrorInfo>();
+            //string errMsg = "Success"; //預設成功
+            errCode = "000000"; //預設成功
+
+            (bool flag, List<SPOutput_GetPayInfo> PayMode) re = (false, new List<SPOutput_GetPayInfo>());
+
+            string SPName = "usp_GetPayInfo_Q1";
+
+            SPOutput_Base spOut = new SPOutput_Base();
+            SQLHelper<SPInput_GetPayInfo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetPayInfo, SPOutput_Base>(connetStr);
+            List<SPOutput_GetPayInfo> PayMode = new List<SPOutput_GetPayInfo>();
+
+            DataSet ds = new DataSet();
+            bool flag = sqlHelp.ExeuteSP(SPName, spInput, ref spOut, ref PayMode, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+            if (flag && PayMode.Count > 0)
+            {
+                re.flag = true;
+                re.PayMode = PayMode;
+            }
+
+            return re;
+        }
+
+        /// <summary>
+        /// 取得錢包付款交易編號
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="flag"></param>
+        /// <param name="errCode"></param>
+        /// <param name="lstError"></param>
+        /// <returns></returns>
+        public (bool flag, SPOutput_WalletPayGetTransId spOut)  sp_GetWalletPayGetTransId(SPInput_WalletPayGetTransId input, ref string errCode)
+        {
+            var lstError = new List<ErrorInfo>();
+            errCode = "000000"; //預設成功
+
+            (bool flag, SPOutput_WalletPayGetTransId spOut) re = (false, new SPOutput_WalletPayGetTransId());
+            string SPName = "usp_WalletPayGetTransId_I01";
+
+            SQLHelper<SPInput_WalletPayGetTransId, SPOutput_WalletPayGetTransId> SqlHelper = new SQLHelper<SPInput_WalletPayGetTransId, SPOutput_WalletPayGetTransId>(connetStr);
+            SPOutput_WalletPayGetTransId spOut = new SPOutput_WalletPayGetTransId();
+            
+            bool flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+
+
+            if (flag)
+            {
+                re.flag = true;
+                re.spOut = spOut;
+
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
+                {
+                    re.flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
+                }
+            }
+            return re;
+        }
+
+
     }
 
     #region SPout轉List

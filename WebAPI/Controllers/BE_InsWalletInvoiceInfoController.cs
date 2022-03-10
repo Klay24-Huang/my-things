@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
 using Domain.SP.BE.Output;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,6 +17,8 @@ namespace WebAPI.Controllers
 {
     public class BE_InsWalletInvoiceInfoController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         /// <summary>
         /// 【後台】儲存和雲錢包發票資訊
@@ -47,63 +50,74 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             #endregion
 
-            #region 防呆
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
-            if (flag)
-            {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_InsWalletInvoiceInfo>(Contentjson);
-                //寫入API Log
-                string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-
-                string[] checkList = { apiInput.UserID, apiInput.IDNO, apiInput.cashAmount };
-                string[] errList = { "ERR900", "ERR900", "ERR900" };
-                //1.判斷必填
-                flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
-            }
-            #endregion
-
-            #region TB
-            if (flag)
+            try
             {
 
-                string spName = "usp_BE_WalletWithdraw_I01";
-                SPInput_BE_InsWalletInvoiceInfo spInput = new SPInput_BE_InsWalletInvoiceInfo()
+                #region 防呆
+                flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
+                if (flag)
                 {
-                    UserID = apiInput.UserID,
-                    IDNO = apiInput.IDNO,
-                    Amount = int.Parse(apiInput.cashAmount),
-                    Tax = apiInput.tax,
-                    HandleFee = apiInput.handleFee,
-                    InvoiceType = int.Parse(apiInput.invoiceMode),
-                    CustID = apiInput.CustID,
-                    Carrier = apiInput.carrier,
-                    NPOBAN = apiInput.NPOBAN,
-                    RVACNT = apiInput.RVACNT,
-                    RVBANK = apiInput.RVBANk,
-                    RV_NAME = apiInput.RV_NAME,
-                    DocURL = apiInput.DocURL,
-                    LogID = LogID,
-                    PRGName = funName
-                };
-                SPOutput_BE_InsWalletInvoiceInfo spOut = new SPOutput_BE_InsWalletInvoiceInfo();
-                SQLHelper<SPInput_BE_InsWalletInvoiceInfo, SPOutput_BE_InsWalletInvoiceInfo> sqlHelp = new SQLHelper<SPInput_BE_InsWalletInvoiceInfo, SPOutput_BE_InsWalletInvoiceInfo>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                    apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_BE_InsWalletInvoiceInfo>(Contentjson);
+                    //寫入API Log
+                    string ClientIP = baseVerify.GetClientIp(Request);
+                    flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
+                    string[] checkList = { apiInput.UserID, apiInput.IDNO, apiInput.cashAmount };
+                    string[] errList = { "ERR900", "ERR900", "ERR900" };
+                    //1.判斷必填
+                    flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
+                }
+                #endregion
+
+                #region TB
+                if (flag)
+                {
+
+                    string spName = "usp_BE_WalletWithdraw_I01";
+                    SPInput_BE_InsWalletInvoiceInfo spInput = new SPInput_BE_InsWalletInvoiceInfo()
+                    {
+                        UserID = apiInput.UserID,
+                        IDNO = apiInput.IDNO,
+                        Amount = int.Parse(apiInput.cashAmount),
+                        Tax = apiInput.tax,
+                        HandleFee = apiInput.handleFee,
+                        InvoiceType = int.Parse(apiInput.invoiceMode),
+                        CustID = apiInput.CustID,
+                        Carrier = apiInput.carrier,
+                        NPOBAN = apiInput.NPOBAN,
+                        RVACNT = apiInput.RVACNT,
+                        RVBANK = apiInput.RVBANk,
+                        RV_NAME = apiInput.RV_NAME,
+                        DocURL = apiInput.DocURL,
+                        LogID = LogID,
+                        PRGName = funName
+                    };
+                    SPOutput_BE_InsWalletInvoiceInfo spOut = new SPOutput_BE_InsWalletInvoiceInfo();
+                    SQLHelper<SPInput_BE_InsWalletInvoiceInfo, SPOutput_BE_InsWalletInvoiceInfo> sqlHelp = new SQLHelper<SPInput_BE_InsWalletInvoiceInfo, SPOutput_BE_InsWalletInvoiceInfo>(connetStr);
+                    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+
+                }
+                #endregion
+
+                #region 寫入錯誤Log
+                if (false == flag && false == isWriteError)
+                {
+                    baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                }
+                #endregion
+                #region 輸出
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+                return objOutput;
+                #endregion
             }
-            #endregion
-
-            #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            catch(Exception ex)
             {
-                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                logger.Error("FunName: BE_InsWalletInvoiceInfoController" + " " + ex.Message);
+                baseVerify.GenerateOutput(ref objOutput, false, "ERR999", ex.Message, apiOutput, token);
+                return objOutput;
             }
-            #endregion
-            #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
-            return objOutput;
-            #endregion
+
         }
     }
 }

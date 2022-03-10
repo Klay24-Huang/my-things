@@ -45,6 +45,7 @@
     <Compile Include="CarMachine\BLEInfo.cs" />
     <Compile Include="CarMachine\CardList.cs" />
     <Compile Include="Common\BackEnd\OperatorItem.cs" />
+    <Compile Include="Common\CodeMailRecv.cs" />
     <Compile Include="Common\CodeData.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiFastAddCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiPaymentAuth.cs" />
+    <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_GetCTBCInquiryList.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCInquiry.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCap.cs" />
@@ -73,12 +75,21 @@
     <Compile Include="SP\Input\Hotai\SP_Input_HotaiTranStep4.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletPayGetTransId.cs" />
+    <Compile Include="SP\Input\Rent\SPInput_OrderExtInfo.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_GetWalletReturn.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletTransfer.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletReturn.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoredErrorHandle.cs" />
+    <Compile Include="SP\Output\Common\SPOutput_IDReturnToken.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_MemberUnBind.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_CTBCCapList.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiTranStep1.cs" />
+    <Compile Include="SP\Output\Wallet\WalletTransferData.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_GetWalletReturn.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletStoredErrorList.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_WalletPayGetTransId.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />
     <Compile Include="TB\Hotai\HotaiCardInfo.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCardList.cs" />
@@ -181,6 +192,7 @@
     <Compile Include="SP\Input\Bill\SPInput_GetMilageSetting.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetOrderInfo.cs" />
     <Compile Include="SP\Input\Bill\SPInput_GetProjectPriceBase.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_InsertOrderOtherFee.cs" />
     <Compile Include="SP\Input\Bill\SPInput_SetRewardResult.cs" />
     <Compile Include="SP\Input\Booking\SPInpupt_BookingDelete.cs" />
     <Compile Include="SP\Input\Booking\SPInput_BeforeBookingStart.cs" />
@@ -694,6 +706,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR420Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR380Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_TransIRentMemCMK.cs" />
     <Compile Include="WebAPI\Input\Hotai\Member\HotaiMemberRequestBody.cs" />
@@ -748,6 +761,7 @@
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetBarcode.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetTaishinToken.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_PayTransaction.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_Refund.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_StoredMoney.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_TransferStoredValueCreateAccount.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Auth.cs" />
@@ -776,6 +790,7 @@
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdateMemberProfile.cs" />
     <Compile Include="WebAPI\Input\Hotai\Member\WebAPIInput_UpdatePassword.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_RelayPost.cs" />
+    <Compile Include="WebAPI\Input\Taishin\WebAPIInput_RelayPost_WalletWithdraw.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_Base.cs" />
     <Compile Include="WebAPI\output\CENS\WSOutput_GetInfo.cs" />
     <Compile Include="WebAPI\output\CTBCPOS\WebAPIOutput_RefundRev.cs" />
@@ -826,6 +841,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData2.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData3.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData4.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR420Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_TransIRentMemCMK.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\ResponseErrorInfo.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_BenefitsAndPrivacyVersion.cs" />
@@ -892,6 +908,7 @@
     <Compile Include="WebAPI\output\Taishin\ResultData\DeleteCreditCardAuthResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\ResultData\GetCreditCardResultData.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\IHUBResHeader.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\RefundParam.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\ShortUrlRes.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\CvsPayInfoRes.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\ResultParam\BarcodeRes.cs" />
@@ -909,6 +926,7 @@
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetBarCode.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_GetTaishinToken.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_PayTransaction.cs" />
+    <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_Refund.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_StoreValueCreateAccount.cs" />
     <Compile Include="WebAPI\output\Taishin\Wallet\WebAPIOutput_TransferStoreValueCreateAccount.cs" />
     <Compile Include="WebAPI\output\Taishin\WebAPIOutput_Auth.cs" />

@@ -1,9 +1,7 @@
 ﻿using Domain.Common;
 using Domain.MemberData;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Member;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -12,7 +10,6 @@ using System.Data;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Output;
 using WebCommon;
 
@@ -75,37 +72,12 @@ namespace WebAPI.Controllers
             //Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             if (flag)
             {
-                /*
-                _repository = new MemberRepository(connetStr);
-                RegisterData obj = new RegisterData();
-                obj = _repository.GetMemberData(IDNO);
-
-                outputAPI = new OAPI_GetMemberData()
-                {
-                     UserData=obj
-                };
-                */
-
                 //20201022 ADD BY ADAM REASON.改為SP呼叫
-                //string spName = new ObjType().GetSPName(ObjType.SPType.GetMemberData);
-                string spName = "usp_GetMemberData_V20220121";
+                string spName = "usp_GetMemberData";
                 SPInput_GetMemberData spMemberDataInput = new SPInput_GetMemberData()
                 {
                     IDNO = IDNO,

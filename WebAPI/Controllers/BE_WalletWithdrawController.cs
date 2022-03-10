@@ -1,18 +1,27 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.OtherService.Taishin;
 using Domain.SP.Input.Wallet;
 using Domain.SP.Output;
 using Domain.SP.Output.Wallet;
 using Domain.TB.BackEnd;
+using Domain.WebAPI.Input.Taishin;
 using Domain.WebAPI.Input.Taishin.Wallet;
+using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
+using NLog;
 using OtherService;
+using OtherService.Common;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -27,9 +36,20 @@ namespace WebAPI.Controllers
 {
     public class BE_WalletWithdrawController : ApiController
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
+
+        private string RelayBaseURL_Withdraw = ConfigurationManager.AppSettings["RelayBaseURL_Withdraw"].ToString();                  //中繼網址
+        private string RelayPostApi_Withdraw = ConfigurationManager.AppSettings["RelayPostApi_Withdraw"].ToString();                  //中繼API
+        private string RelayStatus = ConfigurationManager.AppSettings["RelayStatus"].ToString();                    //是否要啟用中繼
+        private string relayEnKey = ConfigurationManager.AppSettings["RelayEnKey"].ToString();                      //中繼加密key
+        private string relayEnSalt = ConfigurationManager.AppSettings["RelayEnSalt"].ToString();                    //中繼加密Salt
+        private string PayTransaction = ConfigurationManager.AppSettings["PayTransaction"].ToString();              //直接授權   
+        private string TaishinWalletBaseURL = ConfigurationManager.AppSettings["TaishinWalletBaseURL"].ToString();
+
         private CommonFunc baseVerify { get; set; }
         /// <summary>
         /// 【後台】和雲錢包餘額提領
@@ -76,24 +96,33 @@ namespace WebAPI.Controllers
                 flag = baseVerify.CheckISNull(checkList, errList, ref errCode, funName, LogID);
                 #endregion
             }
-
-            #region TB
-            if (flag)
+            try
             {
-                flag = WithdrawWalletFlow(0, int.Parse(apiInput.cashAmount), apiInput.IDNO, "Withdraw", funName, LogID, Access_Token, ref errCode).flag;
-            }
-            #endregion
 
-            #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
-            {
-                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                #region TB
+                if (flag)
+                {
+                    flag = WithdrawWalletFlow(0, int.Parse(apiInput.cashAmount), apiInput.IDNO, "Withdraw", funName, LogID, Access_Token, ref errCode).flag;
+                }
+                #endregion
+
+                #region 寫入錯誤Log
+                if (false == flag && false == isWriteError)
+                {
+                    baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                }
+                #endregion
+                #region 輸出
+                baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
+                return objOutput;
+                #endregion
             }
-            #endregion
-            #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
-            return objOutput;
-            #endregion
+            catch(Exception ex)
+            {
+                logger.Error("FunName: BE_WalletWithdrawController" + " " + ex.Message);
+                baseVerify.GenerateOutput(ref objOutput, false, "ERR999", ex.Message, apiOutput, token);
+                return objOutput;
+            }
 
         }
 
@@ -160,11 +189,142 @@ namespace WebAPI.Controllers
 
             if (result.flag)
             {
+                WebAPIOutput_PayTransaction output = null;
                 var body = JsonConvert.SerializeObject(wallet);
                 TaishinWallet WalletAPI = new TaishinWallet();
                 string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
                 string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
-                result.flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
+
+                #region RelayPost
+
+                bool flag = true;
+                string Site = RelayStatus == "0" ? $"{TaishinWalletBaseURL}{PayTransaction}" : $"{RelayBaseURL_Withdraw}{RelayPostApi_Withdraw}";
+                //string Site = "https://localhost:44393/api/" + RelayPostApi_Withdraw;
+                DateTime MKTime = DateTime.Now;
+                DateTime RTime = MKTime;
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Site);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+                //request.KeepAlive = true;
+                request.KeepAlive = false;
+                SetHeaderValue(request.Headers, "Connection", "close");
+                request.Timeout = 40000;
+
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                //string body = JsonConvert.SerializeObject(wallet);//將匿名物件序列化為json字串
+                string postBody = "";
+                #region 中繼API啟用判斷
+                if (RelayStatus == "0") // 0:不啟用
+                {
+                    postBody = body;
+                }
+                else
+                {
+                    WebAPIInput_RelayPost_WalletWithdraw relayPostinput = new WebAPIInput_RelayPost_WalletWithdraw()
+                    {
+                        BaseUrl = "TaishinWalletBaseURL",
+                        ApiUrl = "PayTransaction",
+                        UtcTimeStamp = utcTimeStamp,
+                        SignCode = SignCode,
+                        RequestData = new AESEncrypt().doEncrypt(relayEnKey, relayEnSalt, body)
+                    };
+
+                    postBody = JsonConvert.SerializeObject(relayPostinput);
+                }
+                #endregion
+
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                    reqStream.Dispose();
+                }
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+
+                        if (RelayStatus == "0") // 0:不啟用
+                        {
+                            output = JsonConvert.DeserializeObject<WebAPIOutput_PayTransaction>(responseStr);
+                        }
+                        else
+                        {
+                            var replyPostResult = JsonConvert.DeserializeObject<WebAPIOutput_RelayPost>(responseStr);
+                            if (replyPostResult.IsSuccess)
+                            {
+                                responseStr = "";
+                                responseStr = new AESEncrypt().doDecrypt(relayEnKey, relayEnSalt, replyPostResult.ResponseData);
+                                output = JsonConvert.DeserializeObject<WebAPIOutput_PayTransaction>(responseStr);
+                            }
+                            else
+                            {
+                                output = new WebAPIOutput_PayTransaction()
+                                {
+                                    ReturnCode = "0",
+                                    Message = replyPostResult.RtnMessage
+                                };
+
+                            }
+                        }
+
+                        if (output.ReturnCode == "0000" || output.ReturnCode == "M000")
+                        {
+                            taishinResponse = output;
+                            //20210630 ADD BY Umeko REASON.扣款成功後寫入LOG紀錄
+                            SPInput_InsPayTransactionLog spInput = new SPInput_InsPayTransactionLog()
+                            {
+                                GUID = wallet.GUID,
+                                MerchantId = wallet.MerchantId,
+                                AccountId = wallet.AccountId,
+                                BarCode = wallet.BarCode,
+                                POSId = wallet.POSId,
+                                StoreId = wallet.StoreId,
+                                StoreTransDate = wallet.StoreTransDate,
+                                StoreTransId = wallet.StoreTransId,
+                                TransmittalDate = "",
+                                TransDate = output.Result.TransDate,
+                                TransId = output.Result.TransId,
+                                SourceTransId = "", //這參數是退款才需要用到
+                                TransType = "T001",
+                                BonusFlag = wallet.BonusFlag,
+                                PriceCustody = wallet.Custody,
+                                SmokeLiqueurFlag = wallet.SmokeLiqueurFlag,
+                                Amount = wallet.Amount,
+                                ActualAmount = output.Result.ActualAmount,
+                                Bonus = output.Result.Bonus,
+                                SourceFrom = wallet.SourceFrom,
+                                AccountingStatus = "0",
+                                SmokeAmount = 0,
+                                ActualGiftCardAmount = 0,
+                            };
+                            List<ErrorInfo> lstError = new List<ErrorInfo>();
+                            new TaishinWalletLog().InsPayTransactionLog(spInput, ref flag, ref errCode, ref lstError);
+                        }
+                        else
+                        {
+                            flag = false;
+                        }
+
+
+                        //20201125紀錄接收資料
+                        reader.Close();
+                        reader.Dispose();
+                    }
+
+                    //增加關閉連線的呼叫
+                    response.Close();
+                    response.Dispose();
+                }
+                #endregion
+
+                //result.flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
             }
 
             if (result.flag)
@@ -243,7 +403,7 @@ namespace WebAPI.Controllers
         private SPInput_WalletPay SetForWalletPayLog(WebAPI_PayTransaction wallet, WebAPIOutput_PayTransaction taishinResponse
             , string IDNO, long OrderNo, long LogID, string Access_Token, DateTime NowTime, string TradeType, string PRGName)
         {
-            return new SPInput_WalletPay()
+            var result = new SPInput_WalletPay()
             {
                 LogID = LogID,
                 Token = Access_Token,
@@ -261,6 +421,18 @@ namespace WebAPI.Controllers
                 Mode = 4,
                 InputSource = 2
             };
+            return result;
+        }
+
+        public static void SetHeaderValue(WebHeaderCollection header, string name, string value)
+        {
+            var property = typeof(WebHeaderCollection).GetProperty("InnerCollection",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            if (property != null)
+            {
+                var collection = property.GetValue(header, null) as NameValueCollection;
+                collection[name] = value;
+            }
         }
     }
 }

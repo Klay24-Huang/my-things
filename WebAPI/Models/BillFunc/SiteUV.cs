@@ -12,7 +12,7 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         public static readonly string codeVersion = "202107291115";//hack: 修改程式請修正此版號
 
-        public static readonly string strSpringSd = "2022-01-29 00:00:00";//春節起
+        public static readonly string strSpringSd = "2022-01-23 00:00:00";//春節起
         public static readonly string strSpringEd = "2022-02-06 23:59:59";//春節迄
 
         /// <summary>

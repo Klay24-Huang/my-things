@@ -163,17 +163,20 @@ namespace WebAPI.Controllers
                 if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
                 {
                     flag = false;
-                    errCode = "ERR290";
+                    errCode = "ERR292";
                 }
-                else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包
-                {
-                    if (WalletAmout < 50)   // 錢包餘額 < 50元 不給取車
-                    {
-                        flag = false;
-                        errCode = "ERR291";
-                    }
-                }
+                #region 20220215 UPD BY AMBER REASON.因預約已預扣錢包50元，取消取車錢包餘額驗證
+                //else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包
+                //{
+                //    if (WalletAmout < 50)   // 錢包餘額 < 50元 不給取車
+                //    {
+                //        flag = false;
+                //        errCode = "ERR291";
+                //    }
+                //}
+                #endregion
             }
+            #endregion
             #region 檢查欠費 20220105路邊欠費查詢取消
             //if (flag)
             //{
@@ -190,7 +193,7 @@ namespace WebAPI.Controllers
             #region 取車
             if (flag)
             {
-                string CheckTokenName = "usp_BeforeBookingStart_V20220119";
+                string CheckTokenName = "usp_BeforeBookingStart";
                 SPInput_BeforeBookingStart spBeforeStart = new SPInput_BeforeBookingStart()
                 {
                     OrderNo = tmpOrder,
@@ -353,9 +356,8 @@ namespace WebAPI.Controllers
                                 }
                             }
                         }
-                        
+                        #endregion
                     }
-                    #endregion
                     #region 20210514 開啟電源後須紀錄電量 20210521 改為設定完租約再記錄電量
                     if (flag)
                     {
@@ -399,7 +401,6 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-                #endregion
             #endregion
             #endregion
             #region 寫入錯誤Log

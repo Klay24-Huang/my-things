@@ -8,6 +8,11 @@
 * 撰寫日期 : 20211029
 * 修改日期 : 20211122 UPD BY YEH REASON:付款方式存檔、增加錢包付款
 			 20211125 UPD BY YEH REASON:增加信用卡類別判斷
+			 20211202 UPD BY YEH REASON:整筆退才寫TB_OrderAuthReturn
+			 20211217 UPD BY YEH REASON:增加信用卡類別(0:和泰;1:台新)
+			 20220216 UPD BY YEH REASON:增加更新A_PRGID,U_PRGID
+			 20220218 UPD BY YEH REASON:增加錢包退款
+			 20220218 UPD BY YEH REASON:PAYAMT = 關帳檔總金額 + 錢包扣款總金額 - 錢包退款總金額
 
 * Example  : 
 ***********************************************************************************************/
@@ -31,32 +36,31 @@ BEGIN
 	DECLARE	@ErrorMsg NVARCHAR(100);
 	DECLARE @SQLExceptionCode VARCHAR(10);		--回傳sqlException代碼
 	DECLARE @SQLExceptionMsg NVARCHAR(1000);	--回傳sqlException訊息
-
 	DECLARE @IsSystem TINYINT;
 	DECLARE @FunName VARCHAR(50);
 	DECLARE @ErrorType TINYINT;
 	DECLARE @hasData TINYINT;
 	DECLARE @NowTime DATETIME;
 
+	DECLARE @Descript NVARCHAR(200);
 	DECLARE @car_mgt_status TINYINT;
 	DECLARE @cancel_status TINYINT;
 	DECLARE @booking_status TINYINT;
-	DECLARE @Descript NVARCHAR(200);
 	DECLARE @CarNo VARCHAR(10);
 	DECLARE @ProjType INT;
 	DECLARE @ParkingSpace NVARCHAR(128);
 	DECLARE @ProjID VARCHAR(10)	--20210420 ADD BY ADAM REASON.增加長租客服還車判斷
-	DECLARE @RSOC_S FLOAT
-			,@RSOC_E FLOAT
-			,@RSOC1 FLOAT
-			,@CHANGETIME INT
-			,@RewardGift INT=0
-			,@ChgGift INT
-			,@CHKSEQNO INT
-			,@CHKCarNo VARCHAR(10)
-			,@CHKDT DATETIME
-			,@LBA FLOAT
-			,@RBA FLOAT
+	DECLARE @RSOC_S FLOAT=0;
+	DECLARE @RSOC_E FLOAT=0;
+	DECLARE @RSOC1 FLOAT=0;
+	DECLARE @CHANGETIME INT;
+	DECLARE @RewardGift INT=0;
+	DECLARE @ChgGift INT=0;
+	DECLARE @CHKSEQNO INT;
+	DECLARE @CHKCarNo VARCHAR(10);
+	DECLARE @CHKDT DATETIME;
+	DECLARE @LBA FLOAT=0;
+	DECLARE @RBA FLOAT=0;
 	DECLARE @Reward INT;	--換電獎勵
 	DECLARE @DiffAmount INT;	-- 尾款
 	DECLARE @final_price INT;	-- 總計
@@ -75,22 +79,23 @@ BEGIN
 	SET @hasData=0;
 	SET @NowTime=DATEADD(HOUR,8,GETDATE());
 
-	SET @Descript=N'使用者操作【完成付款金流】NEW';
+	SET @Descript=N'使用者操作【完成付款金流】';
 	SET @car_mgt_status=0;
 	SET @cancel_status =0;
 	SET @booking_status=0;
 	SET @CarNo='';
 	SET @ProjType=5;
-	SET @IDNO=ISNULL (@IDNO,'');
-	SET @OrderNo=ISNULL (@OrderNo,0);
-	SET @Token=ISNULL (@Token,'');
-	SET @PayMode=ISNULL(@PayMode,0);
 	SET @ParkingSpace='';
 	SET @Reward=0;
 	SET @DiffAmount=0;
 	SET @final_price=0;
 	SET @NoPreAuth=0;
 	SET @APIID=0;
+
+	SET @IDNO=ISNULL (@IDNO,'');
+	SET @OrderNo=ISNULL (@OrderNo,0);
+	SET @Token=ISNULL (@Token,'');
+	SET @PayMode=ISNULL(@PayMode,0);
 
 	BEGIN TRY
 		IF @Token='' OR @IDNO='' OR @OrderNo=0
@@ -363,31 +368,43 @@ BEGIN
 					U_USERID=@IDNO,
 					U_SYSDT=@NowTime
 				FROM @TradeClose A
-				INNER JOIN TB_TradeClose B ON B.CloseID=A.CloseID;
+				INNER JOIN TB_TradeClose B ON B.CloseID=A.CloseID
+				WHERE A.CardType <> 2;	-- 20220218 UPD BY YEH REASON:只有信用卡才更新
 
 				-- 有退款金額寫TB_OrderAuthReturn
-				INSERT INTO TB_OrderAuthReturn (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,order_number,returnAmt,IDNO,AuthFlg,AuthCode,AuthMessage,transaction_no,ori_transaction_no)
-				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.MerchantTradeNo
+				-- 退款要拆成信用卡(台新/中信)/錢包兩種來看，信用卡整筆退款才寫入TB_OrderAuthReturn，錢包則是有退款就寫入TB_OrderAuthReturn
+
+				-- 20211217 UPD BY YEH REASON:增加信用卡類別(0:和泰;1:台新)
+				INSERT INTO TB_OrderAuthReturn (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,order_number,returnAmt,IDNO,AuthFlg,AuthCode,AuthMessage,transaction_no,ori_transaction_no,CardType)
+				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.MerchantTradeNo,B.CardType
 				FROM @TradeClose A
 				INNER JOIN TB_TradeClose B ON B.CloseID=A.CloseID
-				WHERE A.RefundAmount > 0;
+				WHERE A.RefundAmount > 0
+				AND A.ChkClose = 2		-- 20211202 UPD BY YEH REASON:整筆退才寫TB_OrderAuthReturn
+				AND A.CardType <> 2;	-- 20220218 UPD BY YEH REASON:信用卡
+
+				-- 20220218 UPD BY YEH REASON:增加錢包退款
+				INSERT INTO TB_OrderAuthReturn (A_PRGID,A_USERID,A_SYSDT,U_PRGID,U_USERID,U_SYSDT,order_number,returnAmt,IDNO,AuthFlg,AuthCode,AuthMessage,transaction_no,ori_transaction_no,CardType)
+				SELECT @FunName,@IDNO,@NowTime,@FunName,@IDNO,@NowTime,@OrderNo,A.RefundAmount,@IDNO,0,'','','',B.StoreTransId,A.CardType
+				FROM @TradeClose A
+				INNER JOIN TB_WalletHistory B ON B.HistoryID=A.CloseID
+				WHERE A.RefundAmount > 0
+				AND A.CardType = 2;
 			END
 
 			--準備傳送合約
 			IF NOT EXISTS(SELECT IRENTORDNO FROM TB_ReturnCarControl WITH(NOLOCK) WHERE IRENTORDNO=@OrderNo)
 			BEGIN
-				IF (@NoPreAuth = 1 OR @final_price = 0 OR @DiffAmount <= 0 OR @PayMode = 1)
+				IF (@NoPreAuth = 1 OR @final_price = 0 OR @DiffAmount <= 0)
 				BEGIN
 					DECLARE @TradeCloseAmount INT = 0;	-- 關帳檔總金額
 					DECLARE @WalletAmount INT = 0;		-- 錢包扣款總金額
+					DECLARE @WalletReturn INT = 0;		-- 錢包退款總金額
 
-					SELECT @TradeCloseAmount=SUM(CloseAmout) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1 GROUP BY OrderNo;
+					SELECT @TradeCloseAmount=ISNULL(SUM(CloseAmout),0) FROM TB_TradeClose WITH(NOLOCK) WHERE OrderNo=@OrderNo AND ChkClose=1;
+					SELECT @WalletAmount=ISNULL(SUM(Amount),0) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0;
+					SELECT @WalletReturn=ISNULL(SUM(returnAmt),0) FROM TB_OrderAuthReturn WITH(NOLOCK) WHERE order_number=@OrderNo AND CardType=2;
 
-					IF @PayMode = 1	-- 付款方式=錢包才去撈錢包交易總額
-					BEGIN
-						SELECT @WalletAmount=SUM(Amount) FROM TB_WalletHistory WITH(NOLOCK) WHERE OrderNo=@OrderNo AND Mode=0 GROUP BY OrderNo;
-					END
-					
 					INSERT INTO TB_ReturnCarControl
 					(
 						PROCD, ORDNO, CNTRNO, IRENTORDNO, CUSTID, CUSTNM, BIRTH, 
@@ -397,20 +414,24 @@ BEGIN
 						OVERAMT2, RNTAMT, 
 						RENTAMT, 
 						LOSSAMT2, PROJID, REMARK, 
-						INVKIND, UNIMNO, INVTITLE, INVADDR, GIFT, GIFT_MOTO, 
-						CARDNO, PAYAMT, AUTHCODE, isRetry, RetryTimes, eTag, 
-						CARRIERID, NPOBAN, NOCAMT, PARKINGAMT2, MKTime, UPDTime
+						INVKIND, UNIMNO, INVTITLE, INVADDR, GIFT, GIFT_MOTO, CARDNO, 
+						PAYAMT,
+						AUTHCODE, isRetry, RetryTimes, eTag, 
+						CARRIERID, NPOBAN, NOCAMT, PARKINGAMT2,
+						MKTime, UPDTime, A_PRGID, U_PRGID
 					)
 					SELECT PROCD='A', C.ORDNO, C.CNTRNO, A.order_number, C.CUSTID, C.CUSTNM, C.BIRTH,
 						C.CUSTTYPE, C.ODCUSTID, C.CARTYPE, CASRNO=A.CarNo, C.TSEQNO, C.GIVEDATE,
 						C.GIVETIME, dbo.FN_CalRntdays(B.final_start_time,B.final_stop_time), CAST(B.start_mile AS INT), C.OUTBRNHCD, CONVERT(VARCHAR,B.final_stop_time,112), REPLACE(CONVERT(VARCHAR(5),B.final_stop_time,108),':',''),
 						CAST(B.end_mile AS INT), C.INBRNHCD, C.RPRICE, C.RINSU, C.DISRATE, B.fine_interval/600,
 						B.fine_price, RNTAMT=(B.fine_price+B.mileage_price),
-						RENTAMT=CASE WHEN (pure_price- CASE WHEN TransDiscount>0 THEN TransDiscount ELSE 0 END) > 0 THEN (pure_price- CASE WHEN TransDiscount>0 THEN TransDiscount ELSE 0 END) ELSE 0 END,	--20201229 租金要扣掉轉乘優惠
-						mileage_price, A.ProjID, C.REMARK,
-						A.bill_option, A.unified_business_no, '', A.invoiceAddress, B.gift_point, B.gift_motor_point,
-						CARDNO='', PAYAMT=(@TradeCloseAmount + @WalletAmount), AUTHCODE='', isRetry=1, RetryTimes=0, B.Etag,
-						C.CARRIERID, C.NPOBAN, B.Insurance_price, ISNULL(B.parkingFee,0) AS PARKINGAMT2, @NowTime, @NowTime	--20210506;UPD BY YEH REASON.PARKINGAMT2改抓OrderDetail的parkingFee
+						RENTAMT=CASE WHEN (B.pure_price - CASE WHEN B.TransDiscount>0 THEN B.TransDiscount ELSE 0 END) > 0 THEN (B.pure_price- CASE WHEN B.TransDiscount>0 THEN B.TransDiscount ELSE 0 END) ELSE 0 END,	--20201229 租金要扣掉轉乘優惠
+						B.mileage_price, A.ProjID, C.REMARK,
+						A.bill_option, A.unified_business_no, '', A.invoiceAddress, B.gift_point, B.gift_motor_point, CARDNO='', 
+						PAYAMT = (@TradeCloseAmount + @WalletAmount - @WalletReturn),		-- 20220218 UPD BY YEH REASON:PAYAMT = 關帳檔總金額 + 錢包扣款總金額 - 錢包退款總金額
+						AUTHCODE='', isRetry=1, RetryTimes=0, B.Etag,
+						C.CARRIERID, C.NPOBAN, B.Insurance_price, ISNULL(B.parkingFee,0) AS PARKINGAMT2, 	--20210506;UPD BY YEH REASON.PARKINGAMT2改抓OrderDetail的parkingFee
+						@NowTime, @NowTime, @FunName, @FunName	-- 20220216 UPD BY YEH REASON:增加更新A_PRGID,U_PRGID
 					FROM TB_OrderMain A WITH(NOLOCK)
 					INNER JOIN TB_OrderDetail B WITH(NOLOCK) ON A.order_number=B.order_number
 					INNER JOIN TB_lendCarControl C WITH(NOLOCK) ON A.order_number=C.IRENTORDNO
@@ -430,6 +451,7 @@ BEGIN
 						-- 20211125 UPD BY YEH REASON:增加信用卡類別判斷
 						DECLARE @CardType INT = 1;	-- 信用卡類別(預設台新信用卡)
 
+						-- 付費方式(0:信用卡;1:和雲錢包;2:line pay;3:街口支付;4:和泰PAY)
 						IF @PayMode = 0	-- 台新信用卡
 						BEGIN
 							SET @CardType = 1;
@@ -437,6 +459,10 @@ BEGIN
 						ELSE IF @PayMode = 4	-- 和泰PAY
 						BEGIN
 							SET @CardType = 0;
+						END
+						ELSE IF @PayMode = 1	-- 錢包
+						BEGIN
+							SET @CardType = 2;
 						END
 
 						INSERT INTO TB_OrderAuth (A_PRGID, A_USERID, A_SYSDT, U_PRGID, U_USERID, U_SYSDT, order_number, IDNO , final_price, AuthFlg, AuthMessage, CardType, AuthType, AutoClose)

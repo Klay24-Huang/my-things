@@ -1,14 +1,12 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Bill;
 using Domain.SP.Input.Booking;
+using Domain.SP.Input.Notification;
+using Domain.SP.Input.Rent;
 using Domain.SP.Input.Subscription;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Wallet;
-using Domain.SP.Output;
 using Domain.SP.Output.Bill;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Wallet;
-using Domain.SP.Output.Common;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
@@ -17,23 +15,18 @@ using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
-using WebAPI.Models.Param.Input;
-using WebAPI.Models.Param.Output;
-using WebAPI.Utils;
-using WebCommon;
 using WebAPI.Models.ComboFunc;
-using WebAPI.Service;
-using Domain.SP.Input.Rent;
-using Domain.SP.Input.Notification;
 using WebAPI.Models.Param.Bill.Input;
 using WebAPI.Models.Param.Bill.Output;
+using WebAPI.Models.Param.Input;
+using WebAPI.Models.Param.Output;
+using WebAPI.Service;
+using WebCommon;
 
 namespace WebAPI.Controllers
 {
@@ -97,11 +90,13 @@ namespace WebAPI.Controllers
             BillCommon billCommon = new BillCommon();
             CommonService commonService = new CommonService();
             CreditAuthComm creditAuthComm = new CreditAuthComm();
+            WalletSp walletSp = new WalletSp();
             bool CreditFlag = true;     // 信用卡綁卡
             string CreditErrCode = "";  // 信用卡綁卡錯誤訊息
             bool WalletFlag = false;    // 綁定錢包
             int WalletNotice = 0;       // 錢包餘額不足通知 (0:不顯示 1:顯示)
             int WalletAmout = 0;        // 錢包餘額
+            int motoPreAmt = 0;         // 機車預扣金額
 
             #endregion
             #region 防呆
@@ -223,30 +218,32 @@ namespace WebAPI.Controllers
             #region 檢查信用卡是否綁卡、錢包是否開通
             if (flag)
             {
+                #region 檢查錢包是否開通
+                string spName = "usp_CreditAndWalletQuery_Q02";
+                SPInput_CreditAndWalletQuery spWalletInput = new SPInput_CreditAndWalletQuery
+                {
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
+                };
+                SPOut_CreditAndWalletQuery spWalletOut = new SPOut_CreditAndWalletQuery();
+                SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
+                bool WalletCheck = sqlHelp.ExecuteSPNonQuery(spName, spWalletInput, ref spWalletOut, ref lstError);
+                baseVerify.checkSQLResult(ref WalletCheck, spWalletOut.Error, spWalletOut.ErrorCode, ref lstError, ref error);
+                if (WalletCheck)
+                {
+                    WalletFlag = spWalletOut.WalletStatus == "2";
+                    WalletAmout = spWalletOut.WalletAmout;
+                }
+                #endregion
+
+                #region 檢查信用卡是否綁卡
+                var result = creditAuthComm.CheckTaishinBindCard(ref CreditFlag, IDNO, ref CreditErrCode);
+                #endregion
+
                 if (ProjType == 4)  // 4:機車
                 {
-                    #region 檢查信用卡是否綁卡
-                    var result = creditAuthComm.CheckTaishinBindCard(ref CreditFlag, IDNO, ref CreditErrCode);
-                    #endregion
-
-                    #region 檢查錢包是否開通
-                    string spName = "usp_CreditAndWalletQuery_Q01";
-                    SPInput_CreditAndWalletQuery spWalletInput = new SPInput_CreditAndWalletQuery
-                    {
-                        IDNO = IDNO,
-                        Token = Access_Token,
-                        LogID = LogID
-                    };
-                    SPOut_CreditAndWalletQuery spWalletOut = new SPOut_CreditAndWalletQuery();
-                    SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery> sqlHelp = new SQLHelper<SPInput_CreditAndWalletQuery, SPOut_CreditAndWalletQuery>(connetStr);
-                    flag = sqlHelp.ExecuteSPNonQuery(spName, spWalletInput, ref spWalletOut, ref lstError);
-                    baseVerify.checkSQLResult(ref flag, spWalletOut.Error, spWalletOut.ErrorCode, ref lstError, ref errCode);
-                    if (flag)
-                    {
-                        WalletFlag = spWalletOut.WalletStatus == "2";
-                        WalletAmout = spWalletOut.WalletAmout;
-                    }
-                    #endregion
+                    int.TryParse(new CommonRepository(connetStr).GetCodeData("MotorPreAmt").FirstOrDefault().MapCode, out motoPreAmt);  //從TB_CODE抓取機車預扣金額
 
                     if (!CreditFlag && !WalletFlag) // 沒綁信用卡 也 沒開通錢包，就回錯誤訊息
                     {
@@ -255,18 +252,19 @@ namespace WebAPI.Controllers
                     }
                     else if (!CreditFlag && WalletFlag) // 沒綁信用卡 但 有開通錢包，要給APP值顯示通知
                     {
-                        WalletNotice = 1;
 
-                        if (WalletAmout < 50)   // 錢包餘額 < 50元 不給預約
+                        WalletNotice = 1;
+                        if (WalletAmout < motoPreAmt)   // 錢包餘額 < 50元 不給預約
                         {
                             flag = false;
-                            errCode = "ERR294";
+                            errCode = "ERR934";
                         }
                     }
                 }
-                else
-                {   // 0:同站汽車 3:路邊汽車
-                    var result = creditAuthComm.CheckTaishinBindCard(ref flag, IDNO, ref errCode);
+                else //0:同站 3:路邊
+                {
+                    flag = CreditFlag;
+                    errCode = CreditErrCode;
                 }
             }
             #endregion
@@ -340,7 +338,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                SPName = "usp_Booking_V20220118";
+                SPName = "usp_Booking";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
@@ -381,168 +379,244 @@ namespace WebAPI.Controllers
                 monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
             }
             #endregion
-
-            #region 預授權機制
-            if (flag && spOut.haveCar == 1 && (ProjType == 0 || ProjType == 3))
+            #region 預扣機制
+            if (flag && spOut.haveCar == 1)
             {
-                SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);
-                //預授權不處理專案(長租客服月結E077)
-                string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;
-                if (!notHandle.Contains(apiInput.ProjID) && orderData.DoPreAuth ==1)
+                var trace = new TraceCom();
+                trace.traceAdd("apiIn", value);
+                int defaultPayMode = 0;       //預設支付方式(0:信用卡 1:錢包 4:和泰PAY)
+                int preAuthAmt = 0;           //預扣金額
+                bool payFlag = false;         //扣款結果
+                bool authNow = false;         //是否立即刷卡
+                int actualPayMode = -1;       //實際支付方式(0:信用卡 1:錢包 4:和泰PAY)
+                bool walletEnough = false;    //錢包餘額是否足夠
+                bool bookNDaysAgo = false;    //同站取車前6小時之前預約單(走排程授權)
+
+                #region 取得預設支付方式
+                SPInput_GetPayInfo getPayInfo = new SPInput_GetPayInfo()
                 {
-                    var trace = new TraceCom();
-                    trace.traceAdd("apiIn", value);
-                    int preAuthAmt = 0;
-                    bool canAuth = false;
-                    bool authflag = false;
-                    #region 計算預授權金
-                    EstimateData estimateData = new EstimateData()
+                    LogID = LogID,
+                    IDNO = IDNO,
+                    InputSource = 1,
+                    Token = Access_Token
+                };
+                var wallet = walletSp.sp_GetPayInfo(getPayInfo, ref errCode);
+                defaultPayMode = wallet.PayMode[0].DefPayMode;
+                trace.traceAdd("sp_GetPayInfo",new { getPayInfo, defaultPayMode } );
+                trace.FlowList.Add("預設支付方式");
+                #endregion
+                #region 計算預扣款金額
+                if (ProjType == 0 || ProjType == 3)
+                {
+                    SPOutput_OrderForPreAuth orderData = commonService.GetOrderForPreAuth(spOut.OrderNum);
+                    string notHandle = new CommonRepository(connetStr).GetCodeData("PreAuth").FirstOrDefault().MapCode;//預授權不處理專案
+                    if (!notHandle.Contains(apiInput.ProjID) && orderData.DoPreAuth == 1)
                     {
-                        ProjID = orderData.ProjID,
-                        SD = orderData.SD,
-                        ED = orderData.ED,
-                        CarNo = orderData.CarNo,
-                        CarTypeGroupCode = orderData.CarTypeGroupCode,
-                        WeekdayPrice = orderData.PRICE,
-                        HoildayPrice = orderData.PRICE_H,
-                        Insurance = apiInput.Insurance,
-                        InsurancePerHours = orderData.InsurancePerHours,
-                        ProjType = orderData.ProjType
+                        EstimateData estimateData = new EstimateData()
+                        {
+                            ProjID = orderData.ProjID,
+                            SD = orderData.SD,
+                            ED = orderData.ED,
+                            CarNo = orderData.CarNo,
+                            CarTypeGroupCode = orderData.CarTypeGroupCode,
+                            WeekdayPrice = orderData.PRICE,
+                            HoildayPrice = orderData.PRICE_H,
+                            Insurance = apiInput.Insurance,
+                            InsurancePerHours = orderData.InsurancePerHours,
+                            ProjType = orderData.ProjType
+                        };
+
+                        if (ProjType == 0)
+                        {
+                            //同站取車前6小時前預約走排程授權
+                            DateTime checkDate = SDate.AddHours(-6);
+                            bookNDaysAgo = DateTime.Compare(DateTime.Now, checkDate) < 0;
+                        }
+                        else if (ProjType == 3)
+                        {
+                            int triaHour = 1;  //2021/12/16 企劃要求路邊只預收1小時授權金
+                            estimateData.ED = SDate.AddHours(triaHour);
+                        }
+
+                        commonService.EstimatePreAuthAmt(estimateData, out EstimateDetail estimateDetail);
+                        //需扣掉春節訂金
+                        preAuthAmt = orderData.PreAuthAmt == 0 ? estimateDetail.estimateAmt : estimateDetail.estimateAmt - orderData.PreAuthAmt;
+                        trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt, wallet.PayMode });
+                        trace.FlowList.Add("計算預授權金");
+                    }
+                }
+                string TradeType = ProjType == 4 ? "PreAuth_Motor" : "PreAuth_Car";
+                preAuthAmt = ProjType == 4 ? motoPreAmt : preAuthAmt;
+                #endregion
+                #region 扣款流程
+                if (preAuthAmt > 0)
+                {
+                    if (defaultPayMode == 1 && WalletAmout >= preAuthAmt) //預設錢包 餘額足
+                    {
+                        payFlag = DoPreAuth(defaultPayMode, spOut.OrderNum, IDNO, preAuthAmt, funName, LogID, TradeType, ProjType, Access_Token, ref error, ref AuthOutput);
+                        actualPayMode = AuthOutput?.CheckoutMode ?? -1;
+                        walletEnough = payFlag;
+
+                        OFN_CreditAuthResult walletPayOut = AuthOutput;
+                        trace.traceAdd("DoWalletPay", new { defaultPayMode, payFlag, walletPayOut, actualPayMode, error });
+                        trace.FlowList.Add("錢包預扣款");
+                    }
+
+                    if (!walletEnough) //走信用卡支付or回餘額不足
+                    {
+                        if (ProjType == 4 && defaultPayMode != 1) //機車預設不為錢包，不取信用卡預授權
+                        {
+                            flag = true;
+                            preAuthAmt = 0;
+                        }
+                        else if (ProjType == 4 && defaultPayMode == 1 && !CreditFlag) //機車有錢包沒綁卡 回餘額不足
+                        {
+                            payFlag = false; //走取消訂單
+                        }
+                        else if (ProjType == 4 && defaultPayMode == 1 || ProjType == 3) //路邊&機車&同站6小時前訂單  支付方式為錢包且餘額不足，轉信用卡支付
+                        {
+                            authNow = true;
+                        }
+                        else if (ProjType == 0) //同站6小時後訂單 支付方式為錢包且餘額不足，寫入排程取信用卡預授權
+                        {
+                            authNow = !bookNDaysAgo;
+                        }
+                    }
+                }
+                #endregion
+                #region 立即刷卡
+                if (authNow && preAuthAmt > 0)
+                {
+                    payFlag = DoPreAuth(4, spOut.OrderNum, IDNO, preAuthAmt, funName, LogID, TradeType, ProjType, Access_Token, ref errCode, ref AuthOutput); //和泰PAY為優先
+                    actualPayMode = AuthOutput?.CheckoutMode ?? -1;
+
+                    trace.traceAdd("DoPreAuth", new { payFlag, actualPayMode, AuthOutput, errCode });
+                    trace.FlowList.Add("刷卡授權");
+                }
+                #endregion            
+                #region 更新資料
+                if (preAuthAmt > 0)
+                {
+                   
+                    #region 寫入預授權
+                    SPInput_InsOrderAuthAmount input_AuthAmt = new SPInput_InsOrderAuthAmount()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        Token = Access_Token,
+                        AuthType = 1,
+                        final_price = preAuthAmt,
+                        OrderNo = spOut.OrderNum,
+                        PRGName = funName,
+                        Status = payFlag ? 2 : bookNDaysAgo ? 0 : 2
                     };
 
-                    if (ProjType == 0)
+                    actualPayMode = bookNDaysAgo ? -1 : actualPayMode;
+                    switch (actualPayMode)
                     {
-                        //同站取車前6小時後預約立即授權
-                        DateTime checkDate = SDate.AddHours(-6);
-                        canAuth = DateTime.Compare(DateTime.Now, checkDate) >= 0;
+                        case 0:
+                            input_AuthAmt.CardType = 1;
+                            break;
+                        case 1:
+                            input_AuthAmt.CardType = 2;
+                            break;
+                        case 4:
+                            input_AuthAmt.CardType = 0;
+                            break;
+                        default:
+                            input_AuthAmt.CardType = -1;
+                            break;
                     }
-                    else if (ProjType == 3)
-                    {
-                        canAuth = true;
-                        int triaHour = 1;  //2021/12/16 因企劃臨時要求路邊只預收1小時授權金
-                        estimateData.ED = SDate.AddHours(triaHour);
-                    }
-                    commonService.EstimatePreAuthAmt(estimateData, out EstimateDetail estimateDetail);
 
-                    //需扣掉春節訂金
-                    preAuthAmt = orderData.PreAuthAmt == 0 ? estimateDetail.estimateAmt : estimateDetail.estimateAmt - orderData.PreAuthAmt;
+                    input_AuthAmt.BankTradeNo = AuthOutput?.BankTradeNo ?? "";
+                    input_AuthAmt.MerchantTradNo = AuthOutput?.Transaction_no ?? "";
+                    commonService.sp_InsOrderAuthAmount(input_AuthAmt, ref error);
 
-                    trace.traceAdd("GetEsimateAuthAmt", new { canAuth, estimateData, estimateDetail, preAuthAmt });
-                    trace.FlowList.Add("計算預授權金");
-                    #endregion
-                    #region 後續流程
-                    if (preAuthAmt > 0)
-                    {
-                        #region 刷卡授權
-                        if (canAuth)
-                        {
-                            var AuthInput = new IFN_CreditAuthRequest
-                            {
-                                CheckoutMode = 4,
-                                OrderNo = spOut.OrderNum,
-                                IDNO = IDNO,
-                                Amount = preAuthAmt,
-                                PayType = 0,
-                                autoClose = 0,
-                                funName = funName,
-                                insUser = funName,
-                                AuthType = 1
-                            };
-
-                            try
-                            {
-                                authflag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                            }
-                            catch (Exception ex)
-                            {
-                                authflag = false; //走取消訂單
-                                flag = false;
-                                trace.BaseMsg = ex.Message;
-                            }
-
-                            trace.traceAdd("DoAuthV4", new { authflag, AuthInput, AuthOutput, errCode });
-                            trace.FlowList.Add("刷卡授權");
-                        }
-                        #endregion
-                        #region 寫入預授權
-                        SPInput_InsOrderAuthAmount input_AuthAmount = new SPInput_InsOrderAuthAmount()
-                        {
-                            IDNO = IDNO,
-                            LogID = LogID,
-                            Token = Access_Token,
-                            AuthType = 1,
-                            CardType = AuthOutput == null ? 1 : AuthOutput.CardType,
-                            final_price = preAuthAmt,
-                            OrderNo = spOut.OrderNum,
-                            PRGName = funName,
-                            MerchantTradNo = AuthOutput == null ? "" : AuthOutput.Transaction_no,
-                            BankTradeNo = AuthOutput == null ? "" : AuthOutput.BankTradeNo,
-                            Status = canAuth ? 2 : 0
-                        };
-                        commonService.sp_InsOrderAuthAmount(input_AuthAmount, ref error);
-
-                        trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmount, error });
-                        trace.FlowList.Add("寫入預授權");
-                        #endregion
-                        #region 新增推播訊息
-                        if (authflag)
-                        {
-                            string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0);
-                            SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
-                            {
-                                OrderNo = Convert.ToInt32(spOut.OrderNum),
-                                IDNO = IDNO,
-                                LogID = LogID,
-                                NType = 19,
-                                STime = DateTime.Now.AddSeconds(10),
-                                Title = "取授權成功通知",
-                                imageurl = "",
-                                url = "",
-                                Message = $"已於{DateTime.Now:MM/dd HH:mm}以末四碼{cardNo}信用卡預約取授權成功，金額 {preAuthAmt}，謝謝!"
-
-                            };
-                            commonService.sp_InsPersonNotification(input_Notification, ref error);
-
-                            trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
-                            trace.FlowList.Add("新增推播訊息");
-                        }
-                        #endregion
-                        #region 授權失敗取消訂單
-                        if (canAuth && !authflag)
-                        {
-                            SPInput_BookingCancel input_BookingCancel = new SPInput_BookingCancel()
-                            {
-                                OrderNo = spOut.OrderNum,
-                                IDNO = IDNO,
-                                LogID = LogID,
-                                Token = Access_Token,
-                                Cancel_Status_in = 6,
-                                CheckToken = 1,
-                                Descript = $"預授權失敗【取消訂單】，金額{preAuthAmt}"
-                            };
-                            flag = commonService.sp_BookingCancel(input_BookingCancel, ref errCode);
-
-                            trace.traceAdd("sp_BookingCancel", new { input_BookingCancel, errCode });
-                            trace.FlowList.Add("授權失敗取消訂單");
-
-                            if (flag)
-                            {
-                                flag = false;
-                                errCode = "ERR602";
-                            }
-                        }
-                        #endregion
-                    }
+                    trace.traceAdd("sp_InsOrderAuthAmount", new { input_AuthAmt, error });
+                    trace.FlowList.Add("寫入預授權");
                     #endregion
 
-                    trace.traceAdd("TraceFinal", new { errCode, errMsg });
-                    trace.OrderNo = spOut.OrderNum;
-                    var carRepo = new CarRentRepo();
-                    carRepo.AddTraceLog(34, funName, trace, flag);
-                }             
+                    #region 寫入訂單備註
+                    SPInput_OrderExtInfo spInput = new SPInput_OrderExtInfo()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        PRGID = funName,
+                        OrderNo = spOut.OrderNum,
+                        CheckoutMode = -1,
+                        PreAuthMode = defaultPayMode  //預設支付方式
+                    };
+                    commonService.InsertOrderExtInfo(spInput, ref error, ref lstError);
+                    trace.traceAdd("InsertOrderExtInfo", new { spInput, error });
+                    trace.FlowList.Add("寫入訂單備註");
+                    #endregion
+                }
+                #endregion
+                #region 新增推播
+                if (payFlag)
+                {
+                    string interSecion;
+                    if (actualPayMode == 1)
+                    {
+                        interSecion = $"以錢包支付";
+                    }
+                    else
+                    {
+                        string cardNo = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 4) > 0 ? AuthOutput.CardNo.Length - 4 : 0);
+                        interSecion = $"以末四碼{cardNo}信用卡";
+                    }
+
+                    SPInput_InsPersonNotification input_Notification = new SPInput_InsPersonNotification()
+                    {
+                        OrderNo = Convert.ToInt32(spOut.OrderNum),
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        NType = 19,
+                        STime = DateTime.Now.AddSeconds(10),
+                        Title = "預扣款成功通知",
+                        imageurl = "",
+                        url = "",
+                        Message = $"已於{DateTime.Now:MM/dd HH:mm}{interSecion}預約預扣款成功，金額 {preAuthAmt}，謝謝!"
+
+                    };
+                    commonService.sp_InsPersonNotification(input_Notification, ref error);
+
+                    trace.traceAdd("sp_InsPersonNotification", new { input_Notification, error });
+                    trace.FlowList.Add("新增推播訊息");
+                }
+                #endregion
+                #region 扣款失敗取消訂單
+                if (!bookNDaysAgo && !payFlag && preAuthAmt > 0)
+                {
+                    SPInput_BookingCancel input_BookingCancel = new SPInput_BookingCancel()
+                    {
+                        OrderNo = spOut.OrderNum,
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        Token = Access_Token,
+                        Cancel_Status_in = 6,
+                        CheckToken = 1,
+                        Descript = $"預扣款失敗【取消訂單】，金額{preAuthAmt}"
+                    };
+                    flag = commonService.sp_BookingCancel(input_BookingCancel, ref errCode);
+
+                    trace.traceAdd("sp_BookingCancel", new { input_BookingCancel, errCode });
+                    trace.FlowList.Add("預扣款失敗取消訂單");
+
+                    if (flag)
+                    {
+                        flag = false;
+                        errCode = actualPayMode == 1 ? "ERR934" : "ERR602"; //錢包餘額不足:因取授權失敗未完成預約，請檢查卡片餘額或是重新綁卡
+                    }
+                }
+                #endregion
+
+                trace.traceAdd("TraceFinal", new { errCode, errMsg });
+                trace.OrderNo = spOut.OrderNum;
+                var carRepo = new CarRentRepo();
+                carRepo.AddTraceLog(34, funName, trace, flag);
             }
             #endregion
-
             //預約成功
             if (flag && spOut.haveCar == 1)
             {
@@ -649,5 +723,52 @@ namespace WebAPI.Controllers
         }
         #endregion
 
+        /// <summary>
+        /// 預扣
+        /// </summary>
+        /// <param name="CheckoutMode">預設支付方式</param>
+        /// <param name="OrderNo">訂單號碼</param>
+        /// <param name="IDNO">會員帳號</param>
+        /// <param name="Amount">預扣金額</param>
+        /// <param name="funName">程式名稱</param>
+        /// <param name="errCode">回傳錯誤</param>
+        /// <param name="errCode">回傳訊息</param>
+        /// <param name="PreAuthResult">回傳物件</param>
+        /// <returns></returns>
+        bool DoPreAuth(int CheckoutMode, long OrderNo, string IDNO, int Amount, string funName, long LogID, string TradeType, int ProjType, string accessToken, ref string errCode, ref OFN_CreditAuthResult PreAuthResult)
+        {
+            CreditAuthComm creditAuthComm = new CreditAuthComm();
+            var AuthInput = new IFN_CreditAuthRequest
+            {
+                CheckoutMode = CheckoutMode,
+                OrderNo = OrderNo,
+                IDNO = IDNO,
+                Amount = Amount,
+                PayType = 0,
+                autoClose = 0,
+                funName = funName,
+                insUser = funName,
+                AuthType = 1,
+                InputSource = 1,
+                Token = accessToken,
+                LogID = LogID,
+                TradeType = TradeType,
+                ProjType = ProjType
+            };
+
+            bool flag;
+            try
+            {
+                flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref PreAuthResult);
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+                PreAuthResult.AuthMessage = ex.ToString();
+            }
+
+            return flag;
+
+        }
     }
 }

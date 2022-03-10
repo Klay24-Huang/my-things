@@ -3935,6 +3935,8 @@ namespace WebAPI.Models.BillFunc
             double days = 0;
             double hours = 0;
             double mins = 0;
+            double CarDayBaseMinute = 60;   // 汽車基本分鐘數
+            double MotoDayBaseMinute = 6;   // 機車基本分鐘數
             double dayBasMins = 0;
             double dayMaxMins = 0;
             //var proTys = new List<int>() { 0, 3, 4 };
