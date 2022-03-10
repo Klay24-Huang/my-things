@@ -485,7 +485,7 @@ namespace WebAPI.Service
 
             (bool flag, List<SPOutput_GetPayInfo> PayMode) re = (false, new List<SPOutput_GetPayInfo>());
 
-            string SPName = "usp_GetPayInfo_Q1";
+            string SPName = "usp_GetPayInfo_Q1_V20220310";      //20220310 ADD BY ADAM REASON.上線切版調整
 
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetPayInfo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetPayInfo, SPOutput_Base>(connetStr);
