@@ -402,6 +402,8 @@ namespace WebAPI.Controllers
                 };
                 var wallet = walletSp.sp_GetPayInfo(getPayInfo, ref errCode);
                 defaultPayMode = wallet.PayMode[0].DefPayMode;
+                trace.traceAdd("sp_GetPayInfo",new { getPayInfo, defaultPayMode } );
+                trace.FlowList.Add("預設支付方式");
                 #endregion
                 #region 計算預扣款金額
                 if (ProjType == 0 || ProjType == 3)
@@ -455,7 +457,8 @@ namespace WebAPI.Controllers
                         actualPayMode = AuthOutput?.CheckoutMode ?? -1;
                         walletEnough = payFlag;
 
-                        trace.traceAdd("DoWalletPay", new { defaultPayMode, payFlag, AuthOutput, actualPayMode, error });
+                        OFN_CreditAuthResult walletPayOut = AuthOutput;
+                        trace.traceAdd("DoWalletPay", new { defaultPayMode, payFlag, walletPayOut, actualPayMode, error });
                         trace.FlowList.Add("錢包預扣款");
                     }
 

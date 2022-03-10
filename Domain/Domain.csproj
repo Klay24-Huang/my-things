@@ -45,6 +45,7 @@
     <Compile Include="CarMachine\BLEInfo.cs" />
     <Compile Include="CarMachine\CardList.cs" />
     <Compile Include="Common\BackEnd\OperatorItem.cs" />
+    <Compile Include="Common\CodeMailRecv.cs" />
     <Compile Include="Common\CodeData.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
@@ -76,12 +77,17 @@
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletPayGetTransId.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderExtInfo.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_GetWalletReturn.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletTransfer.cs" />
+    <Compile Include="SP\Input\Wallet\SPInput_WalletReturn.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoredErrorHandle.cs" />
     <Compile Include="SP\Output\Common\SPOutput_IDReturnToken.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_MemberUnBind.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_CTBCCapList.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiGetDefaultCard.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_HotaiTranStep1.cs" />
+    <Compile Include="SP\Output\Wallet\WalletTransferData.cs" />
+    <Compile Include="SP\Output\Wallet\SPOutput_GetWalletReturn.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletStoredErrorList.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_WalletPayGetTransId.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />
@@ -700,6 +706,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR420Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR380Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_TransIRentMemCMK.cs" />
     <Compile Include="WebAPI\Input\Hotai\Member\HotaiMemberRequestBody.cs" />
@@ -834,6 +841,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData2.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData3.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData4.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR420Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_TransIRentMemCMK.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\ResponseErrorInfo.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_BenefitsAndPrivacyVersion.cs" />

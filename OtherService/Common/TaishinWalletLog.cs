@@ -24,9 +24,17 @@ namespace OtherService.Common
             flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
             if (flag)
             {
-                if (spOut.Error == 1)
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
                 {
                     flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
                 }
             }
 
@@ -38,11 +46,20 @@ namespace OtherService.Common
             SPOutput_Base spOut = new SPOutput_Base();
             string SPName = new ObjType().GetSPName(ObjType.SPType.InsPayTransactionLog);
             flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+            
             if (flag)
             {
-                if (spOut.Error == 1)
+                if (spOut.Error == 1 || spOut.ErrorCode != "0000")
                 {
                     flag = false;
+                    errCode = spOut.ErrorCode;
+                }
+            }
+            else
+            {
+                if (lstError.Count > 0)
+                {
+                    errCode = lstError[0].ErrorCode;
                 }
             }
 

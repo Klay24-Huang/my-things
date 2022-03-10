@@ -748,6 +748,7 @@ namespace WebAPI.Controllers
                                     if (apiInput.CheckoutMode == 1)
                                     {
                                         AuthInput.TradeType = "Pay_Arrear";
+                                        AuthInput.AutoStore = true;
                                         payCD = "2";
                                         #region 這段不要了
                                         //string TradeType = "Pay_Arrear";
