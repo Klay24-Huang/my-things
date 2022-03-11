@@ -241,7 +241,7 @@ namespace WebAPI.Controllers
         /// <returns></returns>
         private bool UpdateOrdarAuthStatus(SPInput_UpdateOrderAuthListV2 input, ref List<ErrorInfo> lstError, ref string errCode)
         {
-            string SPName = "usp_UpdateOrderAuthReservationList_U01";
+            string SPName = "usp_UpdateOrderAuthReservationList_U01_V20220311";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_UpdateOrderAuthListV2, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_UpdateOrderAuthListV2, SPOutput_Base>(connetStr);
             var flag = SQLPayHelp.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
