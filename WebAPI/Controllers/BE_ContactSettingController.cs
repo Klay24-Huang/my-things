@@ -408,7 +408,7 @@ namespace WebAPI.Controllers
                                             #region SP存檔
                                             if (flag)
                                             {
-                                                string spName = "usp_BE_ContactSetting_U01";
+                                                string spName = "usp_BE_ContactSetting_U01_V20220312";
 
                                                 object[] objparms = new object[TradeCloseLists.Count == 0 ? 1 : TradeCloseLists.Count];
 
