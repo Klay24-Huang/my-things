@@ -762,6 +762,7 @@
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_GetTaishinToken.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_PayTransaction.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_Refund.cs" />
+    <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_ReturnStoreValue.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_StoredMoney.cs" />
     <Compile Include="WebAPI\Input\Taishin\Wallet\WebAPI_TransferStoredValueCreateAccount.cs" />
     <Compile Include="WebAPI\Input\Taishin\WebAPIInput_Auth.cs" />
