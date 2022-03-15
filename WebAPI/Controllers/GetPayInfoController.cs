@@ -76,7 +76,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SPName = "usp_GetPayInfo_Q1_V20220310";  //20220310 ADD BY ADAM REASON.上線切版調整
+                string SPName = "usp_GetPayInfo_Q1";
                 SPInput_GetPayInfo spCheckTokenInput = new SPInput_GetPayInfo()
                 {
                     LogID = LogID,
