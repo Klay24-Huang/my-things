@@ -363,6 +363,8 @@ namespace Domain.SP.Output.OrderList
         public string Mobile { get; set; }
 
         public int ProjType { get; set; }
+
+        public int OnceStore { get; set; }
     }
 
     /// <summary>

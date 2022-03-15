@@ -500,7 +500,7 @@ namespace WebAPI.Models.ComboFunc
                     break;
             }
 
-            logger.Trace(string.Format("DoAuthV4 | End: flag:{0} errCode:{1} Result:{2}",flag,errCode, JsonConvert.SerializeObject(AuthOutput)));
+            logger.Trace(string.Format("DoAuthV4 | End: flag:{0} errCode:{1} Result:{2}", flag, errCode, JsonConvert.SerializeObject(AuthOutput)));
             return flag;
         }
 
@@ -692,17 +692,17 @@ namespace WebAPI.Models.ComboFunc
         /// <param name="Amount">交易金額'</param>
         /// <param name="IDNO">帳號</param>
         /// <param name="TradeType"></param>
-        /// <param name="breakAutoStore"></param>
+        /// <param name="autoStoreFlowFlag"></param>
         /// <param name="funName"></param>
         /// <param name="LogID"></param>
         /// <param name="Access_Token"></param>
         /// <param name="errCode"></param>
         /// <returns></returns>
-        private (bool flag, OFN_CreditAuthResult paymentInfo) PayWalletFlow(IFN_CreditAuthRequest AuthInput, bool breakAutoStore, ref string errCode)
+        private (bool flag, OFN_CreditAuthResult paymentInfo) PayWalletFlow(IFN_CreditAuthRequest AuthInput, bool autoStoreFlowFlag, ref string errCode)
         {
             (bool flag, OFN_CreditAuthResult paymentInfo) result = (false, new OFN_CreditAuthResult());
 
-            logger.Trace($"PayWalletFlow | Start: AuthInput:{ JsonConvert.SerializeObject(AuthInput)} | breakAutoStore :{breakAutoStore}");
+            logger.Trace($"PayWalletFlow | Start: AuthInput:{ JsonConvert.SerializeObject(AuthInput)} | autoStoreFlowFlag :{autoStoreFlowFlag}");
 
             //扣款金額
             int PayAmount = 0;
@@ -716,11 +716,16 @@ namespace WebAPI.Models.ComboFunc
                 errCode = "ERR932";
                 return result;
             }
+
             //錢包餘額<訂單金額
             if (WalletStatus.WalletInfo.Balance < AuthInput.Amount)
             {
+                bool autoStoreFlag = (WalletStatus.WalletInfo.AutoStoreFlag == 1 
+                    || AuthInput.OnceStore == 1) 
+                    ? true : false;
+
                 ////如果自動儲值是on
-                if (breakAutoStore && WalletStatus.WalletInfo.AutoStoreFlag == 1)
+                if (autoStoreFlowFlag && autoStoreFlag)
                 {
                     //儲值.....儲值金額(訂單-錢包)
                     var storeAmount = AuthInput.Amount - WalletStatus.WalletInfo.Balance;
