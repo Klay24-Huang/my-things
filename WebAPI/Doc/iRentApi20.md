@@ -294,6 +294,8 @@
 
 20220301 機車取車(BookingStartMotor)補上output參數說明&錯誤代碼、預約(Booking)移除ERR294錯誤代碼
 
+20220315 付款與還款(CreditAuth)增加Input參數
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -4726,6 +4728,7 @@
 | OrderNo      | 訂單編號                       |  Y   | string | H1254786 |
 | CNTRNO       | 罰金或補繳代碼                 |  Y   |  int   | 0        |
 | CheckoutMode | 付款方式(0:信用卡、1:和雲錢包) |  Y   |  int   | 0        |
+| OnceStore    | 單次儲值餘額 (1:是、0:否)      |  Y   |  int   | 0        |
 
 * input範例(租金)
 
@@ -4734,7 +4737,8 @@
     "PayType": "0",
     "OrderNo": "H1254786",
     "CNTRNO": 0,
-    "CheckoutMode":0
+    "CheckoutMode":0,
+    "OnceStore": 0
 }
 ```
 
@@ -4745,7 +4749,8 @@
     "PayType": "1",
     "OrderNo": "",
     "CNTRNO": 1554880,
-    "CheckoutMode":0
+    "CheckoutMode":0,
+    "OnceStore": 0
 }
 ```
 
