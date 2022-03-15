@@ -100,7 +100,6 @@ namespace WebAPI.Controllers
 
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
 
             if (flag)
@@ -219,7 +218,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 #region 檢查錢包是否開通
-                string spName = "usp_CreditAndWalletQuery_Q02";
+                string spName = "usp_CreditAndWalletQuery_Q01";
                 SPInput_CreditAndWalletQuery spWalletInput = new SPInput_CreditAndWalletQuery
                 {
                     IDNO = IDNO,
@@ -402,7 +401,7 @@ namespace WebAPI.Controllers
                 };
                 var wallet = walletSp.sp_GetPayInfo(getPayInfo, ref errCode);
                 defaultPayMode = wallet.PayMode[0].DefPayMode;
-                trace.traceAdd("sp_GetPayInfo",new { getPayInfo, defaultPayMode } );
+                trace.traceAdd("sp_GetPayInfo", new { getPayInfo, defaultPayMode });
                 trace.FlowList.Add("預設支付方式");
                 #endregion
                 #region 計算預扣款金額
@@ -497,7 +496,6 @@ namespace WebAPI.Controllers
                 #region 更新資料
                 if (preAuthAmt > 0)
                 {
-                   
                     #region 寫入預授權
                     SPInput_InsOrderAuthAmount input_AuthAmt = new SPInput_InsOrderAuthAmount()
                     {
@@ -723,6 +721,7 @@ namespace WebAPI.Controllers
         }
         #endregion
 
+        #region 預扣
         /// <summary>
         /// 預扣
         /// </summary>
@@ -768,7 +767,7 @@ namespace WebAPI.Controllers
             }
 
             return flag;
-
         }
+        #endregion
     }
 }
