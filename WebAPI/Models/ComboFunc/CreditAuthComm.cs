@@ -1101,6 +1101,7 @@ namespace WebAPI.Models.ComboFunc
                         WebAPIOutput = JsonConvert.SerializeObject(resault),
                         WebAPIURL = url
                     };
+                    logger.Trace($" WalletStoreByCredit | flag:{flag} | accessToken:{accessToken} | errCode:{errCode} | InsWebAPILog {JsonConvert.SerializeObject(SPInput)} ");
                     bool logflag = false;
                     new WebAPILogCommon().InsWebAPILog(SPInput, ref logflag, ref errCode, ref lstError);
                 }
