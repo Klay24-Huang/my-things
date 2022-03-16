@@ -187,6 +187,7 @@ namespace WebAPI.Controllers
                     TradeType = AuthOutput.CheckoutMode == 4 ? "Store_HotaiPay" : "Store_Credit";
                     DateTime NowTime = DateTime.Now;
                     int nowCount = 1;
+                    Thread.Sleep(1000);
                     WebAPI_CreateAccountAndStoredMoney wallet = new WebAPI_CreateAccountAndStoredMoney()
                     {
                         ApiVersion = ApiVersion,
