@@ -1,14 +1,11 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.OrderList;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Domain.WebAPI.output.rootAPI;
 using Newtonsoft.Json;
-using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,7 +15,6 @@ using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Models.Param.Output.PartOfParam;
@@ -37,9 +33,7 @@ namespace WebAPI.Controllers
         public Dictionary<string, object> DoBookingQuery(Dictionary<string, object> value)
         {
             #region 初始宣告
-            var monSp = new MonSubsSp();
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -55,12 +49,15 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-
+            
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
             Int64 tmpOrder = -1;
             bool HasInput = false;
+
+            var monSp = new MonSubsSp();
+            BillCommon billCommon = new BillCommon();
             #endregion
             #region 防呆
             if (value != null)
@@ -113,24 +110,12 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    IDNO = spOut.IDNO;
-                }
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
 
             //開始做取得訂單
             if (flag)
@@ -138,11 +123,11 @@ namespace WebAPI.Controllers
                 SPInput_GetOrderList spInput = new SPInput_GetOrderList()
                 {
                     IDNO = IDNO,
-                    LogID = LogID,
                     Token = Access_Token,
-                    OrderNo = tmpOrder
+                    OrderNo = tmpOrder,
+                    LogID = LogID
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderList);
+                string SPName = "usp_OrderListQuery";
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_GetOrderList, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetOrderList, SPOutput_Base>(connetStr);
                 List<OrderQueryDataList> OrderDataLists = new List<OrderQueryDataList>();
@@ -152,12 +137,6 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    BillCommon billCommon = new BillCommon();
-
-                    var _repository = new ProjectRepository(connetStr);
-                    List<GetFullProjectInfo> ProjectInfo = new List<GetFullProjectInfo>();
-                    ProjectInfo = _repository.GetFullProjectInfo();
-
                     int DataLen = OrderDataLists.Count;
                     if (DataLen > 0)
                     {
@@ -225,44 +204,34 @@ namespace WebAPI.Controllers
                             };
                             obj.MileageBill = billCommon.CarMilageCompute(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>());
 
+                            obj.MotorBasePriceObj = new MotorBillBase();
+                            obj.MotorPowerBaseObj = new MotorPowerInfoBase();
                             if (obj.ProjType == 4)  //機車
                             {
-                                obj.MotorBasePriceObj = new Domain.TB.MotorBillBase()
+                                obj.MotorBasePriceObj = new MotorBillBase()
                                 {
                                     BaseMinutes = OrderDataLists[i].BaseMinutes,
                                     BasePrice = OrderDataLists[i].BaseMinutesPrice,
                                     MaxPrice = OrderDataLists[i].MaxPrice,
                                     PerMinutesPrice = OrderDataLists[i].MinuteOfPrice
                                 };
-                                obj.MotorPowerBaseObj = new Domain.TB.MotorPowerInfoBase()
+                                obj.MotorPowerBaseObj = new MotorPowerInfoBase()
                                 {
-                                    //Power = Convert.ToInt32(OrderDataLists[i].device3TBA),
                                     //20210522 ADD BY ADAM REASON.如果可以讀到儀表板電量就以rsoc為主
                                     Power = OrderDataLists[i].deviceRSOC == "NA" || OrderDataLists[i].deviceRSOC == "" ? OrderDataLists[i].device3TBA : Convert.ToInt32(OrderDataLists[i].deviceRSOC),
                                     RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToInt32(Convert.ToSingle(OrderDataLists[i].RemainingMilage))
                                 };
-
-                                //春節限定，調整每日上限
-                                var NYSD = new DateTime(2021, 2, 9, 0, 0, 0);
-                                var NYED = new DateTime(2021, 2, 16, 23, 59, 59);
-                                if (NYSD <= Convert.ToDateTime(obj.StartTime) && NYED >= Convert.ToDateTime(obj.StartTime))
-                                {
-                                    obj.MotorBasePriceObj.MaxPrice = 901;
-                                }
                             }
 
-                            //春節限定，將春節專案的價格移植至原專案上
-                            if (obj.ProjType == 3)  //路邊
+                            obj.DiscountLabel = new DiscountLabel();
+                            if (!string.IsNullOrEmpty(OrderDataLists[i].LabelType) && OrderDataLists[i].GiveMinute > 0)
                             {
-                                var temp = ProjectInfo.Where(x => x.CarTypeName == obj.CarTypeName).FirstOrDefault();
-                                if (temp != null)
+                                obj.DiscountLabel = new DiscountLabel()
                                 {
-                                    if (temp.ShowStart <= Convert.ToDateTime(obj.StartTime) && temp.ShowEnd >= Convert.ToDateTime(obj.StartTime))
-                                    {
-                                        obj.WorkdayPerHour = temp.PRICE / 10;
-                                        obj.HolidayPerHour = temp.PRICE_H / 10;
-                                    }
-                                }
+                                    LabelType = OrderDataLists[i].LabelType,
+                                    GiveMinute = OrderDataLists[i].GiveMinute,
+                                    Describe = string.Format("{0}分鐘優惠折抵", OrderDataLists[i].GiveMinute)
+                                };
                             }
 
                             obj.Bill = obj.CarRentBill + obj.InsuranceBill + obj.MileageBill - obj.TransDiscount;

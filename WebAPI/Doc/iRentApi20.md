@@ -298,6 +298,8 @@
 
 20220315 付款與還款(CreditAuth)增加Input參數
 
+20220317 訂單列表(BookingQuery)增加優惠標籤
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -3316,7 +3318,7 @@
 
 ```
 {
-    "OrderNo":H12044254
+    "OrderNo": "H12044254"
 }
 ```
 
@@ -3383,6 +3385,7 @@
 | CAR_MGT_STATUS    | 取還車狀態<br>0 = 尚未取車<br/>1 = 已經上傳出車照片<br/>2 = 已經簽名出車單<br/>3 = 已經信用卡認證<br/>4 = 已經取車(記錄起始時間)<br/>11 = 已經紀錄還車時間<br/>12 = 已經上傳還車角度照片<br/>13 = 已經上傳還車車損照片<br/>14 = 已經簽名還車單<br/>15 = 已經信用卡付款<br/>16 = 已經檢查車輛完成並已經解除卡號 |   int   | 4                     |
 | AppStatus         | 1:尚未到取車時間(取車時間半小時前)<br/>2:立即換車(取車前半小時，前車尚未完成還車)<br/>3:開始使用(取車時間半小時前)<br/>4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)<br/>5:操作車輛(取車後) 取車時間改實際取車時間<br/>6:操作車輛(準備還車)<br/>7:物品遺漏(再開一次車門)<br/>8:鎖門並還車(一次性開門申請後) |   int   | 6                     |
 | RenterType        | 承租人類型<br>1:主要承租人 2:共同承租人                      |   int   | 1                     |
+| DiscountLabel     | 優惠標籤                                                     | object  |                       |
 
 * StationInfo回傳參數說明
 
@@ -3423,6 +3426,14 @@
 | PerMinutesPrice | 剩餘電量 | float |      |
 | MaxPrice        | 剩餘里程 |  int  |      |
 
+* DiscountLabel回傳參數說明
+
+| 參數名稱   | 參數說明 |    型態    | 範例           |
+| ---------- | -------- | :--------: | -------------- |
+| LabelType  | 標籤類型 |   string   | CP0101         |
+| GiveMinute | 分鐘數   | GiveMinute | 30             |
+| Describe   | 描述     | GiveMinute | 30分鐘優惠折抵 |
+
 * Output範例
 
 ```
@@ -3436,67 +3447,220 @@
         "OrderObj": [
             {
                 "StationInfo": {
-                    "StationID": "X0IN",
-                    "StationName": "iRent-Toyota濱江營業所站",
+                    "StationID": "X0SR",
+                    "StationName": "iRent隨租隨還_台北",
+                    "Tel": "(02)2516-3816",
+                    "ADDR": "台北市中山區範圍詳App",
+                    "Latitude": 25.047632,
+                    "Longitude": 121.516650,
+                    "Content": "限台北市、新北市、基隆市、桃園市、新竹市、新竹縣服務區域內，以及桃園國際機場旁大園停車場(桃園市大園區中正東路437-1號)取/還車，詳細範圍可由地圖查詢。\n\n還車規範：\na.還車限停放於服務區域內合法路邊公有停車格、指定北區(北北基桃竹地區)路外停車場(開放還車停車場可於APP內查詢)\nb.請勿將車輛停放於私人停車場/車庫、紅線路段等違法區域及非指定停車場，違者將依「會員條款暨小客車租賃契約」向會員酌收車輛調度相關費用。\n桃園國際機場服務說明(大園停車場)：\n於大園停車場還車後，停車場業者將免費接駁至桃園國際機場；回國取車前亦可於機場電話聯繫停車場業者，由業者從機場接送至取車點(大園停車場電話：03-385-2888)",
+                    "IsRent": null,
+                    "ContentForAPP": "取/還車範圍：\n限台北市、新北市、基隆市、桃園市、新竹市、新竹縣服務區域內，以及桃園國際機場旁大園停車場(桃園市大園區中正東路437-1號)取/還車，詳細範圍可由地圖查詢。\n\n還車規範：\na.還車限停放於服務區域內合法路邊公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有 6 歲以下兒童者專用、貨車專卸專用等特殊停車格) 、指定北區(北北基桃竹地區)路外停車場(開放還車停車場可於APP內查詢)\nb.請勿將車輛停放於私人停車場/車庫、紅線路段等違法區域及非指定停車場，違者將依「會員條款暨小客車租賃契約」向會員酌收車輛調度相關費用。\n\n桃園國際機場服務說明(大園停車場)：\n因疫情關係，目前僅提供出國送機服務。\n於大園停車場還車後，停車業者將免費接駁至桃園國際機場。(大園停車場電話：03-385-2888)",
+                    "IsRequiredForReturn": 0,
+                    "StationPic": []
+                },
+                "Operator": "supplierIrent",
+                "OperatorScore": 5.0,
+                "CarTypePic": "priusC",
+                "CarNo": "RCG-2261",
+                "CarBrend": "TOYOTA",
+                "CarTypeName": "PRIUSc",
+                "Seat": 5,
+                "ParkingSection": "",
+                "IsMotor": 0,
+                "CarOfArea": "北區",
+                "CarLatitude": 24.9867833,
+                "CarLongitude": 121.2950694,
+                "MotorPowerBaseObj": {
+                    "Power": 0.0,
+                    "RemainingMileage": 0.0
+                },
+                "ProjType": 3,
+                "ProjName": "北區路邊汽車定價專案",
+                "WorkdayPerHour": 230,
+                "HolidayPerHour": 230,
+                "MaxPrice": 0,
+                "MaxPriceH": 0,
+                "MotorBasePriceObj": {
+                    "BaseMinutes": 0,
+                    "BasePrice": 0,
+                    "PerMinutesPrice": 0.0,
+                    "MaxPrice": 0
+                },
+                "OrderStatus": 0,
+                "OrderNo": "H11768047",
+                "StartTime": "2022-03-17 10:50:00",
+                "PickTime": "",
+                "ReturnTime": "",
+                "StopPickTime": "2022-03-17 11:20:00",
+                "StopTime": "2022-03-18 10:50:00",
+                "OpenDoorDeadLine": "",
+                "CarRentBill": 2300,
+                "MileagePerKM": 3.0,
+                "MileageBill": 600,
+                "Insurance": 1,
+                "InsurancePerHour": 50,
+                "InsuranceBill": 0,
+                "TransDiscount": 0,
+                "Bill": 2900,
+                "DailyMaxHour": 10,
+                "CAR_MGT_STATUS": 0,
+                "AppStatus": 4,
+                "RenterType": 1,
+                "DiscountLabel": {
+                    "LabelType": "CP0101",
+                    "GiveMinute": 30,
+                    "Describe": "30分鐘優惠折抵"
+                }
+            },
+            {
+                "StationInfo": {
+                    "StationID": "X0WR",
+                    "StationName": "iRent路邊租還[機車]_台北",
+                    "Tel": "(02)2516-3816",
+                    "ADDR": "台北市中正區詳見APP服務範圍",
+                    "Latitude": 25.041603,
+                    "Longitude": 121.548870,
+                    "Content": "1.開放租還區域：\n台北市、新北市、桃園市部分區域，詳見APP內範圍顯示。\n2.還車規範：\n請停放於路邊公有機車停車格合法停車區域(限時停車格除外)，若違停遭到拖吊須自行負責承擔罰緩及拖吊費用。\n3.換電方式：\n若電量不足或需長途使用，可透過APP搜尋最近能源站進行自助換電。\n4.車內配備：\n車廂內備有兩頂安全帽(3/4罩、半罩各一)、擦車布、拋棄式衛生帽套，除衛生帽套外使用完請歸回原位，違者依法求償並停權處分。",
+                    "IsRent": null,
+                    "ContentForAPP": "1.開放租還區域：\n台北市、新北市、桃園市部分區域，詳見APP內範圍顯示。\n2.還車規範：\n請停放於路邊公有機車停車格合法停車區域(限時停車格除外)，若違停遭到拖吊須自行負責承擔罰緩及拖吊費用。\n3.換電方式：\n若電量不足或需長途使用，可透過APP搜尋最近能源站進行自助換電。\n4.車內配備：\n車廂內備有兩頂安全帽(3/4罩、半罩各一)、擦車布、拋棄式衛生帽套，除衛生帽套外使用完請歸回原位，違者依法求償並停權處分。",
+                    "IsRequiredForReturn": 1,
+                    "StationPic": []
+                },
+                "Operator": "supplierIrent",
+                "OperatorScore": 5.0,
+                "CarTypePic": "iretScooter",
+                "CarNo": "EWA-3507",
+                "CarBrend": "KYMCO",
+                "CarTypeName": "MANY-110",
+                "Seat": 2,
+                "ParkingSection": "",
+                "IsMotor": 1,
+                "CarOfArea": "北北桃",
+                "CarLatitude": 25.0271528,
+                "CarLongitude": 121.4939611,
+                "MotorPowerBaseObj": {
+                    "Power": 88.0,
+                    "RemainingMileage": 40.0
+                },
+                "ProjType": 4,
+                "ProjName": "北區路邊機車推廣專案",
+                "WorkdayPerHour": 2,
+                "HolidayPerHour": 2,
+                "MaxPrice": 1497,
+                "MaxPriceH": 1497,
+                "MotorBasePriceObj": {
+                    "BaseMinutes": 6,
+                    "BasePrice": 12,
+                    "PerMinutesPrice": 2.5,
+                    "MaxPrice": 1497
+                },
+                "OrderStatus": 0,
+                "OrderNo": "H11768051",
+                "StartTime": "2022-03-17 11:20:00",
+                "PickTime": "",
+                "ReturnTime": "",
+                "StopPickTime": "2022-03-17 11:50:00",
+                "StopTime": "2022-03-18 11:20:00",
+                "OpenDoorDeadLine": "",
+                "CarRentBill": 2,
+                "MileagePerKM": 0.0,
+                "MileageBill": 0,
+                "Insurance": 0,
+                "InsurancePerHour": 0,
+                "InsuranceBill": 0,
+                "TransDiscount": 0,
+                "Bill": 2,
+                "DailyMaxHour": 10,
+                "CAR_MGT_STATUS": 0,
+                "AppStatus": 3,
+                "RenterType": 1,
+                "DiscountLabel": {
+                    "LabelType": null,
+                    "GiveMinute": 0,
+                    "Describe": null
+                }
+            },
+            {
+                "StationInfo": {
+                    "StationID": "X0II",
+                    "StationName": "iRent濱江旗艦站",
                     "Tel": "02-2516-3816",
-                    "ADDR": "台北市中山區濱江街269號",
-                    "Latitude": 25.072589,
-                    "Longitude": 121.542617,
+                    "ADDR": "台北市中山區松江路557號",
+                    "Latitude": 25.069014,
+                    "Longitude": 121.533842,
                     "Content": "",
                     "IsRent": null,
-                    "ContentForAPP": "1.濱江營業所前方停車場\n2.固定招牌旁車位\n3.自由進出\n4.請勿停在專屬車位外",
+                    "ContentForAPP": "1.松江路直走過民族東路約20公尺右手邊停車場\n2.固定車位(有塗iRent地漆)\n3.自由進出\n4.請勿停在專屬車位外\n5.門口無車位可再往裡面車位停放\n",
                     "IsRequiredForReturn": 0,
                     "StationPic": [
                         {
-                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X0IN_1_20210209000000.png",
-                            "PicDescription": "停車場位置\n"
+                            "StationPic": "https://irentv2logdata.blob.core.windows.net/station/X0II_1_20210510000000.png",
+                            "PicDescription": "停車場環境"
                         },
                         {
-                            "StationPic": "https://irentv2data.blob.core.windows.net/station/X0IN_2_20210209000000.png",
-                            "PicDescription": "停車位置\n"
+                            "StationPic": "https://irentv2logdata.blob.core.windows.net/station/X0II_2_20210510000000.png",
+                            "PicDescription": "面對停車場左手邊街道"
+                        },
+                        {
+                            "StationPic": "https://irentv2logdata.blob.core.windows.net/station/X0II_3_20210510000000.png",
+                            "PicDescription": "面對停車場右手邊街道"
                         }
                     ]
                 },
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
-                "CarTypePic": "yaris",
-                "CarNo": "RDH-2905  ",
+                "CarTypePic": "cross",
+                "CarNo": "RDA-9297  ",
                 "CarBrend": "TOYOTA",
-                "CarTypeName": "YARIS",
+                "CarTypeName": "COROLLA CROSS",
                 "Seat": 5,
                 "ParkingSection": "",
                 "IsMotor": 0,
-                "CarOfArea": "台北市",
-                "CarLatitude": 25.0726200,
-                "CarLongitude": 121.5424000,
-                "MotorPowerBaseObj": null,
+                "CarOfArea": "同站",
+                "CarLatitude": 24.7968000,
+                "CarLongitude": 120.9599500,
+                "MotorPowerBaseObj": {
+                    "Power": 0.0,
+                    "RemainingMileage": 0.0
+                },
                 "ProjType": 0,
                 "ProjName": "同站汽車110起推廣專案",
-                "WorkdayPerHour": 110,
-                "HolidayPerHour": 168,
+                "WorkdayPerHour": 135,
+                "HolidayPerHour": 218,
                 "MaxPrice": 0,
                 "MaxPriceH": 0,
-                "MotorBasePriceObj": null,
-                "OrderStatus": 5,
-                "OrderNo": "H12289921",
-                "StartTime": "2021-08-30 11:00:00",
-                "PickTime": "2021-08-30 10:51:16",
-                "ReturnTime": "2021-08-30 11:27:04",
-                "StopPickTime": "2021-08-30 11:15:00",
-                "StopTime": "2021-08-30 12:00:00",
-                "OpenDoorDeadLine": "2021-08-30 11:42:34",
-                "CarRentBill": 110,
-                "MileagePerKM": 3.1,
-                "MileageBill": 62,
+                "MotorBasePriceObj": {
+                    "BaseMinutes": 0,
+                    "BasePrice": 0,
+                    "PerMinutesPrice": 0.0,
+                    "MaxPrice": 0
+                },
+                "OrderStatus": 0,
+                "OrderNo": "H11768052",
+                "StartTime": "2022-03-18 13:30:00",
+                "PickTime": "",
+                "ReturnTime": "",
+                "StopPickTime": "2022-03-18 13:45:00",
+                "StopTime": "2022-03-18 14:30:00",
+                "OpenDoorDeadLine": "",
+                "CarRentBill": 135,
+                "MileagePerKM": 3.0,
+                "MileageBill": 60,
                 "Insurance": 1,
-                "InsurancePerHour": 50,
+                "InsurancePerHour": 70,
                 "InsuranceBill": 0,
                 "TransDiscount": 0,
-                "Bill": 172,
+                "Bill": 195,
                 "DailyMaxHour": 10,
-                "CAR_MGT_STATUS": 16,
-                "AppStatus": 7,
-                "RenterType": 1
+                "CAR_MGT_STATUS": 0,
+                "AppStatus": 1,
+                "RenterType": 1,
+                "DiscountLabel": {
+                    "LabelType": null,
+                    "GiveMinute": 0,
+                    "Describe": null
+                }
             }
         ]
     }

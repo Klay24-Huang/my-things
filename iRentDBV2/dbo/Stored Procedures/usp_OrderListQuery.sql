@@ -14,8 +14,10 @@
 			 20210826 UPD BY YEH REASON:將正式版本增加的欄位壓回此SP
 			 20210827 UPD BY YEH REASON:1.增加承租人類型 2.增加副承租人的訂單列表
 			 20210831 UPD BY YEH REASON:增加共同承租人每小時安心服務價格
+			 20211123 ADD BY ADAM REASON.修正訂閱制預估租金
+			 20220317 UPD BY YEH REASON:增加標籤類型、分鐘數
 
-* Example  : EXEC usp_OrderListQuery 'L122184238','3667F93976891550DA17A40CFA4651416F7112B00AC396E86F47BCC114013833',611138892,-1,'','','',''
+* Example  : EXEC usp_OrderListQuery 'E121075744','E3407847174BBC7EA5A2C98855E1319F4BD7E2A671382A3C50EA489610B9B2DC',9999,-1,'','','',''
 ***********************************************************************************************/
 
 CREATE PROCEDURE [dbo].[usp_OrderListQuery]
@@ -55,13 +57,13 @@ BEGIN TRY
 	IF @Token='' OR @IDNO=''  
 	BEGIN
 		SET @Error=1;
-		SET @ErrorCode='ERR900'
+		SET @ErrorCode='ERR900';
 	END
 
 	--0.再次檢核token
 	IF @Error=0
 	BEGIN
-		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token  AND Rxpires_in>@NowTime;
+		SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND Rxpires_in>@NowTime;
 		IF @hasData=0
 		BEGIN
 			SET @Error=1;
@@ -70,7 +72,7 @@ BEGIN TRY
 		ELSE
 		BEGIN
 			SET @hasData=0;
-			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE  Access_Token=@Token AND MEMIDNO=@IDNO;
+			SELECT @hasData=COUNT(1) FROM TB_Token WITH(NOLOCK) WHERE Access_Token=@Token AND MEMIDNO=@IDNO;
 			IF @hasData=0
 			BEGIN
 				SET @Error=1;
@@ -84,13 +86,20 @@ BEGIN TRY
 	BEGIN
 		DROP TABLE IF EXISTS #tmpOrderMain;
 		DROP TABLE IF EXISTS #Result;
+		DROP TABLE IF EXISTS #TB_SubsBookingMonth;
+		DROP TABLE IF EXISTS #SYN_MonthlyRent;
 
-		--抓近1個月內未完成的訂單
+		-- 抓近1個月內未完成的訂單，用意是要判斷預約訂單的車輛是否有前車未還的狀況
 		SELECT *
 		INTO #tmpOrderMain
 		FROM TB_OrderMain WITH(NOLOCK) 
-		WHERE IDNO=@IDNO and start_time > DATEADD(MONTH,-1,@NowTime) AND (car_mgt_status >= 4 and car_mgt_status < 16) AND cancel_status=0
+		WHERE (car_mgt_status >= 4 and car_mgt_status < 16) AND cancel_status=0
+		AND start_time > DATEADD(MONTH,-1,@NowTime) 
 		AND stop_time < @NowTime;
+
+		SELECT * INTO #SYN_MonthlyRent FROM SYN_MonthlyRent WITH(NOLOCK) WHERE IDNO=@IDNO AND useFlag=1;
+
+		SELECT * INTO #TB_SubsBookingMonth FROM TB_SubsBookingMonth WITH(NOLOCK) WHERE IDNO=@IDNO;
 
 		-- 主承租人
 		SELECT VW.lend_place AS StationID
@@ -116,8 +125,8 @@ BEGIN TRY
 			,VW.RemainingMilage						--機車電力相關
             ,VW.ProjType
 			,VW.PRONAME								--專案基本資料
-            ,IIF(VW.PayMode=0,VW.PRICE/10,VW.PRICE) as PRICE			--平日每小時價 20201003 ADD BY ADAM
-            ,IIF(VW.PayMode=0,VW.PRICE_H/10,VW.PRICE_H) as PRICE_H	--假日每小時價 20201003 ADD BY ADAM
+            ,IIF(VW.PayMode=0, VW.PRICE / 10, VW.PRICE) as PRICE			--平日每小時價 20201003 ADD BY ADAM
+            ,IIF(VW.PayMode=0, VW.PRICE_H / 10, VW.PRICE_H) as PRICE_H	--假日每小時價 20201003 ADD BY ADAM
             ,VW.BaseMinutes
             ,VW.BaseMinutesPrice
             ,VW.MinuteOfPrice
@@ -129,7 +138,11 @@ BEGIN TRY
             ,VW.final_stop_time
             ,VW.stop_pick_time
             ,VW.stop_time
-            ,VW.init_price
+			--20211123 ADD BY ADAM REASON.訂閱制租金重算
+			,init_price = CASE WHEN ISNULL(SBM.MonthlyRentId,0) > 0 AND SMR.WorkDayRateForCar IS NOT NULL THEN
+									CASE WHEN VW.PayMode=0 THEN dbo.FN_CarRentCompute(VW.start_time, VW.stop_time, SMR.WorkDayRateForCar * 10, SMR.HoildayRateForCar * 10, 10, 0)
+										 ELSE dbo.FN_CarRentCompute(VW.start_time, VW.stop_time, SMR.WorkDayRateForMoto * 10, SMR.HoildayRateForMoto * 10, 10, 0) END
+							   ELSE VW.init_price END
 			,Insurance = CASE WHEN VW.ProjType=4 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務   20201206改為等級4就是停權
 			,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 
 									  WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours 
@@ -164,15 +177,17 @@ BEGIN TRY
 			,VW.CarLatitude
 			,VW.CarLongitude
 			,VW.Area
-			,StationPicJson = ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) WHERE SI.use_flag=1 AND SI.StationID=VW.lend_place FOR JSON PATH),'[]')
+			,StationPicJson = ISNULL((SELECT StationPic,PicDescription FROM TB_iRentStationInfo SI WITH(NOLOCK) WHERE SI.use_flag=1 AND SI.StationID=VW.lend_place FOR JSON PATH),'[]')
 			,OD.DeadLine AS OpenDoorDeadLine
 			,LastOD.parkingSpace AS parkingSpace
 			,VW.deviceRSOC		--20210524 ADD BY ADAM REASON.增加儀表板電量
 			,1 AS RenterType	-- 20210827 UPD BY YEH REASON:增加承租人類型
 			,JointInsurancePerHour = ISNULL((SELECT SUM(InsurancePerHours) FROM TB_SavePassenger SP WHERE SP.Order_number=VW.order_number),0)	-- 20210831 UPD BY YEH REASON:增加共同承租人每小時安心服務價格
+			,LabelType = ISNULL(E.CPType,'')	-- 20220317 UPD BY YEH REASON:增加標籤類型、分鐘數
+			,GiveMinute = ISNULL(E.GiveMin,0)
         INTO #Result
 		FROM VW_GetOrderData AS VW WITH(NOLOCK)
-        LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND Setting.use_flag=1 --AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
+        LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND Setting.use_flag=1 AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
@@ -181,16 +196,24 @@ BEGIN TRY
 		LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID=VW.AreaID
 		LEFT JOIN TB_OrderDetail LastOD WITH(NOLOCK) ON LastOD.order_number=VW.LastOrderNo
 		LEFT JOIN #tmpOrderMain TempOM WITH(NOLOCK) ON TempOM.CarNo=VW.CarNo
+		LEFT JOIN #TB_SubsBookingMonth SBM WITH(NOLOCK) ON VW.order_number=SBM.OrderNo	--20211123 ADD BY ADAM REASON.修正訂閱制預估租金
+		LEFT JOIN #SYN_MonthlyRent SMR WITH(NOLOCK) ON SMR.MonthlyRentId=SBM.MonthlyRentId
+		LEFT JOIN TB_OrderExtinfo E WITH(NOLOCK) ON E.order_number=VW.order_number
         WHERE VW.IDNO=@IDNO 
 		AND VW.cancel_status=0
         AND (VW.car_mgt_status<16    --排除已還車的
 			--針對汽機車已還車在15分鐘內的
-			OR (VW.car_mgt_status=16 AND VW.final_stop_time is not null AND OD.nowStatus<2 AND DATEADD(mi,15,VW.final_stop_time) > @NowTime)
+			OR (VW.car_mgt_status=16 AND VW.final_stop_time is not null AND OD.nowStatus < 2 AND DATEADD(mi,15,VW.final_stop_time) > @NowTime)
 			)
         AND VW.order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN VW.order_number ELSE @OrderNo END
 		--20210104 UPD BY JERRY 只查一年內的資料
-		AND VW.start_time > DATEADD(MONTH,-3,@NowTime)
-        ORDER BY VW.start_time ASC;
+		AND VW.start_time > DATEADD(MONTH,-3,@NowTime);
+
+		SELECT * INTO #SavePassenger FROM TB_SavePassenger WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+		SELECT VW.*
+			INTO #GetOrderData
+		FROM VW_GetOrderData AS VW WITH(NOLOCK)
+		INNER JOIN #SavePassenger S WITH(NOLOCK) ON VW.order_number=S.Order_number
 
 		-- 副承租人
 		INSERT INTO #Result
@@ -230,7 +253,12 @@ BEGIN TRY
             ,VW.final_stop_time
             ,VW.stop_pick_time
             ,VW.stop_time
-            ,VW.init_price
+			--,VW.init_price
+			--20211123 ADD BY ADAM REASON.訂閱制租金重算
+            ,init_price = CASE WHEN ISNULL(SBM.MonthlyRentId,0) > 0 AND SMR.WorkDayRateForCar IS NOT NULL THEN 
+									CASE WHEN VW.PayMode=0 THEN dbo.FN_CarRentCompute(VW.start_time, VW.stop_time, SMR.WorkDayRateForCar * 10, SMR.HoildayRateForCar * 10, 10, 0)
+										 ELSE dbo.FN_CarRentCompute(VW.start_time, VW.stop_time, SMR.WorkDayRateForMoto * 10, SMR.HoildayRateForMoto * 10, 10, 0) END
+							   ELSE VW.init_price END
 			,Insurance = CASE WHEN VW.ProjType=4 THEN 0 WHEN ISNULL(BU.InsuranceLevel,3) >= 4 THEN 0 ELSE 1 END		--安心服務   20201206改為等級4就是停權
 			,InsurancePerHours = CASE WHEN VW.ProjType=4 THEN 0 
 									  WHEN K.InsuranceLevel IS NULL THEN II.InsurancePerHours 
@@ -265,14 +293,17 @@ BEGIN TRY
 			,VW.CarLatitude
 			,VW.CarLongitude
 			,VW.Area
-			,StationPicJson = ISNULL((SELECT [StationPic],[PicDescription] FROM [TB_iRentStationInfo] SI WITH(NOLOCK) WHERE SI.use_flag=1 AND SI.StationID=VW.lend_place FOR JSON PATH),'[]')
+			,StationPicJson = ISNULL((SELECT StationPic,PicDescription FROM TB_iRentStationInfo SI WITH(NOLOCK) WHERE SI.use_flag=1 AND SI.StationID=VW.lend_place FOR JSON PATH),'[]')
 			,OD.DeadLine AS OpenDoorDeadLine
 			,LastOD.parkingSpace AS parkingSpace
 			,VW.deviceRSOC		--20210524 ADD BY ADAM REASON.增加儀表板電量
 			,2 AS RenterType	-- 20210827 UPD BY YEH REASON:增加承租人類型
 			,JointInsurancePerHour = ISNULL((SELECT SUM(InsurancePerHours) FROM TB_SavePassenger SP WHERE SP.Order_number=VW.order_number),0)	-- 20210831 UPD BY YEH REASON:增加共同承租人每小時安心服務價格
-		FROM VW_GetOrderData AS VW WITH(NOLOCK)
-        LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND Setting.use_flag=1 --AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
+			,LabelType = ISNULL(E.CPType,'')	-- 20220317 UPD BY YEH REASON:增加標籤類型、分鐘數
+			,GiveMinute = ISNULL(E.GiveMin,0)
+		FROM #GetOrderData AS VW WITH(NOLOCK)
+		INNER JOIN #SavePassenger S WITH(NOLOCK) ON VW.order_number=S.Order_number
+        LEFT JOIN TB_MilageSetting AS Setting WITH(NOLOCK) ON Setting.ProjID=VW.ProjID AND Setting.use_flag=1 AND (VW.start_time BETWEEN Setting.SDate AND Setting.EDate)
 		LEFT JOIN TB_BookingInsuranceOfUser BU WITH(NOLOCK) ON BU.IDNO=VW.IDNO
 		LEFT JOIN TB_InsuranceInfo K WITH(NOLOCK) ON K.CarTypeGroupCode=VW.CarTypeGroupCode AND K.useflg='Y' AND BU.InsuranceLevel=K.InsuranceLevel	
 		LEFT JOIN TB_InsuranceInfo II WITH(NOLOCK) ON II.CarTypeGroupCode=VW.CarTypeGroupCode AND II.useflg='Y' AND II.InsuranceLevel=3		--預設專用
@@ -281,25 +312,32 @@ BEGIN TRY
 		LEFT JOIN TB_AreaZip AZ WITH(NOLOCK) ON AZ.AreaID=VW.AreaID
 		LEFT JOIN TB_OrderDetail LastOD WITH(NOLOCK) ON LastOD.order_number=VW.LastOrderNo
 		LEFT JOIN #tmpOrderMain TempOM WITH(NOLOCK) ON TempOM.CarNo=VW.CarNo
-		INNER JOIN TB_SavePassenger S WITH(NOLOCK) ON VW.order_number=S.Order_number
+		LEFT JOIN #TB_SubsBookingMonth SBM WITH(NOLOCK) ON S.Order_number=SBM.OrderNo	--20211123 ADD BY ADAM REASON.修正訂閱制預估租金
+		LEFT JOIN #SYN_MonthlyRent SMR WITH(NOLOCK) ON SMR.MonthlyRentId=SBM.MonthlyRentId
+		LEFT JOIN TB_OrderExtinfo E WITH(NOLOCK) ON E.order_number=VW.order_number
         WHERE S.MEMIDNO=@IDNO
 		AND VW.cancel_status=0
-        AND (VW.car_mgt_status>=4 and VW.car_mgt_status<16) -- 用車中
+        AND (VW.car_mgt_status >= 4 and VW.car_mgt_status < 16) -- 用車中
         AND VW.order_number = CASE WHEN @OrderNo=0 OR @OrderNo=-1 THEN VW.order_number ELSE @OrderNo END
 		--20210104 UPD BY JERRY 只查一年內的資料
 		AND VW.start_time > DATEADD(MONTH,-3,@NowTime);
+
+		DROP TABLE #GetOrderData
+		DROP TABLE #SavePassenger
 
 		-- 查詢結果從TEMP TABLE輸出
 		SELECT * FROM #Result ORDER BY start_time;
 
 		DROP TABLE IF EXISTS #tmpOrderMain;
 		DROP TABLE IF EXISTS #Result;
+		DROP TABLE IF EXISTS #TB_SubsBookingMonth;
+		DROP TABLE IF EXISTS #SYN_MonthlyRent;
 	END
 
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
-		INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+		INSERT INTO TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
 		VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 	END
 END TRY
@@ -316,7 +354,7 @@ BEGIN CATCH
 	END
 	SET @IsSystem=1;
 	SET @ErrorType=4;
-	INSERT INTO TB_ErrorLog([FunName],[ErrorCode],[ErrType],[SQLErrorCode],[SQLErrorDesc],[LogID],[IsSystem])
+	INSERT INTO TB_ErrorLog(FunName,ErrorCode,ErrType,SQLErrorCode,SQLErrorDesc,LogID,IsSystem)
 	VALUES (@FunName,@ErrorCode,@ErrorType,@SQLExceptionCode,@SQLExceptionMsg,@LogID,@IsSystem);
 END CATCH
 RETURN @Error
