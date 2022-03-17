@@ -807,6 +807,8 @@ namespace WebAPI.Controllers
                     {
                         try
                         {
+                            string xerrCode = "";
+                            string xerrMsg = "";
                             mem = msp.GetMemberData(IDNO, LogID, Access_Token);
                             if (mem != null)
                             {
@@ -821,8 +823,8 @@ namespace WebAPI.Controllers
                                     MonthlyNo = buyNxtCom.MonthlyRentId,
                                     PRGID = funName
                                 };
-                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
-                                trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });
+                                var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
+                                trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, xerrCode, xerrMsg });
                                 trace.FlowList.Add("履保處理");
                             }
                         }
@@ -1241,12 +1243,14 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         try
-                        {
+                        {                           
                             mem = msp.GetMemberData(IDNO, LogID, Access_Token);
                             if (mem != null)
                             {
                                 for (int i = 0; i < sp_re.Arrs.Count; i++)
                                 {
+                                    string xerrCode = "";
+                                    string xerrMsg = "";
                                     var spin = new ICF_TSIB_Escrow_Type()
                                     {
                                         IDNO = IDNO,
@@ -1258,8 +1262,9 @@ namespace WebAPI.Controllers
                                         MonthlyNo = sp_re.Arrs[i].MonthlyRentId,
                                         PRGID = funName
                                     };
-                                    var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
-                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });
+
+                                    var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
+                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, xerrCode, xerrMsg });
                                 }
                                 trace.FlowList.Add("履保處理");
                             }

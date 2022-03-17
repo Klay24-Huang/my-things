@@ -220,7 +220,7 @@ namespace OtherService
         {
             bool flag = true;
             output = DoGetTaishinCvsPayTokenSend().Result;
-            if (string.IsNullOrWhiteSpace(output.access_token))
+            if (string.IsNullOrWhiteSpace(output?.access_token))
             {
                 flag = false;
             }
@@ -286,11 +286,11 @@ namespace OtherService
         #region 超商繳費資訊上傳-新增
         public bool DoStoreShopCreateCvsPayInfo(WebAPI_CreateCvsPayInfo wsInput,string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_CreateCvsPayInfo output)
         {
-            bool flag = true;
+            bool flag = false;
             string funName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             output = DoTaishinWalletStoreShopApiSend<WebAPI_CreateCvsPayInfo, WebAPIOutput_CreateCvsPayInfo>(wsInput, CreateCvsPayInfo, accessToken, hmacVal, funName).Result;
 
-            if (output.header.rtnCode == "ok" && output.body.detail[0].statusCode == "S")
+            if (output?.header?.rtnCode == "ok" && output?.body?.detail[0]?.statusCode == "S")
             {
                 SPInput_InsWalletStoreShopLog spInput = new SPInput_InsWalletStoreShopLog()
                 {
@@ -315,10 +315,6 @@ namespace OtherService
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new TaishinWalletLog().InsWalletStoreShopLog(spInput, ref flag, ref errCode, ref lstError);
             }
-            else
-            {
-                flag = false;
-            }
             return flag;
         }
 
@@ -327,11 +323,11 @@ namespace OtherService
         #region 超商繳費條碼查詢
         public bool DoStoreShopGetBarcode(WebAPI_GetBarcode wsInput, string accessToken, string hmacVal, ref string errCode, ref WebAPIOutput_GetBarCode output)
         {
-            bool flag = true;
+            bool flag = false;
             string funName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             output = DoTaishinWalletStoreShopApiSend<WebAPI_GetBarcode, WebAPIOutput_GetBarCode>(wsInput, GetBarCode, accessToken, hmacVal, funName).Result;
 
-            if (output.header.rtnCode == "ok")
+            if (output?.header?.rtnCode == "ok" && !string.IsNullOrWhiteSpace(output?.body?.barcode64))
             {
                 SPInput_UpdWalletStoreShopLog spInput = new SPInput_UpdWalletStoreShopLog()
                 {
@@ -346,10 +342,6 @@ namespace OtherService
                 logger.Trace(" UpdWalletStoreShopLog : " + JsonConvert.SerializeObject(spInput));
                 List<ErrorInfo> lstError = new List<ErrorInfo>();
                 new TaishinWalletLog().UpdWalletStoreShopLog(spInput, ref flag, ref errCode, ref lstError);
-            }
-            else
-            {
-                flag = false;
             }
             return flag;
         }
