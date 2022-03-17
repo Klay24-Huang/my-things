@@ -273,7 +273,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int JointInsurancePerHour { get; set; }
         #endregion
-        #region 優惠相關
+        #region 標籤優惠相關
         /// <summary>
         /// 標籤類型
         /// </summary>
