@@ -21,14 +21,17 @@ namespace WebAPI.Models.Param.Input
         /// 罰金或補繳代碼
         /// </summary>
         public string CNTRNO { set; get; }
-        ///// <summary>
-        ///// 欠款查詢主表ID, 欠費補繳用
-        ///// </summary>
-        //public int? NPR330Save_ID { get; set; }
 
         /// <summary>
         /// 付款方式(0:信用卡、1:和雲錢包)
         /// </summary>
         public int CheckoutMode { get; set; }
+
+        /// <summary>
+        /// 單次儲值餘額
+        /// <para>1:是</para>
+        /// <para>0:否</para>
+        /// </summary>
+        public int OnceStore { get; set; }
     }
 }

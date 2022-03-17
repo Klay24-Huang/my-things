@@ -31,9 +31,9 @@ namespace WebCommon
             request.Method = WebRequestMethods.Http.Post;
             request.ContentType = "application/json";
             request.KeepAlive = false;
-            if (string.IsNullOrWhiteSpace(AccountToken))
+            if (!string.IsNullOrWhiteSpace(AccountToken))
                 request.Headers.Add("Authorization", "Bearer " + AccountToken);
-            request.Timeout = 30000;
+            request.Timeout = 90000;
 
             try
             {

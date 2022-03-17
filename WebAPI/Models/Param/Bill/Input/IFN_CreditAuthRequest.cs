@@ -63,9 +63,14 @@ namespace WebAPI.Models.Param.Bill.Input
         /// </summary>
         public int ProjType { get; set; } = 99;
         /// <summary>
-        /// 錢包自動儲值
+        /// 是否進入錢包自動儲值流程
         /// </summary>
         public bool AutoStore { get; set; } = false;
+
+        /// <summary>
+        /// 單次錢包自動儲值
+        /// </summary>
+        public int OnceStore { get; set; } = 0;
 
     }
 }
