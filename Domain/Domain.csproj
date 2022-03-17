@@ -49,6 +49,8 @@
     <Compile Include="Common\CodeData.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
+    <Compile Include="Flow\CarRentCompute\CarRentInfo.cs" />
+    <Compile Include="Flow\CarRentCompute\DayPayMins.cs" />
     <Compile Include="Flow\Hotai\Class1.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiAddCard.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiFastAddCard.cs" />
