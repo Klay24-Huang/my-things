@@ -1,6 +1,6 @@
 ﻿namespace Domain.Flow.CarRentCompute
 {
-    public class OBIZ_ETagCk : BIZ_CRBase
+    public class OBIZ_ETagCk : OBIZ_CRBase
     {
         /// <summary>
         /// ETAG費用

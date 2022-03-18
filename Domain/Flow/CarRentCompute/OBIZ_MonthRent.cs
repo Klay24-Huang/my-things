@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Domain.Flow.CarRentCompute
 {
-    public class OBIZ_MonthRent : BIZ_CRBase
+    public class OBIZ_MonthRent : OBIZ_CRBase
     {
         /// <summary>
         /// false:無月租;true:有月租

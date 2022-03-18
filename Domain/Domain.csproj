@@ -49,7 +49,7 @@
     <Compile Include="Common\CodeData.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
-    <Compile Include="Flow\CarRentCompute\BIZ_CRBase.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_CRBase.cs" />
     <Compile Include="Flow\CarRentCompute\CarRentInfo.cs" />
     <Compile Include="Flow\CarRentCompute\DayPayMins.cs" />
     <Compile Include="Flow\CarRentCompute\IBIZ_CarMagi.cs" />

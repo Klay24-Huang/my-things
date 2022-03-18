@@ -1,6 +1,6 @@
 ﻿namespace Domain.Flow.CarRentCompute
 {
-    public class OBIZ_CarMagi : BIZ_CRBase
+    public class OBIZ_CarMagi : OBIZ_CRBase
     {
         /// <summary>
         /// 車麻吉費用

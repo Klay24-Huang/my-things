@@ -1,6 +1,6 @@
 ﻿namespace Domain.Flow.CarRentCompute
 {
-    public class OBIZ_InCheck : BIZ_CRBase
+    public class OBIZ_InCheck : OBIZ_CRBase
     {
         /// <summary>
         /// 訂單編號

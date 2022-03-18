@@ -3,7 +3,7 @@ using WebCommon;
 
 namespace Domain.Flow.CarRentCompute
 {
-    public class BIZ_CRBase
+    public class OBIZ_CRBase
     {
         /// <summary>
         /// 
@@ -26,7 +26,7 @@ namespace Domain.Flow.CarRentCompute
         public List<ErrorInfo> lstError { get; set; }
 
         //20210109 ADD BY ADAM REASON.增加constructor
-        public BIZ_CRBase()
+        public OBIZ_CRBase()
         {
             flag = false;
             errMsg = "";

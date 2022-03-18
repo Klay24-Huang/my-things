@@ -1,6 +1,6 @@
 ﻿namespace Domain.Flow.CarRentCompute
 {
-    public class OBIZ_NPR270Query : BIZ_CRBase
+    public class OBIZ_NPR270Query : OBIZ_CRBase
     {
         /// <summary>
         /// 機車點數
