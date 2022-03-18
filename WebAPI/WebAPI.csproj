@@ -295,8 +295,6 @@
     <Compile Include="Controllers\CloseAccountFtpUploadController.cs" />
     <Compile Include="Controllers\CreditAuthReservationJobController.cs" />
     <Compile Include="Controllers\CreditAuthJobV2Controller.cs" />
-    <Compile Include="Controllers\GetAccountStatusController.cs" />
-    <Compile Include="Controllers\GetAccountValueController.cs" />
     <Compile Include="Controllers\GetCarMapDataController.cs" />
     <Compile Include="Controllers\GetMapMedalController.cs" />
     <Compile Include="Controllers\GetMemberMedalController.cs" />
@@ -311,7 +309,6 @@
     <Compile Include="Controllers\JointRentInvitationController.cs" />
     <Compile Include="Controllers\JointRentInviteeModifyController.cs" />
     <Compile Include="Controllers\GetPayInfoController.cs" />
-    <Compile Include="Controllers\GetPayInfoReturnCarController.cs" />
     <Compile Include="Controllers\GetWalletStoredMoneySetController.cs" />
     <Compile Include="Controllers\JointRentInviteeVerifyController.cs" />
     <Compile Include="Controllers\JointRentInviteeListQueryController.cs" />
@@ -626,8 +623,6 @@
     <Compile Include="Models\Param\Input\IAPI_FeedBack.cs" />
     <Compile Include="Models\Param\Input\IAPI_ForgetPWD.cs" />
     <Compile Include="Models\Param\Input\IAPI_GenerateEMailTest.cs" />
-    <Compile Include="Models\Param\Input\IAPI_GetAccountStatus.cs" />
-    <Compile Include="Models\Param\Input\IAPI_GetAccountValue.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetArrsSubsList.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetBindURL.cs" />
@@ -649,7 +644,6 @@
     <Compile Include="Models\Param\Input\IAPI_GetParkingData.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayDetail.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPayInfo.cs" />
-    <Compile Include="Models\Param\Input\IAPI_GetPayInfoReturnCar.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetPolygon.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetProject.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetSubsCNT.cs" />
@@ -760,8 +754,6 @@
     <Compile Include="Models\Param\Output\OAPI_CreditAuth.cs" />
     <Compile Include="Models\Param\Output\OAPI_DelSubsHist.cs" />
     <Compile Include="Models\Param\Output\OAPI_GenerateEMailTest.cs" />
-    <Compile Include="Models\Param\Output\OAPI_GetAccountStatus.cs" />
-    <Compile Include="Models\Param\Output\OAPI_GetAccountValue.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetAnyRentProject.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetArrsSubsList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetBanner.cs" />
@@ -830,7 +822,6 @@
     <Compile Include="Models\Param\Output\OAPI_WalletTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
-    <Compile Include="Models\Param\Output\OPAI_GetPayInfoReturnCar.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CarRentBase.cs" />
