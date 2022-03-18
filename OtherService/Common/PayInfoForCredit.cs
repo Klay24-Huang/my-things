@@ -20,6 +20,7 @@ namespace OtherService.Common
                 new CreditCardPayInfo{ PayType = 5,PayTypeStr = "訂閱",PayTypeCode="MA_",FrontPart="IDNO"},
                 new CreditCardPayInfo{ PayType = 6,PayTypeStr = "春節訂金",PayTypeCode="D_",FrontPart="OrderNo"},
                 new CreditCardPayInfo{ PayType = 7,PayTypeStr = "錢包",PayTypeCode="W_",FrontPart="IDNO"},
+                new CreditCardPayInfo{ PayType = 8,PayTypeStr = "錢包提領",PayTypeCode="WD_",FrontPart="IDNO"},
             };
 
             return CreditCardPayInfoColl;

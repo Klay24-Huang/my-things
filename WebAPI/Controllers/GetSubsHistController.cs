@@ -1,17 +1,15 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Subscription;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
-using WebAPI.Models.BillFunc;
-using Domain.SP.Input.Subscription;
-using WebAPI.Utils;
-using Domain.SP.Output.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -85,24 +83,11 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region token
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                    trace.FlowList.Add("Token判斷");
                 }
-
                 #endregion
 
                 #region TB
@@ -112,16 +97,16 @@ namespace WebAPI.Controllers
                     var spIn = new SPInput_GetSubsHist()
                     {
                         IDNO = IDNO,
-                        LogID = LogID,          
+                        LogID = LogID,
                         SetNow = apiInput.SetNow
                     };
                     trace.traceAdd("spIn", spIn);
                     var sp_list = msp.sp_GetSubsHist(spIn, ref errCode);
                     trace.traceAdd("sp_list", sp_list);
-                    if (sp_list != null && sp_list.Count()>0)
+                    if (sp_list != null && sp_list.Count() > 0)
                     {
                         var hists = map.FromSPOut_GetSubsHist(sp_list);
-                            outputApi.Hists = hists;
+                        outputApi.Hists = hists;
                     }
 
                     trace.traceAdd("outputApi", outputApi);
@@ -210,24 +195,11 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region token
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                    trace.FlowList.Add("Token判斷");
                 }
-
                 #endregion
 
                 #region TB
@@ -242,7 +214,7 @@ namespace WebAPI.Controllers
                         SetNow = apiInput.SetNow
                     };
                     trace.traceAdd("spIn", spIn);
-                    flag = msp.sp_DelSubsHist(spIn, ref errCode);                    
+                    flag = msp.sp_DelSubsHist(spIn, ref errCode);
                     trace.traceAdd("sp_re", flag);
                     outputApi.DelResult = flag ? 1 : 0;
                     trace.traceAdd("outputApi", outputApi);

@@ -1,20 +1,17 @@
 ﻿using Domain.Common;
+using Domain.Flow.CarRentCompute;
 using Domain.SP.BE.Input;
-using Domain.SP.BE.Output;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
 using Domain.TB;
-using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
-using OtherService;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -22,11 +19,8 @@ using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebAPI.Models.ComboFunc;
-using WebCommon;
-using Domain.WebAPI.output.Mochi;
 using WebAPI.Utils;
-using System.Linq;
+using WebCommon;
 
 namespace WebAPI.Controllers
 {
