@@ -3111,6 +3111,15 @@
 | InsuranceBill 	 | 安心服務費用		| int | 1000 |
 | TransDiscount		 | 轉乘優惠			| int | 0 |
 | Bill				 | 總計				| int | 6075 |
+| DiscountLabel      | 優惠標籤物件       | object | |
+
+* DiscountLabel參數說明
+| 參數名稱           | 參數說明         | 型態 | 範例 |
+| ------------------ | ---------------- | :--: | ---- |
+| Price		         | 優惠金額				| int  | 55 |
+| LabelType		     | 優惠標籤類型| string  | CP0101  |
+| GiveMinute		 | 優惠分鐘數  | int | 30 |
+| Describe	 | 優惠說明   | string  | 優惠標籤折抵 |
 
 * Output範例
 
