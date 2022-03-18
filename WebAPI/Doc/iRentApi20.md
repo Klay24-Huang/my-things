@@ -3137,7 +3137,13 @@
         "InsurancePerHour": 50,
         "InsuranceBill": 1000,
         "TransDiscount": 0,
-        "Bill": 6075
+        "Bill": 6075,
+        "DiscountLabel": {
+            "Price": 55,
+            "LabelType": "CP0101",
+            "GiveMinute": 30,
+            "Describe": "優惠標籤折抵"
+        }
     }
 }
 ```
