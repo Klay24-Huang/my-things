@@ -1,5 +1,6 @@
 ﻿using Domain.SP.Input.Arrears;
 using Domain.SP.Input.Common;
+using Domain.SP.Input.Discount;
 using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
@@ -973,6 +974,24 @@ namespace WebAPI.Models.BillFunc
             return false;
         }
         #endregion
+
+        public DiscountLabel GetDiscountLabelByCar(SPInput_GetDiscountLabelByCarNo spInput)
+        {
+            var baseVerify = new CommonFunc();
+            string SPName = "usp_GetDiscountLabelByCarNo";
+            SPOutput_Base spOutBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetDiscountLabelByCarNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetDiscountLabelByCarNo, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            List<DiscountLabel> list = new List<DiscountLabel>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string errCode = "000000";
+            bool flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref list, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+            DiscountLabel result = (flag && list.Count > 0) ? list.FirstOrDefault() ?? null : null;
+
+            return result;
+        }
     }
 
     #region repo

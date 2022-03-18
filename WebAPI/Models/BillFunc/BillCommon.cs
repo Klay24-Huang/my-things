@@ -95,8 +95,8 @@ namespace WebAPI.Models.BillFunc
             Days = Convert.ToInt32(Math.Floor(Convert.ToDouble(TotalMinutes / 600)));
             Hours = Convert.ToInt32(Math.Floor(Convert.ToDouble(((TotalMinutes % 600) / 60))));
             Minutes = TotalMinutes - (Days * 600) - (Hours * 60);
-        #endregion
-        #region 計算以分計費金額(不分平假日)
+            #endregion
+            #region 計算以分計費金額(不分平假日)
         }
         #endregion
 
@@ -598,7 +598,7 @@ namespace WebAPI.Models.BillFunc
             return re;
         }
         #endregion
-        
+
 
         #region 機車月租計算,區分平假日,不分平假日
         /// <summary>
@@ -699,7 +699,7 @@ namespace WebAPI.Models.BillFunc
                     x.xRate = Math.Round(x.xRate, 1);
                 });
                 //取GroupId
-                
+
                 dayPayList = GetDateGroup(norDates, "nor_", dayPayList);
             }
             #endregion
@@ -806,7 +806,7 @@ namespace WebAPI.Models.BillFunc
                                     dre -= dayBasePrice - (dayBaseMins * x.xRate);    // 租金 = 租金 - 基本消費 - (基本分鐘 * 每分鐘金額)
                                 else
                                     dre += (dayBaseMins * x.xRate) - dayBasePrice;      // 租金 = 租金 + (基本分鐘 * 每分鐘金額) - 基本消費
-                                    
+
                                 x.useBaseMins += dayBaseMins;
                             }
                             else
@@ -3038,7 +3038,7 @@ namespace WebAPI.Models.BillFunc
 
             }//end while
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -4010,6 +4010,49 @@ namespace WebAPI.Models.BillFunc
             return new Tuple<double, double, double>(days, hours, mins);
         }
         #endregion
+
+
+        //DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, bool overTime = false, double baseMinutes = 60
+        public int DiscountLabelToPrice(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, int GiveMinute, bool overTime = false, double baseMinutes = 60)
+        {
+            var re = 0;
+            //優惠標籤折抵金額 要超過基本
+            if (ED.Subtract(SD).TotalMinutes > baseMinutes)
+            {
+
+                var minsPro = new MinsProcess(GetCarPayMins);
+                var dayPro = overTime ? new DayMinsProcess(CarOverTimeMinsToPayMins) : null;
+
+                double workdayPriceHour = 0; //平日每小時價格
+                double holidayPriceHour = 0; //假日每小時價格
+
+                workdayPriceHour = Price / dayMaxHour;
+                holidayPriceHour = PriceH / dayMaxHour;
+
+                var result = GetRangeMins(SD, ED, baseMinutes, dayMaxHour * 60, lstHoliday, minsPro, dayPro);
+
+                if (result != null)
+                {
+                    double tPrice = 0;
+
+                    /*Todo 贈送分鐘數換算*/
+                    double workdayGiveMinute = 0;
+                    double holidayGiveMinute = 0;
+
+                    //假日優惠分鐘數
+                    holidayGiveMinute = (result.Item2 >= Convert.ToDouble(GiveMinute)) ? GiveMinute : result.Item2;
+                    workdayGiveMinute = GiveMinute - holidayGiveMinute;
+
+                    tPrice += Math.Floor((workdayGiveMinute / 60) * workdayPriceHour);
+                    tPrice += Math.Floor((holidayGiveMinute / 60) * holidayPriceHour);
+
+                    if (tPrice > 0)
+                        re = Convert.ToInt32(tPrice);
+                }
+            }
+
+            return re;
+        }
     }
 
     #region Model
