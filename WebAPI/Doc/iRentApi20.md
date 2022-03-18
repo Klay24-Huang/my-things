@@ -3471,29 +3471,21 @@
                 "CarOfArea": "北區",
                 "CarLatitude": 24.9867833,
                 "CarLongitude": 121.2950694,
-                "MotorPowerBaseObj": {
-                    "Power": 0.0,
-                    "RemainingMileage": 0.0
-                },
+                "MotorPowerBaseObj": null,
                 "ProjType": 3,
                 "ProjName": "北區路邊汽車定價專案",
                 "WorkdayPerHour": 230,
                 "HolidayPerHour": 230,
                 "MaxPrice": 0,
                 "MaxPriceH": 0,
-                "MotorBasePriceObj": {
-                    "BaseMinutes": 0,
-                    "BasePrice": 0,
-                    "PerMinutesPrice": 0.0,
-                    "MaxPrice": 0
-                },
-                "OrderStatus": 0,
-                "OrderNo": "H11768047",
-                "StartTime": "2022-03-17 10:50:00",
-                "PickTime": "",
-                "ReturnTime": "",
-                "StopPickTime": "2022-03-17 11:20:00",
-                "StopTime": "2022-03-18 10:50:00",
+                "MotorBasePriceObj": null,
+                "OrderStatus": 5,
+                "OrderNo": "H11768055",
+                "StartTime": "2022-03-17 13:20:00",
+                "PickTime": "2022-03-18 10:00:00",
+                "ReturnTime": "2022-03-18 11:55:37",
+                "StopPickTime": "2022-03-17 13:50:00",
+                "StopTime": "2022-03-18 13:20:00",
                 "OpenDoorDeadLine": "",
                 "CarRentBill": 2300,
                 "MileagePerKM": 3.0,
@@ -3504,8 +3496,8 @@
                 "TransDiscount": 0,
                 "Bill": 2900,
                 "DailyMaxHour": 10,
-                "CAR_MGT_STATUS": 0,
-                "AppStatus": 4,
+                "CAR_MGT_STATUS": 13,
+                "AppStatus": 0,
                 "RenterType": 1,
                 "DiscountLabel": {
                     "LabelType": "CP0101",
@@ -3556,12 +3548,12 @@
                     "MaxPrice": 1497
                 },
                 "OrderStatus": 0,
-                "OrderNo": "H11768051",
-                "StartTime": "2022-03-17 11:20:00",
+                "OrderNo": "H11768058",
+                "StartTime": "2022-03-18 13:20:00",
                 "PickTime": "",
                 "ReturnTime": "",
-                "StopPickTime": "2022-03-17 11:50:00",
-                "StopTime": "2022-03-18 11:20:00",
+                "StopPickTime": "2022-03-18 13:50:00",
+                "StopTime": "2022-03-19 13:20:00",
                 "OpenDoorDeadLine": "",
                 "CarRentBill": 2,
                 "MileagePerKM": 0.0,
@@ -3575,11 +3567,7 @@
                 "CAR_MGT_STATUS": 0,
                 "AppStatus": 3,
                 "RenterType": 1,
-                "DiscountLabel": {
-                    "LabelType": null,
-                    "GiveMinute": 0,
-                    "Describe": null
-                }
+                "DiscountLabel": null
             },
             {
                 "StationInfo": {
@@ -3620,29 +3608,21 @@
                 "CarOfArea": "同站",
                 "CarLatitude": 24.7968000,
                 "CarLongitude": 120.9599500,
-                "MotorPowerBaseObj": {
-                    "Power": 0.0,
-                    "RemainingMileage": 0.0
-                },
+                "MotorPowerBaseObj": null,
                 "ProjType": 0,
                 "ProjName": "同站汽車110起推廣專案",
                 "WorkdayPerHour": 135,
                 "HolidayPerHour": 218,
                 "MaxPrice": 0,
                 "MaxPriceH": 0,
-                "MotorBasePriceObj": {
-                    "BaseMinutes": 0,
-                    "BasePrice": 0,
-                    "PerMinutesPrice": 0.0,
-                    "MaxPrice": 0
-                },
+                "MotorBasePriceObj": null,
                 "OrderStatus": 0,
-                "OrderNo": "H11768052",
-                "StartTime": "2022-03-18 13:30:00",
+                "OrderNo": "H11768057",
+                "StartTime": "2022-03-24 13:30:00",
                 "PickTime": "",
                 "ReturnTime": "",
-                "StopPickTime": "2022-03-18 13:45:00",
-                "StopTime": "2022-03-18 14:30:00",
+                "StopPickTime": "2022-03-24 13:45:00",
+                "StopTime": "2022-03-24 14:30:00",
                 "OpenDoorDeadLine": "",
                 "CarRentBill": 135,
                 "MileagePerKM": 3.0,
@@ -3656,11 +3636,7 @@
                 "CAR_MGT_STATUS": 0,
                 "AppStatus": 1,
                 "RenterType": 1,
-                "DiscountLabel": {
-                    "LabelType": null,
-                    "GiveMinute": 0,
-                    "Describe": null
-                }
+                "DiscountLabel": null
             }
         ]
     }

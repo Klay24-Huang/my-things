@@ -204,8 +204,6 @@ namespace WebAPI.Controllers
                             };
                             obj.MileageBill = billCommon.CarMilageCompute(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>());
 
-                            obj.MotorBasePriceObj = new MotorBillBase();
-                            obj.MotorPowerBaseObj = new MotorPowerInfoBase();
                             if (obj.ProjType == 4)  //機車
                             {
                                 obj.MotorBasePriceObj = new MotorBillBase()
@@ -223,7 +221,6 @@ namespace WebAPI.Controllers
                                 };
                             }
 
-                            obj.DiscountLabel = new DiscountLabel();
                             if (!string.IsNullOrEmpty(OrderDataLists[i].LabelType) && OrderDataLists[i].GiveMinute > 0)
                             {
                                 obj.DiscountLabel = new DiscountLabel()
