@@ -141,6 +141,7 @@ namespace WebAPI.Controllers
                                 InputSource = 2,
                                 ProjType = OrderAuth.ProjType,
                                 TradeType = (OrderAuth.CardType == 2) ? GetWalletTradeType(OrderAuth.ProjType, OrderAuth.AuthType) : "",
+                                OnceStore = OrderAuth.OnceStore,
                             };
 
                             if (AuthInput.CheckoutMode == 1 && AuthInput.AuthType == 7)

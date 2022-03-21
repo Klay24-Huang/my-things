@@ -48,7 +48,7 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 使用信用卡付款
+    /// 付款與還款
     /// </summary>
     public class CreditAuthController : ApiController
     {
@@ -524,7 +524,7 @@ namespace WebAPI.Controllers
                         //所以把存檔功能先提早完成再進行信用卡授權
                         if (flag)
                         {
-                            string SPName = "usp_CreditAuth_U01_V20220311";
+                            string SPName = "usp_CreditAuth_U01_V20220321";
 
                             object[] objparms = new object[TradeCloseLists.Count == 0 ? 1 : TradeCloseLists.Count];
 
@@ -564,6 +564,7 @@ namespace WebAPI.Controllers
                                     "",
                                     apiInput.CheckoutMode,
                                     funName,
+                                    apiInput.OnceStore,
                                     LogID
                                 },
                                 objparms
@@ -670,7 +671,6 @@ namespace WebAPI.Controllers
                         #region 1:罰金/補繳
                         // 20210220;增加快取機制，當資料存在快取記憶體中，就不再執行並回錯誤訊息。
                         var KeyString = string.Format("{0}-{1}", "CreditAuthController", apiInput.CNTRNO);
-                        //var CacheString = Cache.StringGet("Key1").ToString();
                         //20220211 ADD BY ADAM REASON.調整快取邏輯
                         var CacheString = Cache.StringGet(KeyString).ToString();
 
