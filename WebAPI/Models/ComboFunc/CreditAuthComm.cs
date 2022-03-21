@@ -796,11 +796,14 @@ namespace WebAPI.Models.ComboFunc
         {
             (bool flag, OFN_CreditAuthResult paymentInfo) result = (false, new OFN_CreditAuthResult());
 
+            logger.Trace($"DoWalletPay | Start: AuthInput:{ JsonConvert.SerializeObject(AuthInputint)} | Amount :{Amount}");
+
             result.flag = IsWalletPayAmountEnough(Amount, 0);
 
             if (!result.flag)
             {
                 errCode = "ERR934";
+                logger.Trace($"DoWalletPay | IsWalletPayAmountEnough : result:{result.flag} | AuthInput:{ JsonConvert.SerializeObject(AuthInputint)} | Amount :{Amount}");
                 return result;
             }
             Thread.Sleep(1000);
@@ -809,7 +812,7 @@ namespace WebAPI.Models.ComboFunc
             var WebAPI = new PayInfoForCredit();
             var temPayTypeInfo = WebAPI.GetPayTypeInfo(AuthInputint.PayType);
             var accountId = GetWalletAccountId(AuthInputint.IDNO, 1);
-
+            logger.Trace($"DoWalletPay | GetWalletAccountId : accountId:{accountId} | AuthInput:{ JsonConvert.SerializeObject(AuthInputint)} | Amount :{Amount}");
             var spGetTransIdInput = new SPInput_WalletPayGetTransId
             {
                 LogID = AuthInputint.LogID,
@@ -825,9 +828,10 @@ namespace WebAPI.Models.ComboFunc
                        , temPayTypeInfo.PaySuff
                        )
             };
-
             var wsp = new WalletSp();
             var reTransIdInput = wsp.sp_GetWalletPayGetTransId(spGetTransIdInput, ref errCode);
+
+            logger.Trace($"DoWalletPay | 取得錢包扣款TransId | spGetTransIdInput:{spGetTransIdInput} |  TransIdOutput : {reTransIdInput} ");
 
             result.flag = reTransIdInput.flag;
 
@@ -849,13 +853,19 @@ namespace WebAPI.Models.ComboFunc
             WebAPI_PayTransaction wallet = SetForWalletPay(AuthInputint.IDNO, AuthInputint.OrderNo, Amount, NowTime, AuthInputint.PayType, accountId, storeTransId);
             WebAPIOutput_PayTransaction taishinResponse = null;
 
+            logger.Trace($"DoWalletPay | SetForWalletPay | wallet:{wallet} ");
+
             if (result.flag)
             {
                 var body = JsonConvert.SerializeObject(wallet);
                 TaishinWallet WalletAPI = new TaishinWallet();
                 string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
                 string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+                logger.Trace($"DoWalletPay | GenerateSignCode | Input:{wallet} | SignCode:{SignCode} ");
+
                 result.flag = WalletAPI.DoPayTransaction(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref taishinResponse);
+                logger.Trace($"DoWalletPay | DoPayTransaction |Result :{result.flag}| Input:{wallet} | MerchantId:{MerchantId} | utcTimeStamp :{utcTimeStamp} | SignCode :{SignCode} |errCode:{errCode} |taishinResponse :{taishinResponse}");
+
             }
             var paymentInfo = new OFN_CreditAuthResult()
             {
@@ -872,7 +882,7 @@ namespace WebAPI.Models.ComboFunc
                 SPInput_WalletPay spInput = SetForWalletPayLog(wallet, taishinResponse, AuthInputint, NowTime);
 
                 result.flag = wsp.sp_WalletPay(spInput, ref errCode);
-
+                logger.Trace($"DoWalletPay | sp_WalletPay |Result :{result.flag}| Input:{spInput} | errCode:{errCode} ");
             }
             else
             {
