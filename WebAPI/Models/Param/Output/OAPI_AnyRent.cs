@@ -53,6 +53,12 @@ namespace WebAPI.Models.Param.Output
         /// 機車假日優惠價
         /// </summary>
         public double HDRateForMoto { get; set; } = 0;
+
+        /// <summary>
+        /// 優惠標籤
+        /// </summary>
+        public DiscountLabel DiscountLabel { get; set; }
+
     }
 
 }
