@@ -2505,6 +2505,7 @@
 | HDRateForCar		| 汽車假日優惠價 | double | 168.0  |
 | WDRateForMoto		| 機車平日優惠價 | dluble | 1.0  |
 | HDRateForMoto		| 機車假日優惠價 | double | 1.2 |
+| DiscountLabel     | 優惠標籤      | object |     |
 | CarNo				| 車號			 | string | RCG-2305 |
 | CarType			| 車型代碼		| string | PRIUSC |
 | CarTypeName		| 車型名稱		| string | TOYOTA PRIUSc |
@@ -2524,6 +2525,12 @@
 | Seat				| 座位數			| int | 5 |
 | ProjID			| 專案代碼			| string | P621 |
 
+* DiscountLabel 參數說明
+| 參數名稱      | 參數說明 |  型態  | 範例       |
+| ------------- | -------- | :----: | ---------- |
+| LabelType		| 標籤類型		| string | CP0101 |
+| GiveMinute	| 贈送分鐘數  | int | 30 |
+| Describe		| 描述		| string | 30分鐘優惠折抵 |
 
 * Output 範例
 
@@ -2546,6 +2553,11 @@
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
+                "DiscountLabel": {
+                    "LabelType": "CP0101",
+                    "GiveMinute": 30,
+                    "Describe": "30分鐘優惠折抵"
+                },
                 "CarNo": "RCF-7051",
                 "CarType": "PRIUSC",
                 "CarTypeName": "TOYOTA PRIUSc",
@@ -2575,6 +2587,7 @@
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
+                "DiscountLabel": null,
                 "CarNo": "RCF-9755",
                 "CarType": "PRIUSC",
                 "CarTypeName": "TOYOTA PRIUSc",

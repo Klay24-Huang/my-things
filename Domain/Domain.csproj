@@ -78,6 +78,7 @@
     <Compile Include="Flow\Hotai\OFN_HotaiPaymentAuth.cs" />
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
+    <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_GetCTBCInquiryList.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCInquiry.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCap.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletReturn.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletStoredErrorList.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_WalletPayGetTransId.cs" />
+    <Compile Include="TB\AnyRentDiscountLabel.cs" />
     <Compile Include="TB\DiscountLabel.cs" />
     <Compile Include="TB\EstimateDiscountLabel.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />

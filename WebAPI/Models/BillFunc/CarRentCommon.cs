@@ -942,6 +942,11 @@ namespace WebAPI.Models.BillFunc
         }
         #endregion
 
+        /// <summary>
+        /// 取得針對車號取得預估租金的優惠標籤
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <returns></returns>
         public DiscountLabel GetDiscountLabelByCar(SPInput_GetDiscountLabelByCarNo spInput)
         {
             var baseVerify = new CommonFunc();
@@ -956,6 +961,30 @@ namespace WebAPI.Models.BillFunc
             baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
 
             DiscountLabel result = (flag && list.Count > 0) ? list.FirstOrDefault() ?? null : null;
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// 取得優惠標籤(AnyRent提供車號清單)
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <returns></returns>
+        public List<AnyRentDiscountLabel> GetDiscountLabelForAnyRentCars(SPInput_GetDiscountLabelForAnyRentCars spInput)
+        {
+            var baseVerify = new CommonFunc();
+            string SPName = "usp_GetDiscountLabelForAnyRentCars";
+            SPOutput_Base spOutBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetDiscountLabelForAnyRentCars, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetDiscountLabelForAnyRentCars, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            List<AnyRentDiscountLabel> list = new List<AnyRentDiscountLabel>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string errCode = "000000";
+            bool flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref list, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+            List<AnyRentDiscountLabel> result = (flag && list.Count > 0) ? list ?? null : null;
 
             return result;
         }

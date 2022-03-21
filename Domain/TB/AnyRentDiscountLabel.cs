@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain.TB
 {
-    public class EstimateDiscountLabel : DiscountLabel
+    public class AnyRentDiscountLabel : DiscountLabel
     {
         /// <summary>
-        /// 則扣金額
+        ///  車號
         /// </summary>
-        public int Price { get; set; }
-
+        public string CarNo { get; set; }
     }
 }

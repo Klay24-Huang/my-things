@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.TB
+namespace Domain.SP.Input.Discount
 {
-    public class EstimateDiscountLabel : DiscountLabel
+    public class SPInput_GetDiscountLabelForAnyRentCars : SPInput_Base
     {
         /// <summary>
-        /// 則扣金額
+        /// 車號
         /// </summary>
-        public int Price { get; set; }
-
+        public string CarNos { get; set; } = "";
     }
 }
