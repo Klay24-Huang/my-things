@@ -328,7 +328,6 @@
     <Compile Include="Controllers\BookingController.cs" />
     <Compile Include="Controllers\BookingDeleteController.cs" />
     <Compile Include="Controllers\BookingExtendController.cs" />
-    <Compile Include="Controllers\BookingFinishController.cs" />
     <Compile Include="Controllers\BookingFinishQueryController.cs" />
     <Compile Include="Controllers\BookingQueryController.cs" />
     <Compile Include="Controllers\BookingStartController.cs" />
@@ -377,8 +376,6 @@
     <Compile Include="Controllers\GetMachiParkingDataController.cs" />
     <Compile Include="Controllers\GetMemberDataController.cs" />
     <Compile Include="Controllers\GetMotorRentProjectController.cs" />
-    <Compile Include="Controllers\GetOrderDetailController.cs" />
-    <Compile Include="Controllers\GetOrderListController.cs" />
     <Compile Include="Controllers\GetParkingDataController.cs" />
     <Compile Include="Controllers\GetPolygonForWebController.cs" />
     <Compile Include="Controllers\GetProjectController.cs" />
@@ -412,7 +409,6 @@
     <Compile Include="Controllers\OpenDoorController.cs" />
     <Compile Include="Controllers\OpenDoorFinishController.cs" />
     <Compile Include="Controllers\OrderDetailController.cs" />
-    <Compile Include="Controllers\OrderUnFinishController.cs" />
     <Compile Include="Controllers\PersonNoticeController.cs" />
     <Compile Include="Controllers\ReadCardController.cs" />
     <Compile Include="Controllers\ReadCardInfoController.cs" />
