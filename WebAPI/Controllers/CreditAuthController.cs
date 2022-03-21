@@ -749,6 +749,7 @@ namespace WebAPI.Controllers
                                     {
                                         AuthInput.TradeType = "Pay_Arrear";
                                         AuthInput.AutoStore = true;
+                                        AuthInput.OnceStore = apiInput.OnceStore;
                                         payCD = "2";
                                         #region 這段不要了
                                         //string TradeType = "Pay_Arrear";
