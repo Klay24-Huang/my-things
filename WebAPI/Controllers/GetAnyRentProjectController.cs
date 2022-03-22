@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Discount;
 using Domain.SP.Input.Project;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
@@ -130,7 +131,7 @@ namespace WebAPI.Controllers
             //取得汽車使用中訂閱制月租
             if (flag)
             {
-                if (!string.IsNullOrWhiteSpace(IDNO))
+                if (flag && !string.IsNullOrWhiteSpace(IDNO))
                 {
                     var sp_in = new SPInput_GetNowSubs()
                     {
@@ -218,6 +219,8 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExeuteSP(SPName, SPInput, ref spOut, ref lstData, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
+                DiscountLabel reDiscountLabel = new DiscountLabel();
+                
                 if (flag)
                 {
                     if (lstData != null)
@@ -225,6 +228,14 @@ namespace WebAPI.Controllers
                         int DataLen = lstData.Count;
                         if (DataLen > 0)
                         {
+                            /*以車號取得當前優惠標籤*/
+                            SPInput_GetDiscountLabelByCarNo spInputDiscountLabel = new SPInput_GetDiscountLabelByCarNo()
+                            {
+                                CarNo = apiInput.CarNo,
+                                LogID = LogID
+                            };
+
+                            reDiscountLabel = new CarRentCommon().GetDiscountLabelByCar(spInputDiscountLabel);
                             int isMin = 1;
 
                             int tmpBill = GetPriceBill(lstData[0], IDNO, LogID, lstHoliday, SDate, EDate, 0) +
@@ -251,7 +262,8 @@ namespace WebAPI.Controllers
                                 WorkdayPerHour = lstData[0].PayMode == 0 ? lstData[0].Price / 10 : lstData[0].Price,
                                 HolidayPerHour = lstData[0].PayMode == 0 ? lstData[0].PRICE_H / 10 : lstData[0].PRICE_H,
                                 CarOfArea = lstData[0].CarOfArea,
-                                Content = lstData[0].Content
+                                Content = lstData[0].Content,
+                                DiscountLabel = reDiscountLabel,
                             });
 
                             if (DataLen > 1)
@@ -299,6 +311,8 @@ namespace WebAPI.Controllers
                                     });
                                 }
                             }
+
+                            
                         }
                     }
                 }
