@@ -2526,6 +2526,7 @@
 | ProjID			| 專案代碼			| string | P621 |
 
 * DiscountLabel 參數說明
+
 | 參數名稱      | 參數說明 |  型態  | 範例       |
 | ------------- | -------- | :----: | ---------- |
 | LabelType		| 標籤類型		| string | CP0101 |
@@ -2829,6 +2830,7 @@
 | HDRateForCar		| 汽車假日優惠價 | double |   |
 | WDRateForMoto		| 機車平日優惠價 | dluble |   |
 | HDRateForMoto		| 機車假日優惠價 | double |   |
+| DiscountLabel     | 優惠標籤      | object |   |
 | CarNo				| 車號			 | string | EWG-1235 |
 | CarType			| 車型代碼		| string | MANY-110 |
 | CarTypeName		| 車型名稱		| string | KYMCO MANY-110 |
@@ -2853,6 +2855,14 @@
 | BasePrice			| 基本費			| int | 10 |
 | PerMinutesPrice	| 每分鐘幾元		| float | 	1.5 |
 
+* DiscountLabel 參數說明
+
+| 參數名稱      | 參數說明 |  型態  | 範例       |
+| ------------- | -------- | :----: | ---------- |
+| LabelType		| 標籤類型		| string | CP0101 |
+| GiveMinute	| 贈送分鐘數  | int | 30 |
+| Describe		| 描述		| string | 30分鐘優惠折抵 |
+
 * Output 範例
 
 ```
@@ -2874,6 +2884,7 @@
                 "HDRateForCar": 0.0,
                 "WDRateForMoto": 0.0,
                 "HDRateForMoto": 0.0,
+                "DiscountLabel": null,
                 "CarNo": "EWG-1235",
                 "CarType": "MANY-110",
                 "CarTypeName": "KYMCO MANY-110",
@@ -2906,6 +2917,11 @@
                 "HDRateForCar": 0.0,
                 "WDRateForMoto": 0.0,
                 "HDRateForMoto": 0.0,
+                "DiscountLabel": {
+                    "LabelType": "CP0101",
+                    "GiveMinute": 12,
+                    "Describe": "12分鐘優惠折抵"
+                },
                 "CarNo": "EWH-7726",
                 "CarType": "MANY-110",
                 "CarTypeName": "KYMCO MANY-110",
