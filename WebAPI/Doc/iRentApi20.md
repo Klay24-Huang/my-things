@@ -3029,7 +3029,15 @@
 | HDRateForMoto		| 機車假日優惠價 | double |   |
 | MonthStartDate	| 開始日			| string | |
 | MonthEndDate		| 結束日			| string | |
+| DiscountLabel     | 優惠標籤物件    | object | |
 
+* DiscountLabel回傳參數說明
+
+| 參數名稱   | 參數說明 |    型態    | 範例           |
+| ---------- | -------- | :--------: | -------------- |
+| LabelType  | 標籤類型 |   string   | CP0101         |
+| GiveMinute | 分鐘數   | GiveMinute | 30             |
+| Describe   | 描述     | GiveMinute | 30分鐘優惠折抵 |
 
 * Output 範例
 
@@ -3068,7 +3076,12 @@
                 "WDRateForMoto": 0.0,
                 "HDRateForMoto": 0.0,
                 "MonthStartDate": "",
-                "MonthEndDate": ""
+                "MonthEndDate": "",
+                "DiscountLabel": {
+                    "LabelType": "CP0101",
+                    "GiveMinute": 12,
+                    "Describe": ""
+                }
             }
         ]
     }
