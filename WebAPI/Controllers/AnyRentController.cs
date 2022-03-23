@@ -271,15 +271,6 @@ namespace WebAPI.Controllers
                                        GiveMinute = t.GiveMinute,
                                        Describe = $"{t.GiveMinute}分鐘優惠折抵",
                                    }).FirstOrDefault();
-
-                                //var discountLabel = discountLabels.Where(t => t.CarNo == x.CarNo).FirstOrDefault();
-
-                                //x.DiscountLabel = new DiscountLabel()
-                                //{
-                                //    LabelType = discountLabel.LabelType,
-                                //    GiveMinute = discountLabel.GiveMinute,
-                                //    Describe = "",
-                                //};
                             });
 
                         }
