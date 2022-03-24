@@ -19,7 +19,7 @@ namespace Domain.Flow.CarRentCompute
         public int RentInMins { get; set; } = 0;
 
         /// <summary>
-        ///未逾時一般時段租用時數(可折抵時數)
+        /// 未逾時可折抵時數
         /// </summary>
         public int DiscRentInMins { get; set; } = 0;
 
@@ -57,5 +57,10 @@ namespace Domain.Flow.CarRentCompute
         /// 剩餘月租點數
         /// </summary>
         public double lastMonthDisc { get; set; } = 0;
+
+        /// <summary>
+        /// 使用標籤優惠分鐘數
+        /// </summary>
+        public int UseGiveMinute { get; set; }
     }
 }

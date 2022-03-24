@@ -117,6 +117,11 @@ namespace Domain.Flow.CarRentCompute
         public int MaxPrice { get; set; }
 
         /// <summary>
+        /// 標籤優惠分鐘數
+        /// </summary>
+        public int GiveMinute { get; set; }
+
+        /// <summary>
         /// 虛擬月租
         /// </summary>
         public List<MonthlyRentData> VisMons { get; set; }

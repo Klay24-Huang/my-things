@@ -208,7 +208,7 @@ namespace WebAPI.Models.BillFunc
                             int motoDisc = sour.Discount;
 
                             // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins);
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins, sour.GiveMinute);
                             if (xre != null)
                             {
                                 re.carInfo = xre;
@@ -247,7 +247,7 @@ namespace WebAPI.Models.BillFunc
                             int xDiscount = sour.Discount;//帶入月租運算的折扣
                             if (sour.hasFine)
                             {
-                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
+                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins, sour.GiveMinute);
                                 if (re.carInfo != null)
                                 {
                                     re.CarRental += re.carInfo.RentInPay;
@@ -260,7 +260,7 @@ namespace WebAPI.Models.BillFunc
                             }
                             else
                             {
-                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
+                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins, sour.GiveMinute);
                                 if (re.carInfo != null)
                                 {
                                     re.CarRental += re.carInfo.RentInPay;

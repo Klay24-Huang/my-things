@@ -270,7 +270,7 @@ namespace Domain.SP.Output.OrderList
         public int PreAmount { get; set; }
         #endregion
 
-        #region 無用欄位
+        #region 春節相關
         /// <summary>
         /// 春節訂金
         /// </summary>
@@ -283,6 +283,13 @@ namespace Domain.SP.Output.OrderList
         /// 剩餘訂金
         /// </summary>
         public int LastOrderPrice { get; set; }
+        #endregion
+
+        #region 標籤優惠相關
+        /// <summary>
+        /// 標籤優惠分鐘數
+        /// </summary>
+        public int GiveMinute { get; set; }
         #endregion
     }
 

@@ -273,21 +273,23 @@ namespace WebAPI.Models.BillFunc
         /// <param name="mOri">月租列表</param>
         /// <param name="Discount">折扣</param>
         /// <param name="FreeMins">前n免費</param>
-        /// <returns></returns>
-        /// <mark>2020-12-07 eason</mark>
-        public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins,double dayMaxHour, 
-            List<Holiday> lstHoliday, List<MonthlyRentData> mOri, int Discount, double FreeMins = 0
+        /// <param name="GiveMinute">標籤優惠分鐘數</param>
+        public CarRentInfo CarRentInCompute(DateTime SD, DateTime ED, double priceN, double priceH, double daybaseMins, double dayMaxHour,
+            List<Holiday> lstHoliday, List<MonthlyRentData> mOri, int Discount, double FreeMins = 0, int GiveMinute = 0
             )
         {
+            int DayBaseMinute = Convert.ToInt32(daybaseMins);
+
             if (SD == null || ED == null || SD > ED)
                 throw new Exception("SD,ED錯誤");
 
             SD = SD.AddSeconds(SD.Second * -1);
             ED = ED.AddSeconds(ED.Second * -1);
             var mins = ED.Subtract(SD).TotalMinutes;
-            if (mins >= daybaseMins)    // 使用時數超過基本分鐘數，將基本分鐘歸零
+
+            if (mins >= daybaseMins)
                 daybaseMins = 0;
-            
+
             CarRentInfo re = new CarRentInfo();
             double dre = 0;
             double lastDisc = Convert.ToDouble(Discount);//剩餘折扣
@@ -300,7 +302,7 @@ namespace WebAPI.Models.BillFunc
 
             if (mOri != null && mOri.Count() > 0)
             {
-                if (mOri.Any(x => x.WorkDayHours < 0 || x.WorkDayRateForCar < 0 ||x.HolidayHours < 0 || x.HoildayRateForCar < 0 || x.MonthlyRentId <= 0|| x.Mode != 0))
+                if (mOri.Any(x => x.WorkDayHours < 0 || x.WorkDayRateForCar < 0 || x.HolidayHours < 0 || x.HoildayRateForCar < 0 || x.MonthlyRentId <= 0 || x.Mode != 0))
                     throw new Exception("mOri資料內容錯誤");
 
                 if (mOri.GroupBy(x => x.MonthlyRentId).Where(y => y.Count() > 1).Count() > 0)
@@ -319,19 +321,20 @@ namespace WebAPI.Models.BillFunc
                 });
             }
 
-            var allDay = GetDateMark(SD, ED, lstHoliday, mOri);//區間內時間註記
-            var dayPayList = GetCarTypeMins(SD, ED, daybaseMins, dayMaxHour * 60, allDay);//全分類時間
+            var allDay = GetDateMark(SD, ED, lstHoliday, mOri); //區間內時間註記
+            var dayPayList = GetCarTypeMins(SD, ED, daybaseMins, dayMaxHour * 60, allDay);  //全分類時間
+            
+            re.RentInMins = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());     // 扣掉免費時數前先記錄總租用時數
 
             if (FreeMins > 0 && dayPayList != null && dayPayList.Count() > 0)
                 dayPayList = befMinsFree(FreeMins, dayPayList);
 
-            var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();//一般時段
-            var dpList = new List<DayPayMins>();//剩餘有分鐘數的
+            var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();   //一般時段
+            var dpList = new List<DayPayMins>();    //剩餘有分鐘數的
 
-            re.RentInMins = Convert.ToInt32(Math.Floor(dayPayList.Select(x => x.xMins).Sum()));
-            re.DiscRentInMins = Convert.ToInt32(norList.Select(x => x.xMins).Sum());
+            re.DiscRentInMins = Convert.ToInt32(norList.Select(x => x.xMins).Sum());    // 扣掉免費時數剩餘時數為可折抵時數
 
-            //費率回存
+            #region 費率回存
             if (dayPayList != null && dayPayList.Count() > 0)
             {
                 dayPayList.ForEach(x =>
@@ -354,22 +357,48 @@ namespace WebAPI.Models.BillFunc
                     }
                 });
             }
+            #endregion
 
             double wDisc = 0; //平日折扣
             double hDisc = 0; //假日折扣 
             double m_wDisc = 0; //平日折扣(所有月租)
-            double m_hDisc = 0; //假日折扣(所有月租) 
+            double m_hDisc = 0; //假日折扣(所有月租)
+
+            double UseGiveMinute = 0;
+            if (GiveMinute > 0)
+            {
+                var BillingTime = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());   // 收費時數
+                if (BillingTime > DayBaseMinute)   // 收費時數 > 基本消費分鐘數 才可使用標籤優惠時數
+                {
+                    double RemainGiveMinute = Convert.ToDouble(GiveMinute);
+
+                    //價高先折
+                    dpList = dayPayList.Where(x => x.xMins > 0).OrderByDescending(x => x.xRate).ThenBy(x => x.xDate).ToList();
+
+                    dpList.ForEach(x =>
+                    {
+                        if (RemainGiveMinute > 0)
+                        {
+                            var useDisc = RemainGiveMinute > x.xMins ? x.xMins : RemainGiveMinute;
+                            RemainGiveMinute -= useDisc;
+                            x.xMins = x.xMins - useDisc;
+                            UseGiveMinute += useDisc;
+                        }
+                    });
+                }
+            }
+
             var mList = dayPayList.Where(x => !norDates.Any(y => y == x.DateType)).OrderBy(z => z.xDate).ToList();
             var mDiscs = new List<DayPayMins>();//有變動的日期 
 
-            //月租內點數先折
+            #region 訂閱制點數先折
             if (mFinal != null && mFinal.Count() > 0)
             {
                 foreach (var m in mFinal)
                 {
                     var carAllDisc = Convert.ToDouble(m.CarTotalHours);
-                    var wdisc = Convert.ToDouble(m.WorkDayHours - m.WorkDayHours % 30);//平日可折
-                    var hdisc = Convert.ToDouble(m.HolidayHours - m.HolidayHours % 30);//假日可折
+                    var wdisc = Convert.ToDouble(m.WorkDayHours - m.WorkDayHours % 30); //平日可折
+                    var hdisc = Convert.ToDouble(m.HolidayHours - m.HolidayHours % 30); //假日可折
 
                     var allDays = mList.Where(x => x.DateType == m.MonthlyRentId.ToString() || x.DateType == (m.MonthlyRentId.ToString() + "h")).OrderBy(y => y.xDate).ToList();
                     var wDays = mList.Where(x => x.DateType == m.MonthlyRentId.ToString()).OrderBy(y => y.xDate).ToList();
@@ -437,6 +466,7 @@ namespace WebAPI.Models.BillFunc
                     });
                 }
             }
+            #endregion
 
             #region 混和折扣前先記錄使用月租點數
             re.useMonthDisc = m_wDisc + m_hDisc;
@@ -481,8 +511,8 @@ namespace WebAPI.Models.BillFunc
             re.useDisc = Convert.ToInt32(Convert.ToDouble(Discount) - lastDisc);
 
             //原始總點數-使用總點數
-            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum() -
-                  mFinal.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum();
+            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum() 
+                                                - mFinal.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum();
 
             if (mFinal != null && mFinal.Count() > 0)//回傳monthData
             {
@@ -495,12 +525,14 @@ namespace WebAPI.Models.BillFunc
                 re.mFinal = mFinal;
             }
 
+            re.UseGiveMinute = Convert.ToInt32(UseGiveMinute);
+
             dre = dre > 0 ? dre : 0;
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
             return re;
         }
         #endregion
-        
+
         #region 機車月租計算,區分平假日,不分平假日
         /// <summary>
         /// 機車月租計算,區分平假日,不分平假日
@@ -518,11 +550,10 @@ namespace WebAPI.Models.BillFunc
         /// <param name="fDayMaxPrice">每日金額上限</param>
         /// <param name="dayBasePrice">基本消費</param>
         /// <param name="FreeMins">免費分鐘數</param>
-        /// <returns></returns>
-        /// <mark>2020-12-21 eason</mark>
+        /// <param name="GiveMinute">標籤優惠分鐘數</param>
         public CarRentInfo MotoRentMonthComp(DateTime SD, DateTime ED, double priceNmin, double priceHmin, int dayBaseMins, double dayMaxMins
             , List<Holiday> lstHoliday = null, List<MonthlyRentData> mOri = null, int Discount = 0
-            , int fDayMaxMins = 0, double fDayMaxPrice = 0, double dayBasePrice = 10, double FreeMins = 0
+            , int fDayMaxMins = 0, double fDayMaxPrice = 0, double dayBasePrice = 10, double FreeMins = 0, int GiveMinute = 0
             )
         {
             CarRentInfo re = new CarRentInfo();
@@ -570,13 +601,35 @@ namespace WebAPI.Models.BillFunc
             if (FreeMins > 0 && dayPayList != null && dayPayList.Count() > 0)
                 dayPayList = befMinsFree(FreeMins, dayPayList);
 
-            var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();   //一般時段
+            re.RentInMins = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());
+
             var dpList = new List<DayPayMins>();//剩餘有分鐘數的
+
+            double UseGiveMinute = 0;
+            if (GiveMinute > 0)
+            {
+                double RemainGiveMinute = Convert.ToDouble(GiveMinute);
+
+                dpList = dayPayList.Where(v => v.xMins > 0).OrderByDescending(x => x.xRate).ThenBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
+
+                dpList.ForEach(x =>
+                {
+                    if (RemainGiveMinute > 0)
+                    {
+                        var useDisc = RemainGiveMinute > x.xMins ? x.xMins : RemainGiveMinute;
+                        RemainGiveMinute -= useDisc;
+                        x.xMins = x.xMins - useDisc;
+                        UseGiveMinute += useDisc;
+                    }
+                });
+            }
+
+            var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();   //一般時段
 
             #region 判斷每分鐘費率
             if (dayPayList != null && dayPayList.Count() > 0)
             {
-                re.RentInMins = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());
+                //re.RentInMins = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());
                 //費率回存
                 dayPayList.ForEach(x =>
                 {
@@ -608,14 +661,6 @@ namespace WebAPI.Models.BillFunc
             if (norList != null && norList.Count() > 0)
                 re.DiscRentInMins = Convert.ToInt32(norList.Select(x => x.xMins).Sum());    // 可折抵時數=使用分鐘數
 
-            // 20211213 UPD BY YEH REASON:因應免費分鐘數減免打開，這段不使用
-            // 這裡處理減掉免費分鐘數
-            // 原因是dayPayList的xMins(使用分鐘數)不能扣掉免費分鐘數，如扣掉的話，計算租金的地方會再把低銷的分鐘扣掉，就會少了低消時數的租金
-            // 計算租金是用使用分鐘數去計算租金，後續計算折抵時才把免費分鐘數拿來折抵，此做法為目前沒時間調整整段邏輯的變通處理方法
-            //if (re.DiscRentInMins >= Convert.ToInt32(FreeMins))     // 可折抵時數 > 免費分鐘數
-            //    re.DiscRentInMins = re.DiscRentInMins - Convert.ToInt32(FreeMins);  // 可折抵時數 = 可折抵時數 - 免費分鐘數
-            //nowDisc = nowDisc + Convert.ToInt32(FreeMins);  // 折抵時數 = 折抵時數 + 免費分鐘數
-
             double wDisc = 0; //平日折扣
             double hDisc = 0; //假日則扣  
             double m_wDisc = 0; //平日折扣(所有月租)
@@ -635,25 +680,28 @@ namespace WebAPI.Models.BillFunc
 
                     if (m_list != null && m_list.Count() > 0)
                     {
-                        if (m_list != null && mList.Count() > 0)
-                            m_list.ForEach(x => x.dayGroupId = "mon_" + m.MonthlyRentId.ToString());
-
-                        var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice, ref m_list, m_disc, m_wType, m_hType, fDayMaxMins, fDayMaxPrice, FreeMins);
-                        if (mre != null)
+                        if (m_list.Sum(x => x.xMins) > 0)   // 有使用分鐘數才進入計算
                         {
-                            dre += mre.Item3;       // 租金
-                            m_wDisc += mre.Item1;   // 月租平日折扣
-                            m_hDisc += mre.Item2;   // 月租假日則扣
-                            m.MotoTotalHours -= Convert.ToSingle(mre.Item1 + mre.Item2);
+                            if (m_list != null && mList.Count() > 0)
+                                m_list.ForEach(x => x.dayGroupId = "mon_" + m.MonthlyRentId.ToString());
+
+                            var mre = MotoRentDiscComp(m.WorkDayRateForMoto, m.HoildayRateForMoto, dayBaseMins, dayBasePrice, ref m_list, m_disc, m_wType, m_hType, fDayMaxMins, fDayMaxPrice, FreeMins);
+                            if (mre != null)
+                            {
+                                dre += mre.Item3;       // 租金
+                                m_wDisc += mre.Item1;   // 月租平日折扣
+                                m_hDisc += mre.Item2;   // 月租假日則扣
+                                m.MotoTotalHours -= Convert.ToSingle(mre.Item1 + mre.Item2);
+                            }
+
+                            //還原變動
+                            dayPayList.ForEach(x =>
+                            {
+                                var item = m_list.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
+                                if (item != null)
+                                    x = item;
+                            });
                         }
-
-                        //還原變動
-                        dayPayList.ForEach(x =>
-                        {
-                            var item = m_list.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
-                            if (item != null)
-                                x = item;
-                        });
                     }
                 }
             }
@@ -670,21 +718,24 @@ namespace WebAPI.Models.BillFunc
                     foreach (var gID in gIDs)
                     {
                         var gList = norList.Where(x => x.dayGroupId == gID).OrderBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
-                        var gre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, ref gList, 0, eumDateType.wDay.ToString(), eumDateType.hDay.ToString(), fDayMaxMins, fDayMaxPrice, FreeMins);
-                        if (gre != null)
+                        if (Convert.ToInt32(gList.Sum(x => x.xMins)) > 0)
                         {
-                            dre += gre.Item3;
-                            wDisc += gre.Item1;
-                            hDisc += gre.Item2;
-                        }
+                            var gre = MotoRentDiscComp(priceNmin, priceHmin, dayBaseMins, dayBasePrice, ref gList, 0, eumDateType.wDay.ToString(), eumDateType.hDay.ToString(), fDayMaxMins, fDayMaxPrice, FreeMins);
+                            if (gre != null)
+                            {
+                                dre += gre.Item3;
+                                wDisc += gre.Item1;
+                                hDisc += gre.Item2;
+                            }
 
-                        //還原變動
-                        dayPayList.ForEach(x =>
-                        {
-                            var item = gList.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
-                            if (item != null)
-                                x = item;
-                        });
+                            //還原變動
+                            dayPayList.ForEach(x =>
+                            {
+                                var item = gList.Where(y => y.xSTime == x.xSTime && y.xETime == x.xETime && y.haveNext == x.haveNext).FirstOrDefault();
+                                if (item != null)
+                                    x = item;
+                            });
+                        }
                     }
                 }
             }
@@ -748,13 +799,9 @@ namespace WebAPI.Models.BillFunc
             }
 
             re.useDisc = Convert.ToInt32(wDisc + hDisc);    //使用一般折扣點數
-            // 20211213 UPD BY YEH REASON:因應免費分鐘數減免打開，這段不使用
-            //if (re.useDisc >= Convert.ToInt32(FreeMins))
-            //    re.useDisc = re.useDisc - Convert.ToInt32(FreeMins);    // 這裡將免費分鐘數扣掉，使用者才會看到正確的折抵數字
-
             re.useMonthDisc = m_wDisc + m_hDisc;    //使用月租折扣點數
 
-            if (mOri != null && mOri.Count() > 0)//剩餘月租點數
+            if (mOri != null && mOri.Count() > 0)   //剩餘月租點數
                 re.lastMonthDisc = mOri.Select(x => x.MotoTotalHours).Sum() - (m_wDisc + m_hDisc);
 
             if (mFinal != null && mFinal.Count() > 0)//回傳monthData
@@ -774,6 +821,7 @@ namespace WebAPI.Models.BillFunc
 
             re.useMonthDiscW = m_wDisc;
             re.useMonthDiscH = m_hDisc;
+            re.UseGiveMinute = Convert.ToInt32(UseGiveMinute);
 
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
 
@@ -2371,7 +2419,7 @@ namespace WebAPI.Models.BillFunc
 
             sd = Convert.ToDateTime(sd.ToString("yyyy-MM-dd HH:mm"));
             ed = Convert.ToDateTime(ed.ToString("yyyy-MM-dd HH:mm"));
-           
+
             if (ProjType == 4)
             {
                 dayBasMins = 6;
@@ -2430,8 +2478,6 @@ namespace WebAPI.Models.BillFunc
         }
         #endregion
 
-
-        //DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, bool overTime = false, double baseMinutes = 60
         public int DiscountLabelToPrice(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, int GiveMinute, bool overTime = false, double baseMinutes = 60)
         {
             var re = 0;
