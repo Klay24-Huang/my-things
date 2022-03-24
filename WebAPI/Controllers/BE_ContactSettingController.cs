@@ -1,6 +1,7 @@
 ﻿using Domain.CarMachine;
 using Domain.Common;
 using Domain.Flow.CarRentCompute;
+using Domain.Log;
 using Domain.SP.BE.Input;
 using Domain.SP.BE.Output;
 using Domain.SP.Input.Bill;

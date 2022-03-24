@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Log;
 using Domain.SP.Input.Subscription;
 using System;
 using System.Collections.Generic;

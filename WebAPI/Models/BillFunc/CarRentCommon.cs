@@ -1,9 +1,8 @@
 ﻿using Domain.Flow.CarRentCompute;
+using Domain.Log;
 using Domain.SP.Input.Arrears;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.Discount;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Domain.WebAPI.output.HiEasyRentAPI;
@@ -1456,54 +1455,6 @@ namespace WebAPI.Models.BillFunc
     #endregion
     #endregion
 
-    #region VM
-    #region TraceLog
-    public class TraceLogVM
-    {
-        public string CodeVersion { get; set; } = "x";
-        public long OrderNo { get; set; } = 0;
-        public int ApiId { get; set; } = 0;
-        public string ApiNm { get; set; } = "x";
-        public string ApiMsg { get; set; } = "x";
-        public string FlowStep { get; set; } = "x";
-        public eumTraceType TraceType { get; set; } = eumTraceType.none;
-    }
-    #endregion
-    #endregion
-    #region TBVM
-    public class ProjectDiscountTBVM
-    {
-        public string ProjID { get; set; }
-        public string CARTYPE { get; set; }
-        public string CUSTOMIZE { get; set; }
-        public string CUSDAY { get; set; }
-        public int DISTYPE { get; set; }//短整數
-        public double DISRATE { get; set; }
-        public double PRICE { get; set; }
-        public double PRICE_H { get; set; }
-        public double DISCOUNT { get; set; }
-        public double PHOURS { get; set; }
-    }
-    public class NYPayList
-    {
-        public Int64 order_number { get; set; }
-        public string PAYDATE { get; set; }
-        public int PAYAMT { get; set; }
-        public int RETURNAMT { get; set; }
-        public string NORDNO { get; set; }
-    }
-    #endregion
-    #region eunm
-    public enum eumTraceType
-    {
-        none,
-        fun,
-        exception,
-        followErr,
-        logicErr,
-        mark
-    }
-    #endregion
     #region TraceVm
     public class TraceBase
     {

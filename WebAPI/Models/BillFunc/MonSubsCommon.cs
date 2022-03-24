@@ -1,4 +1,5 @@
 ﻿using Domain.Flow.CarRentCompute;
+using Domain.Log;
 using Domain.MemberData;
 using Domain.SP.Input.Bill;
 using Domain.SP.Input.Member;

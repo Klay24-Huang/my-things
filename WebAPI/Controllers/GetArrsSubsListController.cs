@@ -10,6 +10,7 @@ using WebAPI.Models.Param.Output;
 using WebCommon;
 using WebAPI.Models.BillFunc;
 using Domain.SP.Input.Subscription;
+using Domain.Log;
 
 namespace WebAPI.Controllers
 {

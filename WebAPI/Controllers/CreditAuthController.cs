@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Log;
 using Domain.SP.Input.Bill;
 using Domain.SP.Input.Car;
 using Domain.SP.Input.OtherService.Common;
