@@ -40,6 +40,7 @@ namespace WebAPI.Controllers
         private readonly string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
         private readonly string ApiVersion = ConfigurationManager.AppSettings["TaishinWalletApiVersion"].ToString();
 
+
         /// <summary>
         /// 錢包儲值-信用卡
         /// </summary>
@@ -66,6 +67,7 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_WalletStoredByCredit apiInput = null;
             var spOutput = new SPOutput_GetWallet();
+            WebAPI_CreateAccountAndStoredMoney wallet = null;
             WebAPIOutput_StoreValueCreateAccount output = null;
             OAPI_WalletStoreBase apiOutput = null;
             Token token = null;
@@ -160,11 +162,11 @@ namespace WebAPI.Controllers
                         funName = funName,
                         insUser = funName,
                         AuthType = 9,
-                        InputSource=1,
-                        LogID=LogID,
-                        Token=Access_Token
+                        InputSource = 1,
+                        LogID = LogID,
+                        Token = Access_Token
                     };
-                   
+
                     try
                     {
                         CreditAuthComm creditAuthComm = new CreditAuthComm();
@@ -184,42 +186,45 @@ namespace WebAPI.Controllers
                 #region 台新錢包儲值
                 if (flag)
                 {
-                    TradeType = AuthOutput.CheckoutMode == 4 ? "Store_HotaiPay" : "Store_Credit";
-                    DateTime NowTime = DateTime.Now;
-                    int nowCount = 1;
-                    Thread.Sleep(1000);
-                    WebAPI_CreateAccountAndStoredMoney wallet = new WebAPI_CreateAccountAndStoredMoney()
-                    {
-                        ApiVersion = ApiVersion,
-                        GUID = Guid.NewGuid().ToString().Replace("-", ""),
-                        MerchantId = MerchantId,
-                        POSId = "",
-                        StoreId = "1",//用此欄位區分訂閱制履保或錢包儲值紀錄
-                        StoreName = "",
-                        StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
-                        StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
-                        MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
-                        AccountType = "2",
-                        AmountType = "2",
-                        CreateType = "1",
-                        Amount = apiInput.StoreMoney,
-                        Bonus = 0,
-                        BonusExpiredate = "",
-                        SourceFrom = "9"
-                    };
-
-                    var body = JsonConvert.SerializeObject(wallet);
-                    TaishinWallet WalletAPI = new TaishinWallet();
-                    string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-                    string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
                     try
                     {
+                        TradeType = AuthOutput.CheckoutMode == 4 ? "Store_HotaiPay" : "Store_Credit";
+                        DateTime NowTime = DateTime.Now;
+                        int nowCount = 1;
+                        Thread.Sleep(1000);
+                       
+                        wallet = new WebAPI_CreateAccountAndStoredMoney()
+                        {
+                            ApiVersion = ApiVersion,
+                            GUID = Guid.NewGuid().ToString().Replace("-", ""),
+                            MerchantId = MerchantId,
+                            POSId = "",
+                            StoreId = "1",//用此欄位區分訂閱制履保或錢包儲值紀錄
+                            StoreName = "",
+                            StoreTransDate = NowTime.ToString("yyyyMMddHHmmss"),
+                            StoreTransId = string.Format("{0}{1}", IDNO, NowTime.ToString("MMddHHmmss")),
+                            MemberId = string.Format("{0}Wallet{1}", IDNO, nowCount.ToString().PadLeft(4, '0')),
+                            AccountType = "2",
+                            AmountType = "2",
+                            CreateType = "1",
+                            Amount = apiInput.StoreMoney,
+                            Bonus = 0,
+                            BonusExpiredate = "",
+                            SourceFrom = "9"
+                        };
+
+                        var body = JsonConvert.SerializeObject(wallet);
+                        TaishinWallet WalletAPI = new TaishinWallet();
+                        string utcTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+                        string SignCode = WalletAPI.GenerateSignCode(wallet.MerchantId, utcTimeStamp, body, APIKey);
+
                         flag = WalletAPI.DoStoreValueCreateAccount(wallet, MerchantId, utcTimeStamp, SignCode, ref errCode, ref output);
+
                     }
                     catch (Exception ex)
                     {
                         flag = false;
-                        exMsg = ex.Message;
+                        errMsg = ex.ToString();
                         trace.BaseMsg = ex.Message;
                     }
 
@@ -246,7 +251,7 @@ namespace WebAPI.Controllers
                             LogID = LogID,
                             ReturnCode = output?.ReturnCode ?? "-1",
                             ExceptionData = output?.ExceptionData ?? exMsg ?? "",
-                            Message = output?.Message?? "",
+                            Message = output?.Message ?? "",
                             BankTradeNo = AuthOutput?.BankTradeNo ?? "",
                             CardNumber = AuthOutput?.CardNo ?? "",
                             MerchantTradeNo = AuthOutput?.Transaction_no ?? "",
@@ -266,15 +271,15 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     string formatString = "yyyyMMddHHmmss";
-                    string cardNum = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);       
+                    string cardNum = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);
                     SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
                     {
                         IDNO = IDNO,
                         WalletMemberID = output.Result.MemberId,
                         WalletAccountID = output.Result.AccountId,
                         Status = Convert.ToInt32(output.Result.Status),
-                        Email = output.Result.Email,
-                        PhoneNo = output.Result.PhoneNo,
+                        Email = output?.Result?.Email??"",
+                        PhoneNo = output?.Result?.PhoneNo??"",
                         StoreAmount = apiInput.StoreMoney,
                         WalletBalance = output.Result.Amount,
                         CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
@@ -312,6 +317,7 @@ namespace WebAPI.Controllers
             {
                 flag = false;
                 errCode = "ERR918";
+                errMsg = ex.ToString();
                 trace.BaseMsg = ex.Message;
             }
 
