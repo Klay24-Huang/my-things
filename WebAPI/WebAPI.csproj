@@ -900,7 +900,6 @@
     <None Include="Properties\PublishProfiles\irentv2-as-backend-api-test-promrtheus - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AutoJob - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-backend-api-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api2 - Web Deploy.pubxml" />
