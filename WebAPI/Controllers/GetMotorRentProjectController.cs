@@ -226,13 +226,13 @@ namespace WebAPI.Controllers
                         if (DataLen > 0)
                         {
                             /*以車號取得當前優惠標籤*/
-                            SPInput_GetDiscountLabelByCarNo spInputDiscountLabel = new SPInput_GetDiscountLabelByCarNo()
+                            SPInput_GetDiscountLabelForAnyRentProject spInputDiscountLabel = new SPInput_GetDiscountLabelForAnyRentProject()
                             {
                                 CarNo = apiInput.CarNo,
                                 LogID = LogID
                             };
 
-                            reDiscountLabel = new CarRentCommon().GetDiscountLabelByCar(spInputDiscountLabel);
+                            reDiscountLabel = new CarRentCommon().GetDiscountLabelForAnyRentProject(spInputDiscountLabel);
 
                             int isMin = 1;
                             lstTmpData.Add(new MotorProjectObj()
