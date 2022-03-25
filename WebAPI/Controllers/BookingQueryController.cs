@@ -142,7 +142,8 @@ namespace WebAPI.Controllers
                     Token = Access_Token,
                     OrderNo = tmpOrder
                 };
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderList);
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderList);
+                string SPName = "usp_OrderListQuery_V20220325";
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_GetOrderList, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetOrderList, SPOutput_Base>(connetStr);
                 List<OrderQueryDataList> OrderDataLists = new List<OrderQueryDataList>();

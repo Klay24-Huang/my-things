@@ -277,12 +277,12 @@ namespace WebAPI.Controllers
                                 //ProcessedJobCount9.Inc();//唐加prometheus
                                 SetCount("NUM_CreditAuth_Fail_car_mgt_status_15");//已完成還車付款，請勿重覆付款
                             }
-                            else if (OrderDataLists[0].car_mgt_status < 13) // 20220120 UPD BY YEH REASON:狀態非13不可還車
-                            {
-                                flag = false;
-                                errCode = "ERR210";
-                                SetCount("NUM_CreditAuth_Fail_car_mgt_status_13");  //尚未完成還車步驟，無法還車付款
-                            }
+                            //else if (OrderDataLists[0].car_mgt_status < 13) // 20220120 UPD BY YEH REASON:狀態非13不可還車
+                            //{
+                            //    flag = false;
+                            //    errCode = "ERR210";
+                            //    SetCount("NUM_CreditAuth_Fail_car_mgt_status_13");  //尚未完成還車步驟，無法還車付款
+                            //}
                             else if (OrderDataLists[0].car_mgt_status < 11)
                             {
                                 flag = false;
