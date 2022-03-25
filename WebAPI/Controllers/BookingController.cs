@@ -272,12 +272,16 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 int TAMT = 0;
-                WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
+                ContactComm contract = new ContactComm();
                 flag = contract.CheckNPR330(IDNO, LogID, ref TAMT);
-                if (TAMT > 0)
+                if (flag && TAMT > 0)
                 {
                     flag = false;
                     errCode = "ERR233";
+                }
+                else
+                {
+                    errCode = "ERR161";
                 }
             }
             #endregion
@@ -402,7 +406,7 @@ namespace WebAPI.Controllers
                 };
                 var wallet = walletSp.sp_GetPayInfo(getPayInfo, ref errCode);
                 defaultPayMode = wallet.PayMode[0].DefPayMode;
-                trace.traceAdd("sp_GetPayInfo",new { getPayInfo, defaultPayMode } );
+                trace.traceAdd("sp_GetPayInfo", new { getPayInfo, defaultPayMode });
                 trace.FlowList.Add("預設支付方式");
                 #endregion
                 #region 計算預扣款金額
@@ -497,7 +501,7 @@ namespace WebAPI.Controllers
                 #region 更新資料
                 if (preAuthAmt > 0)
                 {
-                   
+
                     #region 寫入預授權
                     SPInput_InsOrderAuthAmount input_AuthAmt = new SPInput_InsOrderAuthAmount()
                     {
@@ -660,15 +664,6 @@ namespace WebAPI.Controllers
                     WalletNotice = WalletNotice
                 };
             }
-            else
-            {
-                flag = false;
-                //20210113 ADD BY ADAM REASON.修正預約顯示錯誤
-                if (errCode == "000000")
-                {
-                    errCode = "ERR161";
-                }
-            }
             #endregion
 
             #region 寫入錯誤Log
@@ -723,6 +718,7 @@ namespace WebAPI.Controllers
         }
         #endregion
 
+        #region 預扣
         /// <summary>
         /// 預扣
         /// </summary>
@@ -768,7 +764,7 @@ namespace WebAPI.Controllers
             }
 
             return flag;
-
         }
+        #endregion
     }
 }
