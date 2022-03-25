@@ -988,6 +988,29 @@ namespace WebAPI.Models.BillFunc
 
             return result;
         }
+
+        /// <summary>
+        /// 取得針對車號取得AnyRentProject優惠標籤
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <returns></returns>
+        public DiscountLabel GetDiscountLabelForAnyRentProject(SPInput_GetDiscountLabelForAnyRentProject spInput)
+        {
+            var baseVerify = new CommonFunc();
+            string SPName = "usp_GetDiscountLabelForAnyRentProject";
+            SPOutput_Base spOutBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetDiscountLabelForAnyRentProject, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetDiscountLabelForAnyRentProject, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            List<DiscountLabel> list = new List<DiscountLabel>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string errCode = "000000";
+            bool flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref list, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+            DiscountLabel result = (flag && list.Count > 0) ? list.FirstOrDefault() ?? null : null;
+
+            return result;
+        }
     }
 
     #region repo

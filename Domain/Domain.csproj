@@ -79,6 +79,7 @@
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />
+    <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentProject.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_GetCTBCInquiryList.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCInquiry.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCap.cs" />
