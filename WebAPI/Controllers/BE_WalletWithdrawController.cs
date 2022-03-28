@@ -258,7 +258,7 @@ namespace WebAPI.Controllers
                 TransId = taishinResponse.Result.TransId,
                 TradeType = TradeType,
                 PRGName = PRGName,
-                Mode = 4,
+                Mode = 6,
                 InputSource = 2
             };
         }
