@@ -126,18 +126,16 @@ namespace WebAPI.Controllers
                 {
                     if (orderFinishDataLists.Count > 0)
                     {
+                        var item = orderFinishDataLists[0];
                         int gd = 0, gh = 0, gm = 0;
                         int md = 0, mh = 0, mm = 0;
                         int ud = 0, uh = 0, um = 0;
                         int td = 0, th = 0, tm = 0;
-                        int total = Convert.ToInt32(Convert.ToDateTime(orderFinishDataLists[0].EndTime).Subtract(Convert.ToDateTime(orderFinishDataLists[0].StartTime)).TotalMinutes);
-                        int useHour = Convert.ToInt32(total - orderFinishDataLists[0].GiftPoint - orderFinishDataLists[0].GiftMotorPoint - (orderFinishDataLists[0].MonthlyHours * 60));
+                        int gud = 0, guh = 0, gum = 0;
                         BillCommon billComm = new BillCommon();
-                        var GiftPoint = orderFinishDataLists[0].GiftPoint + orderFinishDataLists[0].GiftMotorPoint;
-                        float UseMile = (float)Math.Round(Convert.ToDecimal(orderFinishDataLists[0].End_mile - orderFinishDataLists[0].Start_mile), 1, MidpointRounding.AwayFromZero);
+                        float UseMile = (float)Math.Round(Convert.ToDecimal(item.End_mile - item.Start_mile), 1, MidpointRounding.AwayFromZero);
 
                         #region 日時分計算
-                        var item = orderFinishDataLists[0];
                         var xre = billComm.GetTimePart(Convert.ToDateTime(item.StartTime), Convert.ToDateTime(item.EndTime), item.ProjType);
                         if (xre != null)
                         {
@@ -148,99 +146,61 @@ namespace WebAPI.Controllers
                         #region 月租點數
                         if (item.MonthlyHours > 0)
                         {
-                            if (item.ProjType == 4)
-                            {
-                                var vre = billComm.GetTimePart(item.MonthlyHours, 600);     // 20220114 UPD BY YEH REASON:機車單日上限改為600分鐘
-                                md = Convert.ToInt32(Math.Floor(vre.Item1));    // 月租使用幾天
-                                mh = Convert.ToInt32(Math.Floor(vre.Item2));    // 月租使用幾時
-                                mm = Convert.ToInt32(Math.Floor(vre.Item3));    // 月租使用幾分
-                            }
-                            else
-                            {
-                                var vre = billComm.GetTimePart(item.MonthlyHours * 60, 600);
-                                md = Convert.ToInt32(Math.Floor(vre.Item1));    // 月租使用幾天
-                                mh = Convert.ToInt32(Math.Floor(vre.Item2));    // 月租使用幾時
-                                mm = Convert.ToInt32(Math.Floor(vre.Item3));    // 月租使用幾分
-                            }
+                            var vre = billComm.GetTimePart(item.MonthlyHours * 60, 600);
+                            md = Convert.ToInt32(vre.Item1);    // 月租使用幾天
+                            mh = Convert.ToInt32(vre.Item2);    // 月租使用幾時
+                            mm = Convert.ToInt32(vre.Item3);    // 月租使用幾分
                         }
                         #endregion
                         #region 折抵點數
                         if (item.GiftPoint > 0 || item.GiftMotorPoint > 0)
                         {
+                            var allPoints = 0;
                             if (item.ProjType == 4)
-                            {
-                                var allPoints = item.GiftPoint + item.GiftMotorPoint;
-                                var vre = billComm.GetTimePart(allPoints, 600);     // 20220114 UPD BY YEH REASON:機車單日上限改為600分鐘
-                                if (vre != null)
-                                {
-                                    gd = Convert.ToInt32(Math.Floor(vre.Item1));    // 折抵使用幾天
-                                    gh = Convert.ToInt32(Math.Floor(vre.Item2));    // 折抵使用幾時
-                                    gm = Convert.ToInt32(Math.Floor(vre.Item3));    // 折抵使用幾分
-                                }
-                            }
+                                allPoints = item.GiftPoint + item.GiftMotorPoint;
                             else
+                                allPoints = item.GiftPoint;
+                            var vre = billComm.GetTimePart(item.GiftPoint, 600);
+                            if (vre != null)
                             {
-                                var vre = billComm.GetTimePart(item.GiftPoint, 600);
-                                if (vre != null)
-                                {
-                                    gd = Convert.ToInt32(Math.Floor(vre.Item1));    // 折抵使用幾天
-                                    gh = Convert.ToInt32(Math.Floor(vre.Item2));    // 折抵使用幾時
-                                    gm = Convert.ToInt32(Math.Floor(vre.Item3));    // 折抵使用幾分
-                                }
+                                gd = Convert.ToInt32(vre.Item1);    // 折抵使用幾天
+                                gh = Convert.ToInt32(vre.Item2);    // 折抵使用幾時
+                                gm = Convert.ToInt32(vre.Item3);    // 折抵使用幾分
+                            }
+                        }
+                        #endregion
+                        #region 優惠標籤使用時數
+                        if (item.UseGiveMinute > 0)
+                        {
+                            var vre = billComm.GetTimePart(item.UseGiveMinute, 600);
+                            if (vre != null)
+                            {
+                                gud = Convert.ToInt32(vre.Item1);    // 優惠標籤使用幾天
+                                guh = Convert.ToInt32(vre.Item2);    // 優惠標籤使用幾時
+                                gum = Convert.ToInt32(vre.Item3);    // 優惠標籤使用幾分
                             }
                         }
                         #endregion
                         #endregion
 
                         #region 折扣完剩餘日時分
-                        int vtd = td;   // 用車使用幾天
-                        int vth = th;   // 用車使用幾時
-                        int vtm = tm;   // 用車使用幾分
-
-                        double oriPayMins = 0;
-                        double lastPayMins = 0;
-                        if (item.ProjType == 4)
-                        {
-                            oriPayMins += vtd * 600;
-                            oriPayMins += vth * 60;
-                            oriPayMins += vtm;
-                            lastPayMins = oriPayMins - (md + gd) * 600 - (mh + gh) * 60 - (mm + gm);
-                        }
-                        else
-                        {
-                            oriPayMins += vtd * 600;
-                            oriPayMins += vth * 60;
-                            oriPayMins += vtm;
-                            lastPayMins = oriPayMins - (md + gd) * 600 - (mh + gh) * 60 - (mm + gm);
-                        }
+                        double oriPayMins = td * 600 + th * 60 + tm;
+                        double lastPayMins = oriPayMins - (md + gd + gud) * 600 - (mh + gh + guh) * 60 - (mm + gm + gum);
                         lastPayMins = lastPayMins < 0 ? 0 : lastPayMins;
                         if (lastPayMins > 0)
                         {
-                            if (item.ProjType == 4)
+                            var vre = billComm.GetTimePart(lastPayMins, 600);
+                            if (vre != null)
                             {
-                                var vre = billComm.GetTimePart(lastPayMins, 600);
-                                if (vre != null)
-                                {
-                                    ud = Convert.ToInt32(Math.Floor(vre.Item1));
-                                    uh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                    um = Convert.ToInt32(Math.Floor(vre.Item3));
-                                }
-                            }
-                            else
-                            {
-                                var vre = billComm.GetTimePart(lastPayMins, 600);
-                                if (vre != null)
-                                {
-                                    ud = Convert.ToInt32(Math.Floor(vre.Item1));
-                                    uh = Convert.ToInt32(Math.Floor(vre.Item2));
-                                    um = Convert.ToInt32(Math.Floor(vre.Item3));
-                                }
+                                ud = Convert.ToInt32(vre.Item1);
+                                uh = Convert.ToInt32(vre.Item2);
+                                um = Convert.ToInt32(vre.Item3);
                             }
                         }
                         #endregion
 
                         #region 春節訂金
-                        int UseOrderPrice = orderFinishDataLists[0].UseOrderPrice;
+                        int UseOrderPrice = item.UseOrderPrice;
                         var NYPayLists = cr_repo.GetNYPayList(Convert.ToInt32(tmpOrder));
                         if (NYPayLists != null && NYPayLists.Count() > 0)
                         {
@@ -252,61 +212,62 @@ namespace WebAPI.Controllers
 
                         outputApi = new OAPI_OrderDetail()
                         {
-                            OrderNo = string.Format("H{0}", orderFinishDataLists[0].OrderNo.ToString().PadLeft(orderFinishDataLists[0].OrderNo.ToString().Length, '0')),
+                            OrderNo = string.Format("H{0}", item.OrderNo.ToString().PadLeft(item.OrderNo.ToString().Length, '0')),
                             ContactURL = "",
-                            Operator = orderFinishDataLists[0].Operator,
-                            CarTypePic = orderFinishDataLists[0].CarTypePic,
-                            CarNo = orderFinishDataLists[0].CarNo,
-                            Seat = orderFinishDataLists[0].Seat,
-                            CarBrend = orderFinishDataLists[0].CarBrend,
-                            CarTypeName = orderFinishDataLists[0].CarTypeName,
-                            StationName = orderFinishDataLists[0].StationName,
-                            OperatorScore = orderFinishDataLists[0].OperatorScore,
-                            ProjName = orderFinishDataLists[0].ProjName,
-                            CarRentBill = orderFinishDataLists[0].pure_price,
+                            Operator = item.Operator,
+                            CarTypePic = item.CarTypePic,
+                            CarNo = item.CarNo,
+                            Seat = item.Seat,
+                            CarBrend = item.CarBrend,
+                            CarTypeName = item.CarTypeName,
+                            StationName = item.StationName,
+                            OperatorScore = item.OperatorScore,
+                            ProjName = item.ProjName,
+                            CarRentBill = item.pure_price,
                             TotalHours = string.Format("{0}天{1}時{2}分", td, th, tm),     // 使用時數
                             MonthlyHours = string.Format("{0}天{1}時{2}分", md, mh, mm),   // 月租折抵
                             GiftPoint = string.Format("{0}天{1}時{2}分", gd, gh, gm),      // 折抵時數
                             PayHours = string.Format("{0}天{1}時{2}分", ud, uh, um),       // 計費時數
-                            MileageBill = orderFinishDataLists[0].mileage_price,
-                            InsuranceBill = orderFinishDataLists[0].Insurance_price,
-                            EtagBill = orderFinishDataLists[0].Etag,
-                            OverTimeBill = orderFinishDataLists[0].fine_price,
-                            ParkingBill = orderFinishDataLists[0].parkingFee,
-                            TransDiscount = orderFinishDataLists[0].TransDiscount,
-                            TotalBill = orderFinishDataLists[0].final_price,
-                            InvoiceType = orderFinishDataLists[0].InvoiceType,
-                            CARRIERID = orderFinishDataLists[0].CARRIERID,
-                            NPOBAN = orderFinishDataLists[0].NPOBAN,
-                            NPOBAN_Name = orderFinishDataLists[0].NPOBAN_Name,
-                            Unified_business_no = orderFinishDataLists[0].Unified_business_no,
-                            InvoiceNo = orderFinishDataLists[0].invoiceCode,
-                            InvoiceDate = orderFinishDataLists[0].invoice_date,
-                            InvoiceBill = orderFinishDataLists[0].invoice_price,
+                            UseGiveMinute = string.Format("{0}天{1}時{2}分", gud, guh, gum),   // 優惠標籤使用時數
+                            MileageBill = item.mileage_price,
+                            InsuranceBill = item.Insurance_price,
+                            EtagBill = item.Etag,
+                            OverTimeBill = item.fine_price,
+                            ParkingBill = item.parkingFee,
+                            TransDiscount = item.TransDiscount,
+                            TotalBill = item.final_price,
+                            InvoiceType = item.InvoiceType,
+                            CARRIERID = item.CARRIERID,
+                            NPOBAN = item.NPOBAN,
+                            NPOBAN_Name = item.NPOBAN_Name,
+                            Unified_business_no = item.Unified_business_no,
+                            InvoiceNo = item.invoiceCode,
+                            InvoiceDate = item.invoice_date,
+                            InvoiceBill = item.invoice_price,
                             InvoiceURL = "",
-                            StartTime = Convert.ToDateTime(orderFinishDataLists[0].StartTime).ToString("yyyy-MM-dd HH:mm"),
-                            EndTime = Convert.ToDateTime(orderFinishDataLists[0].EndTime).ToString("yyyy-MM-dd HH:mm"),
+                            StartTime = Convert.ToDateTime(item.StartTime).ToString("yyyy-MM-dd HH:mm"),
+                            EndTime = Convert.ToDateTime(item.EndTime).ToString("yyyy-MM-dd HH:mm"),
                             Millage = UseMile <= 0 ? 0 : UseMile,
-                            CarOfArea = orderFinishDataLists[0].Area,
-                            DiscountAmount = orderFinishDataLists[0].DiscountAmount,
-                            DiscountName = orderFinishDataLists[0].DiscountName,
+                            CarOfArea = item.Area,
+                            DiscountAmount = item.DiscountAmount,
+                            DiscountName = item.DiscountName,
                             //20201212 ADD BY ADAM REASON.增加營損費用，先用預設值
-                            CtrlBill = orderFinishDataLists[0].CarDispatch,
-                            ClearBill = orderFinishDataLists[0].CleanFee,
-                            EquipBill = orderFinishDataLists[0].DestroyFee,
-                            ParkingBill2 = orderFinishDataLists[0].ParkingFee2,
-                            TowingBill = orderFinishDataLists[0].DraggingFee,
-                            OtherBill = orderFinishDataLists[0].OtherFee,
+                            CtrlBill = item.CarDispatch,
+                            ClearBill = item.CleanFee,
+                            EquipBill = item.DestroyFee,
+                            ParkingBill2 = item.ParkingFee2,
+                            TowingBill = item.DraggingFee,
+                            OtherBill = item.OtherFee,
                             UseOrderPrice = UseOrderPrice,
-                            ReturnOrderPrice = orderFinishDataLists[0].ReturnOrderPrice,
+                            ReturnOrderPrice = item.ReturnOrderPrice,
                             //20210517 ADD BY ADAM REASON.新換電獎勵需求
-                            ChangePoint = orderFinishDataLists[0].ChangePoint,
-                            ChangeTimes = orderFinishDataLists[0].ChangeTimes,
-                            RSOC_S = orderFinishDataLists[0].RSOC_S,
-                            RSOC_E = orderFinishDataLists[0].RSOC_E,
-                            RewardPoint = orderFinishDataLists[0].RewardPoint,
-                            TotalRewardPoint = orderFinishDataLists[0].TotalRewardPoint,
-                            RenterType = orderFinishDataLists[0].RenterType
+                            ChangePoint = item.ChangePoint,
+                            ChangeTimes = item.ChangeTimes,
+                            RSOC_S = item.RSOC_S,
+                            RSOC_E = item.RSOC_E,
+                            RewardPoint = item.RewardPoint,
+                            TotalRewardPoint = item.TotalRewardPoint,
+                            RenterType = item.RenterType
                         };
                     }
                 }
