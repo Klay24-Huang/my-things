@@ -302,7 +302,9 @@
 
 20220324 取得租金明細(GetPayDetail)增加標籤優惠折抵時數
 
-20220328 OrderDetail(訂單明細)增加優惠標籤使用時數
+20220328 訂單明細(OrderDetail)增加優惠標籤使用時數
+
+20220329 新增上傳出還車照片(UploadCarImage)
 
 # API位置
 
@@ -4701,7 +4703,126 @@
 | ERR182   | 您延長用車時間重疊到您之後的預約用車時間，請先取消重疊的訂單再做延長。 | 延長用車時間重疊到之後的預約用車時間   |
 | ERR237   | 延長用車時間最少1小時                                        | 延長用車時間最少1小時                  |
 | ERR604   | 延長用車取授權未成功，請盡速檢查卡片餘額或是重新綁卡         | 延長用車取授權未成功                   |
-------
+## UploadCarImage 上傳出還車照片
+
+### [/api/UploadCarImage/]
+
+* 20220329新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱  | 參數說明            | 必要 |  型態  | 範例      |
+| --------- | ------------------- | :--: | :----: | --------- |
+| OrderNo   | 訂單編號            |  Y   | string | H11768110 |
+| Mode      | 模式(0:取車 1:還車) |  Y   | string | 0         |
+| CarImages | 照片                |  N   | object |           |
+
+* CarImages參數說明
+
+| 參數名稱 | 參數說明   | 必要 |  型態  | 範例   |
+| -------- | ---------- | :--: | :----: | ------ |
+| CarType  | 圖片類型   |  Y   |  int   | 1      |
+| CarImage | 圖片base64 |  Y   | string | base64 |
+
+* input範例
+
+```
+{
+    "OrderNo": "H11768110",
+    "Mode": "1",
+    "CarImages": [
+        {
+            "CarType": 1,
+            "CarImage": "base64"
+        },
+        {
+            "CarType": 2,
+            "CarImage": "base64"
+        }
+    ]
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data參數說明
+
+| 參數名稱    | 參數說明 | 型態 | 範例 |
+| ----------- | -------- | :--: | ---- |
+| CarImageObj |          | List |      |
+
+* CarImageData參數說明
+
+| 參數名稱     | 參數說明                      | 型態 | 範例 |
+| ------------ | ----------------------------- | :--: | ---- |
+| CarImageType | 圖片類型                      | int  | 1    |
+| HasUpload    | 是否上傳至storage (0:否;1:是) | int  | 0    |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "CarImageObj": [
+            {
+                "CarImageType": 1,
+                "HasUpload": 0
+            },
+            {
+                "CarImageType": 2,
+                "HasUpload": 0
+            },
+            {
+                "CarImageType": 3,
+                "HasUpload": 0
+            },
+            {
+                "CarImageType": 4,
+                "HasUpload": 0
+            },
+            {
+                "CarImageType": 5,
+                "HasUpload": 0
+            },
+            {
+                "CarImageType": 6,
+                "HasUpload": 0
+            },
+            {
+                "CarImageType": 7,
+                "HasUpload": 0
+            },
+            {
+                "CarImageType": 8,
+                "HasUpload": 0
+            }
+        ]
+    }
+}
+```
+
 ## ReturnCar 還車
 
 ### [/api/ReturnCar/]
