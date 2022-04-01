@@ -167,7 +167,7 @@ namespace WebAPI.Controllers
                             UpdateOrderAuthList.AuthMessage = "金額為0免刷卡";
                         }
 
-                        var updateFlag = UpdateOrdarAuthStatus(UpdateOrderAuthList, ref lstError, ref errCode);
+                        //var updateFlag = UpdateOrdarAuthStatus(UpdateOrderAuthList, ref lstError, ref errCode);
                         
                         //if (payStatus == false && OrderAuth.AuthType == 1 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace(OrderAuth.Mobile))
                         //{
