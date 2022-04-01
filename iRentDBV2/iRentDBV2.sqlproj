@@ -651,6 +651,7 @@
     <Build Include="dbo\Stored Procedures\usp_AutoSubscribeJob_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_AutoSubscribeJob_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiTranStep2_U01.sql" />
+    <Build Include="dbo\Stored Procedures\usp_MonthlyRentEscrowCheck_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiTranStep1_I01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiGetDefaultCard_Q01.sql" />
     <Build Include="dbo\Stored Procedures\usp_HotaiDefaultCardUnbind_U01.sql" />

@@ -1,41 +1,41 @@
-﻿using Domain.SP.Input.Bill;
+﻿using Domain.Flow.CarRentCompute;
+using Domain.Log;
+using Domain.MemberData;
+using Domain.SP.Input.Bill;
+using Domain.SP.Input.Member;
 using Domain.SP.Input.Rent;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
 using Domain.SP.Output.Bill;
 using Domain.SP.Output.Rent;
-using OtherService.Enum;
+using Domain.SP.Output.Subscription;
+using Domain.TB;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.Input.Taishin;
+using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
+using Domain.WebAPI.Input.Taishin.Wallet;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using Domain.WebAPI.output.Taishin;
+using Domain.WebAPI.output.Taishin.Wallet;
+using Newtonsoft.Json;
+using NLog;
+using OtherService;
+using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
+using System.Threading;
+using WebAPI.Models.BaseFunc;
+using WebAPI.Models.Param.Bill.Input;
+using WebAPI.Models.Param.CusFun.Input;
+using WebAPI.Models.Param.Input;
+using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Utils;
 using WebCommon;
-using System.Configuration;
-using WebAPI.Models.BaseFunc;
-using Domain.SP.Output.Subscription;
-using WebAPI.Models.Param.Bill.Input;
-using Domain.WebAPI.output.Taishin;
-using OtherService;
-using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
-using Domain.WebAPI.Input.Taishin;
-using System.Threading;
-using WebAPI.Models.Param.Output.PartOfParam;
-using WebAPI.Models.Param.Output;
-using Domain.TB;
-using Reposotory.Implement;
-using WebAPI.Models.Param.CusFun.Input;
-using Domain.WebAPI.Input.Taishin.Wallet;
-using Newtonsoft.Json;
-using Domain.WebAPI.output.Taishin.Wallet;
-using Domain.MemberData;
-using Domain.SP.Input.Member;
-using Domain.WebAPI.Input.HiEasyRentAPI;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using NLog;
-using System.Data.SqlClient;
-using WebAPI.Models.Param.Input;
 
 namespace WebAPI.Models.BillFunc
 {
@@ -48,14 +48,10 @@ namespace WebAPI.Models.BillFunc
         private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
-
         private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
         private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
-
         private MonSubsSp msp = new MonSubsSp();
-        
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-
         //20211106 ADD BY ADAM REASON.預授權
         private const int CreditAutoClose = 1;
 
@@ -77,34 +73,17 @@ namespace WebAPI.Models.BillFunc
         {
             var TSIB_In = new IFN_TSIBCardTrade();
             TSIB_In.IDNO = IDNO;
-            TSIB_In.MerchantTradeNo = string.Format("{0}M_{1}",IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff"));
+            TSIB_In.MerchantTradeNo = string.Format("{0}M_{1}", IDNO, DateTime.Now.ToString("yyyyMMddHHmmssfff"));
             TSIB_In.ProdNm = string.Format("{0}月租", IDNO);
 
             string ck = ckMerchantTradeNo(TSIB_In.MerchantTradeNo);
             if (!string.IsNullOrWhiteSpace(ck))
                 throw new Exception(ck);
 
-            return TSIBCardTrade(TSIB_In,ref WSAuthOutput,ref Amount,ref errCode);
+            return TSIBCardTrade(TSIB_In, ref WSAuthOutput, ref Amount, ref errCode);
         }
 
         private bool TSIBCardTrade(IFN_TSIBCardTrade sour, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
-        {
-            //return true;//hack: fix 信用卡交易暫時關閉,上線再打開
-            //hack 重要 這個是因為APP要測試才開放的，預計
-            //if (sour.IDNO != "S124413890" && sour.IDNO != "K122319624" && sour.IDNO != "H123315066" && sour.IDNO != "C121275662")
-            //{
-                return ori_TSIBCardTrade(sour, ref WSAuthOutput, ref Amount, ref errCode);
-            //}
-            //else
-            //{
-            //    return true;
-            //}
-        }
-
-        /// <summary>
-        /// 台新信用卡交易
-        /// </summary>
-        private bool ori_TSIBCardTrade(IFN_TSIBCardTrade sour, ref WebAPIOutput_Auth WSAuthOutput, ref int Amount, ref string errCode)
         {
             var trace = new TraceCom();
             var carRepo = new CarRentRepo();
@@ -115,7 +94,7 @@ namespace WebAPI.Models.BillFunc
             trace.traceAdd("FnIn", new { sour, WSAuthOutput, Amount, errCode });
 
             try
-            {               
+            {
                 if (string.IsNullOrWhiteSpace(sour.IDNO) ||
                     string.IsNullOrWhiteSpace(sour.ProdNm) ||
                     string.IsNullOrWhiteSpace(sour.MerchantTradeNo) ||
@@ -210,7 +189,7 @@ namespace WebAPI.Models.BillFunc
                                 //flag = WebAPI.DoCreditCardAuthV2(WSAuthInput, sour.IDNO, ref errCode, ref WSAuthOutput);
                                 //trace.traceAdd("DoCreditCardAuthV2", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
                                 //20211106 ADD BY ADAM REASON.預授權
-                                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, sour.IDNO, CreditAutoClose, "TSIBCardTrade", sour.IDNO, ref errCode, ref WSAuthOutput,8);
+                                flag = WebAPI.DoCreditCardAuthV3(WSAuthInput, sour.IDNO, CreditAutoClose, "TSIBCardTrade", sour.IDNO, ref errCode, ref WSAuthOutput, 8);
                                 trace.traceAdd("DoCreditCardAuthV3", new { sour.IDNO, errCode, WSAuthInput, WSAuthOutput });
 
                                 if (WSAuthOutput.RtnCode != "1000")
@@ -254,7 +233,7 @@ namespace WebAPI.Models.BillFunc
                 carRepo.AddTraceLog(FunId, FunNm, eumTraceType.exception, trace);
             else
             {
-                if(flag)
+                if (flag)
                     carRepo.AddTraceLog(FunId, FunNm, eumTraceType.mark, trace);
                 else
                     carRepo.AddTraceLog(FunId, FunNm, eumTraceType.followErr, trace);
@@ -271,7 +250,7 @@ namespace WebAPI.Models.BillFunc
         /// <returns></returns>        
         public bool TSIB_Escrow_Month(ICF_TSIB_Escrow_Type sour, ref string errCode, ref string errMsg)
         {
-            if(sour != null)
+            if (sour != null)
             {
                 var spin = new ICF_TSIB_Escrow();
                 spin = objUti.TTMap<ICF_TSIB_Escrow_Type, ICF_TSIB_Escrow>(sour);
@@ -307,9 +286,9 @@ namespace WebAPI.Models.BillFunc
                 //Email = sour.Email,
                 //Name = sour.Name,
                 //PhoneNo = sour.PhoneNo, 
-                GUID = guid,             
+                GUID = guid,
                 MemberId = sour.MemberId,
-                MerchantId = MerchantId,            
+                MerchantId = MerchantId,
                 POSId = "",
                 SourceFrom = "9",
                 Amount = sour.Amount,
@@ -348,7 +327,7 @@ namespace WebAPI.Models.BillFunc
                     LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
                     UseType = sour.UseType,
                     MonthlyNo = sour.MonthlyNo,
-                    PRGID=sour.PRGID                  
+                    PRGID = sour.PRGID
                 };
                 msp.sp_InsEscrowHist(spin, ref errCode);
             }
@@ -388,7 +367,7 @@ namespace WebAPI.Models.BillFunc
                     StoreTransId = string.Format("{0}M{1}", sour.OrderNo, (NowTime.ToString("yyMMddHHmmss")).Substring(1)),//限制長度為20以下所以減去1碼
                     Amount = sour.Amount,
                     BarCode = "",
-                    StoreTransDate = NowTime.ToString("yyyyMMddHHmmss")                        
+                    StoreTransDate = NowTime.ToString("yyyyMMddHHmmss")
                 };
                 var body = JsonConvert.SerializeObject(wallet);
                 TaishinWallet WalletAPI = new TaishinWallet();
@@ -420,7 +399,7 @@ namespace WebAPI.Models.BillFunc
                         PhoneNo = sour.PhoneNo,
                         Amount = sour.Amount,
                         TotalAmount = output.Result.Amount,
-                        CreateDate = sour.CreateDate,                        
+                        CreateDate = sour.CreateDate,
                         LastStoreTransId = output.Result.StoreTransId,
                         LastTransDate = DateTime.ParseExact(output.Result.TransDate, formatString, null),
                         LastTransId = output.Result.TransId,
@@ -450,7 +429,7 @@ namespace WebAPI.Models.BillFunc
         {
             var cr_sp = new CarRentSp();
             double re = 0;
-            if(sour != null)
+            if (sour != null)
             {
                 sour.lstHoliday = sour.lstHoliday ?? new List<Holiday>();
                 sour.mOri = sour.mOri ?? new List<MonthlyRentData>();
@@ -460,7 +439,8 @@ namespace WebAPI.Models.BillFunc
                     var monthlyRentRepository = new MonthlyRentRepository(connetStr);
                     var mOri = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonId.ToString());
 
-                    if (mOri != null && mOri.Count() > 0) {
+                    if (mOri != null && mOri.Count() > 0)
+                    {
                         string esErrMsg = "";
                         foreach (var m in mOri)
                         {//月租假日優惠費率改用一般假日優惠費率
@@ -468,7 +448,7 @@ namespace WebAPI.Models.BillFunc
                             {
                                 var p_re = cr_sp.sp_GetEstimate(sour.ProjID, sour.CarType, 99999, ref esErrMsg, 0);
                                 if (p_re != null && p_re.PRICE_H > 0)
-                                    m.HoildayRateForCar = Convert.ToSingle(p_re.PRICE_H/10);
+                                    m.HoildayRateForCar = Convert.ToSingle(p_re.PRICE_H / 10);
                             }
                         }
                         sour.mOri = mOri;
@@ -492,7 +472,7 @@ namespace WebAPI.Models.BillFunc
         {
             var re = new CarRentInfo();
 
-            if(sour != null)
+            if (sour != null)
             {
                 re = new BillCommon().CarRentInCompute(
                     sour.SD,
@@ -551,13 +531,13 @@ namespace WebAPI.Models.BillFunc
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 re = 0;
             }
 
             return re;
-        } 
+        }
 
         public InvoiceData GetINVDataFromMember(string IDNO)
         {
@@ -578,25 +558,14 @@ namespace WebAPI.Models.BillFunc
                     re.CARRIERID = splist.FirstOrDefault().CARRIERID;
                     re.NPOBAN = splist.FirstOrDefault().NPOBAN;
                     re.InvocieTypeId = int.Parse(splist.FirstOrDefault().InvoiceId);
-                    
+
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
             return re;
-        }
-
-        public void InvoiceProc()
-        {
-            WebAPIInput_MonthlyRentSave wsInput = new WebAPIInput_MonthlyRentSave()
-            {
-
-            };
-            WebAPIOutput_MonthlyRentSave wsOuptput = new WebAPIOutput_MonthlyRentSave();
-            HiEasyRentAPI wsAPI = new HiEasyRentAPI();
-            //wsAPI.MonthlyRentSave();
         }
     }
 
@@ -621,7 +590,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonthList);
                 string SPName = "usp_GetMonthList_U1";
                 object[][] parms1 = {
                     new object[] {
@@ -670,7 +638,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMySubs);
                 string SPName = "usp_GetMySubs_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -698,7 +665,7 @@ namespace WebAPI.Models.BillFunc
                         if (months != null && months.Count() > 0)
                             re.Months = months;
                     }
-                    else 
+                    else
                     {
                         int lstIndex = ds1.Tables.Count - 1;
                         if (lstIndex > 0)
@@ -727,7 +694,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetChgSubsList);
                 string SPName = "usp_GetChgSubsList_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -790,7 +756,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetUpSubsList);
                 string SPName = "usp_GetUpSubsList_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -854,7 +819,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsCNT);
                 string SPName = "usp_GetSubsCNT_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -922,7 +886,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsCreditStatus);
                 string SPName = "usp_GetSubsCreditStatus_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -975,7 +938,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsEscrowPay);
                 string SPName = "usp_GetSubsEscrowPay_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1022,7 +984,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonthGroup);
                 string SPName = "usp_GetMonthGroup_Q01";
                 object[][] parms1 = {
                     new object[] {
@@ -1069,7 +1030,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetBuyNowInfo);
                 string SPName = "usp_GetBuyNowInfo_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1109,7 +1069,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_CreateSubsMonth(SPInput_CreateSubsMonth spInput, ref string errCode, ref int MonthlyRentId)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.CreateSubsMonth);
             string spName = "usp_CreateSubsMonth_U01";
 
             var lstError = new List<ErrorInfo>();
@@ -1120,8 +1079,8 @@ namespace WebAPI.Models.BillFunc
 
             if (spFlag && spOut != null)
             {
-                if(spOut.ErrorCode != "0000")
-                  errCode = spOut.ErrorCode;
+                if (spOut.ErrorCode != "0000")
+                    errCode = spOut.ErrorCode;
                 flag = spOut.xError == 0;
 
                 //20210714 ADD BY ADAM REASON.取流水號
@@ -1134,7 +1093,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_UpSubsMonth(SPInput_UpSubsMonth spInput, ref string errCode, ref int MonthlyRentId, ref int NowPeriod, ref DateTime OriSDATE)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.UpSubsMonth);
             string spName = "usp_UpSubsMonth_U01";
 
             var lstError = new List<ErrorInfo>();
@@ -1161,7 +1119,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_SetSubsNxt(SPInput_SetSubsNxt spInput, ref string errCode)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
             string spName = "usp_SetSubsNxt_U01";
 
             var lstError = new List<ErrorInfo>();
@@ -1188,7 +1145,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_SetSubsCreditStatus(SPInput_SetSubsCreditStatus spInput, ref string errCode)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsCreditStatus);
             string spName = "usp_SetSubsCreditStatus_U1";
 
             var lstError = new List<ErrorInfo>();
@@ -1215,7 +1171,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_SubsPayInvoDef(SPInput_SetSubsPayInvoDef spInput, ref string errCode)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsNxt);
             string spName = "usp_SetSubsPayInvoDef_U1";
 
             var lstError = new List<ErrorInfo>();
@@ -1242,7 +1197,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_ArrearsPaySubs(SPInput_ArrearsPaySubs spInput, ref string errCode)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.ArrearsPaySubs);
             string spName = "usp_ArrearsPaySubs_U01";
 
             var lstError = new List<ErrorInfo>();
@@ -1270,7 +1224,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_InsEscrowHist(SPInput_InsEscrowHist spInput, ref string errCode)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.InsEscrowHist);
             string spName = "usp_InsEscrowHist_U02";
 
             var lstError = new List<ErrorInfo>();
@@ -1294,7 +1247,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsHist);
                 string SPName = "usp_GetSubsHist_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1355,7 +1307,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetArrsSubsList);
                 string SPName = "usp_GetArrsSubsList_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1418,13 +1369,12 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsMonthByOrderNo);
                 string SPName = "usp_GetSubsMonthByOrderNo_Q1";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
                         spInput.LogID,
-                        spInput.OrderNo                    
+                        spInput.OrderNo
                     },
                 };
 
@@ -1439,7 +1389,7 @@ namespace WebAPI.Models.BillFunc
                 {
                     if (ds1.Tables.Count >= 2)
                     {
-                        re = objUti.ConvertToList<SPOut_GetSubsMonthByOrderNo>(ds1.Tables[0]);                       
+                        re = objUti.ConvertToList<SPOut_GetSubsMonthByOrderNo>(ds1.Tables[0]);
                     }
                     else
                     {
@@ -1466,7 +1416,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_DelSubsHist(SPInput_DelSubsHist spInput, ref string errCode)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.DelSubsHist);
             string spName = "usp_DelSubsHist_U1";
 
             var lstError = new List<ErrorInfo>();
@@ -1494,7 +1443,6 @@ namespace WebAPI.Models.BillFunc
         public bool sp_SetSubsBookingMonth(SPInput_SetSubsBookingMonth spInput, ref string errCode)
         {
             bool flag = false;
-            //string spName = new ObjType().GetSPName(ObjType.SPType.SetSubsBookingMonth);
             string spName = "usp_SetSubsBookingMonth_U1";
 
             var lstError = new List<ErrorInfo>();
@@ -1524,7 +1472,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetNowSubs);
                 string SPName = "usp_GetNowSubs_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1546,7 +1493,7 @@ namespace WebAPI.Models.BillFunc
                 if (string.IsNullOrWhiteSpace(returnMessage) && ds1 != null && ds1.Tables.Count >= 0)
                 {
                     if (ds1.Tables.Count >= 2)
-                       re = objUti.ConvertToList<SPOut_GetNowSubs>(ds1.Tables[0]);
+                        re = objUti.ConvertToList<SPOut_GetNowSubs>(ds1.Tables[0]);
                     else
                     {
                         int lstIndex = ds1.Tables.Count - 1;
@@ -1575,7 +1522,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetTBCode);
                 string SPName = "usp_GetTBCode_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1616,7 +1562,7 @@ namespace WebAPI.Models.BillFunc
             }
         }
 
-        public Dictionary<string,object> Sql_GetMonData(int monthlyRentID)
+        public Dictionary<string, object> Sql_GetMonData(int monthlyRentID)
         {
             Dictionary<string, object> resultDic = new Dictionary<string, object>();
             try
@@ -1647,7 +1593,7 @@ namespace WebAPI.Models.BillFunc
             }
             catch (Exception ex)
             {
-                throw ;
+                throw;
             }
             return resultDic;
         }
@@ -1658,7 +1604,6 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetMonSetInfo);
                 string SPName = "usp_GetMonSetInfo_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1721,7 +1666,6 @@ namespace WebAPI.Models.BillFunc
                 else
                     return null;
 
-                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetSubsBookingMonth);
                 string SPName = "usp_GetSubsBookingMonth_Q1";
                 object[][] parms1 = {
                     new object[] {
@@ -1913,7 +1857,7 @@ namespace WebAPI.Models.BillFunc
             SPOutput_Base spOutput = new SPOutput_Base();
             SQLHelper<IAPI_MonthlyPayInv, SPOutput_Base> sqlHelp = new SQLHelper<IAPI_MonthlyPayInv, SPOutput_Base>(connetStr);
             flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOutput, ref lstError);
-            
+
             if (flag)
             {
                 if (spOutput.Error == 1 || spOutput.ErrorCode != "0000")
@@ -1931,9 +1875,7 @@ namespace WebAPI.Models.BillFunc
             }
 
             return flag;
-
         }
-
     }
 
     /// <summary>
@@ -1944,28 +1886,28 @@ namespace WebAPI.Models.BillFunc
         public List<MonCardParam> FromSPOutput_GetMonthList_Month(List<SPOutput_GetMonthList_Month> sour)
         {
             var re = new List<MonCardParam>();
-            if(sour != null && sour.Count()>0)
+            if (sour != null && sour.Count() > 0)
             {
-               re = (from a in sour
-                             select new MonCardParam
-                             {
-                                 MonProjID = a.MonProjID,
-                                 MonProjNM = a.MonProjNM,
-                                 MonProPeriod = a.MonProPeriod,
-                                 ShortDays = a.ShortDays,
-                                 PeriodPrice = a.PeriodPrice,
-                                 IsMoto = a.IsMoto,
-                                 CarWDHours = a.CarWDHours,
-                                 CarHDHours = a.CarHDHours,
-                                 MotoTotalMins = a.MotoTotalMins,
-                                 WDRateForCar = a.WDRateForCar,
-                                 HDRateForCar = a.HDRateForCar,
-                                 WDRateForMoto = a.WDRateForMoto,
-                                 HDRateForMoto = a.HDRateForMoto,
-                                 IsDiscount = a.IsDiscount,
-                                 IsPay = a.IsPay,
-                                 IsMix = a.IsMix    //20210525 ADD BY ADAM REASON.增加城市車手判斷
-                             }).ToList();
+                re = (from a in sour
+                      select new MonCardParam
+                      {
+                          MonProjID = a.MonProjID,
+                          MonProjNM = a.MonProjNM,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          PeriodPrice = a.PeriodPrice,
+                          IsMoto = a.IsMoto,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = a.MotoTotalMins,
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          IsDiscount = a.IsDiscount,
+                          IsPay = a.IsPay,
+                          IsMix = a.IsMix    //20210525 ADD BY ADAM REASON.增加城市車手判斷
+                      }).ToList();
             }
             return re;
         }
@@ -1995,7 +1937,7 @@ namespace WebAPI.Models.BillFunc
                           IsPay = a.IsPay,
                           IsMix = a.IsMix,
                           NxtPay = a.NxtPay,
-                          StartDate =  a.StartDate.ToString("MM/dd HH:mm"),
+                          StartDate = a.StartDate.ToString("MM/dd HH:mm"),
                           EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
                       }).ToList();
             }
@@ -2035,78 +1977,13 @@ namespace WebAPI.Models.BillFunc
                     IsUpd = sour.IsUpd,
                     SubsNxt = sour.SubsNxt,
                     IsMoto = sour.IsMoto
-                    
+
                 };
             }
             else
                 return null;
         }
 
-        public List<OAPI_GetArrsSubsList_arrs> FromSPOut_GetArrsSubsList(List<SPOut_GetArrsSubsList_Card> sour)
-        {
-            var re = new List<OAPI_GetArrsSubsList_arrs>();
-
-            if(sour != null && sour.Count() > 0)
-            {
-                re = (from a in sour
-                      select new OAPI_GetArrsSubsList_arrs
-                      {
-                          Period = a.rw,
-                          ArresPrice = a.PeriodPayPrice
-                      }).ToList();
-            }
-
-            return re;
-        }
-
-        /// <summary>
-        /// 使用中訂閱制卡片(前端顯示)
-        /// </summary>
-        /// <param name="sour"></param>
-        /// <returns></returns>
-        public List<OAPI_NowSubsCard> NowSubsCard_FromGetNowSubs(List<SPOut_GetNowSubs> sour)
-        {
-            var re = new List<OAPI_NowSubsCard>();
-            if(sour != null && sour.Count()>0)
-                re = objUti.TTMap<List<SPOut_GetNowSubs>, List<OAPI_NowSubsCard>>(sour);
-            return re;
-        }
-
-        /// <summary>
-        /// 使用中訂閱制卡片(月租涵式使用)
-        /// </summary>
-        /// <param name="sour"></param>
-        /// <returns></returns>
-        public List<MonthlyRentData> MonthlyRentData_FromGetNowSubs(List<SPOut_GetNowSubs> sour)
-        {
-            var re = new List<MonthlyRentData>();
-            if(sour != null && sour.Count() > 0)
-            {
-                re = (from a in sour
-                      select new MonthlyRentData
-                      {
-                          Mode = a.Mode,
-                          MonthlyRentId = a.MonthlyRentId,
-                          MonLvl = a.MonLvl,
-                          MonType = a.MonType,
-                          //IDNO = "",不包含IDNO
-                          CarTotalHours = Convert.ToSingle(a.CarTotalHours),
-                          WorkDayHours = Convert.ToSingle(a.WorkDayHours),
-                          HolidayHours = Convert.ToSingle(a.HolidayHours),
-                          MotoTotalHours = Convert.ToSingle(a.MotoTotalMins),
-                          MotoWorkDayMins = Convert.ToSingle(a.MotoWorkDayMins),
-                          MotoHolidayMins = Convert.ToSingle(a.MotoHolidayMins),
-                          WorkDayRateForCar = Convert.ToSingle(a.WorkDayRateForCar),
-                          HoildayRateForCar = Convert.ToSingle(a.HoildayRateForCar),
-                          WorkDayRateForMoto = Convert.ToSingle(a.WorkDayRateForMoto),
-                          HoildayRateForMoto = Convert.ToSingle(a.HoildayRateForMoto),
-                          StartDate = a.StartDate,
-                          EndDate = a.EndDate
-                      }).ToList();
-            }
-            return re;
-        }
-    
         public List<OAPI_GetSubsHist_Param> FromSPOut_GetSubsHist(List<SPOut_GetSubsHist> sour)
         {
             var re = new List<OAPI_GetSubsHist_Param>();
@@ -2127,10 +2004,10 @@ namespace WebAPI.Models.BillFunc
                           HDRateForCar = a.HDRateForCar,
                           WDRateForMoto = a.WDRateForMoto,
                           HDRateForMoto = a.HDRateForMoto,
-                          PayDate = a.PayDate.ToString("yyyyMMdd") == "00010101"?"":a.PayDate.ToString("yyyy/MM/dd HH:mm"),
+                          PayDate = a.PayDate.ToString("yyyyMMdd") == "00010101" ? "" : a.PayDate.ToString("yyyy/MM/dd HH:mm"),
                           IsMoto = a.IsMoto,
                           StartDate = a.StartDate.ToString("yyyy/MM/dd HH:mm"),
-                          EndDate =  (a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1) : a.EndDate).ToString("yyyy/MM/dd HH:mm"),
+                          EndDate = (a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1) : a.EndDate).ToString("yyyy/MM/dd HH:mm"),
                           PerNo = a.PerNo,
                           MonthlyRentId = a.MonthlyRentId,
                           InvType = a.InvType,
@@ -2147,13 +2024,13 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
-    
+
         public List<OAPI_GetArrsSubsList_card> FromSPOut_GetArrsSubsList(SPOut_GetArrsSubsList sour)
         {
             var re = new List<OAPI_GetArrsSubsList_card>();
 
-            if(sour != null 
-                && sour.DateRange != null && sour.DateRange.Count()>0
+            if (sour != null
+                && sour.DateRange != null && sour.DateRange.Count() > 0
                 && sour.Arrs != null && sour.Arrs.Count() > 0)
             {
                 var arrs = sour.Arrs;
@@ -2164,15 +2041,15 @@ namespace WebAPI.Models.BillFunc
                     nObj.StartDate = a.StartDate.ToString("yyyy/MM/dd");
                     nObj.EndDate = a.EndDate.ToString("yyyy/MM/dd");
                     var nArrs = arrs.Where(y => y.SubsId == a.SubsId).ToList();
-                    if(nArrs != null && nArrs.Count() > 0)
+                    if (nArrs != null && nArrs.Count() > 0)
                     {
                         nObj.ProjNm = nArrs.FirstOrDefault().MonProjNM;
                         var tmpArrs = (from k in nArrs
-                                     select new OAPI_GetArrsSubsList_arrs
-                                     {
-                                         Period = k.rw,
-                                         ArresPrice = k.PeriodPayPrice
-                                     }).ToList();
+                                       select new OAPI_GetArrsSubsList_arrs
+                                       {
+                                           Period = k.rw,
+                                           ArresPrice = k.PeriodPayPrice
+                                       }).ToList();
                         nObj.Arrs = tmpArrs;
                         //20210617 ADD BY ADAM REASON.
                         nObj.CarTypePic = nArrs.FirstOrDefault().CarTypePic;
@@ -2183,7 +2060,7 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
-    
+
         public OPAI_GetChgSubsList_Card FromSPOut_GetChgSubsList_Card(SPOut_GetChgSubsList_Card sour)
         {
             var re = new OPAI_GetChgSubsList_Card();
@@ -2214,26 +2091,26 @@ namespace WebAPI.Models.BillFunc
         {
             var re = new List<OPAI_GetChgSubsList_Card>();
 
-            if(sour != null && sour.Count() > 0)
+            if (sour != null && sour.Count() > 0)
             {
                 re = (from a in sour
                       select new OPAI_GetChgSubsList_Card
                       {
-                            MonProjID = a.MonProjID,
-                            MonProPeriod = a.MonProPeriod,
-                            ShortDays = a.ShortDays,
-                            MonProjNM = a.MonProjNM,
-                            PeriodPrice = a.PeriodPrice,
-                            CarWDHours = a.CarWDHours,
-                            CarHDHours = a.CarHDHours,
-                            MotoTotalMins = (a.MotoTotalMins == -999 && a.IsMix==1) ? 0 : Convert.ToInt32(a.MotoTotalMins),
-                            WDRateForCar = a.WDRateForCar,
-                            HDRateForCar = a.HDRateForCar,
-                            WDRateForMoto = a.WDRateForMoto,
-                            HDRateForMoto = a.HDRateForMoto,
-                            IsDiscount = a.IsDiscount,
-                            IsMix = a.IsMix,     //20210525 ADD BY ADAM REASON.增加城市車手
-                            IsMoto = a.IsMoto   //20210527 ADD BY ADAM REASON.補欄位
+                          MonProjID = a.MonProjID,
+                          MonProPeriod = a.MonProPeriod,
+                          ShortDays = a.ShortDays,
+                          MonProjNM = a.MonProjNM,
+                          PeriodPrice = a.PeriodPrice,
+                          CarWDHours = a.CarWDHours,
+                          CarHDHours = a.CarHDHours,
+                          MotoTotalMins = (a.MotoTotalMins == -999 && a.IsMix == 1) ? 0 : Convert.ToInt32(a.MotoTotalMins),
+                          WDRateForCar = a.WDRateForCar,
+                          HDRateForCar = a.HDRateForCar,
+                          WDRateForMoto = a.WDRateForMoto,
+                          HDRateForMoto = a.HDRateForMoto,
+                          IsDiscount = a.IsDiscount,
+                          IsMix = a.IsMix,     //20210525 ADD BY ADAM REASON.增加城市車手
+                          IsMoto = a.IsMoto   //20210527 ADD BY ADAM REASON.補欄位
                       }).ToList();
             }
             return re;
@@ -2242,7 +2119,7 @@ namespace WebAPI.Models.BillFunc
         public List<OAPI_GetUpSubsList_Card> FromSPOut_GetUpSubsList_Card(List<SPOut_GetUpSubsList_Card> sour)
         {
             var re = new List<OAPI_GetUpSubsList_Card>();
-            if(sour != null && sour.Count() > 0)
+            if (sour != null && sour.Count() > 0)
             {
                 re = (from a in sour
                       select new OAPI_GetUpSubsList_Card
@@ -2268,7 +2145,7 @@ namespace WebAPI.Models.BillFunc
             }
             return re;
         }
-    
+
         public OAPI_GetSubsCNT_NxtCard FromSPOut_GetSubsCNT_NxtCard(SPOut_GetSubsCNT_NxtCard sour)
         {
             if (sour != null)
@@ -2298,7 +2175,7 @@ namespace WebAPI.Models.BillFunc
                     IsMix = sour.IsMix,      //20210525 ADD BY ADAM REASON.增加城市車手
                     //20210526 ADD BY ADAM REASON.補欄位
                     MonthStartDate = sour.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
-                    MonthEndDate = sour.MonthEndDate.ToString("HHmm")=="0000" ? sour.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
+                    MonthEndDate = sour.MonthEndDate.ToString("HHmm") == "0000" ? sour.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sour.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
                     NxtMonProPeriod = sour.NxtMonProPeriod,
                     IsPay = sour.IsPay,
                     IsUpd = sour.IsUpd,
@@ -2309,34 +2186,5 @@ namespace WebAPI.Models.BillFunc
             else
                 return null;
         }
-
-        public List<OAPI_GetSubsCNT_NxtCard> FromSPOut_GetSubsCNT_NxtCard(List<SPOut_GetSubsCNT_NxtCard> sour)
-        {
-            var re = new List<OAPI_GetSubsCNT_NxtCard>();
-            if(sour != null && sour.Count() > 0)
-            {
-                re = (from a in sour
-                      select new OAPI_GetSubsCNT_NxtCard
-                      {
-                          IsChange = a.IsChange,
-                          MonProjID = a.MonProjID,
-                          MonProPeriod = a.MonProPeriod,
-                          ShortDays = a.ShortDays,
-                          MonProjNM = a.MonProjNM,
-                          CarWDHours = a.CarWDHours,
-                          CarHDHours = a.CarHDHours,
-                          MotoTotalMins = Convert.ToInt32(a.MotoTotalMins),
-                          WDRateForCar = a.WDRateForCar,
-                          HDRateForCar = a.HDRateForCar,
-                          WDRateForMoto = a.WDRateForMoto,
-                          HDRateForMoto = a.HDRateForMoto,
-                          StartDate = a.SD.ToString("yyyy/MM/dd"),
-                          EndDate = a.ED.ToString("yyyy/MM/dd"),
-                          MonProDisc = a.MonProDisc
-                      }).ToList();
-            }
-            return re;
-        }
     }
-
 }

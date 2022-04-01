@@ -60,12 +60,12 @@
         /// <summary>
         /// 折抵時數(汽車)
         /// </summary>
-        public float GiftPoint { get; set; }
+        public int GiftPoint { get; set; }
 
         /// <summary>
         /// 折抵時數(機車)
         /// </summary>
-        public float GiftMotorPoint { get; set; }
+        public int GiftMotorPoint { get; set; }
 
         /// <summary>
         /// 月租抵扣
@@ -275,5 +275,10 @@
         /// 承租人類型 1:主要承租人 2:共同承租人
         /// </summary>
         public int RenterType { get; set; }
+
+        /// <summary>
+        /// 優惠標籤使用分鐘數
+        /// </summary>
+        public int UseGiveMinute { get; set; }
     }
 }

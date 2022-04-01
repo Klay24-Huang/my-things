@@ -128,29 +128,29 @@ namespace WebAPI.Controllers
                 #region TB
 
                 #region 刷卡判斷
-                //if (flag)
-                //{//24小時內相同呼叫條件視為相同
-                //    string spErrCode = "";
-                //    var spIn = new SPInput_GetSubsCreditStatus()
-                //    {
-                //        IDNO = IDNO,
-                //        LogID = LogID,
-                //        APIID = 181,
-                //        ActionNM = funName,
-                //        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                //    };
-                //    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                //    if (sp_list != null && sp_list.Count() > 0)
-                //    {
-                //        flag = false;
-                //        errCode = "ERR277";
-                //        errMsg = "刷卡已存在";
-                //    }
-                //    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
-                //    trace.FlowList.Add("刷卡判斷");
-                //}
+                if (flag)
+                {//24小時內相同呼叫條件視為相同
+                    string spErrCode = "";
+                    var spIn = new SPInput_GetSubsCreditStatus()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        APIID = 181,
+                        ActionNM = funName,
+                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                    };
+                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                    {
+                        flag = false;
+                        errCode = "ERR277";
+                        errMsg = "刷卡已存在";
+                    }
+                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                    trace.FlowList.Add("刷卡判斷");
+                }
                 #endregion
-              
+
                 #region 購買前檢核
                 if (flag)
                 {
@@ -490,7 +490,7 @@ namespace WebAPI.Controllers
                 trace.BaseMsg = ex.Message;
             }
 
-            carRepo.AddTraceLog(181, funName, trace, flag);
+            carRepo.AddTraceLog(223, funName, trace, flag);
 
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
@@ -602,27 +602,27 @@ namespace WebAPI.Controllers
                 #region TB
 
                 #region 刷卡判斷
-                //if (flag)
-                //{//24小時內相同呼叫條件視為相同
-                //    string spErrCode = "";
-                //    var spIn = new SPInput_GetSubsCreditStatus()
-                //    {
-                //        IDNO = IDNO,
-                //        LogID = LogID,
-                //        APIID = 181,
-                //        ActionNM = funName,
-                //        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                //    };
-                //    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                //    if (sp_list != null && sp_list.Count() > 0)
-                //    {
-                //        flag = false;
-                //        errCode = "ERR277";
-                //        errMsg = "刷卡已存在";
-                //    }
-                //    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
-                //    trace.FlowList.Add("刷卡判斷");
-                //}
+                if (flag)
+                {//24小時內相同呼叫條件視為相同
+                    string spErrCode = "";
+                    var spIn = new SPInput_GetSubsCreditStatus()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        APIID = 181,
+                        ActionNM = funName,
+                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                    };
+                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                    {
+                        flag = false;
+                        errCode = "ERR277";
+                        errMsg = "刷卡已存在";
+                    }
+                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                    trace.FlowList.Add("刷卡判斷");
+                }
                 #endregion
 
                 #region 升轉前檢核
@@ -1079,27 +1079,27 @@ namespace WebAPI.Controllers
                 #region TB
 
                 #region 刷卡判斷
-                //if (flag)
-                //{//24小時內相同呼叫條件視為相同
-                //    string spErrCode = "";
-                //    var spIn = new SPInput_GetSubsCreditStatus()
-                //    {
-                //        IDNO = IDNO,
-                //        LogID = LogID,
-                //        APIID = 181,
-                //        ActionNM = funName,
-                //        ApiCallKey = JsonConvert.SerializeObject(apiInput)
-                //    };
-                //    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
-                //    if (sp_list != null && sp_list.Count() > 0)
-                //    {
-                //        flag = false;
-                //        errCode = "ERR277";
-                //        errMsg = "刷卡已存在";
-                //    }
-                //    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
-                //    trace.FlowList.Add("刷卡判斷");
-                //}
+                if (flag)
+                {//24小時內相同呼叫條件視為相同
+                    string spErrCode = "";
+                    var spIn = new SPInput_GetSubsCreditStatus()
+                    {
+                        IDNO = IDNO,
+                        LogID = LogID,
+                        APIID = 181,
+                        ActionNM = funName,
+                        ApiCallKey = JsonConvert.SerializeObject(apiInput)
+                    };
+                    var sp_list = msp.sp_GetSubsCreditStatus(spIn, ref spErrCode);
+                    if (sp_list != null && sp_list.Count() > 0)
+                    {
+                        flag = false;
+                        errCode = "ERR277";
+                        errMsg = "刷卡已存在";
+                    }
+                    trace.traceAdd("GetSubsCreditStatus", new { spIn, spErrCode });
+                    trace.FlowList.Add("刷卡判斷");
+                }
                 #endregion
 
                 #region 進入欠費繳交流程

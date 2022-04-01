@@ -105,7 +105,8 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR900";
                     }
-                    else if (apiInput.StoreMoney > 0 && apiInput.StoreMoney < 300)
+                    //else if (apiInput.StoreMoney > 0 && apiInput.StoreMoney < 300)
+                    else if (apiInput.StoreMoney > 0 && apiInput.StoreMoney < 50)   //ADAM測試
                     {
                         flag = false;
                         errCode = "ERR284";

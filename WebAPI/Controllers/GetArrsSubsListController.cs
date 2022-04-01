@@ -10,6 +10,7 @@ using WebAPI.Models.Param.Output;
 using WebCommon;
 using WebAPI.Models.BillFunc;
 using Domain.SP.Input.Subscription;
+using Domain.Log;
 
 namespace WebAPI.Controllers
 {
@@ -38,7 +39,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "GetSubsHistController";
+            string funName = "GetArrsSubsListController";
             Int64 LogID = 0;
             var apiInput = new IAPI_GetArrsSubsList();
             var outputApi = new OAPI_GetArrsSubsList();
@@ -49,7 +50,6 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-
             #endregion
 
             if (value == null)
@@ -60,7 +60,6 @@ namespace WebAPI.Controllers
                 trace.traceAdd("apiIn", value);
 
                 #region 防呆
-
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
@@ -79,32 +78,17 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
                 #endregion
 
                 #region token
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                    trace.FlowList.Add("Token判斷");
                 }
-
                 #endregion
 
                 #region TB
-
                 if (flag)
                 {
                     var spIn = new SPInput_GetArrsSubsList()
@@ -117,18 +101,18 @@ namespace WebAPI.Controllers
                     var sp_re = msp.sp_GetArrsSubsList(spIn, ref errCode);
                     trace.traceAdd("sp_re", sp_re);
                     if (sp_re != null && sp_re.DateRange != null && sp_re.DateRange.Count() > 0
-                        && sp_re.Arrs != null && sp_re.Arrs.Count() > 0) { 
+                        && sp_re.Arrs != null && sp_re.Arrs.Count() > 0)
+                    {
                         outputApi.Cards = map.FromSPOut_GetArrsSubsList(sp_re);
 
-                        if(outputApi.Cards != null && outputApi.Cards.Count() > 0)
+                        if (outputApi.Cards != null && outputApi.Cards.Count() > 0)
                         {
                             var cards = outputApi.Cards;
                             outputApi.TotalArresPrice = cards.Select(x => x.Arrs.Select(y => y.ArresPrice).Sum()).Sum();
-                        }                      
+                        }
                     }
                     trace.traceAdd("outputApi", outputApi);
                 }
-
                 #endregion
             }
             catch (Exception ex)
@@ -137,7 +121,7 @@ namespace WebAPI.Controllers
                 trace.BaseMsg = ex.Message;
                 errMsg = ex.Message;
                 errCode = "ERR913";
-                carRepo.AddTraceLog(189, funName, eumTraceType.exception, trace);
+                carRepo.AddTraceLog(190, funName, eumTraceType.exception, trace);
             }
 
             #region 輸出
@@ -145,6 +129,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-
     }
 }

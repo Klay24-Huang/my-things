@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Discount;
 using Domain.SP.Input.Project;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Output;
@@ -214,6 +215,8 @@ namespace WebAPI.Controllers
                 DataSet ds = new DataSet();
                 flag = sqlHelp.ExeuteSP(SPName, SPInput, ref spOut, ref lstData, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                
+                DiscountLabel reDiscountLabel = new DiscountLabel();
 
                 if (flag)
                 {
@@ -222,6 +225,15 @@ namespace WebAPI.Controllers
                         int DataLen = lstData.Count;
                         if (DataLen > 0)
                         {
+                            /*以車號取得當前優惠標籤*/
+                            SPInput_GetDiscountLabelForAnyRentProject spInputDiscountLabel = new SPInput_GetDiscountLabelForAnyRentProject()
+                            {
+                                CarNo = apiInput.CarNo,
+                                LogID = LogID
+                            };
+
+                            reDiscountLabel = new CarRentCommon().GetDiscountLabelForAnyRentProject(spInputDiscountLabel);
+
                             int isMin = 1;
                             lstTmpData.Add(new MotorProjectObj()
                             {
@@ -244,7 +256,8 @@ namespace WebAPI.Controllers
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = lstData[0].Content,
                                 Power = Convert.ToInt32(lstData[0].Power),
-                                RemainingMileage = Convert.ToInt32(lstData[0].RemainingMileage)
+                                RemainingMileage = Convert.ToInt32(lstData[0].RemainingMileage),
+                                DiscountLabel = reDiscountLabel,
                             });
                             if (DataLen > 1)
                             {

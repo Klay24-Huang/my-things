@@ -202,6 +202,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
+
                     #region 春節專案使用
                     //春節限定，將R139專案移除，並將R139的價格給原專案
                     //List<AnyRentObj> ListOutCorrect = new List<AnyRentObj>();
@@ -220,9 +221,18 @@ namespace WebAPI.Controllers
                     //    }
                     //}
                     #endregion
-
+                    List<AnyRentDiscountLabel> discountLabels = new List<AnyRentDiscountLabel>();
                     if (ListOut != null && ListOut.Count() > 0)
+                    {
+                        discountLabels = new CarRentCommon().GetDiscountLabelForAnyRentCars(
+                        new Domain.SP.Input.Discount.SPInput_GetDiscountLabelForAnyRentCars
+                        {
+                            LogID = LogID,
+                            CarNos = string.Join(",", ListOut.Select(o => o.CarNo.Trim()))
+
+                        });
                         _AnyRentObj = objUti.TTMap<List<AnyRentObj>, List<OAPI_AnyRent_Param>>(ListOut);
+                    }
 
                     if (_AnyRentObj != null && _AnyRentObj.Count() > 0)
                     {
@@ -249,8 +259,27 @@ namespace WebAPI.Controllers
                             }
                         }
                         #endregion
+                        #region 加入優惠標籤
+                        if (discountLabels != null && discountLabels.Count > 0)
+                        {
+                            _AnyRentObj.ForEach(x =>
+                            {
+                                x.DiscountLabel = discountLabels.Where(t => t.CarNo == x.CarNo)
+                                   .Select(t => new DiscountLabel
+                                   {
+                                       LabelType = t.LabelType,
+                                       GiveMinute = t.GiveMinute,
+                                       Describe = $"{t.GiveMinute}分鐘優惠折抵",
+                                   }).FirstOrDefault();
+                            });
+
+                        }
+                        #endregion
+
                         OAnyRentAPI.AnyRentObj = _AnyRentObj;
                     }
+
+
                 }
             }
             #endregion

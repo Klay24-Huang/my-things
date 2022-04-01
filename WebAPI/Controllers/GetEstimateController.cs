@@ -1,5 +1,7 @@
 ﻿using Domain.Common;
+using Domain.Flow.CarRentCompute;
 using Domain.SP.Input.Bill;
+using Domain.SP.Input.Discount;
 using Domain.SP.Output;
 using Domain.TB;
 using Reposotory.Implement;
@@ -262,6 +264,7 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
+
                                 int InsurancePer10Hours = priceBase[0].InsurancePerHours * 10;
                                 outputApi = new OAPI_GetEstimate()
                                 {
@@ -269,12 +272,33 @@ namespace WebAPI.Controllers
                                     InsuranceBill = (apiInput.Insurance == 1) ? billCommon.CarRentCompute(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, 10, lstHoliday) : 0,
                                     InsurancePerHour = priceBase[0].InsurancePerHours,
                                     MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
-                                    MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
+                                    MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday),
+                                    //DiscountLabel = new EstimateDiscountLabel(),
                                 };
+
+                                /*以車號取得當前優惠標籤*/
+                                SPInput_GetDiscountLabelByCarNo spInputDiscountLabel = new SPInput_GetDiscountLabelByCarNo()
+                                {
+                                    CarNo = apiInput.CarNo,
+                                    LogID = LogID
+                                };
+
+                                var reDiscountLabel = cr_com.GetDiscountLabelByCar(spInputDiscountLabel);
+
+                                if (reDiscountLabel != null)
+                                {
+                                    outputApi.DiscountLabel = new EstimateDiscountLabel();
+                                    var discountPrice = billCommon.DiscountLabelToPrice(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday, reDiscountLabel.GiveMinute);
+                                    outputApi.DiscountLabel.LabelType = reDiscountLabel.LabelType;
+                                    outputApi.DiscountLabel.GiveMinute = reDiscountLabel.GiveMinute;
+                                    outputApi.DiscountLabel.Price = discountPrice;
+                                    outputApi.DiscountLabel.Describe = $"優惠標籤折抵";
+                                }
+                               
                             }
                             #endregion
 
-                            outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill;
+                            outputApi.Bill = outputApi.CarRentBill + outputApi.InsuranceBill + outputApi.MileageBill - (outputApi.DiscountLabel?.Price??0);
                         }
                     }
                 }
@@ -296,5 +320,6 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
+
     }
 }

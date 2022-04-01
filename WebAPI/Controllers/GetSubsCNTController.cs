@@ -1,32 +1,15 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
-using Domain.SP.Output.Common;
-using Domain.TB;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using OtherService;
-using Reposotory.Implement;
+using Domain.Log;
+using Domain.SP.Input.Subscription;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-using System.Data;
-using WebAPI.Utils;
-using Domain.SP.Output;
-using System.CodeDom;
-using Domain.SP.Input.Arrears;
-using WebAPI.Models.BillFunc;
-using Domain.SP.Input.Rent;
-using Newtonsoft.Json;
-using Domain.SP.Input.Subscription;
-using Domain.SP.Output.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -51,7 +34,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "DoGetSubsCNT";
+            string funName = "GetSubsCNTController";
             Int64 LogID = 0;
             var apiInput = new IAPI_GetSubsCNT();
             var outputApi = new OAPI_GetSubsCNT();
@@ -106,28 +89,14 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region token
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                    trace.FlowList.Add("Token判斷");
                 }
-
                 #endregion
 
                 #region TB
-
                 if (flag)
                 {
                     var spIn = new SPInput_GetSubsCNT()
@@ -157,14 +126,13 @@ namespace WebAPI.Controllers
                                 //outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("yyyy/MM/dd");
                                 //20210611 ADD BY ADAM 
                                 outputApi.NxtCard.StartDate = sp_re.NxtCard.SD.ToString("yyyy/MM/dd HH:mm");
-                                outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("HHmm")=="0000" ? sp_re.NxtCard.ED.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sp_re.NxtCard.ED.ToString("yyyy/MM/dd HH:mm");
+                                outputApi.NxtCard.EndDate = sp_re.NxtCard.ED.ToString("HHmm") == "0000" ? sp_re.NxtCard.ED.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : sp_re.NxtCard.ED.ToString("yyyy/MM/dd HH:mm");
                             }
                         }
                     }
 
                     trace.traceAdd("outputApi", outputApi);
                 }
-
                 #endregion
             }
             catch (Exception ex)

@@ -307,35 +307,51 @@ namespace WebAPI.Controllers
                         #region 履保
                         if (apiInput.EscrowMonthFlg == 1 && flag)
                         {
-                            try
-                            {
-                                string xerrCode = "";
-                                string xerrMsg = "";
 
-                                logger.Info("履保開始!");
-                                mem = msp.GetMemberData(IDNO, LogID, Access_Token);
-                                if (mem != null)
+                            IAPI_MonthlyPayInv spInput = new IAPI_MonthlyPayInv()
+                            {
+                                IdNo = apiInput.IDNO,
+                                MonthlyRentId = apiInput.MonthlyRentId == 0 ? buyNxtCom.MonthlyRentId : apiInput.MonthlyRentId,
+                            };
+
+                            var checkFlag = msp.sp_MonthlyRentEscrowCheck(spInput, ref errCode);
+                            trace.traceAdd("MonthlyRentEscrowCheck", new { checkFlag, spInput, errCode });
+                            trace.FlowList.Add("履保檢查");
+
+                            if (checkFlag)
+                            {
+                                try
                                 {
-                                    var spin = new ICF_TSIB_Escrow_Type()
+                                    string xerrCode = "";
+                                    string xerrMsg = "";
+
+                                    logger.Info("履保開始!");
+                                    mem = msp.GetMemberData(IDNO, LogID, Access_Token);
+                                    if (mem != null)
                                     {
-                                        IDNO = IDNO,
-                                        Name = mem.MEMCNAME,
-                                        PhoneNo = mem.MEMTEL,
-                                        Email = mem.MEMEMAIL,
-                                        Amount = ProdPrice,
-                                        UseType = 0,
-                                        MonthlyNo = apiInput.MonthlyRentId == 0 ? buyNxtCom.MonthlyRentId : apiInput.MonthlyRentId,
-                                        PRGID = funName
-                                    };
-                                    var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
-                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, xerrCode, xerrMsg });
-                                    trace.FlowList.Add("履保處理");
+                                        var spin = new ICF_TSIB_Escrow_Type()
+                                        {
+                                            IDNO = IDNO,
+                                            Name = mem.MEMCNAME,
+                                            PhoneNo = mem.MEMTEL,
+                                            Email = mem.MEMEMAIL,
+                                            Amount = ProdPrice,
+                                            UseType = 0,
+                                            MonthlyNo = apiInput.MonthlyRentId == 0 ? buyNxtCom.MonthlyRentId : apiInput.MonthlyRentId,
+                                            PRGID = funName
+                                        };
+                                        var xFlag = mscom.TSIB_Escrow_Month(spin, ref xerrCode, ref xerrMsg);
+                                        trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, xerrCode, xerrMsg });
+                                        trace.FlowList.Add("履保處理");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    trace.traceAdd("Escrow_Exception", new { ex });
                                 }
                             }
-                            catch (Exception ex)
-                            {
-                                trace.traceAdd("Escrow_Exception", new { ex });
-                            }
+
+                        
                         }
                         #endregion
 
@@ -779,32 +795,44 @@ namespace WebAPI.Controllers
 
                         if (flag)
                         {
-                            try
+                            IAPI_MonthlyPayInv spInput = new IAPI_MonthlyPayInv()
                             {
-                                mem = msp.GetMemberData(IDNO, LogID, Access_Token);
-                                if (mem != null)
-                                {
-                                    var spin = new ICF_TSIB_Escrow_Type()
-                                    {
-                                        IDNO = IDNO,
-                                        Name = mem.MEMCNAME,
-                                        PhoneNo = mem.MEMTEL,
-                                        Email = mem.MEMEMAIL,
-                                        Amount = ProdPrice,
-                                        UseType = 0,
-                                        MonthlyNo = buyNxtCom.MonthlyRentId,
-                                        PRGID = funName
-                                    };
-                                    var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
-                                    trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });
-                                    trace.FlowList.Add("履保處理");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                trace.traceAdd("Escrow_Exception", new { ex });
-                            }
+                                IdNo = apiInput.IDNO,
+                                MonthlyRentId = buyNxtCom.MonthlyRentId,
+                            };
 
+                            var checkFlag = msp.sp_MonthlyRentEscrowCheck(spInput, ref errCode);
+                            trace.traceAdd("MonthlyRentEscrowCheck", new { checkFlag, spInput, errCode });
+                            trace.FlowList.Add("履保檢查");
+
+                            if (checkFlag)
+                            {
+                                try
+                                {
+                                    mem = msp.GetMemberData(IDNO, LogID, Access_Token);
+                                    if (mem != null)
+                                    {
+                                        var spin = new ICF_TSIB_Escrow_Type()
+                                        {
+                                            IDNO = IDNO,
+                                            Name = mem.MEMCNAME,
+                                            PhoneNo = mem.MEMTEL,
+                                            Email = mem.MEMEMAIL,
+                                            Amount = ProdPrice,
+                                            UseType = 0,
+                                            MonthlyNo = buyNxtCom.MonthlyRentId,
+                                            PRGID = funName
+                                        };
+                                        var xFlag = mscom.TSIB_Escrow_Month(spin, ref errCode, ref errMsg);
+                                        trace.traceAdd("TSIB_Escrow_Month", new { spin, xFlag, errCode, errMsg });
+                                        trace.FlowList.Add("履保處理");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    trace.traceAdd("Escrow_Exception", new { ex });
+                                }
+                            }                          
                         }
 
                         #endregion

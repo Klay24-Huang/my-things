@@ -5,11 +5,11 @@ using System.Web;
 
 namespace WebAPI.Models.Param.Input
 {
-    public class IAPI_GetPayInfoReturnCar
+    public class IAPI_BindListQueryByEasyrent
     {
         /// <summary>
-        /// 付款金額
+        /// 接收參數
         /// </summary>
-        public int PaymentAmount { get; set; }
+        public string P { get; set; }
     }
 }

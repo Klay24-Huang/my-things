@@ -1,10 +1,15 @@
-﻿/****************************************************************
-** 用　　途：訂閱制續期取月租設定產發票用
-*****************************************************************
-** Change History
-*****************************************************************
-** 20210816 ADD BY AMBER
-*****************************************************************/
+﻿/***********************************************************************************************
+* Serve    : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_GetMonthlyPayInvData
+* 系    統 : IRENT
+* 程式功能 : 訂閱制續期取月租設定產發票用
+* 作    者 : AMBER
+* 撰寫日期 : 20210812
+* 修改日期 : 20220209 ADD BY AMBER REASON.新增判斷InvJob條件
+Example :
+
+***********************************************************************************************/
 CREATE PROCEDURE [dbo].[usp_GetMonthlyPayInvData]
 (   @MonthlyRentId      　　INT      　　　　　　 ,
 	@IdNo               　　VARCHAR(10)           ,
@@ -54,17 +59,17 @@ BEGIN TRY
 				s.IsMoto,
 				p.PayTypeId,
 				p.InvoTypeId,
-				a.transaction_no,
+				a.transaction_no as MerchantTradeNo,
 				a.TaishinTradeNo,
 				a.CardNumber,
-				a.AuthCode
+				a.AuthIdResp as AuthCode --20210819 ADD BY AMBER REASON.授權碼改抓此欄位
 				FROM TB_OrderAuthMonthly a WITH(NOLOCK) 
 				JOIN TB_MonthlyPay p WITH(NOLOCK) ON a.MonthlyRentId=p.MonthlyRentId
 				JOIN TB_MonthlyRentUse u WITH(NOLOCK) ON p.MonthlyRentId=u.MonthlyRentId
 				JOIN TB_MonthlyRentSet s WITH(NOLOCK) ON u.ProjID=s.MonProjID AND u.MonProPeriod=s.MonProPeriod AND u.ShortDays=s.ShortDays
 				JOIN TB_MemberData m  WITH(NOLOCK) ON a.IDNO=m.MEMIDNO
 				WHERE p.ActualPay=1 AND a.TaishinTradeNo <>''
-				AND a.MonthlyRentId=@MonthlyRentId AND a.IDNO=@IdNo;	
+				AND a.MonthlyRentId=@MonthlyRentId AND a.IDNO=@IdNo AND a.InvJob=0 AND a.AuthFlg=1;   --20220209 ADD BY AMBER REASON.新增判斷InvJob條件
 
 				IF @@ROWCOUNT=0
 				BEGIN
@@ -97,7 +102,4 @@ END CATCH
 
 RETURN @Error
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_GetMonthlyPayInvData';
-
-GO
-
 

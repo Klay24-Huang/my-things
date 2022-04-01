@@ -141,7 +141,7 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region 檢查錢包是否開通
-                string SPName = "usp_CreditAndWalletQuery_Q01";
+                string SPName = "usp_CreditAndWalletQuery_Q02";
                 SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
                 {
                     IDNO = IDNO,
