@@ -219,7 +219,7 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExeuteSP(SPName, SPInput, ref spOut, ref lstData, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
-                DiscountLabel reDiscountLabel = new DiscountLabel();
+                ProjectDiscountLabel reDiscountLabel = new ProjectDiscountLabel();
                 
                 if (flag)
                 {

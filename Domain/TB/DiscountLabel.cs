@@ -14,7 +14,7 @@ namespace Domain.TB
         /// <summary>
         /// 標籤類型
         /// </summary>
-        public string LabelType { get; set; }
+        public string LabelType { get; set; } = "";
 
         /// <summary>
         /// 分鐘數
@@ -24,6 +24,6 @@ namespace Domain.TB
         /// <summary>
         /// 描述
         /// </summary>
-        public string Describe { get; set; }
+        public string Describe { get; set; } = "";
     }
 }

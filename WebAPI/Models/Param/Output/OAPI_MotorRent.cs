@@ -54,7 +54,7 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 優惠標籤
         /// </summary>
-        public DiscountLabel DiscountLabel { get; set; }
+        public DiscountLabel DiscountLabel { get; set; } = new DiscountLabel();
     }
 
 }

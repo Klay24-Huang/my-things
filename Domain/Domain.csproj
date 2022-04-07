@@ -682,6 +682,7 @@
     <Compile Include="TB\Polygon.cs" />
     <Compile Include="TB\ProjectAndCarTypeData.cs" />
     <Compile Include="TB\ProjectAndCarTypeDataForMotor.cs" />
+    <Compile Include="TB\ProjectDiscountLabel.cs" />
     <Compile Include="TB\ProjectInfo.cs" />
     <Compile Include="TB\ProjectPriceBase.cs" />
     <Compile Include="TB\ProjectPriceOfMinuteBase.cs" />
