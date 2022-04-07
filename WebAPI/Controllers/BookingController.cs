@@ -272,12 +272,16 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 int TAMT = 0;
-                WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();
+                ContactComm contract = new ContactComm();
                 flag = contract.CheckNPR330(IDNO, LogID, ref TAMT);
-                if (TAMT > 0)
+                if (flag && TAMT > 0)
                 {
                     flag = false;
                     errCode = "ERR233";
+                }
+                else
+                {
+                    errCode = "ERR161";
                 }
             }
             #endregion

@@ -291,7 +291,9 @@ namespace WebAPI.Controllers
                     {
                         //BE_ReturnControl obj = rentRepository.GetReturnControl(tmpOrder);
 
-                        string spName2 = new ObjType().GetSPName(ObjType.SPType.BE_GetReturnCarControl);
+                        //string spName2 = new ObjType().GetSPName(ObjType.SPType.BE_GetReturnCarControl);
+                        string spName2 = "usp_BE_GetReturnCarControl_V20220325";
+
                         SPInput_BE_GetReturnCarControl spInput2 = new SPInput_BE_GetReturnCarControl()
                         {
                             OrderNo = tmpOrder,
@@ -367,19 +369,23 @@ namespace WebAPI.Controllers
                                     {
                                         //先確認當下是否能處理
                                         //if (ReturnControlList[z].CloseAmout > obj.eTag)
-                                        if ((ReturnControlList[z].CloseAmout + ReturnControlList[z].WalletAmount) > obj.eTag)
+                                        //if ((ReturnControlList[z].CloseAmout + ReturnControlList[z].WalletAmount) > obj.eTag)
+                                        if (ReturnControlList[z].PaymentAmount > obj.eTag)
                                         {
                                             //input.tbPaymentDetail = new PaymentDetail[2];
                                             input.tbPaymentDetail[z] = new PaymentDetail()
                                             {
                                                 //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
                                                 //PAYAMT = (ReturnControlList[z].CloseAmout - obj.eTag).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                                PAYAMT = ((ReturnControlList[z].CloseAmout + ReturnControlList[z].WalletAmount) - obj.eTag).ToString(), //20220307 ADD BY ADAM REASON.加上錢包支付
+                                                //PAYAMT = ((ReturnControlList[z].CloseAmout + ReturnControlList[z].WalletAmount) - obj.eTag).ToString(), //20220307 ADD BY ADAM REASON.加上錢包支付
+                                                PAYAMT = (ReturnControlList[z].PaymentAmount - obj.eTag).ToString(),
                                                 PAYTYPE = "1",
-                                                PAYMENTTYPE = (ReturnControlList[z].WalletAmount > 0 ? "2":"1"),
+                                                //PAYMENTTYPE = (ReturnControlList[z].WalletAmount > 0 ? "2":"1"),
+                                                PAYMENTTYPE = ReturnControlList[z].PaymentType,
                                                 PAYMEMO = "租金",
                                                 //PORDNO = obj.REMARK
-                                                PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                                //PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                                PORDNO = ReturnControlList[z].PaymentNORDNO,
                                                 OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                             };
                                         }
@@ -402,9 +408,14 @@ namespace WebAPI.Controllers
                                                 //    input.tbPaymentDetail[k].PAYAMT = (ReturnControlList[k].CloseAmout - obj.eTag).ToString();
                                                 //    break;
                                                 //}
-                                                if ((ReturnControlList[k].CloseAmout + ReturnControlList[z].WalletAmount) > obj.eTag)
+                                                //if ((ReturnControlList[k].CloseAmout + ReturnControlList[z].WalletAmount) > obj.eTag)
+                                                //{
+                                                //    input.tbPaymentDetail[k].PAYAMT = ((ReturnControlList[k].CloseAmout + ReturnControlList[z].WalletAmount) - obj.eTag).ToString();
+                                                //    break;
+                                                //}
+                                                if (ReturnControlList[k].PaymentAmount > obj.eTag)
                                                 {
-                                                    input.tbPaymentDetail[k].PAYAMT = ((ReturnControlList[k].CloseAmout + ReturnControlList[z].WalletAmount) - obj.eTag).ToString();
+                                                    input.tbPaymentDetail[k].PAYAMT = (ReturnControlList[k].PaymentAmount - obj.eTag).ToString();
                                                     break;
                                                 }
                                                 k--;
@@ -415,10 +426,12 @@ namespace WebAPI.Controllers
                                         {
                                             PAYAMT = (obj.eTag).ToString(),
                                             PAYTYPE = "2",
-                                            PAYMENTTYPE = (ReturnControlList[z].WalletAmount > 0 ? "2" : "1"),
+                                            //PAYMENTTYPE = (ReturnControlList[z].WalletAmount > 0 ? "2" : "1"),
+                                            PAYMENTTYPE = ReturnControlList[z].PaymentType,
                                             PAYMEMO = "eTag",
                                             //PORDNO = obj.REMARK
-                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            //PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            PORDNO = ReturnControlList[z].PaymentNORDNO,
                                             OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }
@@ -429,11 +442,14 @@ namespace WebAPI.Controllers
                                         input.tbPaymentDetail[z] = new PaymentDetail()
                                         {
                                             //PAYAMT = obj.PAYAMT.ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
-                                            PAYAMT = (ReturnControlList[z].CloseAmout + ReturnControlList[z].WalletAmount).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            //PAYAMT = (ReturnControlList[z].CloseAmout + ReturnControlList[z].WalletAmount).ToString(),     //20210112 ADD BY ADAM REASON.在view那邊就已經有減掉etag，故排除
+                                            PAYAMT = ReturnControlList[z].PaymentAmount.ToString(),
                                             PAYTYPE = "1",
-                                            PAYMENTTYPE = (ReturnControlList[z].WalletAmount > 0 ? "2" : "1"),
+                                            //PAYMENTTYPE = (ReturnControlList[z].WalletAmount > 0 ? "2" : "1"),
+                                            PAYMENTTYPE = ReturnControlList[z].PaymentType,
                                             PAYMEMO = "租金",
-                                            PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            //PORDNO = GetOperator(ReturnControlList[z].MerchantID) == 1 ? ReturnControlList[z].MerchantTradeNo : ReturnControlList[z].REMARK,
+                                            PORDNO = ReturnControlList[z].PaymentNORDNO,
                                             OPERATOR = GetOperator(ReturnControlList[z].MerchantID)     //20211227 ADD BY ADAM REASON.增加刷卡商代判斷
                                         };
                                     }

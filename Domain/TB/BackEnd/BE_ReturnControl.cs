@@ -239,5 +239,17 @@ namespace Domain.TB.BackEnd
         /// 錢包支付金額 20220307 ADD BY ADAM 
         /// </summary>
         public int WalletAmount { get; set; }
+        /// <summary>
+        /// 支付金額
+        /// </summary>
+        public int PaymentAmount { get; set; }
+        /// <summary>
+        /// 支付訂單編號
+        /// </summary>
+        public string PaymentNORDNO { get; set; }
+        /// <summary>
+        /// 支付類型 1:信用卡 2:錢包
+        /// </summary>
+        public string PaymentType { get; set; }
     }
 }

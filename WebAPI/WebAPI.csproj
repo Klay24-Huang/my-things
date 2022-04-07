@@ -238,6 +238,7 @@
     <Compile Include="Controllers\CTBCInquiryController.cs" />
     <Compile Include="Controllers\CTBCCapJobController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
+    <Compile Include="Controllers\LowPowerHintReadController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
     <Compile Include="Controllers\WalletToolsController.cs" />
     <Compile Include="Controllers\WalletTransferJobController.cs" />
@@ -886,7 +887,6 @@
     <None Include="Properties\PublishProfiles\irentv2-as-backend-api-test-promrtheus - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AutoJob - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-backend-api-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Car-api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Taishin-Api2 - Web Deploy.pubxml" />

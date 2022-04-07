@@ -53,7 +53,9 @@ namespace WebAPI.Controllers
 
             List<string> allowList = new List<string>()
             {
-                "usp_MonthlyRentNotifyPrepare_Q01","usp_EventMillion_Send_U01"
+                "usp_MonthlyRentNotifyPrepare_Q01",
+                "usp_EventMillion_Send_U01",
+                "SP_DelCarRawDataByDate"        //20220315新增
             };
 
             if (flag)
