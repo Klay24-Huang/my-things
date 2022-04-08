@@ -39,6 +39,6 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 優惠標籤
         /// </summary>
-        public EstimateDiscountLabel DiscountLabel { get; set; }
+        public EstimateDiscountLabel DiscountLabel { get; set; } = new EstimateDiscountLabel();
     }
 }

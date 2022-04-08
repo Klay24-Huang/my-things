@@ -270,7 +270,7 @@ namespace WebAPI.Controllers
                                        LabelType = t.LabelType,
                                        GiveMinute = t.GiveMinute,
                                        Describe = $"{t.GiveMinute}分鐘優惠折抵",
-                                   }).FirstOrDefault();
+                                   }).FirstOrDefault()??new DiscountLabel();
                             });
 
                         }

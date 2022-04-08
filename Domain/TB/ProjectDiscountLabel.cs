@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain.TB
 {
-    public class EstimateDiscountLabel : DiscountLabel
+    public class ProjectDiscountLabel: DiscountLabel
     {
         /// <summary>
-        /// 折扣金額
+        /// APP優惠標籤說明
         /// </summary>
-        public int Price { get; set; }
-
+        public string AppDescribe { get; set; } = "";
     }
 }

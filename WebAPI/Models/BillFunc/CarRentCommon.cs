@@ -993,7 +993,7 @@ namespace WebAPI.Models.BillFunc
         /// </summary>
         /// <param name="spInput"></param>
         /// <returns></returns>
-        public DiscountLabel GetDiscountLabelForAnyRentProject(SPInput_GetDiscountLabelForAnyRentProject spInput)
+        public ProjectDiscountLabel GetDiscountLabelForAnyRentProject(SPInput_GetDiscountLabelForAnyRentProject spInput)
         {
             var baseVerify = new CommonFunc();
             string SPName = "usp_GetDiscountLabelForAnyRentProject";
@@ -1006,7 +1006,9 @@ namespace WebAPI.Models.BillFunc
             bool flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref list, ref ds, ref lstError);
             baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
 
-            DiscountLabel result = (flag && list.Count > 0) ? list.FirstOrDefault() ?? null : null;
+            ProjectDiscountLabel result = (flag && list.Count > 0) 
+                ? list.Select(x=>new ProjectDiscountLabel { LabelType = x.LabelType,GiveMinute = x.GiveMinute,AppDescribe = x.Describe, Describe = "", }).FirstOrDefault() 
+                ?? new ProjectDiscountLabel() : new ProjectDiscountLabel();
 
             return result;
         }

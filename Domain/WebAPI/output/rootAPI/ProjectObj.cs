@@ -158,6 +158,6 @@ namespace Domain.WebAPI.output.rootAPI
         /// <summary>
         /// 優惠標籤
         /// </summary>
-        public DiscountLabel DiscountLabel { get; set; } = new DiscountLabel();
+        public ProjectDiscountLabel DiscountLabel { get; set; } = new ProjectDiscountLabel();
     }
 }
