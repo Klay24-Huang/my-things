@@ -1,19 +1,12 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
 using Domain.SP.Input.JointRent;
-using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.JointRent;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
@@ -28,7 +21,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -47,11 +39,11 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
-            bool HasInput = true;
+            Int64 OrderNo = 0;
             #endregion
 
             #region 防呆
-            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, HasInput);
+            flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest, true);
 
             if (flag)
             {
@@ -70,60 +62,51 @@ namespace WebAPI.Controllers
                     errCode = "ERR101";
                 }
             }
+
             //檢查訂單編號格式
-            var checkOrderNo = OrderNoFormatVerify(apiInput.OrderNo);
-            flag = checkOrderNo.status;
-            errCode = checkOrderNo.errorCode;
+            if (flag)
+            {
+                var checkOrderNo = OrderNoFormatVerify(apiInput.OrderNo);
+                flag = checkOrderNo.status;
+                if (!flag)
+                    errCode = checkOrderNo.errorCode;
+                OrderNo = checkOrderNo.orderNo;
+            }
             #endregion
 
             #region TB
-            //Token判斷
+            #region Token判斷
+            if (flag && isGuest == false)
+            {
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+            }
+            #endregion
+
             if (flag)
             {
-                string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderInsuranceInfo);
+                string SPName = "usp_GetOrderInsuranceInfo";
                 SPInput_GetOrderInsuranceInfo spInput = new SPInput_GetOrderInsuranceInfo()
                 {
-                    OrderNo = checkOrderNo.orderNo.ToString()
+                    OrderNo = OrderNo,
+                    IDNO = IDNO,
+                    Token = Access_Token,
+                    LogID = LogID
                 };
                 SPOutput_GetOrderInsuranceInfo spOut = new SPOutput_GetOrderInsuranceInfo();
                 SQLHelper<SPInput_GetOrderInsuranceInfo, SPOutput_GetOrderInsuranceInfo> sqlHelp = new SQLHelper<SPInput_GetOrderInsuranceInfo, SPOutput_GetOrderInsuranceInfo>(connetStr);
-                //flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
-                try
+                flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                if (flag)
                 {
-                    using (SqlConnection conn = new SqlConnection(connetStr))
-                    {
-                        conn.Open();
-                        using (SqlCommand cmd = new SqlCommand(SPName, conn))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@OrderNo", SqlDbType.VarChar).Value = checkOrderNo.orderNo.ToString();
-                            var reader = cmd.ExecuteReader();
-
-                            if (reader.HasRows)
-                            {
-                                errCode = "000000";
-                                while (reader.Read())
-                                {
-                                    outputApi.Insurance = (int)reader[0];
-                                    outputApi.MainInsurancePerHour = (int)reader[1];
-                                    outputApi.JointInsurancePerHour = (int)reader[2];
-                                    outputApi.JointAlertMessage = reader[3].ToString();
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    errCode = "ERR";
-                    errMsg = ex.Message.ToString();
-                    outputApi = new OAPI_GetOrderInsuranceInfo();
-                    baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                    outputApi.Insurance = spOut.Insurance;
+                    outputApi.MainInsurancePerHour = spOut.MainInsurancePerHour;
+                    outputApi.JointInsurancePerHour = spOut.JointInsurancePerHour;
+                    outputApi.JointAlertMessage = spOut.JointAlertMessage;
                 }
             }
             #endregion
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (flag == false && isWriteError == false)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
@@ -170,4 +153,3 @@ namespace WebAPI.Controllers
         }
     }
 }
-
