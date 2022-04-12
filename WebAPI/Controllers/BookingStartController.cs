@@ -45,6 +45,7 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
+        private readonly string NPR330Flg = ConfigurationManager.AppSettings["NPR330Flg"].ToString();       //20220413 ADD BY ADAM REASON.欠費查詢開關
 
         [HttpPost]
         public Dictionary<string, object> DoBookingStart(Dictionary<string, object> value)
@@ -158,7 +159,7 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 檢查欠費
-            if (flag)
+            if (flag && NPR330Flg == "Y")       //20220413 ADD BY ADAM REASON.欠費查詢開關
             {
                 int TAMT = 0;
                 WebAPI.Models.ComboFunc.ContactComm contract = new Models.ComboFunc.ContactComm();

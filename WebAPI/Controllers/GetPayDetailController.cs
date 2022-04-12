@@ -30,6 +30,8 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         public float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
+        private readonly string NPR270Flg = ConfigurationManager.AppSettings["NPR270Flg"].ToString();       //20220413 ADD BY ADAM REASON.時數查詢開關
+        private readonly string ETAGFlg = ConfigurationManager.AppSettings["ETAGFlg"].ToString();           //20220413 ADD BY ADAM REASON.ETAG查詢開關
 
         [HttpPost]
         public Dictionary<string, object> DoGetPayDetail(Dictionary<string, object> value)
@@ -466,7 +468,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 與短租查時數 - 春節不執行
-                    if (flag && !isSpring)
+                    if (flag && !isSpring && NPR270Flg == "Y")      //20220413 ADD BY ADAM REASON.時數查詢開關
                     {
                         var inp = new IBIZ_NPR270Query()
                         {
@@ -581,7 +583,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region 查ETAG 20201202 ADD BY ADAM
-                    if (flag && ProjType != 4)    //汽車才需要進來
+                    if (flag && ProjType != 4 && ETAGFlg == "Y")    //汽車才需要進來
                     {
                         var input = new IBIZ_ETagCk()
                         {
