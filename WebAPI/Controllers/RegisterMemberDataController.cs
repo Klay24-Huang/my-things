@@ -168,7 +168,7 @@ namespace WebAPI.Controllers
             #endregion
             #region 取得MEMRFNBR
             //20201125 ADD BY ADAM REASON.寫入帳號前先去短租那邊取得MEMRFNBR
-            if (flag && MEMRFNBR == 0)
+            if (flag)
             {
                 WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
                 HiEasyRentAPI wsAPI = new HiEasyRentAPI();

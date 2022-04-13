@@ -27,5 +27,9 @@ namespace Domain.SP.Input.Register
         /// 
         /// </summary>
         public Int64 LogID { set; get; }
+        /// <summary>
+        /// 短租會員流水號
+        /// </summary>
+        public Int64 MEMRFNBR { set; get; }
     }
 }
