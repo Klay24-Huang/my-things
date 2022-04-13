@@ -58,12 +58,14 @@
 取還車跟車機操控相關
 
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
+- [CheckCarStatus 取車前判斷車輛狀態](#CheckCarStatus)
 - [BookingStart 汽車取車](#BookingStart)
 - [BookingStartMotor 機車取車](#BookingStartMotor)
 - [BookingExtend 延長用車](#BookingExtend)
 - [ReturnCar 還車](#ReturnCar)
 - [GetPayDetail 取得租金明細](#GetPayDetail)
 - [CreditAuth 付款與還款](#CreditAuth)
+- [GetCarStatus 取得汽車狀態](#GetCarStatus)
 
 月租訂閱制相關
 
@@ -305,6 +307,8 @@
 20220328 訂單明細(OrderDetail)增加優惠標籤使用時數
 
 20220329 新增上傳出還車照片(UploadCarImage)
+
+20220413 新增取車前判斷車輛狀態(CheckCarStatus)、取得汽車狀態(GetCarStatus)
 
 # API位置
 
@@ -4476,6 +4480,59 @@
     }
 }
 ```
+## CheckCarStatus 取車前判斷車輛狀態
+
+### [/api/CheckCarStatus/]
+
+* 20220413新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
+| -------- | -------- | :--: | :----: | --------- |
+| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H10641049"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
 ## BookingStart 汽車取車
 
 ### [/api/BookingStart/]
@@ -4709,6 +4766,7 @@
 | ERR182   | 您延長用車時間重疊到您之後的預約用車時間，請先取消重疊的訂單再做延長。 | 延長用車時間重疊到之後的預約用車時間   |
 | ERR237   | 延長用車時間最少1小時                                        | 延長用車時間最少1小時                  |
 | ERR604   | 延長用車取授權未成功，請盡速檢查卡片餘額或是重新綁卡         | 延長用車取授權未成功                   |
+
 ## UploadCarImage 上傳出還車照片
 
 ### [/api/UploadCarImage/]
@@ -5272,6 +5330,79 @@
 | ERR932   | 錢包未開通                                       | 錢包未開通                                       |
 | ERR933   | 錢包扣款失敗                                     | 錢包扣款失敗                                     |
 | ERR934   | 錢包餘額不足                                     | 錢包餘額不足                                     |
+
+## GetCarStatus 取得汽車狀態
+
+### [/api/GetCarStatus/]
+
+* 20220413新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| CarNo    | 車牌     |  Y   | string | RBX-1722 |
+
+
+* input範例
+
+```
+{
+	"CarNo": "RBX-1722"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data參數說明
+
+| 參數名稱          | 參數說明                                                     |  型態  | 範例     |
+| ----------------- | ------------------------------------------------------------ | :----: | -------- |
+| CarNo             | 車號                                                         | string | RBX-1722 |
+| PowerOnStatus     | 引擎狀態，發動為1，熄火為0                                   |  int   | 1        |
+| CentralLockStatus | 中控鎖狀態：1為上鎖，0為解鎖                                 |  int   | 1        |
+| DoorStatus        | 車門狀態：1111關門;0000開門                                  | string | 1111     |
+| LockStatus        | 門鎖狀態：1為上鎖，0為解鎖<br>四個門鎖分別為：駕駛門鎖、副駕駛門、乘客門鎖、後行李箱門鎖 | string | 1111     |
+| IndoorLightStatus | 車內燈：1為開啟，0為關閉                                     |  int   | 0        |
+| SecurityStatus    | 防盜鎖狀態：1為開啟，0為關閉                                 |  int   | 1        |
+
+* Output範例
+
+```
+{
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {
+		"CarNo": "RBX-1722 ",
+		"PowerOnStatus": 1,
+		"CentralLockStatus": 1,
+		"DoorStatus": "1111",
+		"LockStatus": "1111",
+		"IndoorLightStatus": 0,
+		"SecurityStatus": 1
+	}
+}
+```
 
 # 月租訂閱制相關
 
