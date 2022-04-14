@@ -943,10 +943,7 @@ namespace WebAPI.Controllers
                         {
                             outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
                             outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
-
-                            // 20211209 UPD BY YEH REASON:給前端顯示的租用時數改用可折抵時數
-                            //outputApi.Rent.RentalTimeInterval = (carInfo.RentInMins).ToString();//租用時數(未逾時)
-                            outputApi.Rent.RentalTimeInterval = carInfo.DiscRentInMins.ToString();  // 可折抵時數
+                            outputApi.Rent.RentalTimeInterval = carInfo.RentInMins.ToString();  //租用時數(未逾時)
 
                             //2020-12-29 所有點數改成皆可折抵
                             //outputApi.Rent.ActualRedeemableTimeInterval = carInfo.DiscRentInMins.ToString();//可折抵租用時數
