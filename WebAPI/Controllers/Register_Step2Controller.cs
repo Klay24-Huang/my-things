@@ -114,10 +114,10 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            #region 判斷短租流水號
+            #region 設定密碼
             if (flag)
             {
-                string spName = "usp_Register_Step2";
+                string spName = "usp_Register_Step2_U01";
                 SPInput_Register_Step2 spInput = new SPInput_Register_Step2()
                 {
                     LogID = LogID,
