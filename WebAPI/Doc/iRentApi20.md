@@ -3535,6 +3535,7 @@
 | CAR_MGT_STATUS    | 取還車狀態<br>0 = 尚未取車<br/>1 = 已經上傳出車照片<br/>2 = 已經簽名出車單<br/>3 = 已經信用卡認證<br/>4 = 已經取車(記錄起始時間)<br/>11 = 已經紀錄還車時間<br/>12 = 已經上傳還車角度照片<br/>13 = 已經上傳還車車損照片<br/>14 = 已經簽名還車單<br/>15 = 已經信用卡付款<br/>16 = 已經檢查車輛完成並已經解除卡號 |   int   | 4                     |
 | AppStatus         | 1:尚未到取車時間(取車時間半小時前)<br/>2:立即換車(取車前半小時，前車尚未完成還車)<br/>3:開始使用(取車時間半小時前)<br/>4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)<br/>5:操作車輛(取車後) 取車時間改實際取車時間<br/>6:操作車輛(準備還車)<br/>7:物品遺漏(再開一次車門)<br/>8:鎖門並還車(一次性開門申請後) |   int   | 6                     |
 | RenterType        | 承租人類型<br>1:主要承租人 2:共同承租人                      |   int   | 1                     |
+| PreviousCarPath   | 前車照片                                                     | string  |                       |
 | DiscountLabel     | 優惠標籤                                                     | object  |                       |
 
 * StationInfo回傳參數說明
@@ -3786,6 +3787,7 @@
                 "CAR_MGT_STATUS": 0,
                 "AppStatus": 1,
                 "RenterType": 1,
+				"PreviousCarPath": "https://irentv2logdata.blob.core.windows.net/carpic/H11768471_1_20220413161530.png",
                 "DiscountLabel": null
             }
         ]

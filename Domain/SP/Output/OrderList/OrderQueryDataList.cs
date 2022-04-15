@@ -272,6 +272,10 @@ namespace Domain.SP.Output.OrderList
         /// 共同承租人每小時安心服務價格
         /// </summary>
         public int JointInsurancePerHour { get; set; }
+        /// <summary>
+        /// 前車圖片名稱
+        /// </summary>
+        public string PreviousCarImage { set; get; }
         #endregion
         #region 標籤優惠相關
         /// <summary>
