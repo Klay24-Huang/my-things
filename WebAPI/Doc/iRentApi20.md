@@ -310,6 +310,8 @@
 
 20220413 新增取車前判斷車輛狀態(CheckCarStatus)、取得汽車狀態(GetCarStatus)
 
+20220415 取得租金明細(GetPayDetail)增加可折抵時數
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -5018,6 +5020,7 @@
 | BookingEndDate               | 預計還車時間           | string | 2022-03-24 15:41:00 |
 | RentalDate                   | 實際還車時間           | string | 2022-03-24 15:41:00 |
 | RentalTimeInterval           | 實際租用時數           | string | 120                 |
+| CanDiscountTime              | 可折抵時數             |  int   | 90                  |
 | RedeemingTimeInterval        | 可使用的折抵總時數     | string | 600                 |
 | RedeemingTimeCarInterval     | 可使用的折抵時數(汽車) | string | 600                 |
 | RedeemingTimeMotorInterval   | 可使用的折抵時數(機車) | string | 0                   |
@@ -5088,15 +5091,16 @@
         "CanUseMonthRent": 1,
         "IsMonthRent": 0,
         "IsMotor": 0,
-        "UseOrderPrice": 172,
+        "UseOrderPrice": 170,
         "ReturnOrderPrice": 0,
         "FineOrderPrice": 0,
         "Rent": {
-            "CarNo": "RCG-2261",
-            "BookingStartDate": "2022-03-24 13:41:00",
-            "BookingEndDate": "2022-03-24 15:41:00",
-            "RentalDate": "2022-03-24 15:41:00",
+            "CarNo": "RCF-8151",
+            "BookingStartDate": "2022-04-15 09:00:00",
+            "BookingEndDate": "2022-04-15 11:03:00",
+            "RentalDate": "2022-04-15 11:03:00",
             "RentalTimeInterval": "120",
+            "CanDiscountTime": 90,
             "RedeemingTimeInterval": "600",
             "RedeemingTimeCarInterval": "600",
             "RedeemingTimeMotorInterval": "0",
@@ -5115,8 +5119,8 @@
             "InsurancePurePrice": 0,
             "InsuranceExtPrice": 0,
             "TotalRental": 165,
-            "PreAmount": 172,
-            "DiffAmount": -7
+            "PreAmount": 170,
+            "DiffAmount": -5
         },
         "CarRent": {
             "HourOfOneDay": 10,

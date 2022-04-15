@@ -323,16 +323,14 @@ namespace WebAPI.Models.BillFunc
 
             var allDay = GetDateMark(SD, ED, lstHoliday, mOri); //區間內時間註記
             var dayPayList = GetCarTypeMins(SD, ED, daybaseMins, dayMaxHour * 60, allDay);  //全分類時間
-            
-            re.RentInMins = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());     // 扣掉免費時數前先記錄總租用時數
 
             if (FreeMins > 0 && dayPayList != null && dayPayList.Count() > 0)
                 dayPayList = befMinsFree(FreeMins, dayPayList);
 
+            re.RentInMins = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());     // 扣掉免費時數後記錄總租用時數
+
             var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();   //一般時段
             var dpList = new List<DayPayMins>();    //剩餘有分鐘數的
-
-            re.DiscRentInMins = Convert.ToInt32(norList.Select(x => x.xMins).Sum());    // 扣掉免費時數剩餘時數為可折抵時數
 
             #region 費率回存
             if (dayPayList != null && dayPayList.Count() > 0)
@@ -381,7 +379,7 @@ namespace WebAPI.Models.BillFunc
                         {
                             var useDisc = RemainGiveMinute > x.xMins ? x.xMins : RemainGiveMinute;
                             RemainGiveMinute -= useDisc;
-                            x.xMins = x.xMins - useDisc;
+                            x.xMins -= useDisc;
                             UseGiveMinute += useDisc;
                         }
                     });
@@ -526,6 +524,8 @@ namespace WebAPI.Models.BillFunc
             }
 
             re.UseGiveMinute = Convert.ToInt32(UseGiveMinute);
+            // 20220414 UPD BY YEH REASON:此欄位改為記錄 實際租用時數 - 訂閱制時數 - 標籤優惠時數，用意是記錄一個未折抵的數字，讓APP在部分折抵可以使用
+            re.DiscRentInMins = re.RentInMins - Convert.ToInt32(re.useMonthDisc + UseGiveMinute);
 
             dre = dre > 0 ? dre : 0;
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
@@ -618,13 +618,11 @@ namespace WebAPI.Models.BillFunc
                     {
                         var useDisc = RemainGiveMinute > x.xMins ? x.xMins : RemainGiveMinute;
                         RemainGiveMinute -= useDisc;
-                        x.xMins = x.xMins - useDisc;
+                        x.xMins -= useDisc;
                         UseGiveMinute += useDisc;
                     }
                 });
             }
-
-            var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();   //一般時段
 
             #region 判斷每分鐘費率
             if (dayPayList != null && dayPayList.Count() > 0)
@@ -657,9 +655,6 @@ namespace WebAPI.Models.BillFunc
                 dayPayList = GetDateGroup(norDates, "nor_", dayPayList);
             }
             #endregion
-
-            if (norList != null && norList.Count() > 0)
-                re.DiscRentInMins = Convert.ToInt32(norList.Select(x => x.xMins).Sum());    // 可折抵時數=使用分鐘數
 
             double wDisc = 0; //平日折扣
             double hDisc = 0; //假日則扣  
@@ -710,6 +705,7 @@ namespace WebAPI.Models.BillFunc
             nowDisc = nowDisc > allMins ? allMins : nowDisc;//自動縮減
 
             //一般計費日
+            var norList = dayPayList.Where(x => norDates.Any(y => y == x.DateType)).ToList();   //一般時段
             if (norList != null && norList.Count() > 0)
             {
                 List<string> gIDs = norList.GroupBy(x => x.dayGroupId).Select(y => y.FirstOrDefault().dayGroupId).OrderBy(z => z).ToList();
@@ -817,12 +813,13 @@ namespace WebAPI.Models.BillFunc
                 re.mFinal = mFinal;
             }
 
-            dre = dre > 0 ? dre : 0;
-
             re.useMonthDiscW = m_wDisc;
             re.useMonthDiscH = m_hDisc;
             re.UseGiveMinute = Convert.ToInt32(UseGiveMinute);
+            // 20220414 UPD BY YEH REASON:此欄位改為記錄 實際租用時數 - 訂閱制時數 - 標籤優惠時數，用意是記錄一個未折抵的數字，讓APP在部分折抵可以使用
+            re.DiscRentInMins = re.RentInMins - Convert.ToInt32(m_wDisc + m_hDisc + UseGiveMinute);
 
+            dre = dre > 0 ? dre : 0;
             re.RentInPay = Convert.ToInt32(Math.Round(dre, 0, MidpointRounding.AwayFromZero));
 
             return re;
