@@ -66,6 +66,7 @@
 - [GetPayDetail 取得租金明細](#GetPayDetail)
 - [CreditAuth 付款與還款](#CreditAuth)
 - [GetCarStatus 取得汽車狀態](#GetCarStatus)
+- [GetFeedBackKindDescript 取得回饋類別](#GetFeedBackKindDescript)
 
 月租訂閱制相關
 
@@ -311,6 +312,8 @@
 20220413 新增取車前判斷車輛狀態(CheckCarStatus)、取得汽車狀態(GetCarStatus)
 
 20220415 取得租金明細(GetPayDetail)增加可折抵時數
+
+20220415 新增取得回饋類別(GetFeedBackKindDescript)
 
 # API位置
 
@@ -5405,6 +5408,101 @@
 		"IndoorLightStatus": 0,
 		"SecurityStatus": 1
 	}
+}
+```
+
+## GetFeedBackKindDescript 取得回饋類別
+
+### [/api/GetFeedBackKindDescript/]
+
+* 20220415新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明              | 必要 | 型態 | 範例 |
+| -------- | --------------------- | :--: | :--: | ---- |
+| IsMotor  | 是否為機車(0:否 1:是) |  Y   | int  | 0    |
+
+
+* input範例
+
+```
+{
+    "IsMotor" : 0
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data 回傳參數說明
+
+| 參數名稱    | 參數說明 | 型態 | 範例 |
+| ----------- | -------- | :--: | ---- |
+| DescriptObj | 回饋項目 | list |      |
+
+* 回饋項目參數說明
+
+| 參數名稱       | 參數說明 |  型態  | 範例           |
+| -------------- | -------- | :----: | -------------- |
+| Star           | 星星數   |  int   | 1              |
+| Descript       | 描述     | string | 取還車流程不佳 |
+| FeedBackKindId | ID       |  int   | 21             |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "DescriptObj": [
+            {
+                "Star": 1,
+                "Descript": "取還車流程不佳",
+                "FeedBackKindId": 21
+            },
+            {
+                "Star": 1,
+                "Descript": "車輛整潔不佳",
+                "FeedBackKindId": 22
+            },
+            {
+                "Star": 1,
+                "Descript": "車輛設備不佳",
+                "FeedBackKindId": 23
+            },
+            {
+                "Star": 1,
+                "Descript": "不佳的 CP 值",
+                "FeedBackKindId": 24
+            },
+            {
+                "Star": 1,
+                "Descript": "客服服務待加強",
+                "FeedBackKindId": 25
+            }
+        ]
+    }
 }
 ```
 
