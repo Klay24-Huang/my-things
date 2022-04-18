@@ -6,6 +6,8 @@
 
 註冊相關
 
+- [CheckAccountExist 判斷帳號是否存在](#CheckAccountExist)
+- [Register_Step1 發送手機驗證](#Register_Step1)
 - [Register_Step2 設定密碼](#Register_Step2)
 - [RegisterMemberData 設定會員資料](#RegisterMemberData)
 
@@ -313,7 +315,7 @@
 
 20220415 取得租金明細(GetPayDetail)增加可折抵時數
 
-20220415 新增取得回饋類別(GetFeedBackKindDescript)
+20220415 新增取得回饋類別(GetFeedBackKindDescript)、判斷帳號是否存在(CheckAccountExist)、發送手機驗證(Register_Step1)
 
 # API位置
 
@@ -346,6 +348,134 @@
 ----------
 
 # 註冊相關
+
+## CheckAccountExist 判斷帳號是否存在
+
+### [/api/CheckAccountExist/]
+
+- 20220415新增
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- 動作 [POST]
+
+- Input 傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
+| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
+| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
+| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
+| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
+
+* Input範例
+
+```
+{
+    "IDNO": "A123456789",
+    "DeviceID": "170f2199f13bf36bcb6bf85a3e1c19c99",
+    "app": 0,
+    "appVersion": "5.10.0"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息              | 說明                               |
+| -------- | --------------------- | ---------------------------------- |
+| ERR130   | 此身份證/居留證已存在 | 註冊檢查帳號時，若帳號已存在時回傳 |
+
+## Register_Step1 發送手機驗證
+
+### [/api/Register_Step1/]
+
+- 20210811發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- 動作 [POST]
+
+- Input 傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
+| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
+| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
+| Mobile     | 手機                     |  Y   | string | 0912345678                        |
+| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
+| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
+
+* Input範例
+
+```
+{
+    "IDNO": "A123456789",
+    "Mobile": "0912345678",
+    "PWD": "0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app": 0,
+    "appVersion": "5.10.0"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                     | 說明                               |
+| -------- | -------------------------------------------- | ---------------------------------- |
+| ERR106   | 手機號碼格式錯誤                             | 註冊時驗證手機格式是否錯誤         |
+| ERR114   | 這個手機號碼不開放驗證，請洽鄰近和運租車門市 | 拒往名單阻擋                       |
+| ERR130   | 此身份證/居留證已存在                        | 註冊檢查帳號時，若帳號已存在時回傳 |
 
 ## Register_Step2 設定密碼
 
