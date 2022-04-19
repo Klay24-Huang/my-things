@@ -70,6 +70,7 @@
 - [GetCarStatus 取得汽車狀態](#GetCarStatus)
 - [GetFeedBackKindDescript 取得回饋類別](#GetFeedBackKindDescript)
 - [FeedBack 還車回饋](#FeedBack)
+- [OpenDoor 一次性開門申請](#OpenDoor)
 
 月租訂閱制相關
 
@@ -319,6 +320,8 @@
 20220415 新增取得回饋類別(GetFeedBackKindDescript)、判斷帳號是否存在(CheckAccountExist)、發送手機驗證(Register_Step1)
 
 20220418 新增還車回饋(FeedBack)
+
+20220419 新增一次性開門申請(OpenDoor)
 
 # API位置
 
@@ -5673,6 +5676,59 @@
     "Star": 5,
     "FeedBackKind": [ 1, 3, 5 ],
     "Descript": "TEST"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+## OpenDoor 一次性開門申請
+
+### [/api/OpenDoor/]
+
+* 20220419新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
+| -------- | -------- | :--: | :----: | --------- |
+| OrderNo  | 訂單編號 |  Y   | string | H11768647 |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H11768647"   
 }
 ```
 
