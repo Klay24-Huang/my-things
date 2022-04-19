@@ -524,7 +524,7 @@ namespace WebAPI.Controllers
                         //所以把存檔功能先提早完成再進行信用卡授權
                         if (flag)
                         {
-                            string SPName = "usp_CreditAuth_U01_V20220321";
+                            string SPName = "usp_CreditAuth_U02_V20220321";
 
                             object[] objparms = new object[TradeCloseLists.Count == 0 ? 1 : TradeCloseLists.Count];
 
