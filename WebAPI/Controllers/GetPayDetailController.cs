@@ -543,6 +543,7 @@ namespace WebAPI.Controllers
                     int car_inPrice = 0;        //未超時費用
                     int car_outPrice = 0;       //逾時費用
                     int UseGiveMinute = 0;      // 使用標籤優惠分鐘數
+                    int CanDiscountTime = 0;    // 可折抵時數
 
                     if (flag)
                     {
@@ -566,6 +567,7 @@ namespace WebAPI.Controllers
                                     car_inPrice = car_re.RentInPay;
                                     nor_car_PayDisc = car_re.useDisc;
                                     UseGiveMinute = car_re.UseGiveMinute;
+                                    CanDiscountTime = car_re.DiscRentInMins;
                                 }
                             }
                             else
@@ -579,6 +581,7 @@ namespace WebAPI.Controllers
                                     car_inPrice = car_re.RentInPay;
                                     nor_car_PayDisc = car_re.useDisc;
                                     UseGiveMinute = car_re.UseGiveMinute;
+                                    CanDiscountTime = car_re.DiscRentInMins;
                                 }
                             }
                             trace.FlowList.Add("汽車計費資訊(非月租)");
@@ -945,10 +948,9 @@ namespace WebAPI.Controllers
                         #region 修正輸出欄位                 
                         if (ProjType == 4)  // 機車
                         {
-                            outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
-                            // 20211209 UPD BY YEH REASON:給前端顯示的租用時數改用可折抵時數
                             outputApi.Rent.RentalTimeInterval = carInfo.RentInMins.ToString();  //租用時數(未逾時)
-                            //outputApi.Rent.RentalTimeInterval = carInfo.DiscRentInMins.ToString();  // 可折抵時數
+                            outputApi.Rent.CanDiscountTime = carInfo.DiscRentInMins;
+                            outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
                             outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
                             outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
                             outputApi.Rent.UseGiveMinute = carInfo.UseGiveMinute;
@@ -974,8 +976,9 @@ namespace WebAPI.Controllers
                         {
                             if (UseMonthMode)   //true:有月租;false:無月租
                             {
-                                outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
                                 outputApi.Rent.RentalTimeInterval = carInfo.RentInMins.ToString();//租用時數(未逾時)
+                                outputApi.Rent.CanDiscountTime = carInfo.DiscRentInMins;
+                                outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
                                 outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
                                 outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
                                 outputApi.Rent.UseGiveMinute = carInfo.UseGiveMinute;
@@ -984,8 +987,9 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-                                outputApi.Rent.ActualRedeemableTimeInterval = (car_payInMins - UseGiveMinute).ToString(); //可折抵租用時數
                                 outputApi.Rent.RentalTimeInterval = car_payInMins.ToString(); //租用時數(未逾時)
+                                outputApi.Rent.CanDiscountTime = CanDiscountTime;
+                                outputApi.Rent.ActualRedeemableTimeInterval = (car_payInMins - UseGiveMinute).ToString(); //可折抵租用時數
                                 outputApi.Rent.UseNorTimeInterval = Discount.ToString();
                                 outputApi.Rent.UseGiveMinute = UseGiveMinute;
                                 outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount - UseGiveMinute).ToString();    //未逾時折抵後的租用時數

@@ -31,6 +31,11 @@
         public string RentalTimeInterval { set; get; } = "0";
 
         /// <summary>
+        /// 可折抵時數 (實際租用時數 - 訂閱制時數 - 標籤優惠時數)
+        /// </summary>
+        public int CanDiscountTime { get; set; }
+
+        /// <summary>
         /// 可使用的折抵總時數 (汽車:RedeemingTimeCarInterval 機車:RedeemingTimeCarInterval+RedeemingTimeMotorInterval)
         /// </summary>
         public string RedeemingTimeInterval { set; get; } = "0";
