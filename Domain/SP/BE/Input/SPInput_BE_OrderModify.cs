@@ -154,5 +154,9 @@ namespace Domain.SP.BE.Input
         /// 修改者
         /// </summary>
         public string UserID { set; get; }
+        /// <summary>
+        /// 實際使用優惠時數
+        /// </summary>
+        public int UseMin { get; set; }
     }
 }

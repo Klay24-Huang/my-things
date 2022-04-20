@@ -6,6 +6,8 @@
 
 註冊相關
 
+- [CheckAccountExist 判斷帳號是否存在](#CheckAccountExist)
+- [Register_Step1 發送手機驗證](#Register_Step1)
 - [Register_Step2 設定密碼](#Register_Step2)
 - [RegisterMemberData 設定會員資料](#RegisterMemberData)
 
@@ -58,12 +60,17 @@
 取還車跟車機操控相關
 
 - [ChangeUUCard 變更悠遊卡](#ChangeUUCard)
+- [CheckCarStatus 取車前判斷車輛狀態](#CheckCarStatus)
 - [BookingStart 汽車取車](#BookingStart)
 - [BookingStartMotor 機車取車](#BookingStartMotor)
 - [BookingExtend 延長用車](#BookingExtend)
 - [ReturnCar 還車](#ReturnCar)
 - [GetPayDetail 取得租金明細](#GetPayDetail)
 - [CreditAuth 付款與還款](#CreditAuth)
+- [GetCarStatus 取得汽車狀態](#GetCarStatus)
+- [GetFeedBackKindDescript 取得回饋類別](#GetFeedBackKindDescript)
+- [FeedBack 還車回饋](#FeedBack)
+- [OpenDoor 一次性開門申請](#OpenDoor)
 
 月租訂閱制相關
 
@@ -306,6 +313,16 @@
 
 20220329 新增上傳出還車照片(UploadCarImage)
 
+20220413 新增取車前判斷車輛狀態(CheckCarStatus)、取得汽車狀態(GetCarStatus)
+
+20220415 取得租金明細(GetPayDetail)增加可折抵時數
+
+20220415 新增取得回饋類別(GetFeedBackKindDescript)、判斷帳號是否存在(CheckAccountExist)、發送手機驗證(Register_Step1)
+
+20220418 新增還車回饋(FeedBack)
+
+20220419 新增一次性開門申請(OpenDoor)
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -337,6 +354,134 @@
 ----------
 
 # 註冊相關
+
+## CheckAccountExist 判斷帳號是否存在
+
+### [/api/CheckAccountExist/]
+
+- 20220415新增
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- 動作 [POST]
+
+- Input 傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
+| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
+| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
+| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
+| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
+
+* Input範例
+
+```
+{
+    "IDNO": "A123456789",
+    "DeviceID": "170f2199f13bf36bcb6bf85a3e1c19c99",
+    "app": 0,
+    "appVersion": "5.10.0"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息              | 說明                               |
+| -------- | --------------------- | ---------------------------------- |
+| ERR130   | 此身份證/居留證已存在 | 註冊檢查帳號時，若帳號已存在時回傳 |
+
+## Register_Step1 發送手機驗證
+
+### [/api/Register_Step1/]
+
+- 20210811發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- 動作 [POST]
+
+- Input 傳入參數說明
+
+| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
+| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
+| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
+| Mobile     | 手機                     |  Y   | string | 0912345678                        |
+| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
+| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
+
+* Input範例
+
+```
+{
+    "IDNO": "A123456789",
+    "Mobile": "0912345678",
+    "PWD": "0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app": 0,
+    "appVersion": "5.10.0"
+}
+```
+
+* Output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                     | 說明                               |
+| -------- | -------------------------------------------- | ---------------------------------- |
+| ERR106   | 手機號碼格式錯誤                             | 註冊時驗證手機格式是否錯誤         |
+| ERR114   | 這個手機號碼不開放驗證，請洽鄰近和運租車門市 | 拒往名單阻擋                       |
+| ERR130   | 此身份證/居留證已存在                        | 註冊檢查帳號時，若帳號已存在時回傳 |
 
 ## Register_Step2 設定密碼
 
@@ -4478,6 +4623,59 @@
     }
 }
 ```
+## CheckCarStatus 取車前判斷車輛狀態
+
+### [/api/CheckCarStatus/]
+
+* 20220413新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
+| -------- | -------- | :--: | :----: | --------- |
+| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H10641049"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
 ## BookingStart 汽車取車
 
 ### [/api/BookingStart/]
@@ -4711,6 +4909,7 @@
 | ERR182   | 您延長用車時間重疊到您之後的預約用車時間，請先取消重疊的訂單再做延長。 | 延長用車時間重疊到之後的預約用車時間   |
 | ERR237   | 延長用車時間最少1小時                                        | 延長用車時間最少1小時                  |
 | ERR604   | 延長用車取授權未成功，請盡速檢查卡片餘額或是重新綁卡         | 延長用車取授權未成功                   |
+
 ## UploadCarImage 上傳出還車照片
 
 ### [/api/UploadCarImage/]
@@ -4962,6 +5161,7 @@
 | BookingEndDate               | 預計還車時間           | string | 2022-03-24 15:41:00 |
 | RentalDate                   | 實際還車時間           | string | 2022-03-24 15:41:00 |
 | RentalTimeInterval           | 實際租用時數           | string | 120                 |
+| CanDiscountTime              | 可折抵時數             |  int   | 90                  |
 | RedeemingTimeInterval        | 可使用的折抵總時數     | string | 600                 |
 | RedeemingTimeCarInterval     | 可使用的折抵時數(汽車) | string | 600                 |
 | RedeemingTimeMotorInterval   | 可使用的折抵時數(機車) | string | 0                   |
@@ -5032,15 +5232,16 @@
         "CanUseMonthRent": 1,
         "IsMonthRent": 0,
         "IsMotor": 0,
-        "UseOrderPrice": 172,
+        "UseOrderPrice": 170,
         "ReturnOrderPrice": 0,
         "FineOrderPrice": 0,
         "Rent": {
-            "CarNo": "RCG-2261",
-            "BookingStartDate": "2022-03-24 13:41:00",
-            "BookingEndDate": "2022-03-24 15:41:00",
-            "RentalDate": "2022-03-24 15:41:00",
+            "CarNo": "RCF-8151",
+            "BookingStartDate": "2022-04-15 09:00:00",
+            "BookingEndDate": "2022-04-15 11:03:00",
+            "RentalDate": "2022-04-15 11:03:00",
             "RentalTimeInterval": "120",
+            "CanDiscountTime": 90,
             "RedeemingTimeInterval": "600",
             "RedeemingTimeCarInterval": "600",
             "RedeemingTimeMotorInterval": "0",
@@ -5059,8 +5260,8 @@
             "InsurancePurePrice": 0,
             "InsuranceExtPrice": 0,
             "TotalRental": 165,
-            "PreAmount": 172,
-            "DiffAmount": -7
+            "PreAmount": 170,
+            "DiffAmount": -5
         },
         "CarRent": {
             "HourOfOneDay": 10,
@@ -5274,6 +5475,288 @@
 | ERR932   | 錢包未開通                                       | 錢包未開通                                       |
 | ERR933   | 錢包扣款失敗                                     | 錢包扣款失敗                                     |
 | ERR934   | 錢包餘額不足                                     | 錢包餘額不足                                     |
+
+## GetCarStatus 取得汽車狀態
+
+### [/api/GetCarStatus/]
+
+* 20220413新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| CarNo    | 車牌     |  Y   | string | RBX-1722 |
+
+
+* input範例
+
+```
+{
+	"CarNo": "RBX-1722"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data參數說明
+
+| 參數名稱          | 參數說明                                                     |  型態  | 範例     |
+| ----------------- | ------------------------------------------------------------ | :----: | -------- |
+| CarNo             | 車號                                                         | string | RBX-1722 |
+| PowerOnStatus     | 引擎狀態，發動為1，熄火為0                                   |  int   | 1        |
+| CentralLockStatus | 中控鎖狀態：1為上鎖，0為解鎖                                 |  int   | 1        |
+| DoorStatus        | 車門狀態：1111關門;0000開門                                  | string | 1111     |
+| LockStatus        | 門鎖狀態：1為上鎖，0為解鎖<br>四個門鎖分別為：駕駛門鎖、副駕駛門、乘客門鎖、後行李箱門鎖 | string | 1111     |
+| IndoorLightStatus | 車內燈：1為開啟，0為關閉                                     |  int   | 0        |
+| SecurityStatus    | 防盜鎖狀態：1為開啟，0為關閉                                 |  int   | 1        |
+
+* Output範例
+
+```
+{
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {
+		"CarNo": "RBX-1722 ",
+		"PowerOnStatus": 1,
+		"CentralLockStatus": 1,
+		"DoorStatus": "1111",
+		"LockStatus": "1111",
+		"IndoorLightStatus": 0,
+		"SecurityStatus": 1
+	}
+}
+```
+
+## GetFeedBackKindDescript 取得回饋類別
+
+### [/api/GetFeedBackKindDescript/]
+
+* 20220415新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明              | 必要 | 型態 | 範例 |
+| -------- | --------------------- | :--: | :--: | ---- |
+| IsMotor  | 是否為機車(0:否 1:是) |  Y   | int  | 0    |
+
+
+* input範例
+
+```
+{
+    "IsMotor" : 0
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data 回傳參數說明
+
+| 參數名稱    | 參數說明 | 型態 | 範例 |
+| ----------- | -------- | :--: | ---- |
+| DescriptObj | 回饋項目 | list |      |
+
+* 回饋項目參數說明
+
+| 參數名稱       | 參數說明 |  型態  | 範例           |
+| -------------- | -------- | :----: | -------------- |
+| Star           | 星星數   |  int   | 1              |
+| Descript       | 描述     | string | 取還車流程不佳 |
+| FeedBackKindId | ID       |  int   | 21             |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "DescriptObj": [
+            {
+                "Star": 1,
+                "Descript": "取還車流程不佳",
+                "FeedBackKindId": 21
+            },
+            {
+                "Star": 1,
+                "Descript": "車輛整潔不佳",
+                "FeedBackKindId": 22
+            },
+            {
+                "Star": 1,
+                "Descript": "車輛設備不佳",
+                "FeedBackKindId": 23
+            },
+            {
+                "Star": 1,
+                "Descript": "不佳的 CP 值",
+                "FeedBackKindId": 24
+            },
+            {
+                "Star": 1,
+                "Descript": "客服服務待加強",
+                "FeedBackKindId": 25
+            }
+        ]
+    }
+}
+```
+
+## FeedBack 還車回饋
+
+### [/api/FeedBack/]
+
+* 20220418新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱     | 參數說明             | 必要 |   型態    | 範例      |
+| ------------ | -------------------- | :--: | :-------: | --------- |
+| OrderNo      | 訂單編號             |  Y   |  string   | H11768647 |
+| Mode         | 類型 (0:取車 1:還車) |  Y   |    int    | 1         |
+| Star         | 星星數               |  Y   |    int    | 5         |
+| FeedBackKind | 回饋類別             |  N   | List<int> | 1,3,5     |
+| Descript     | 描述                 |  N   |  string   | TEST      |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H11768647",
+    "Mode": 1,
+    "Star": 5,
+    "FeedBackKind": [ 1, 3, 5 ],
+    "Descript": "TEST"
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+## OpenDoor 一次性開門申請
+
+### [/api/OpenDoor/]
+
+* 20220419新增
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
+| -------- | -------- | :--: | :----: | --------- |
+| OrderNo  | 訂單編號 |  Y   | string | H11768647 |
+
+
+* input範例
+
+```
+{
+    "OrderNo": "H11768647"   
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
 
 # 月租訂閱制相關
 

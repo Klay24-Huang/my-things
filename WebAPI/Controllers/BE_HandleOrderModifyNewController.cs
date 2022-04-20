@@ -505,7 +505,8 @@ namespace WebAPI.Controllers
                 Insurance_price = apiInput.Insurance_price,
                 Mileage = apiInput.Mileage,
                 Pure = apiInput.Pure,
-                ParkingFeeTotal = apiInput.ParkingFeeTotal
+                ParkingFeeTotal = apiInput.ParkingFeeTotal,
+                UseMin = apiInput.UseMin
             };
             SPOutput_Base spOut = new SPOutput_Base();
 
