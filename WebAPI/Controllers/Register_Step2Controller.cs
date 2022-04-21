@@ -1,13 +1,14 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
+using Domain.WebAPI.output.HiEasyRentAPI;
+using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
@@ -39,6 +40,7 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             Int16 APPKind = 2;
             string Contentjson = "";
+            int MEMRFNBR = 0;
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
@@ -91,14 +93,32 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
+            #region 取得MEMRFNBR
+            //20201125 ADD BY ADAM REASON.寫入帳號前先去短租那邊取得MEMRFNBR
             if (flag)
             {
-                string spName = new ObjType().GetSPName(ObjType.SPType.Register_Step2);
+                WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
+                HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                flag = wsAPI.NPR013Reg(apiInput.IDNO, "", ref wsOutput);
+                if (flag)
+                {
+                    if (wsOutput.Data.Length > 0)
+                    {
+                        MEMRFNBR = wsOutput.Data[0].MEMRFNBR == "" ? 0 : MEMRFNBR_FromStr(wsOutput.Data[0].MEMRFNBR);
+                    }
+                }
+            }
+            #endregion
+            #region 設定密碼
+            if (flag)
+            {
+                string spName = "usp_Register_Step2_U01";
                 SPInput_Register_Step2 spInput = new SPInput_Register_Step2()
                 {
                     LogID = LogID,
                     IDNO = apiInput.IDNO,
                     PWD = apiInput.PWD,
+                    MEMRFNBR = MEMRFNBR,
                     DeviceID = apiInput.DeviceID,
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
@@ -106,6 +126,7 @@ namespace WebAPI.Controllers
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
             }
+            #endregion
             #endregion
 
             #region 寫入錯誤Log
@@ -118,6 +139,13 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, ApiOutput, token);
             return objOutput;
             #endregion
+        }
+        private int MEMRFNBR_FromStr(string sour)
+        {
+            if (double.TryParse(sour, out double d_sour))
+                return Convert.ToInt32(Math.Floor(d_sour));
+            else
+                throw new Exception("MEMRFNBR格式錯誤");
         }
     }
 }
