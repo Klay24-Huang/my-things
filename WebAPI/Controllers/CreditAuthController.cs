@@ -601,29 +601,29 @@ namespace WebAPI.Controllers
 
                         #region 換電獎勵
                         //20201201 ADD BY ADAM REASON.換電獎勵
-                        if (flag && OrderDataLists[0].ProjType == 4 && RewardPoint > 0)
-                        {
-                            WebAPIOutput_NPR380Save wsOutput = new WebAPIOutput_NPR380Save();
-                            HiEasyRentAPI wsAPI = new HiEasyRentAPI();
-                            flag = wsAPI.NPR380Save(IDNO, RewardPoint.ToString(), apiInput.OrderNo, ref wsOutput);
+                        //if (flag && OrderDataLists[0].ProjType == 4 && RewardPoint > 0)
+                        //{
+                        //    WebAPIOutput_NPR380Save wsOutput = new WebAPIOutput_NPR380Save();
+                        //    HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                        //    flag = wsAPI.NPR380Save(IDNO, RewardPoint.ToString(), apiInput.OrderNo, ref wsOutput);
 
-                            trace.traceAdd("NPR380Save", new { IDNO, RewardPoint, apiInput.OrderNo, wsOutput });
+                        //    trace.traceAdd("NPR380Save", new { IDNO, RewardPoint, apiInput.OrderNo, wsOutput });
 
-                            //存檔
-                            string SPName = "usp_SaveNPR380Result";
-                            SPOutput_Base NPR380Output = new SPOutput_Base();
-                            SPInput_SetRewardResult NPR380Input = new SPInput_SetRewardResult()
-                            {
-                                OrderNo = tmpOrder,
-                                Result = flag == true ? 1 : 0,
-                                LogID = LogID
-                            };
-                            SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
-                            flag = SQLPayHelp.ExecuteSPNonQuery(SPName, NPR380Input, ref NPR380Output, ref lstError);
-                            baseVerify.checkSQLResult(ref flag, ref NPR380Output, ref lstError, ref errCode);
+                        //    //存檔
+                        //    string SPName = "usp_SaveNPR380Result";
+                        //    SPOutput_Base NPR380Output = new SPOutput_Base();
+                        //    SPInput_SetRewardResult NPR380Input = new SPInput_SetRewardResult()
+                        //    {
+                        //        OrderNo = tmpOrder,
+                        //        Result = flag == true ? 1 : 0,
+                        //        LogID = LogID
+                        //    };
+                        //    SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
+                        //    flag = SQLPayHelp.ExecuteSPNonQuery(SPName, NPR380Input, ref NPR380Output, ref lstError);
+                        //    baseVerify.checkSQLResult(ref flag, ref NPR380Output, ref lstError, ref errCode);
 
-                            trace.traceAdd("SaveNPR380Result", new { flag, NPR380Input, NPR380Output, lstError });
-                        }
+                        //    trace.traceAdd("SaveNPR380Result", new { flag, NPR380Input, NPR380Output, lstError });
+                        //}
                         #endregion
 
                         #region 寫還車照片到azure
