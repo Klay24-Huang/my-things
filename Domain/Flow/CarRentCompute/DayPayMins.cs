@@ -81,5 +81,10 @@
         /// 是否為完整24H,1是,0否
         /// </summary>
         public bool isFull24H { get; set; }
+
+        /// <summary>
+        /// 使用優惠分鐘數
+        /// </summary>
+        public double UseGiveMinute { get; set; }
     }
 }

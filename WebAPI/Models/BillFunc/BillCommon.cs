@@ -606,12 +606,11 @@ namespace WebAPI.Models.BillFunc
             var dpList = new List<DayPayMins>();//剩餘有分鐘數的
 
             double UseGiveMinute = 0;
-            if (GiveMinute > 0)
+            if (GiveMinute > 0 && mins >= 6)
             {
                 double RemainGiveMinute = Convert.ToDouble(GiveMinute);
 
                 dpList = dayPayList.Where(v => v.xMins > 0).OrderByDescending(x => x.xRate).ThenBy(y => y.xSTime).ThenByDescending(z => z.haveNext).ToList();
-
                 dpList.ForEach(x =>
                 {
                     if (RemainGiveMinute > 0)
@@ -620,6 +619,11 @@ namespace WebAPI.Models.BillFunc
                         RemainGiveMinute -= useDisc;
                         x.xMins -= useDisc;
                         UseGiveMinute += useDisc;
+                        if (useDisc >= 6)
+                        {
+                            x.UseGiveMinute = useDisc;
+                            x.useBaseMins = 6;    // 優惠分鐘數>=6記錄使用基本時間分鐘 不然後續折抵會有問題
+                        }
                     }
                 });
             }
@@ -1833,7 +1837,7 @@ namespace WebAPI.Models.BillFunc
                 var fdate = fList.FirstOrDefault();//取出首日
                 string FdateType = "";//首日資料狀態
 
-                if ((fdate.isFull24H) || (!fdate.isFull24H && fList.Count() == 2))
+                if (fdate.isFull24H || (!fdate.isFull24H && fList.Count() == 2))
                     FdateType = sAll;
                 else if (fdate.haveNext == 1 && fList.Count() == 1)
                     FdateType = sFir;
@@ -1845,56 +1849,83 @@ namespace WebAPI.Models.BillFunc
                 if (FdateType == sAll)
                 {
                     var useDisc01 = tmpUseDisc > fdate.xMins ? fdate.xMins : tmpUseDisc;    //折扣自動縮減
-                    double f01_over6 = 0;    //超過基本分鐘的部分
+                    double f01_over6 = 0;    //超過基本分鐘的時數
 
-                    if (FreeMinute == 0)  // 免費分鐘數等於0，才計算超過基本分鐘的部分
+                    if (FreeMinute == 0)  // 免費分鐘數等於0，才計算超過基本分鐘的時數
                     {
-                        f01_over6 = fdate.xMins > dayBaseMins ? (fdate.xMins - dayBaseMins) : 0;
+                        if (fdate.useBaseMins == 0) // 使用基本時間分鐘=0，才計算超過基本分鐘的時數
+                        {
+                            f01_over6 = fdate.xMins > dayBaseMins ? (fdate.xMins - dayBaseMins) : 0;
+                        }
+                        else
+                        {
+                            f01_over6 = fdate.xMins;
+                        }
                     }
                     else
                     {
                         f01_over6 = fdate.xMins;
                     }
 
-                    //使用6分內不可折抵
-                    //if (Mins < 6)
-                    //    useDisc01 = 0;
-
                     if (fdate.DateType == wDateType)    // 平日
                     {
+                        #region 平日
                         if (useDisc01 == 0) // 折抵分鐘數 = 0
                         {
                             wLastMins += fdate.xMins;
-                            if (FreeMinute == 0)
-                                f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
-                            else
-                                f24Pay += fdate.xMins * priceNmin + dayBasePrice;   // 租金 = 使用分鐘數 * 每分鐘價格 + 基本消費
-                        }
-                        else
-                        {
-                            if (useDisc01 >= dayBaseMins)   // 折抵分鐘數 >= 基本分鐘數
+                            if (FreeMinute == 0)    // 免費分鐘數 = 0
                             {
-                                wLastMins += (fdate.xMins - useDisc01); // 折扣後平日剩餘分鐘 = 使用分鐘數 - 折抵分鐘數
-                                f24Pay += (fdate.xMins - useDisc01) * priceNmin;    // 租金 = (使用分鐘數-折抵分鐘數) * 每分鐘價格
-                                fdate.xMins -= useDisc01;   // 使用分鐘數 = 使用分鐘數 - 折抵分鐘數
-                                fdate.useBaseMins = dayBaseMins;
-                            }
-                            else
-                            {
-                                //折扣小於基本分只能折扣超過基本分的部分
-                                if (f01_over6 > 0)
+                                if (fdate.UseGiveMinute == 0)     // 使用優惠分鐘數 = 0
                                 {
-                                    useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
-                                    //f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceNmin;
-                                    // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
-                                    f24Pay += dayBasePrice + (f01_over6 - useDisc01) * priceNmin;
-                                    wLastMins += (fdate.xMins - useDisc01);
-                                    fdate.xMins -= useDisc01;
+                                    f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
                                 }
                                 else
                                 {
-                                    useDisc01 = 0;
-                                    f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
+                                    f24Pay += fdate.xMins * priceNmin;  // 租金 = 使用分鐘數 * 每分鐘價格
+                                }
+                            }
+                            else
+                            {
+                                f24Pay += fdate.xMins * priceNmin + dayBasePrice;   // 租金 = 使用分鐘數 * 每分鐘價格 + 基本消費
+                            }
+                        }
+                        else
+                        {
+                            if (fdate.UseGiveMinute == 0)   // 使用優惠分鐘數 = 0
+                            {
+                                if (useDisc01 >= dayBaseMins)   // 折抵分鐘數 >= 基本分鐘數
+                                {
+                                    wLastMins += fdate.xMins - useDisc01; // 折扣後平日剩餘分鐘 = 使用分鐘數 - 折抵分鐘數
+                                    f24Pay += (fdate.xMins - useDisc01) * priceNmin;    // 租金 = (使用分鐘數-折抵分鐘數) * 每分鐘價格
+                                    fdate.xMins -= useDisc01;   // 使用分鐘數 = 使用分鐘數 - 折抵分鐘數
+                                    fdate.useBaseMins = dayBaseMins;
+                                }
+                                else
+                                {
+                                    //折扣小於基本分只能折扣超過基本分的時數
+                                    if (f01_over6 > 0)
+                                    {
+                                        useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
+                                        // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
+                                        f24Pay += dayBasePrice + (f01_over6 - useDisc01) * priceNmin;
+                                        wLastMins += fdate.xMins - useDisc01;
+                                        fdate.xMins -= useDisc01;
+                                    }
+                                    else
+                                    {
+                                        useDisc01 = 0;
+                                        f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
+                                        wLastMins += fdate.xMins - useDisc01;
+                                        fdate.xMins -= useDisc01;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (f01_over6 > 0)
+                                {
+                                    useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
+                                    f24Pay += (f01_over6 - useDisc01) * priceNmin;
                                     wLastMins += fdate.xMins - useDisc01;
                                     fdate.xMins -= useDisc01;
                                 }
@@ -1902,49 +1933,73 @@ namespace WebAPI.Models.BillFunc
                             tmpUseDisc -= useDisc01;
                             f1_wDisc += useDisc01;
                         }
+                        #endregion
                     }
                     else if (fdate.DateType == hDateType)   // 假日
                     {
+                        #region 假日
                         if (useDisc01 == 0) // 折抵分鐘數 = 0
                         {
                             hLastMins += fdate.xMins;
                             if (FreeMinute == 0)
-                                f24Pay += (fdate.xMins - dayBaseMins) * priceNmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
+                            {
+                                if (fdate.UseGiveMinute == 0)     // 使用優惠分鐘數 = 0
+                                {
+                                    f24Pay += (fdate.xMins - dayBaseMins) * priceHmin + dayBasePrice;   // 租金 = (使用分鐘數-基本分鐘數) * 每分鐘價格 + 基本消費
+                                }
+                                else
+                                {
+                                    f24Pay += fdate.xMins * priceHmin;  // 租金 = 使用分鐘數 * 每分鐘價格
+                                }
+                            }
                             else
-                                f24Pay += fdate.xMins * priceNmin + dayBasePrice;   // 租金 = 使用分鐘數 * 每分鐘價格 + 基本消費
+                                f24Pay += fdate.xMins * priceHmin + dayBasePrice;   // 租金 = 使用分鐘數 * 每分鐘價格 + 基本消費
                         }
                         else
                         {
-                            if (useDisc01 >= dayBaseMins)   // 折抵分鐘數 >= 基本分鐘數
+                            if (fdate.UseGiveMinute == 0)   // 使用優惠分鐘數 = 0
                             {
-                                hLastMins += (fdate.xMins - useDisc01); // 折扣後平日剩餘分鐘 = 使用分鐘數 - 折抵分鐘數
-                                f24Pay += (fdate.xMins - useDisc01) * priceHmin;    // 租金 = (使用分鐘數-折抵分鐘數) * 每分鐘價格
-                                fdate.xMins -= useDisc01;   // 使用分鐘數 = 使用分鐘數 - 折抵分鐘數
-                                fdate.useBaseMins = dayBaseMins;
+                                if (useDisc01 >= dayBaseMins)   // 折抵分鐘數 >= 基本分鐘數
+                                {
+                                    hLastMins += (fdate.xMins - useDisc01); // 折扣後平日剩餘分鐘 = 使用分鐘數 - 折抵分鐘數
+                                    f24Pay += (fdate.xMins - useDisc01) * priceHmin;    // 租金 = (使用分鐘數-折抵分鐘數) * 每分鐘價格
+                                    fdate.xMins -= useDisc01;   // 使用分鐘數 = 使用分鐘數 - 折抵分鐘數
+                                    fdate.useBaseMins = dayBaseMins;
+                                }
+                                else
+                                {
+                                    if (f01_over6 > 0)
+                                    {
+                                        useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
+                                        //折扣小於基本分只能折扣超過基本分的部分
+                                        // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
+                                        f24Pay += dayBasePrice + (f01_over6 - useDisc01) * priceHmin;
+                                        hLastMins += (fdate.xMins - useDisc01);
+                                        fdate.xMins -= useDisc01;
+                                    }
+                                    else
+                                    {
+                                        useDisc01 = 0;
+                                        f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
+                                        wLastMins += fdate.xMins - useDisc01;
+                                        fdate.xMins -= useDisc01;
+                                    }
+                                }
                             }
                             else
                             {
                                 if (f01_over6 > 0)
                                 {
                                     useDisc01 = useDisc01 > f01_over6 ? f01_over6 : useDisc01;
-                                    //折扣小於基本分只能折扣超過基本分的部分
-                                    //f24Pay += dayBasePrice + ((fdate.xMins - dayBaseMins) - useDisc01) * priceHmin;
-                                    // 20211213 UPD BY YEH REASON:有訂閱制且扣除免費分鐘後使用時間<基本分鐘就會進來，改為不扣除基本分鐘數下去計算
-                                    f24Pay += dayBasePrice + (f01_over6 - useDisc01) * priceNmin;
+                                    f24Pay += (f01_over6 - useDisc01) * priceHmin;
                                     hLastMins += (fdate.xMins - useDisc01);
-                                    fdate.xMins -= useDisc01;
-                                }
-                                else
-                                {
-                                    useDisc01 = 0;
-                                    f24Pay += dayBasePrice;//使用未超過基本分,且折扣小於基本分時不能折
-                                    wLastMins += fdate.xMins - useDisc01;
                                     fdate.xMins -= useDisc01;
                                 }
                             }
                             tmpUseDisc -= useDisc01;
                             f1_hDisc += useDisc01;
                         }
+                        #endregion
                     }
 
                     if (fdate.haveNext == 1 && fList != null && fList.Count() >= 2)
