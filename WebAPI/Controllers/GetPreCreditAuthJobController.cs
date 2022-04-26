@@ -98,6 +98,7 @@ namespace WebAPI.Controllers
             {
                 var bookingList = PreOrderAuthList.Where(p => p.AuthType == 1);
                 var timeoutList = PreOrderAuthList.Where(p => p.AuthType == 5);
+                var use10hrList = PreOrderAuthList.Where(p => p.AuthType == 11);
 
                 //處理預約
                 foreach (var bookingObj in bookingList)
@@ -161,6 +162,29 @@ namespace WebAPI.Controllers
                 //        baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
                 //    }
                 //}
+
+                //處理使用10小時
+                foreach (var use10hrObj in use10hrList)
+                {
+                    var insertFlag = false;
+
+                    int estimateUsePrice = GetUseAmount(use10hrObj.order_number, use10hrObj.start_time, DateTime.Now);
+
+                    int prePaidAmount = use10hrObj.pre_final_Price;
+                    
+                    use10hrObj.pre_final_Price = estimateUsePrice > prePaidAmount ? estimateUsePrice - prePaidAmount : 0;
+
+                    SPInput_OrderAuth input = SetOrderAuthObj(use10hrObj, funName, AuthGateCount);
+
+                    insertFlag = commonService.InsertOrderAuth(input, ref errCode, ref lstError);
+                    if (!insertFlag)
+                    {
+                        string errString = SetErrorStringForLog("InsertOrderAuth", lstError, use10hrObj);
+
+                        logger.Trace(errString);
+                        baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
+                    }
+                }
 
                 errCode = "000000";
             }
@@ -235,6 +259,28 @@ namespace WebAPI.Controllers
                 ProjType = orderInfo.ProjType,
                 SD = stop_time,
                 ED = stop_time.AddDays(prepaidDays),
+                Insurance = orderInfo.Insurance,
+                InsurancePerHours = orderInfo.InsurancePerHours,
+                WeekdayPrice = orderInfo.WeekdayPrice,
+                HoildayPrice = orderInfo.HoildayPrice
+            };
+            EstimateDetail outData;
+            commonService.EstimatePreAuthAmt(estimateData, out outData);
+            return outData.estimateAmt;
+
+        }
+
+        private int GetUseAmount(Int64 order_number, DateTime startTime ,DateTime endTime)
+        {
+            CommonService commonService = new CommonService();
+            var orderInfo = commonService.GetOrderForPreAuth(order_number);
+
+            var estimateData = new EstimateData
+            {
+                ProjID = orderInfo.ProjID,
+                ProjType = orderInfo.ProjType,
+                SD = startTime,
+                ED = endTime,
                 Insurance = orderInfo.Insurance,
                 InsurancePerHours = orderInfo.InsurancePerHours,
                 WeekdayPrice = orderInfo.WeekdayPrice,
