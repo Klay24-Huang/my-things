@@ -31,5 +31,9 @@ namespace Domain.SP.Output.Booking
         public int car_mgt_status{set;get;}
         public int cancel_status {set;get;}
         public int booking_status{set;get;}
+        /// <summary>
+        /// 尋車需響喇叭 Y/N
+        /// </summary>
+        public string CarHornFlg { set; get; }
     }
 }

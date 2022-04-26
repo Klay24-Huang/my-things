@@ -76,6 +76,11 @@ namespace Domain.SP.BE.Input
         public int IsRequired { get; set; }
 
         /// <summary>
+        /// 尋車需響喇叭 Y/N
+        /// </summary>
+        public string CarHornFlg { set; get; }
+
+        /// <summary>
         /// 共同出車庫位
         /// </summary>
         public string StationPick { get; set; }

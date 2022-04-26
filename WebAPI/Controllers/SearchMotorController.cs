@@ -146,6 +146,18 @@ namespace WebAPI.Controllers
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
                             }
 
+                            if (spOut.CarHornFlg == "Y")
+                            {
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
+                            }
+                            else
+                            {
+                                //晚上不要吵人
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
+                            }
+
                             WSInput_Base<Params> input = new WSInput_Base<Params>()
                             {
                                 command = true,
