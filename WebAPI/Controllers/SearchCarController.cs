@@ -121,7 +121,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token
                 };
-                string SPName = "usp_GetCarMachineInfoCommon_U01";
+                string SPName = "usp_GetCarMachineInfoCommon_Q01";
                 SPOutput_CarMachineCommon spOut = new SPOutput_CarMachineCommon();
                 SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon> sqlHelp = new SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
