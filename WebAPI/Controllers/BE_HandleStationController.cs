@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
 
-                string spName = new ObjType().GetSPName(ObjType.SPType.BE_HandleStationNew); //←切回舊版改為BE_HandleStation即可
+                string spName = "usp_BE_HandleStationNew_U01"; //←切回舊版改為BE_HandleStation即可
                 SPInput_HandleStation spInput = new SPInput_HandleStation()
                 {
                     LogID = LogID,
@@ -164,6 +164,7 @@ namespace WebAPI.Controllers
                     fileName5 = apiInput.fileName5,
                     in_description = apiInput.in_description,
                     IsRequired = apiInput.IsRequired,
+                    CarHornFlg = apiInput.CarHornFlg,
                     ManagerStationID = apiInput.ManagerStationID,
                     Mode = apiInput.Mode,
                     OnlineNum = apiInput.OnlineNum,
