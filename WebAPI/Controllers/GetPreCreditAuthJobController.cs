@@ -168,12 +168,14 @@ namespace WebAPI.Controllers
                 {
                     var insertFlag = false;
 
-                    int estimateUsePrice = GetUseAmount(use10hrObj.order_number, use10hrObj.start_time, DateTime.Now);
+                    DateTime useStopTime = use10hrObj.start_time.AddHours(10);
+                    int estimateUsePrice = GetUseAmount(use10hrObj.order_number, use10hrObj.start_time, useStopTime);
 
                     int prePaidAmount = use10hrObj.pre_final_Price;
                     
                     use10hrObj.pre_final_Price = estimateUsePrice > prePaidAmount ? estimateUsePrice - prePaidAmount : 0;
 
+                   
                     SPInput_OrderAuth input = SetOrderAuthObj(use10hrObj, funName, AuthGateCount);
 
                     insertFlag = commonService.InsertOrderAuth(input, ref errCode, ref lstError);
@@ -184,6 +186,7 @@ namespace WebAPI.Controllers
                         logger.Trace(errString);
                         baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, errString);
                     }
+                    
                 }
 
                 errCode = "000000";
@@ -283,8 +286,8 @@ namespace WebAPI.Controllers
                 ED = endTime,
                 Insurance = orderInfo.Insurance,
                 InsurancePerHours = orderInfo.InsurancePerHours,
-                WeekdayPrice = orderInfo.WeekdayPrice,
-                HoildayPrice = orderInfo.HoildayPrice
+                WeekdayPrice = orderInfo.PRICE,
+                HoildayPrice = orderInfo.PRICE_H
             };
             EstimateDetail outData;
             commonService.EstimatePreAuthAmt(estimateData, out outData);
