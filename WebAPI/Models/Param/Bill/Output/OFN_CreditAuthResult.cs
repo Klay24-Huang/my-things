@@ -12,7 +12,7 @@ namespace WebAPI.Models.Param.Bill.Output
         /// </summary>
         public int CheckoutMode { get; set; }
         /// <summary>
-        /// 卡片系統來源(0:和泰Pay 1:台新)
+        /// 卡片系統來源(0:和泰Pay 1:台新 2:錢包)
         /// </summary>
         public int CardType { get; set; }
         /// <summary>
