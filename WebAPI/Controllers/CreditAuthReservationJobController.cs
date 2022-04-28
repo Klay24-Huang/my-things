@@ -104,12 +104,14 @@ namespace WebAPI.Controllers
             {
                 logger.Trace("OrderAuthReservationList Count:" + OrderAuthList.Count.ToString());
 
-                //PayUpList
-                List<int> payUpList = new List<int>{ 6, 7, 11 };
+                //PayUpList 預約，欠費，用車10小時需全額繳清
+                List<int> payUpList = new List<int>{ 1 ,6, 11 };
 
                 List<string> exCodeList = new List<string> { "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
                 foreach (var OrderAuth in OrderAuthList)
                 {
+                    //重置
+                    errCode = "000000";
                     SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
                     {
                         authSeq = OrderAuth.authSeq,
@@ -180,10 +182,10 @@ namespace WebAPI.Controllers
                                 UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p => p == errCode) ? -9 : -1);
                             }
 
-                            UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode;
-                            UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage;
-                            UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no;
-                            UpdateOrderAuthList.CardNumber = AuthOutput.CardNo;
+                            UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode??"";
+                            UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage??"";
+                            UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no??"";
+                            UpdateOrderAuthList.CardNumber = AuthOutput.CardNo??"";
                             UpdateOrderAuthList.CardType = AuthOutput.CardType;
                         }
                         else
