@@ -602,7 +602,7 @@ namespace WebAPI.Controllers
             #region 判斷是否成功
             if (flag)
             {
-                if (CarMachineType == 0)
+                if (CarMachineType == 0 && isDebug == "0")
                 {
                     int nowCount = 0;
                     bool waitFlag = false;
