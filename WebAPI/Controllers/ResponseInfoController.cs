@@ -179,34 +179,34 @@ namespace WebAPI.Controllers
         {
     
             SPInput_InsCarStatus spInput = new SPInput_InsCarStatus();
-
-               spInput.AccON = objResInfo.AccON; //(objResInfo.objInfo[i].AccON < 0) ? 2 : objResInfo.objInfo[i].AccON;
-               spInput.SPEED = Convert.ToSingle(objResInfo.SPEED); //(objResInfo.objInfo[i].Speed < 0) ? 2 : Convert.ToSingle(objResInfo.objInfo[i].Speed);
-               spInput.CentralLock = objResInfo.CentralLock;// (objResInfo.objInfo[i].CentralLock < 0) ? 2 : objResInfo.objInfo[i].CentralLock;
-               spInput.MachineNo = objResInfo.CID;// objResInfo.objInfo[i].carCarMachineNO.ToUpper();
-               spInput.DoorStatus = objResInfo.doorStatus;// objResInfo.objInfo[i].doorStatus;
-               spInput.GPRSStatus = objResInfo.GPRSStatus;// objResInfo.objInfo[i].GPRSStatus;
-               spInput.GPSStatus = objResInfo.GPSStatus;// objResInfo.objInfo[i].GPSStatus;
-               spInput.Lat = Convert.ToDecimal(objResInfo.Lat);
-               spInput.Lng = Convert.ToDecimal(objResInfo.Lng);
-               spInput.LockStatus = objResInfo.lockStatus;
-               spInput.Milage = Convert.ToSingle(objResInfo.Milage); //(objResInfo.objInfo[i].Milage < 0) ? -1 : Convert.ToSingle(objResInfo.objInfo[i].Milage);
-               spInput.OBDStatus = objResInfo.OBDStatus;// (objResInfo.objInfo[i].OBDStatus < 0) ? 2 : objResInfo.objInfo[i].OBDStatus;
-               spInput.PowON = objResInfo.PowON;// (objResInfo.objInfo[i].PowON < 0) ? 2 : objResInfo.objInfo[i].PowON;
-               spInput.Volt = Convert.ToSingle(objResInfo.Volt);// (objResInfo.objInfo[i].Volt < 0) ? 2 : Convert.ToSingle(objResInfo.objInfo[i].Volt);
-               spInput.LightStatus = objResInfo.indoorLight;// (objResInfo.objInfo[i].indoorLight < 0) ? 2 : objResInfo.objInfo[i].indoorLight;
-               spInput.OrderStatus = objResInfo.OrderStatus;// (objResInfo.objInfo[i].OrderStatus < 0) ? 2 : objResInfo.objInfo[i].OrderStatus;
-               spInput.SecurityStatus = objResInfo.SecurityStatus == 1 ? 0 : 1;// (objResInfo.objInfo[i].SecurityStatus < 0) ? 2 : objResInfo.objInfo[i].SecurityStatus;
-               spInput.GPSTime = objResInfo.GPSTime;// (objResInfo.objInfo[i].GpsTime == null) ? DateTime.Now : objResInfo.objInfo[i].GpsTime;
-               spInput.iButton = objResInfo.iButton;// (objResInfo.objInfo[i].iButton < 0) ? 0 : objResInfo.objInfo[i].iButton;
-               spInput.iButtonKey = objResInfo.iButtonKey;// (string.IsNullOrEmpty(objResInfo.objInfo[i].iButtonKey) ? "" : objResInfo.objInfo[i].iButtonKey);
-               spInput.fwver = objResInfo.fwver ?? "";
-
-
+            spInput.AccON = objResInfo.AccON; //(objResInfo.objInfo[i].AccON < 0) ? 2 : objResInfo.objInfo[i].AccON;
+            spInput.SPEED = Convert.ToSingle(objResInfo.SPEED); //(objResInfo.objInfo[i].Speed < 0) ? 2 : Convert.ToSingle(objResInfo.objInfo[i].Speed);
+            spInput.CentralLock = objResInfo.CentralLock;// (objResInfo.objInfo[i].CentralLock < 0) ? 2 : objResInfo.objInfo[i].CentralLock;
+            spInput.MachineNo = objResInfo.CID;// objResInfo.objInfo[i].carCarMachineNO.ToUpper();
+            spInput.DoorStatus = objResInfo.doorStatus;// objResInfo.objInfo[i].doorStatus;
+            spInput.GPRSStatus = objResInfo.GPRSStatus;// objResInfo.objInfo[i].GPRSStatus;
+            spInput.GPSStatus = objResInfo.GPSStatus;// objResInfo.objInfo[i].GPSStatus;
+            spInput.Lat = Convert.ToDecimal(objResInfo.Lat);
+            spInput.Lng = Convert.ToDecimal(objResInfo.Lng);
+            spInput.LockStatus = objResInfo.lockStatus;
+            spInput.Milage = Convert.ToSingle(objResInfo.Milage); //(objResInfo.objInfo[i].Milage < 0) ? -1 : Convert.ToSingle(objResInfo.objInfo[i].Milage);
+            spInput.OBDStatus = objResInfo.OBDStatus;// (objResInfo.objInfo[i].OBDStatus < 0) ? 2 : objResInfo.objInfo[i].OBDStatus;
+            spInput.PowON = objResInfo.PowON;// (objResInfo.objInfo[i].PowON < 0) ? 2 : objResInfo.objInfo[i].PowON;
+            spInput.Volt = Convert.ToSingle(objResInfo.Volt);// (objResInfo.objInfo[i].Volt < 0) ? 2 : Convert.ToSingle(objResInfo.objInfo[i].Volt);
+            spInput.LightStatus = objResInfo.indoorLight;// (objResInfo.objInfo[i].indoorLight < 0) ? 2 : objResInfo.objInfo[i].indoorLight;
+            spInput.OrderStatus = objResInfo.OrderStatus;// (objResInfo.objInfo[i].OrderStatus < 0) ? 2 : objResInfo.objInfo[i].OrderStatus;
+            spInput.SecurityStatus = objResInfo.SecurityStatus == 1 ? 0 : 1;// (objResInfo.objInfo[i].SecurityStatus < 0) ? 2 : objResInfo.objInfo[i].SecurityStatus;
+            spInput.GPSTime = objResInfo.GPSTime;// (objResInfo.objInfo[i].GpsTime == null) ? DateTime.Now : objResInfo.objInfo[i].GpsTime;
+            spInput.iButton = objResInfo.iButton;// (objResInfo.objInfo[i].iButton < 0) ? 0 : objResInfo.objInfo[i].iButton;
+            spInput.iButtonKey = objResInfo.iButtonKey;// (string.IsNullOrEmpty(objResInfo.objInfo[i].iButtonKey) ? "" : objResInfo.objInfo[i].iButtonKey);
+            spInput.fwver = objResInfo.fwver ?? "";
+            spInput.CSQ = objResInfo.CSQ ?? ""; // 
+            spInput.retrycnt = objResInfo.retrycnt ?? ""; //
+            spInput.gaslvl = Convert.ToSingle(objResInfo.gaslvl); //
 
             string errCode = "";
             SPOutput_Base spOut = new SPOutput_Base();
-            string spName = "usp_InsCarStatus_20210608";
+            string spName = "usp_InsCarStatus_V20220427";
 
             SQLHelper<SPInput_InsCarStatus, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_InsCarStatus, SPOutput_Base>(connetStr);
             List<ErrorInfo> lstError = new List<ErrorInfo>();
