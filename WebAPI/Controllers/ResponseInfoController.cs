@@ -15,6 +15,8 @@ using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+using Newtonsoft.Json;
+using NLog;
 
 namespace WebAPI.Controllers
 {
@@ -24,6 +26,7 @@ namespace WebAPI.Controllers
     public class ResponseInfoController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         [HttpPost]
         public Dictionary<string, object> ResponseInfoInsert([FromBody] Dictionary<string, object> value)
         {
@@ -51,6 +54,7 @@ namespace WebAPI.Controllers
                 flag = baseVerify.baseCheck(value, ref errCode, funName);
                 if (flag)
                 {
+                    logger.Info(value["para"].ToString());
                     apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_CENS_ResponseInfo>(value["para"].ToString());
                     //寫入ap log
                     string ClientIP = baseVerify.GetClientIp(Request);
@@ -64,6 +68,8 @@ namespace WebAPI.Controllers
                 }
                 #endregion
                 #region 寫入tb
+                //20220506 ADD BY ADAM REASON.寫入LOG DEBUG用
+                logger.Info(JsonConvert.SerializeObject(apiInput));
                 InCarStatus(apiInput,LogID);
                 #endregion
             }
@@ -200,7 +206,7 @@ namespace WebAPI.Controllers
             spInput.iButton = objResInfo.iButton;// (objResInfo.objInfo[i].iButton < 0) ? 0 : objResInfo.objInfo[i].iButton;
             spInput.iButtonKey = objResInfo.iButtonKey;// (string.IsNullOrEmpty(objResInfo.objInfo[i].iButtonKey) ? "" : objResInfo.objInfo[i].iButtonKey);
             spInput.fwver = objResInfo.fwver ?? "";
-            spInput.CSQ = objResInfo.CSQ ?? ""; // 
+            spInput.CSQ = objResInfo.csq ?? ""; // 
             spInput.retrycnt = objResInfo.retrycnt ?? ""; //
             spInput.gaslvl = Convert.ToSingle(objResInfo.gaslvl); //
 

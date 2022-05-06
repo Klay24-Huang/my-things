@@ -119,7 +119,7 @@ namespace WebAPI.Controllers
             #region 判斷車機類型
             if (flag)
             {
-                if (isDebug == "0") // isDebug = 1，不送車機指令
+                if (isDebug == "0" || CID =="70001") // isDebug = 1，不送車機指令
                 {
                     if (CarMachineType == 0)
                     {

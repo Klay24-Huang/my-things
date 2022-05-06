@@ -864,6 +864,8 @@
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\iRent-CarMachine-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRent-CarMachine-Api-AS - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irent-carmachine-api-test - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\irent-carmachine-api-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRent-Taishin-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irent-test-for-fet - Web Deploy.pubxml" />
@@ -880,11 +882,14 @@
     <None Include="Properties\PublishProfiles\iRentV2-AS-Api3 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-api3-STB - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Api4 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-api4-irentv2-as-uat - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-Backend-Api - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-backend-api-exp - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-backend-api-exp - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AS-backend-api-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\irentv2-as-backend-api-test-promrtheus - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-clear-web-test - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\irentv2-as-clear-web-test - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-AutoJob - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-Backend-Api - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\iRentV2-backend-api-test - Web Deploy.pubxml" />
