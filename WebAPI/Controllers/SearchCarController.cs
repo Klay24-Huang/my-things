@@ -121,7 +121,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token
                 };
-                string SPName = "usp_GetCarMachineInfoCommon";
+                string SPName = "usp_GetCarMachineInfoCommon_Q01";
                 SPOutput_CarMachineCommon spOut = new SPOutput_CarMachineCommon();
                 SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon> sqlHelp = new SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
@@ -146,6 +146,15 @@ namespace WebAPI.Controllers
                                         CMD = 0
                                     };
                                     if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                    {
+                                        wsInput.CMD = 0;
+                                    }
+                                    else
+                                    {
+                                        //晚上不要吵人
+                                        wsInput.CMD = 2;
+                                    }
+                                    if (spOut.CarHornFlg == "Y")
                                     {
                                         wsInput.CMD = 0;
                                     }
@@ -194,6 +203,17 @@ namespace WebAPI.Controllers
                                     {
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                    }
+                                    if (spOut.CarHornFlg == "Y")
+                                    {
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                    }
+                                    else
+                                    {
+                                        //晚上不要吵人
+                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
                                     }
                                 }
                                 else

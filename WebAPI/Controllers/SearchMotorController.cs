@@ -117,7 +117,7 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     Token = Access_Token
                 };
-                string SPName = "usp_GetCarMachineInfoCommon";
+                string SPName = "usp_GetCarMachineInfoCommon_Q01";
                 SPOutput_CarMachineCommon spOut = new SPOutput_CarMachineCommon();
                 SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon> sqlHelp = new SQLHelper<SPInput_CarMachineCommon, SPOutput_CarMachineCommon>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
@@ -135,6 +135,18 @@ namespace WebAPI.Controllers
                             OtherService.Enum.MachineCommandType.CommandType CmdType;
 
                             if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                            {
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
+                            }
+                            else
+                            {
+                                //晚上不要吵人
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
+                            }
+
+                            if (spOut.CarHornFlg == "Y")
                             {
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
