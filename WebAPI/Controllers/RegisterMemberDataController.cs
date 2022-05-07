@@ -1,10 +1,8 @@
 ﻿using Domain.Common;
-using Domain.MemberData;
 using Domain.SP.Input.Member;
 using Domain.SP.Input.Register;
 using Domain.SP.Output;
 using Domain.SP.Output.Member;
-using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
 using OtherService;
@@ -140,35 +138,9 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region TB
-            #region 判斷短租流水號
-            if (flag)
-            {
-                string spName = "usp_GetMemberData";
-                SPInput_GetMemberData spInput = new SPInput_GetMemberData
-                {
-                    IDNO = apiInput.IDNO,
-                    Token = "",
-                    CheckToken = 0,
-                    LogID = LogID
-                };
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_GetMemberData, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetMemberData, SPOutput_Base>(connetStr);
-                List<RegisterData> ListOut = new List<RegisterData>();
-                DataSet ds = new DataSet();
-                flag = sqlHelp.ExeuteSP(spName, spInput, ref spOut, ref ListOut, ref ds, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                if (flag)
-                {
-                    if (ListOut.Count > 0)
-                    {
-                        flag = int.TryParse(ListOut.FirstOrDefault().MEMRFNBR.Replace("ir", ""), out MEMRFNBR);
-                    }
-                }
-            }
-            #endregion
             #region 取得MEMRFNBR
             //20201125 ADD BY ADAM REASON.寫入帳號前先去短租那邊取得MEMRFNBR
-            if (flag && MEMRFNBR == 0)
+            if (flag)
             {
                 WebAPIOutput_NPR013Reg wsOutput = new WebAPIOutput_NPR013Reg();
                 HiEasyRentAPI wsAPI = new HiEasyRentAPI();
