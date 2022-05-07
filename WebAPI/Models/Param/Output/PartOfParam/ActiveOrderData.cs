@@ -216,6 +216,10 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// <para>2:共同承租人</para>
         /// </summary>
         public int RenterType { get; set; }
+        /// <summary>
+        /// 前車圖片路徑
+        /// </summary>
+        public string PreviousCarPath { set; get; }
         #endregion
         #region 優惠相關
         /// <summary>

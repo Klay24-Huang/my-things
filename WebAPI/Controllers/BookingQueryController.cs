@@ -220,6 +220,8 @@ namespace WebAPI.Controllers
                                     RemainingMileage = (OrderDataLists[i].RemainingMilage == "NA" || OrderDataLists[i].RemainingMilage == "") ? -1 : Convert.ToInt32(Convert.ToSingle(OrderDataLists[i].RemainingMilage))
                                 };
                             }
+                            // 前車圖片欄位 ADD 20200414 
+                            obj.PreviousCarPath = (obj.ProjType == 4 ? (OrderDataLists[i].PreviousCarImage == "" ? "" : string.Format("{0}{1}/{2}", ConfigurationManager.AppSettings["StorageBaseURL"], ConfigurationManager.AppSettings["CarContainer"], OrderDataLists[i].PreviousCarImage)) : "");
 
                             if (!string.IsNullOrEmpty(OrderDataLists[i].LabelType) && OrderDataLists[i].GiveMinute > 0)
                             {
