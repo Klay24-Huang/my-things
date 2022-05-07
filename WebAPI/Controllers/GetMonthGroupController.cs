@@ -1,29 +1,17 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
-using Domain.SP.Output.Common;
-using Domain.TB;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using OtherService;
-using Reposotory.Implement;
+using Domain.Log;
+using Domain.SP.Input.Rent;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-using System.Data;
-using WebAPI.Utils;
-using Domain.SP.Output;
-using System.CodeDom;
-using Domain.SP.Input.Arrears;
-using WebAPI.Models.BillFunc;
-using Domain.SP.Input.Rent;
 
 namespace WebAPI.Controllers
 {
@@ -62,7 +50,6 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             outputApi.MonCards = new List<GetMonthGroup_MonCardParam>();
             string IDNO = "";
-
             #endregion
 
             try
@@ -81,28 +68,14 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region token
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                    trace.FlowList.Add("Token判斷");
                 }
-
                 #endregion
 
                 #region TB
-
                 if (flag)
                 {
                     var spIn = new SPInput_GetMonthGroup()
@@ -159,7 +132,6 @@ namespace WebAPI.Controllers
                         trace.traceAdd("outputApi", outputApi);
                     }
                 }
-
                 #endregion
             }
             catch (Exception ex)
@@ -173,6 +145,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-
     }
 }

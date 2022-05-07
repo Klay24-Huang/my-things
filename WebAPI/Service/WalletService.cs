@@ -341,7 +341,7 @@ namespace WebAPI.Service
 
             return flag;
         }
-        
+
         /// <summary>
         /// 寫入開戶儲值錯誤LOG
         /// </summary>
@@ -485,7 +485,7 @@ namespace WebAPI.Service
 
             (bool flag, List<SPOutput_GetPayInfo> PayMode) re = (false, new List<SPOutput_GetPayInfo>());
 
-            string SPName = "usp_GetPayInfo_Q1_V20220310";      //20220310 ADD BY ADAM REASON.上線切版調整
+            string SPName = "usp_GetPayInfo_Q1";
 
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetPayInfo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetPayInfo, SPOutput_Base>(connetStr);
@@ -512,7 +512,7 @@ namespace WebAPI.Service
         /// <param name="errCode"></param>
         /// <param name="lstError"></param>
         /// <returns></returns>
-        public (bool flag, SPOutput_WalletPayGetTransId spOut)  sp_GetWalletPayGetTransId(SPInput_WalletPayGetTransId input, ref string errCode)
+        public (bool flag, SPOutput_WalletPayGetTransId spOut) sp_GetWalletPayGetTransId(SPInput_WalletPayGetTransId input, ref string errCode)
         {
             var lstError = new List<ErrorInfo>();
             errCode = "000000"; //預設成功
@@ -522,7 +522,7 @@ namespace WebAPI.Service
 
             SQLHelper<SPInput_WalletPayGetTransId, SPOutput_WalletPayGetTransId> SqlHelper = new SQLHelper<SPInput_WalletPayGetTransId, SPOutput_WalletPayGetTransId>(connetStr);
             SPOutput_WalletPayGetTransId spOut = new SPOutput_WalletPayGetTransId();
-            
+
             bool flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
 
 
@@ -570,39 +570,6 @@ namespace WebAPI.Service
                           TradeAMT = Convert.ToInt32(a.TradeAMT),
                           ShowFLG = a.ShowFLG
                       }).ToList();
-            }
-
-            return re;
-        }
-
-        public OPAI_GetPayInfoReturnCar FromSPOut_GetPayInfoReturnCar(SPOut_GetPayInfoReturnCar sour)
-        {
-            var re = new OPAI_GetPayInfoReturnCar();
-
-            if (sour != null)
-            {
-                if (sour.CheckoutModes != null && sour.CheckoutModes.Count() > 0)
-                {
-                    var CheckoutModes = (
-                           from a in sour.CheckoutModes
-                           select new OPAI_GetPayInfoReturnCar_CheckoutMode
-                           {
-                               CheckoutMode = a.CheckoutMode,
-                               CheckoutNM = a.CheckoutNM,
-                               CheckoutNote = a.CheckoutNote,
-                               IsDef = a.IsDef
-                           }).ToList();
-                    re.CheckoutModes = CheckoutModes;
-                }
-
-                if (sour.PayInfo != null)
-                {
-                    var a = sour.PayInfo;
-                    var PayInfo = new OPAI_GetPayInfoReturnCar_PayInfo();
-                    PayInfo.WalletAmount = a.WalletAmount;
-                    PayInfo.CreditStoreAmount = a.CreditStoreAmount;
-                    re.PayInfo = PayInfo;
-                }
             }
 
             return re;

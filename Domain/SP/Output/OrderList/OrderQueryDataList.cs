@@ -10,7 +10,7 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public string StationID { set; get; }
         /// <summary>
-        /// 據點名稱，對應tb裡的Location
+        /// 據點名稱
         /// </summary>
         public string StationName { set; get; }
         /// <summary>
@@ -272,6 +272,17 @@ namespace Domain.SP.Output.OrderList
         /// 共同承租人每小時安心服務價格
         /// </summary>
         public int JointInsurancePerHour { get; set; }
+        #endregion
+        #region 標籤優惠相關
+        /// <summary>
+        /// 標籤類型
+        /// </summary>
+        public string LabelType { get; set; }
+
+        /// <summary>
+        /// 分鐘數
+        /// </summary>
+        public int GiveMinute { get; set; }
         #endregion
     }
 }

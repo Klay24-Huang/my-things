@@ -1,31 +1,17 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
-using Domain.SP.Output.Common;
-using Domain.TB;
-using Domain.WebAPI.output.HiEasyRentAPI;
-using OtherService;
-using Reposotory.Implement;
+using Domain.Log;
+using Domain.SP.Input.Subscription;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
-using System.Data;
-using WebAPI.Utils;
-using Domain.SP.Output;
-using System.CodeDom;
-using Domain.SP.Input.Arrears;
-using WebAPI.Models.BillFunc;
-using Domain.SP.Input.Rent;
-using Newtonsoft.Json;
-using Domain.SP.Input.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -76,7 +62,6 @@ namespace WebAPI.Controllers
                 trace.traceAdd("apiIn", value);
 
                 #region 防呆
-
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
@@ -97,39 +82,24 @@ namespace WebAPI.Controllers
 
                     if (flag)
                     {
-                        if (string.IsNullOrWhiteSpace(apiInput.MonProjID) ||apiInput.MonProPeriod == 0)
+                        if (string.IsNullOrWhiteSpace(apiInput.MonProjID) || apiInput.MonProPeriod == 0)
                         {
                             flag = false;
                             errCode = "ERR257";
                         }
                     }
                 }
-
                 #endregion
 
                 #region token
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                    trace.FlowList.Add("Token判斷");
                 }
-
                 #endregion
 
                 #region TB
-
                 if (flag)
                 {
                     var spIn = new SPInput_GetMySubs()
@@ -143,43 +113,43 @@ namespace WebAPI.Controllers
                     var sp_re = msp.sp_GetMySubs(spIn, ref errCode);
                     trace.traceAdd("sp_re", sp_re);
                     if (sp_re != null)
-                    {  
+                    {
                         if (sp_re.Months != null && sp_re.Months.Count() > 0)
                         {
                             var months = (from a in sp_re.Months
-                                            select new OAPI_GetMySubs_Month
-                                            {
-                                                MonProjID = a.MonProjID,
-                                                MonProjNM = a.MonProjNM,
-                                                MonProPeriod = a.MonProPeriod,
-                                                ShortDays = a.ShortDays,
-                                                CarWDHours = a.WorkDayHours,
-                                                CarHDHours = a.HolidayHours,
-                                                MotoTotalMins = Convert.ToInt32(a.MotoTotalHours),  //20210525 ADD BY ADAM REASON.改為int
-                                                WDRateForCar = a.WorkDayRateForCar,
-                                                HDRateForCar  = a.HoildayRateForCar,
-                                                WDRateForMoto = a.WorkDayRateForMoto,
-                                                HDRateForMoto = a.HoildayRateForMoto,
+                                          select new OAPI_GetMySubs_Month
+                                          {
+                                              MonProjID = a.MonProjID,
+                                              MonProjNM = a.MonProjNM,
+                                              MonProPeriod = a.MonProPeriod,
+                                              ShortDays = a.ShortDays,
+                                              CarWDHours = a.WorkDayHours,
+                                              CarHDHours = a.HolidayHours,
+                                              MotoTotalMins = Convert.ToInt32(a.MotoTotalHours),  //20210525 ADD BY ADAM REASON.改為int
+                                              WDRateForCar = a.WorkDayRateForCar,
+                                              HDRateForCar = a.HoildayRateForCar,
+                                              WDRateForMoto = a.WorkDayRateForMoto,
+                                              HDRateForMoto = a.HoildayRateForMoto,
 
-                                                //StartDate = a.StartDate.ToString("MM/dd"),
-                                                //EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
-                                                //MonthStartDate = a.MonthStartDate.ToString("yyyy/MM/dd"),
-                                                //MonthEndDate = a.MonthEndDate.ToString("yyyy/MM/dd"),
-                                                //20210611 ADD BY ADAM REASON.調整日期輸出格式
-                                                StartDate = a.StartDate.ToString("yyyy/MM/dd HH:mm"),
-                                                EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.EndDate.ToString("yyyy/MM/dd HH:mm"),
-                                                MonthStartDate = a.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
-                                                MonthEndDate = a.MonthEndDate.ToString("HHmm") == "0000"? a.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
-                                                NxtMonProPeriod = a.NxtMonProPeriod,
-                                                IsMix = a.IsMix,                                                
-                                                IsUpd = a.IsUpd,
-                                                SubsNxt = a.SubsNxt,
-                                                IsChange = a.IsChange,
-                                                IsPay = a.IsPay,
-                                                NxtPay = a.NxtPay,
-                                                IsMoto = a.IsMoto       //20210527 ADD BY ADAM
-                                                
-                                            }).ToList();
+                                              //StartDate = a.StartDate.ToString("MM/dd"),
+                                              //EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("MM/dd HH:mm") : a.EndDate.ToString("MM/dd HH:mm"),
+                                              //MonthStartDate = a.MonthStartDate.ToString("yyyy/MM/dd"),
+                                              //MonthEndDate = a.MonthEndDate.ToString("yyyy/MM/dd"),
+                                              //20210611 ADD BY ADAM REASON.調整日期輸出格式
+                                              StartDate = a.StartDate.ToString("yyyy/MM/dd HH:mm"),
+                                              EndDate = a.EndDate.ToString("HHmm") == "0000" ? a.EndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.EndDate.ToString("yyyy/MM/dd HH:mm"),
+                                              MonthStartDate = a.MonthStartDate.ToString("yyyy/MM/dd HH:mm"),
+                                              MonthEndDate = a.MonthEndDate.ToString("HHmm") == "0000" ? a.MonthEndDate.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm") : a.MonthEndDate.ToString("yyyy/MM/dd HH:mm"),
+                                              NxtMonProPeriod = a.NxtMonProPeriod,
+                                              IsMix = a.IsMix,
+                                              IsUpd = a.IsUpd,
+                                              SubsNxt = a.SubsNxt,
+                                              IsChange = a.IsChange,
+                                              IsPay = a.IsPay,
+                                              NxtPay = a.NxtPay,
+                                              IsMoto = a.IsMoto       //20210527 ADD BY ADAM
+
+                                          }).ToList();
 
                             var NowMon = months.Where(x => x.MonProjID == apiInput.MonProjID
                                 && x.MonProPeriod == apiInput.MonProPeriod && x.ShortDays == apiInput.ShortDays).ToList();
@@ -208,7 +178,6 @@ namespace WebAPI.Controllers
 
                     trace.traceAdd("outputApi", outputApi);
                 }
-
                 #endregion
             }
             catch (Exception ex)
@@ -222,6 +191,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-
     }
 }

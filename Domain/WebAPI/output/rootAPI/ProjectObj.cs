@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.TB;
+using System;
 
 namespace Domain.WebAPI.output.rootAPI
 {
@@ -154,5 +155,9 @@ namespace Domain.WebAPI.output.rootAPI
         public string MonthEndDate { get; set; } = "";
         #endregion
 
+        /// <summary>
+        /// 優惠標籤
+        /// </summary>
+        public ProjectDiscountLabel DiscountLabel { get; set; } = new ProjectDiscountLabel();
     }
 }

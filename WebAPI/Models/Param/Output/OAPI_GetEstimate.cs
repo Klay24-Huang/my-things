@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.TB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -35,5 +36,9 @@ namespace WebAPI.Models.Param.Output
         /// 總計
         /// </summary>
         public int Bill { set; get; }
+        /// <summary>
+        /// 優惠標籤
+        /// </summary>
+        public EstimateDiscountLabel DiscountLabel { get; set; } = new EstimateDiscountLabel();
     }
 }

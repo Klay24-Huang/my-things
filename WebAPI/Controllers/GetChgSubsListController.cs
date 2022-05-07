@@ -1,17 +1,16 @@
 ﻿using Domain.Common;
+using Domain.Log;
+using Domain.SP.Input.Subscription;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
-using WebAPI.Utils;
-using WebAPI.Models.BillFunc;
-using Domain.SP.Input.Subscription;
-using Domain.SP.Output.Subscription;
 
 namespace WebAPI.Controllers
 {
@@ -59,7 +58,6 @@ namespace WebAPI.Controllers
                 trace.traceAdd("apiIn", value);
 
                 #region 防呆
-
                 flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
@@ -87,32 +85,17 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
                 #endregion
 
                 #region token
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
+                    trace.FlowList.Add("Token判斷");
                 }
-
                 #endregion
 
                 #region TB
-
                 if (flag)
                 {
                     var spIn = new SPInput_GetChgSubsList()
@@ -132,7 +115,7 @@ namespace WebAPI.Controllers
                         if (sp_re.NowCard != null)
                             outputApi.MyCard = map.FromSPOut_GetChgSubsList_Card(sp_re.NowCard);
 
-                        if(sp_re.OtrCards != null && sp_re.OtrCards.Count()>0)
+                        if (sp_re.OtrCards != null && sp_re.OtrCards.Count() > 0)
                             outputApi.OtrCards = map.FromSPOut_GetChgSubsList_Card(sp_re.OtrCards);
                     }
                     else
@@ -140,10 +123,8 @@ namespace WebAPI.Controllers
                         flag = false;
                         errCode = "ERR908";//sp錯誤
                     }
-
                     trace.traceAdd("outputApi", outputApi);
                 }
-
                 #endregion
             }
             catch (Exception ex)
@@ -157,6 +138,5 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion        
         }
-
     }
 }

@@ -1,16 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.JointRent
 {
-    public class SPInput_GetOrderInsuranceInfo
+    public class SPInput_GetOrderInsuranceInfo : SPInput_Base
     {
         /// <summary>
         /// 訂單編號
         /// </summary>
-        public string OrderNo { get; set; }
+        public Int64 OrderNo { get; set; }
+
+        /// <summary>
+        /// 帳號
+        /// </summary>
+        public string IDNO { get; set; }
+
+        /// <summary>
+        /// Token
+        /// </summary>
+        public string Token { get; set; }
     }
 }

@@ -1,48 +1,26 @@
-﻿/****************************************************************
-** Name: [dbo].[usp_Booking]
-** Desc: 
-**
-** Return values: 0 成功 else 錯誤
-** Return Recordset: 
-**
-** Called by: 
-**
-** Parameters:
-** Input
-** -----------
+﻿/***********************************************************************************************
+* Server   : sqyhi03az.database.windows.net
+* Database : IRENT_V2
+* 程式名稱 : usp_Booking
+* 系    統 : IRENT
+* 程式功能 : 預約
+* 作    者 : ERIC
+* 撰寫日期 : 20200916
+* 修改日期 : 20210325 ADD BY ADAM REASON.車機指令改善
+			 20210505 ADD BY ADAM REASON. CC車型加大
+			 20211001 UPD BY YEH REASON:增加會員積分黑名單不可租車檢查
+			 20211006 UPD BY YEH REASON:副承租人的同站預約時段不可重疊
+			 20211007 UPD BY YEH REASON:沒車給ErrorCode
+			 20211008 UPD BY YEH REASON:企劃部說不卡控，移除檢核
+			 20211009 ADD BY ADAM REASON.增加預約後發送推播功能
+			 20211023 ADD BY ADAM REASON.文字內容修改
+			 20211110 ADD BY ADAM REASON.春節定金修改
+			 20210118 UPD BY YEH REASON:春節卡三天延長至1/20 10:00
+			 20220209 UPD BY YEH REASON:檢查專案是否有效
+			 20220315 UPD BY YEH REASON:路邊汽車、機車增加久停群聚折扣判斷
+* Example  : 
+***********************************************************************************************/
 
-** 
-**
-** Output
-** -----------
-		
-	@ErrorCode 				VARCHAR(6)			
-	@ErrorCodeDesc			NVARCHAR(100)	
-	@SQLExceptionCode		VARCHAR(10)				
-	@SqlExceptionMsg		NVARCHAR(1000)	
-**
-** 
-** Example
-**------------
-** DECLARE @Error               INT;
-** DECLARE @ErrorCode 			VARCHAR(6);		
-** DECLARE @ErrorMsg  			NVARCHAR(100);
-** DECLARE @SQLExceptionCode	VARCHAR(10);		
-** DECLARE @SQLExceptionMsg		NVARCHAR(1000);
-** EXEC @Error=[dbo].[usp_Booking]    @ErrorCode OUTPUT,@ErrorMsg OUTPUT,@SQLExceptionCode OUTPUT,@SQLExceptionMsg	 OUTPUT;
-** SELECT @Error,@ErrorCode ,@ErrorMsg ,@SQLExceptionCode ,@SQLExceptionMsg;
-**------------
-** Auth:Eric 
-** Date:2020/9/16 上午 11:03:46 
-**
-*****************************************************************
-** Change History
-*****************************************************************
-** Date:     |   Author:  |          Description:
-** ----------|------------| ------------------------------------
-** 2020/9/16 上午 11:03:46    |  Eric|          First Release
-**			 |			  |
-*****************************************************************/
 CREATE PROCEDURE [dbo].[usp_Booking]
 	@IDNO					VARCHAR(10)				,	--身份證
     @ProjID					VARCHAR(10)				,	--專案代碼
@@ -60,6 +38,8 @@ CREATE PROCEDURE [dbo].[usp_Booking]
 	@InsurancePurePrice     INT						,	--安心服務預估金額
 	@PayMode                TINYINT					,	--計費模式：0:以時計費;1:以分計費
 	@LogID                  BIGINT					,
+	@PhoneLon               DECIMAL(9,6)            ,   --回傳手機經度
+	@PhoneLat               DECIMAL(9,6)            ,   --回傳手機緯度
 	@haveCar                TINYINT         OUTPUT	,	--是否有車(0:否;1:是)
 	@OrderNum               BIGINT			OUTPUT	,
 	@CID					VARCHAR(10)		OUTPUT	,	--車機編號
@@ -99,6 +79,8 @@ DECLARE  @INVKIND		TINYINT		--發票寄送方式 1:捐贈;2:email;3:二聯;4:三
 		,@UNIMNO		VARCHAR(10)	--統編
 DECLARE @BeforeDate		DATETIME;
 DECLARE @Descript NVARCHAR(200);
+--20211009 ADD BY ADAM REASON.增加預約後發送推播功能
+DECLARE @PushToken INT
 
 /*初始設定*/
 SET @Error=0;
@@ -140,8 +122,9 @@ BEGIN TRY
 	IF @Token='' OR @IDNO='' 
 	BEGIN
 		SET @Error=1;
-		SET @ErrorCode='ERR900'
+		SET @ErrorCode='ERR900';
 	END
+
 	--0.再次檢核token
 	IF @Error=0
 	BEGIN
@@ -162,6 +145,7 @@ BEGIN TRY
 			END
 		END
 	END
+
 	--1.取出目前各類型預約數
 	IF @Error=0
 	BEGIN
@@ -183,12 +167,12 @@ BEGIN TRY
 		,@AnyRentBookingNowCount=B.[3]
 		,@MotorRentBookingNowCount=B.[4]
 		FROM (
-		SELECT ProjType,COUNT(ProjType) AS ProjCount
-		FROM TB_OrderMain WITH(NOLOCK) 
-		WHERE IDNO=@IDNO
-		AND cancel_status=0
-		AND car_mgt_status < 16
-		AND start_time > dateadd(d,-30,dbo.GET_TWDATE())
+			SELECT ProjType,COUNT(ProjType) AS ProjCount
+			FROM TB_OrderMain WITH(NOLOCK) 
+			WHERE IDNO=@IDNO
+			AND cancel_status=0
+			AND car_mgt_status < 16
+			AND start_time > dateadd(d,-30,dbo.GET_TWDATE())
 		GROUP BY ProjType) A
 		PIVOT
 		(
@@ -199,7 +183,7 @@ BEGIN TRY
 		IF (@NormalRentBookingNowCount+@AnyRentBookingNowCount+@MotorRentBookingNowCount)>=5
 		BEGIN
 			SET @Error=1;
-			SET @ErrorCode='ERR156'
+			SET @ErrorCode='ERR156';
 		END
 		--1.2判斷是否是同站且已到達3
 		IF @Error=0
@@ -229,6 +213,7 @@ BEGIN TRY
 			END
 		END
 	END
+
 	--2.判斷有沒有同站有沒有重疊
 	IF @Error=0
 	BEGIN
@@ -244,39 +229,59 @@ BEGIN TRY
 				   OR (@SD BETWEEN start_time AND stop_time)
 				   OR (@ED BETWEEN start_time AND stop_time)
 				   OR (DATEADD(MINUTE, -30, @SD) BETWEEN start_time AND stop_time)
-				   OR (DATEADD(MINUTE, 30, @ED) BETWEEN start_time AND stop_time))
+				   OR (DATEADD(MINUTE, 30, @ED) BETWEEN start_time AND stop_time));
 
 			IF @hasData=1
 			BEGIN
 				SET @Error=1;
-				SET @ErrorCode='ERR160'
+				SET @ErrorCode='ERR160';
 			END
+
+			-- 20211008 UPD BY YEH REASON:企劃部說不卡控，移除檢核
+			-- 20211006 UPD BY YEH REASON:副承租人的同站預約時段不可重疊
+			--IF EXISTS(SELECT * 
+			--			FROM TB_TogetherPassenger A WITH(NOLOCK)
+			--			INNER JOIN TB_OrderMain B WITH(NOLOCK) ON B.order_number=A.Order_number
+			--			WHERE A.MEMIDNO=@IDNO
+			--			AND ProjType=@ProjType
+			--			AND B.car_mgt_status<16 AND B.booking_status<5 AND B.cancel_status=0
+			--			AND ((B.start_time BETWEEN @SD AND @ED)
+			--				OR (B.stop_time BETWEEN @SD AND @ED)
+			--				OR (@SD BETWEEN B.start_time AND B.stop_time)
+			--				OR (@ED BETWEEN B.start_time AND B.stop_time)
+			--				OR (DATEADD(MINUTE, -30, @SD) BETWEEN B.start_time AND B.stop_time)
+			--				OR (DATEADD(MINUTE, 30, @ED) BETWEEN B.start_time AND B.stop_time)))
+			--BEGIN
+			--	SET @Error=1;
+			--	SET @ErrorCode='ERR160';
+			--END
 		END
 	END
+
 	--2.5 春節卡預約
 	IF @Error = 0
 	BEGIN
-		IF (@SD>=CAST('2021-02-09' AS DATETIME) AND @SD<= CAST('2021-02-16' AS DATETIME))
-		OR (@ED>=CAST('2021-02-09' AS DATETIME) AND @ED<= CAST('2021-02-16' AS DATETIME))
+		--20211108 ADD BY ADAM REASON.先卡時段，後續機制再補
+		IF (@SD>=CAST('2022-01-29' AS DATETIME) AND @SD<= CAST('2022-02-06 23:59' AS DATETIME))
+		OR (@ED>=CAST('2022-01-29' AS DATETIME) AND @ED<= CAST('2022-02-06 23:59' AS DATETIME))
 		BEGIN
-			--測試人員不卡春節
-	--		IF NOT EXISTS(SELECT MEMIDNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND SPECSTATUS='99')
 			--春節期間非R129不給預約
-			IF @ProjID <> 'R129' AND (@ProjType <>4 AND @ProjType <> 3)	--機車會暫時跨到過年先排除
+			IF @ProjID <> 'R320' AND (@ProjType <>4 AND @ProjType <> 3)	--機車會暫時跨到過年先排除
 			BEGIN
-				SET @Error=1
+				SET @Error=1;
 				--SET @ErrorCode='ERR242'
-				SET @ErrorCode='ERR161'
+				SET @ErrorCode='ERR161';
 			END
 		END
 	END
+
 	--春節專案預約日期判斷
 	IF @Error = 0 
 	BEGIN
-		IF @ProjID='R129'
+		IF @ProjID='R320'
 		BEGIN
-			DECLARE @ChineseNewYearBeginDate DATETIME = CONVERT(datetime,'2021/2/9 00:00:00');	--春節專案起日
-			DECLARE @ChineseNewYearEndDate DATETIME = CONVERT(datetime,'2021/2/16 23:59:59');	--春節專案迄日
+			DECLARE @ChineseNewYearBeginDate DATETIME = CONVERT(datetime,'2022/01/29 00:00:00');	--春節專案起日
+			DECLARE @ChineseNewYearEndDate DATETIME = CONVERT(datetime,'2022/02/06 23:59:59');	--春節專案迄日
 
 			DECLARE @TempBeginDate DATETIME;	--春節專案使用起日
 			DECLARE @TempEndDate DATETIME;		--春節專案使用迄日
@@ -290,23 +295,26 @@ BEGIN TRY
 
 			IF @ED > @ChineseNewYearEndDate
 			BEGIN
-				SET @TempEndDate = @ChineseNewYearEndDate
+				SET @TempEndDate = @ChineseNewYearEndDate;
 			END
 
 			DECLARE @TotalHours FLOAT;	--春節專案總使用時數
-			SELECT @TotalHours = dbo.FN_CalHours(@TempBeginDate,@TempEndDate)
+			SELECT @TotalHours = dbo.FN_CalHours(@TempBeginDate,@TempEndDate);
 
-			--早鳥須預約三天以上
-			--IF dbo.GET_TWDATE() < '2021-01-31 23:59:59' AND DATEDIFF(day,@SD,@ED) < 3
-			--IF dbo.GET_TWDATE() < '2021-01-31 23:59:59' AND @TotalHours < 30
+			--20211110 ADD BY ADAM REASON.早鳥從5天開始擋
+			IF dbo.GET_TWDATE() < '2021-12-16 10:00:00' AND @TotalHours < 50
+			BEGIN
+				SET @Error=1;
+				SET @ErrorCode='ERR293';
+			END
 			--20210127 ADD BY ADAM REASON.預約一天提早到0128
-			IF dbo.GET_TWDATE() < '2021-01-27 23:59:59' AND @TotalHours < 30
+			-- 20210118 UPD BY YEH REASON:春節卡三天延長至1/20 10:00
+			ELSE IF dbo.GET_TWDATE() < '2022-01-20 10:00:00' AND @TotalHours < 30
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR241';
 			END
-			--ELSE IF dbo.GET_TWDATE() < '2021-02-09 23:59:59' AND DATEDIFF(day,@SD,@ED) < 1
-			ELSE IF dbo.GET_TWDATE() < '2021-02-09 23:59:59' AND @TotalHours < 10
+			ELSE IF dbo.GET_TWDATE() < '2022-01-28 23:59:59' AND @TotalHours < 10
 			BEGIN
 				SET @Error=1;
 				SET @ErrorCode='ERR242';
@@ -314,29 +322,29 @@ BEGIN TRY
 		END
 	END
 	
-	--維修卡預約
-	--IF	(@SD>=CAST('2021-06-09 01:00:00' AS DATETIME) AND @SD<=CAST('2021-06-09 05:00:00' AS DATETIME)) OR
-	--	--(@ED>=CAST('2021-03-03 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-03 05:00:00' AS DATETIME))
-	--	(@ED>=CAST('2021-06-09 01:00:00' AS DATETIME) AND @ED<=CAST('2021-06-09 05:00:00' AS DATETIME) AND @ProjType=0)		--20210302 ADD BY ADAM REASON.同站才需要判斷還車時間
-	--BEGIN
-	--	IF @IDNO <> 'A122364317'
-	--	BEGIN
-	--		SET @Error=1
-	--		SET @ErrorCode='ERR905'
-	--	END
-	--END
-	--IF
-	--	(@SD>=CAST('2021-03-11 01:00:00' AS DATETIME) AND @SD<=CAST('2021-03-11 05:00:00' AS DATETIME)) OR
-	--	--(@ED>=CAST('2021-03-11 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-11 05:00:00' AS DATETIME))
-	--	(@ED>=CAST('2021-03-11 01:00:00' AS DATETIME) AND @ED<=CAST('2021-03-11 05:00:00' AS DATETIME) AND @ProjType=0)		--20210302 ADD BY ADAM REASON.同站才需要判斷還車時間
-	--BEGIN
-	--	if @IDNO <> 'A122364317'
-	--	BEGIN
-	--	SET @Error=1
-	--	SET @ErrorCode='ERR906'
-	--	END
-	--END		
+	----維修卡預約
+	IF	(@SD>=CAST('2022-02-16 02:00:00' AS DATETIME) AND @SD<=CAST('2022-02-16 06:00:00' AS DATETIME)) OR
+		(@ED>=CAST('2022-02-16 02:00:00' AS DATETIME) AND @ED<=CAST('2022-02-16 06:00:00' AS DATETIME) AND @ProjType=0)		--20210302 ADD BY ADAM REASON.同站才需要判斷還車時間
+	BEGIN
+		IF @IDNO <> 'A122364317' AND @IDNO <> 'A128091484'
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR905';
+		END
+	END
 
+	-- 20220209 UPD BY YEH REASON:檢查專案是否有效
+	IF @Error=0
+	BEGIN
+		SET @hasData=0;
+		SELECT @hasData=COUNT(*) FROM TB_Project WITH(NOLOCK) WHERE PROJID=@ProjID AND (@SD BETWEEN ShowStart AND ShowEnd);
+		IF @hasData = 0
+		BEGIN
+			SET @Error=1;
+			SET @ErrorCode='ERR155';
+		END
+	END
+	
 	-- 據點特殊判斷
 	IF @Error=0
 	BEGIN
@@ -346,30 +354,8 @@ BEGIN TRY
 		BEGIN
 			IF @StationID='X0IU' OR @StationID='X0IF' OR @StationID='X0LL' OR @StationID='X1Q9'
 			BEGIN
-				SET @Error=1
-				SET @ErrorCode='ERR161'
-			END
-		END
-
-		-- 20210108;天霖說X0VX要撤點，要擋預約
-		IF @StationID='X0VX'
-		BEGIN
-			IF (@SD>=CAST('2021-01-29 00:00:00' AS DATETIME) AND @SD<=CAST('2021-06-01 00:00:00' AS DATETIME)) OR
-				(@ED>=CAST('2021-01-29 00:00:00' AS DATETIME) AND @ED<=CAST('2021-06-01 00:00:00' AS DATETIME))
-			BEGIN
-				SET @Error=1
-				SET @ErrorCode='ERR161'
-			END
-		END
-
-		-- 20210119;天霖說X1VS要擋預約
-		IF @StationID='X1VS'
-		BEGIN
-			IF (@SD>=CAST('2021-01-31 00:00:00' AS DATETIME) AND @SD<=CAST('2021-04-01 00:00:00' AS DATETIME)) OR
-				(@ED>=CAST('2021-01-31 00:00:00' AS DATETIME) AND @ED<=CAST('2021-04-01 00:00:00' AS DATETIME))
-			BEGIN
-				SET @Error=1
-				SET @ErrorCode='ERR161'
+				SET @Error=1;
+				SET @ErrorCode='ERR161';
 			END
 		END
 
@@ -382,6 +368,7 @@ BEGIN TRY
 			SET @ErrorCode='ERR243';
 		END
 	END
+
 	--2.6 卡會員狀態 20210104 ADD BY ADAM REASON.審核不通過不可預約
 	IF @Error=0
 	BEGIN
@@ -415,6 +402,17 @@ BEGIN TRY
 		--	END
 		--END
 	END
+
+	-- 20211001 UPD BY YEH REASON:增加會員積分黑名單不可租車檢查
+	IF @Error = 0
+	BEGIN
+		IF EXISTS(SELECT * FROM TB_MemberScoreMain WITH(NOLOCK) WHERE MEMIDNO=@IDNO AND ISBLOCK=1)
+		BEGIN
+			SET @Error = 1;
+			SET @ErrorCode = 'ERR287';
+		END
+	END
+
 	--3.判斷有沒有車可預約
 	IF @Error=0
 	BEGIN
@@ -458,32 +456,37 @@ BEGIN TRY
 			BEGIN
 				SET @haveCar=0;
 				ROLLBACK TRAN;
+				-- 20211007 UPD BY YEH REASON:沒車給ErrorCode
+				SET @Error=1;
+				SET @ErrorCode='ERR161';
 			END
 			ELSE
 			BEGIN
 				--20201124 ADD BY ADAM REASON.由會員檔取出發票資料
-				SELECT @INVKIND=MEMSENDCD,@CARRIERID=CARRIERID,@NPOBAN=NPOBAN,@UNIMNO=UNIMNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+				SELECT @INVKIND=MEMSENDCD,@CARRIERID=CARRIERID,@NPOBAN=NPOBAN,@UNIMNO=UNIMNO 
+				,@PushToken = PushREGID --20211009 ADD BY ADAM REASON.增加預約後發送推播功能
+				FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO
 				--資料梳理
 				IF @INVKIND=1
 				BEGIN
-					SET @UNIMNO=''
-					SET @CARRIERID=''
+					SET @UNIMNO='';
+					SET @CARRIERID='';
 				END
 				IF @INVKIND=2 OR @INVKIND=3
 				BEGIN
-					SET @NPOBAN=''
-					SET @UNIMNO=''
-					SET @CARRIERID=''
+					SET @NPOBAN='';
+					SET @UNIMNO='';
+					SET @CARRIERID='';
 				END
 				IF @INVKIND=4
 				BEGIN
-					SET @NPOBAN=''
-					SET @CARRIERID=''
+					SET @NPOBAN='';
+					SET @CARRIERID='';
 				END
 				IF @INVKIND=5
 				BEGIN
-					SET @NPOBAN=''
-					SET @UNIMNO=''
+					SET @NPOBAN='';
+					SET @UNIMNO='';
 				END
 
 				INSERT INTO TB_OrderMain
@@ -530,10 +533,13 @@ BEGIN TRY
 					--寫入歷史記錄
 					INSERT INTO TB_OrderHistory(OrderNum,Descript)VALUES(@OrderNum,@Descript);
 
+					--寫入GPS記錄
+					EXEC usp_InsOrderGEO @OrderNum,0,@PhoneLon,@PhoneLat
+
 					--20210110 ADD BY ADAM REASON.春節專案寫入預約轉檔
-					IF @ProjID='R129'
+					IF @ProjID='R320'
 					BEGIN
-						EXEC usp_BookingControl_NY @IDNO,@OrderNum,'',@LogID,'','','',''
+						EXEC usp_BookingControl_NY @IDNO,@OrderNum,'',@LogID,'','','','';
 					END
 
 					COMMIT TRAN;
@@ -565,31 +571,32 @@ BEGIN TRY
 				   OR (DATEADD(MINUTE, -30, @SD) BETWEEN start_time AND stop_time)
 				   OR (DATEADD(MINUTE, 30, @ED) BETWEEN start_time AND stop_time))
 
-			--print 'HASDATA=' + CAST(@hasData AS VARCHAR)
 			IF @hasData=0
 			BEGIN
-				SELECT @INVKIND=MEMSENDCD,@CARRIERID=CARRIERID,@NPOBAN=NPOBAN,@UNIMNO=UNIMNO FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO
+				SELECT @INVKIND=MEMSENDCD,@CARRIERID=CARRIERID,@NPOBAN=NPOBAN,@UNIMNO=UNIMNO 
+				,@PushToken = PushREGID --20211009 ADD BY ADAM REASON.增加預約後發送推播功能
+				FROM TB_MemberData WITH(NOLOCK) WHERE MEMIDNO=@IDNO
 				--資料梳理
 				IF @INVKIND=1
 				BEGIN
-					SET @UNIMNO=''
-					SET @CARRIERID=''
+					SET @UNIMNO='';
+					SET @CARRIERID='';
 				END
 				IF @INVKIND=2 OR @INVKIND=3
 				BEGIN
-					SET @NPOBAN=''
-					SET @UNIMNO=''
-					SET @CARRIERID=''
+					SET @NPOBAN='';
+					SET @UNIMNO='';
+					SET @CARRIERID='';
 				END
 				IF @INVKIND=4
 				BEGIN
-					SET @NPOBAN=''
-					SET @CARRIERID=''
+					SET @NPOBAN='';
+					SET @CARRIERID='';
 				END
 				IF @INVKIND=5
 				BEGIN
-					SET @NPOBAN=''
-					SET @UNIMNO=''
+					SET @NPOBAN='';
+					SET @UNIMNO='';
 				END
 
 				INSERT INTO TB_OrderMain
@@ -609,7 +616,7 @@ BEGIN TRY
 				
 				IF @@ROWCOUNT=1
 				BEGIN
-					PRINT 'ROWCOUNT='
+					--PRINT 'ROWCOUNT='
 					SET @OrderNum=@@IDENTITY;
 					SET @haveCar=1;
 
@@ -660,6 +667,36 @@ BEGIN TRY
 					--寫入歷史記錄
 					INSERT INTO TB_OrderHistory(OrderNum,Descript)VALUES(@OrderNum,@Descript);
 
+					--寫入GPS記錄
+					EXEC usp_InsOrderGEO @OrderNum,0,@PhoneLon,@PhoneLat
+
+					-- 20220315 UPD BY YEH REASON:路邊汽車、機車增加久停群聚折扣判斷
+					IF EXISTS(SELECT * FROM TB_DiscountLabelHistory WITH(NOLOCK) WHERE CarNo=@CarNo AND UseFlag=1)
+					BEGIN
+						DECLARE @AuthSeq BIGINT;		-- 久停群聚車輛優惠歷程檔流水號
+						DECLARE @CPType VARCHAR(10);	-- 優惠類型
+						DECLARE @GiveMin INT;			-- 折扣時數（分鐘）
+
+						SELECT @AuthSeq=authSeq,@CPType=CPType,@GiveMin=GiveMin FROM TB_DiscountLabelHistory WITH(NOLOCK) WHERE CarNo=@CarNo AND UseFlag=1;
+
+						IF NOT EXISTS (SELECT * FROM TB_OrderExtinfo WITH(NOLOCK) WHERE order_number=@OrderNum)
+						BEGIN
+							INSERT INTO TB_OrderExtinfo (order_number,CPType,LabelSeq,GiveMin,MKTime,MKUser,MKPRGID,UPDTime,UPDUser,UPDPRGID)
+							VALUES(@OrderNum,@CPType,@AuthSeq,@GiveMin,@NowTime,@IDNO,@FunName,@NowTime,@IDNO,@FunName);
+						END
+						ELSE
+						BEGIN
+							UPDATE TB_OrderExtinfo
+							SET CPType=@CPType,
+								LabelSeq=@AuthSeq,
+								GiveMin=@GiveMin,
+								UPDTime=@NowTime,
+								UPDUser=@IDNO,
+								UPDPRGID=@FunName
+							WHERE order_number=@OrderNum;
+						END
+					END
+
 					COMMIT TRAN;
 
 					--20210325  ADD BY ADAM REASON.車機指令改善
@@ -696,6 +733,73 @@ BEGIN TRY
 			END
 		END
 	END
+
+	--20211009 ADD BY ADAM REASON.增加預約後發送推播功能
+	--4.增加共同承租人的推播判斷
+	--活動到2021/12/30號為止
+	--IF @Error = 0 AND @NowTime < CAST('2021-12-31' AS DATETIME) --AND (@IDNO='T224185456' OR @IDNO='A122364317')
+	--BEGIN
+	--	--檢核是否有發送過推播
+	--	IF NOT EXISTS(SELECT * FROM TB_PersonNotification WITH(NOLOCK) WHERE IDNO=@IDNO AND NType=20 AND MKTime > DATEADD(day,-1,@NowTime))
+	--	BEGIN
+	--		--20211023 ADD BY ADAM REASON.文字內容修改
+	--		IF @ProjType=4		--機車
+	--		BEGIN
+	--			--寫入推播
+	--			INSERT INTO TB_PersonNotification
+	--			(
+	--				OrderNum,IDNO,NType,UserName,UserToken,STime,Title,
+	--				Message,url,isSend,MKTime,NewsID
+	--			)
+	--			VALUES
+	--			(
+	--				@OrderNum,@IDNO,20,'',@PushToken,@NowTime,
+	--				'免費時數分鐘等你拿！取車前邀好友成為新會員並成為共同承租人就可獲得免費時數',
+	--				'',--'取車前主承租人邀請朋友加入共同承租人，就可以換手駕駛、共享保障囉!若好友為新會員，一起完成好友首筆共同承租人訂單，主承租人還可獲得免費汽車時數 30 分鐘或機車時數 10 分鐘!(詳請請見 banner 活動頁)'
+	--				'https://www.irentcar.com.tw/event/111event/2056/index.html',0,@NowTime,0
+	--			)
+	--		END
+	--		ELSE	--汽車
+	--		BEGIN
+	--			--寫入推播
+	--			INSERT INTO TB_PersonNotification
+	--			(
+	--				OrderNum,IDNO,NType,UserName,UserToken,STime,Title,
+	--				Message,url,isSend,MKTime,NewsID
+	--			)
+	--			VALUES
+	--			(
+	--				@OrderNum,@IDNO,20,'',@PushToken,@NowTime,
+	--				'免費時數180分鐘等你拿！取車前邀好友成為新會員並成為共同承租人就可獲得免費時數',
+	--				'',--'取車前主承租人邀請朋友加入共同承租人，就可以換手駕駛、共享保障囉!若好友為新會員，一起完成好友首筆共同承租人訂單，主承租人還可獲得免費汽車時數 30 分鐘或機車時數 10 分鐘!(詳請請見 banner 活動頁)'
+	--				'https://www.irentcar.com.tw/event/111event/2056/index.html',0,@NowTime,0
+	--			)
+	--		END
+	--	END
+	--END
+
+	--20211114 ADD BY ADAM REASON.春節預約寫推播
+	--20220129 ADD BY ADAM REASON.春節預約出車日要大於1.5天後才會跑
+	IF @Error = 0 AND @ProjID='R320' AND @SD > DATEADD(hour,36,@NowTime)
+	BEGIN
+		DECLARE @ORDAMT INT,@AUTHDATE VARCHAR(10)
+		SET @ORDAMT = round((@Price+@InsurancePurePrice)*0.3,0)
+		SET @AUTHDATE = CONVERT(VARCHAR(10),DATEADD(day,2,@NowTime),121)
+		
+		INSERT INTO TB_PersonNotification
+		(
+			OrderNum,IDNO,NType,UserName,UserToken,STime,Title,
+			Message,url,isSend,MKTime,NewsID
+		)
+		VALUES
+		(
+			@OrderNum,@IDNO,21,'',@PushToken,@NowTime,
+			'春節定金授權通知-H'+CAST(@OrderNum AS VARCHAR),
+			'親愛的iRent會員您好，感謝您預約春節專案，系統將於' + @AUTHDATE +'自您的信用卡扣除定金'+CAST(@ORDAMT AS VARCHAR)+'元。請確認您的信用卡額度於扣款當日足夠，若扣款失敗，系統將自動取消您的訂單不另行通知，謝謝。',
+			'',0,@NowTime,0
+		)
+	END
+
 	--寫入錯誤訊息
 	IF @Error=1
 	BEGIN
@@ -722,19 +826,4 @@ END CATCH
 RETURN @Error
 
 EXECUTE sp_addextendedproperty @name = N'Platform', @value = N'API', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Booking';
-
-
 GO
-EXECUTE sp_addextendedproperty @name = N'Owner', @value = N'Eric', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Booking';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'預約', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Booking';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'IsActive', @value = N'1:使用', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Booking';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'Comments', @value = N'', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'PROCEDURE', @level1name = N'usp_Booking';

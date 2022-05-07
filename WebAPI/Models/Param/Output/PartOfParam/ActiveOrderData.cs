@@ -217,5 +217,11 @@ namespace WebAPI.Models.Param.Output.PartOfParam
         /// </summary>
         public int RenterType { get; set; }
         #endregion
+        #region 優惠相關
+        /// <summary>
+        /// 優惠標籤
+        /// </summary>
+        public DiscountLabel DiscountLabel { get; set; }
+        #endregion
     }
 }

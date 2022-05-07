@@ -1,7 +1,8 @@
-﻿using Domain.SP.Input.Arrears;
-using Domain.SP.Input.Common;
+﻿using Domain.Flow.CarRentCompute;
+using Domain.Log;
+using Domain.SP.Input.Arrears;
+using Domain.SP.Input.Discount;
 using Domain.SP.Output;
-using Domain.SP.Output.Common;
 using Domain.SP.Output.OrderList;
 using Domain.TB;
 using Domain.WebAPI.output.HiEasyRentAPI;
@@ -26,40 +27,6 @@ namespace WebAPI.Models.BillFunc
     public class CarRentCommon
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-
-        #region TokenCheck
-        public OBIZ_TokenCk TokenCk(IBIZ_TokenCk sour)
-        {
-            var re = new OBIZ_TokenCk();
-            re.flag = false;
-
-            if (sour.LogID > 0 && !string.IsNullOrWhiteSpace(sour.Access_Token))
-            {
-                var baseVerify = new CommonFunc();
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-                    LogID = sour.LogID,
-                    Token = sour.Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                var lstError = re.lstError;
-                re.flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                re.lstError = lstError;
-                bool flag = re.flag;
-                string errCode = re.errCode;
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
-                re.flag = flag;
-                re.errCode = errCode;
-                if (re.flag)
-                {
-                    re.IDNO = spOut.IDNO;
-                }
-            }
-            return re;
-        }
-        #endregion
 
         #region 點數查詢
         /// <summary>
@@ -240,7 +207,7 @@ namespace WebAPI.Models.BillFunc
                             int motoDisc = sour.Discount;
 
                             // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins);
+                            var xre = billCommon.MotoRentMonthComp(sour.SD, sour.ED, sour.MinuteOfPrice, sour.MinuteOfPriceH, sour.MotoBaseMins, 600, sour.lstHoliday, motoMonth, motoDisc, 600, sour.MaxPrice, sour.MotoBasePrice, sour.FirstFreeMins, sour.GiveMinute);
                             if (xre != null)
                             {
                                 re.carInfo = xre;
@@ -279,7 +246,7 @@ namespace WebAPI.Models.BillFunc
                             int xDiscount = sour.Discount;//帶入月租運算的折扣
                             if (sour.hasFine)
                             {
-                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
+                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.ED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins, sour.GiveMinute);
                                 if (re.carInfo != null)
                                 {
                                     re.CarRental += re.carInfo.RentInPay;
@@ -292,7 +259,7 @@ namespace WebAPI.Models.BillFunc
                             }
                             else
                             {
-                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins);
+                                re.carInfo = billCommon.CarRentInCompute(sour.SD, sour.FED, sour.PRICE, sour.PRICE_H, sour.carBaseMins, 10, sour.lstHoliday, UseMonthlyRent, xDiscount, sour.FirstFreeMins, sour.GiveMinute);
                                 if (re.carInfo != null)
                                 {
                                     re.CarRental += re.carInfo.RentInPay;
@@ -973,6 +940,78 @@ namespace WebAPI.Models.BillFunc
             return false;
         }
         #endregion
+
+        /// <summary>
+        /// 取得針對車號取得預估租金的優惠標籤
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <returns></returns>
+        public DiscountLabel GetDiscountLabelByCar(SPInput_GetDiscountLabelByCarNo spInput)
+        {
+            var baseVerify = new CommonFunc();
+            string SPName = "usp_GetDiscountLabelByCarNo";
+            SPOutput_Base spOutBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetDiscountLabelByCarNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetDiscountLabelByCarNo, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            List<DiscountLabel> list = new List<DiscountLabel>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string errCode = "000000";
+            bool flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref list, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+            DiscountLabel result = (flag && list.Count > 0) ? list.FirstOrDefault() ?? null : null;
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// 取得優惠標籤(AnyRent提供車號清單)
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <returns></returns>
+        public List<AnyRentDiscountLabel> GetDiscountLabelForAnyRentCars(SPInput_GetDiscountLabelForAnyRentCars spInput)
+        {
+            var baseVerify = new CommonFunc();
+            string SPName = "usp_GetDiscountLabelForAnyRentCars";
+            SPOutput_Base spOutBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetDiscountLabelForAnyRentCars, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetDiscountLabelForAnyRentCars, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            List<AnyRentDiscountLabel> list = new List<AnyRentDiscountLabel>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string errCode = "000000";
+            bool flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref list, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+            List<AnyRentDiscountLabel> result = (flag && list.Count > 0) ? list ?? null : null;
+
+            return result;
+        }
+
+        /// <summary>
+        /// 取得針對車號取得AnyRentProject優惠標籤
+        /// </summary>
+        /// <param name="spInput"></param>
+        /// <returns></returns>
+        public ProjectDiscountLabel GetDiscountLabelForAnyRentProject(SPInput_GetDiscountLabelForAnyRentProject spInput)
+        {
+            var baseVerify = new CommonFunc();
+            string SPName = "usp_GetDiscountLabelForAnyRentProject";
+            SPOutput_Base spOutBase = new SPOutput_Base();
+            SQLHelper<SPInput_GetDiscountLabelForAnyRentProject, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_GetDiscountLabelForAnyRentProject, SPOutput_Base>(connetStr);
+            DataSet ds = new DataSet();
+            List<DiscountLabel> list = new List<DiscountLabel>();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            string errCode = "000000";
+            bool flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref list, ref ds, ref lstError);
+            baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+            ProjectDiscountLabel result = (flag && list.Count > 0) 
+                ? list.Select(x=>new ProjectDiscountLabel { LabelType = x.LabelType,GiveMinute = x.GiveMinute,AppDescribe = x.Describe, Describe = "", }).FirstOrDefault() 
+                ?? new ProjectDiscountLabel() : new ProjectDiscountLabel();
+
+            return result;
+        }
     }
 
     #region repo
@@ -1441,417 +1480,6 @@ namespace WebAPI.Models.BillFunc
     #endregion
     #endregion
 
-    #region VM
-    #region 春節月租
-    public class IBIZ_SpringInit
-    {
-        /// <summary>
-        /// 帳號
-        /// </summary>
-        public string IDNO { get; set; }
-        /// <summary>
-        /// 訂單編號
-        /// </summary>
-        public Int64 OrderNo { get; set; } = 0;
-        /// <summary>
-        /// 專案代碼
-        /// </summary>
-        public string ProjID { set; get; }
-        /// <summary>
-        /// 專案類型
-        /// </summary>
-        public int ProjType { get; set; }
-        /// <summary>
-        /// 車號
-        /// </summary>
-        public string CarNo { get; set; }
-        /// <summary>
-        /// 車型
-        /// </summary>
-        public string CarType { set; get; }
-        /// <summary>
-        /// 取車時間
-        /// </summary>
-        public DateTime SD { set; get; }
-        /// <summary>
-        /// 還車時間
-        /// </summary>
-        public DateTime ED { set; get; }
-        /// <summary>
-        /// 平日價-小時
-        /// </summary>
-        public double PRICE { set; get; }
-        /// <summary>
-        /// 假日價-小時
-        /// </summary>
-        public double PRICE_H { set; get; }
-        /// <summary>
-        /// 專案平日價-小時
-        /// </summary>
-        public double ProDisPRICE { set; get; }
-        /// <summary>
-        /// 專案假日價-小時
-        /// </summary>
-        public double ProDisPRICE_H { set; get; }
-        /// <summary>
-        /// 假日列表
-        /// </summary>
-        public List<Holiday> lstHoliday { get; set; } = new List<Holiday>();
-        /// <summary>
-        /// LogID
-        /// </summary>
-        public long LogID { set; get; }
-    }
-    public class OBIZ_SpringInit : IBIZ_SpringInit
-    {
-        /// <summary>
-        /// 虛擬月租
-        /// </summary>
-        public List<MonthlyRentData> VisMons { get; set; } = new List<MonthlyRentData>();
-    }
-    #endregion
-    #region 底層output
-    public class BIZ_CRBase
-    {
-        public bool flag { get; set; }
-        public string errMsg { get; set; }
-        public string errCode { get; set; }
-        public List<ErrorInfo> lstError { get; set; }
-
-        //20210109 ADD BY ADAM REASON.增加constructor
-        public BIZ_CRBase()
-        {
-            flag = false;
-            errMsg = "";
-            errCode = "000000";
-            lstError = new List<ErrorInfo>();
-        }
-    }
-    #endregion
-    #region Token
-    public class IBIZ_TokenCk
-    {
-        public Int64 LogID { get; set; }
-        public string Access_Token { get; set; }
-    }
-    public class OBIZ_TokenCk : BIZ_CRBase
-    {
-        public string IDNO { set; get; }
-    }
-    #endregion
-    #region 非月租租金計算out
-    /// <summary>
-    /// 非月租租金計算out
-    /// </summary>
-    public class OBIZ_CRNoMonth : BIZ_CRBase
-    {
-        /// <summary>
-        /// 全部計費租用分鐘
-        /// </summary>
-        public int car_payAllMins { get; set; }
-        /// <summary>
-        /// 未超時計費分鐘
-        /// </summary>
-        public int car_payInMins { get; set; }
-        /// <summary>
-        /// 超時分鐘
-        /// </summary>
-        public int car_payOutMins { get; set; }
-        /// <summary>
-        /// 未超時平日計費分鐘
-        /// </summary>
-        public double car_pay_in_wMins { get; set; }
-        /// <summary>
-        /// 未超時假日計費分鐘
-        /// </summary>
-        public double car_pay_in_hMins { get; set; }
-        /// <summary>
-        /// 超時平日計費分鐘
-        /// </summary>
-        public double car_pay_out_wMins { get; set; }
-        /// <summary>
-        /// 超時假日計費分鐘
-        /// </summary>
-        public double car_pay_out_hMins { get; set; }
-        /// <summary>
-        /// 未超時費用
-        /// </summary>
-        public int car_inPrice { get; set; }
-        /// <summary>
-        /// 超時費用
-        /// </summary>
-        public int car_outPrice { get; set; }
-    }
-    #endregion
-    #region 點數查詢
-    public class IBIZ_NPR270Query
-    {
-        public string IDNO { get; set; }
-    }
-    public class OBIZ_NPR270Query : BIZ_CRBase
-    {
-        /// <summary>
-        /// 機車點數
-        /// </summary>
-        public int MotorPoint { get; set; }
-        /// <summary>
-        /// 汽車點數
-        /// </summary>
-        public int CarPoint { get; set; }
-    }
-    #endregion
-    #region eTag
-    public class IBIZ_ETagCk
-    {
-        /// <summary>
-        /// 訂單編號
-        /// </summary>
-        public string OrderNo { set; get; }
-    }
-    public class OBIZ_ETagCk : BIZ_CRBase
-    {
-        /// <summary>
-        /// ETAG費用
-        /// </summary>
-        public int etagPrice { get; set; }
-    }
-    #endregion
-    #region 車麻吉停車費
-    public class IBIZ_CarMagi
-    {
-        public Int64 LogID { get; set; }
-        /// <summary>
-        /// 車號
-        /// </summary>
-        public string CarNo { set; get; }
-        public DateTime SD { get; set; }
-        public DateTime ED { get; set; }
-        public Int64 OrderNo { get; set; }
-    }
-    public class OBIZ_CarMagi : BIZ_CRBase
-    {
-        /// <summary>
-        /// 車麻吉費用
-        /// </summary>
-        public int ParkingFee { set; get; }
-    }
-    #endregion
-    #region 月租
-    public class IBIZ_MonthRent
-    {
-        /// <summary>
-        /// 帳號
-        /// </summary>
-        public string IDNO { get; set; }
-        /// <summary>
-        /// LogID
-        /// </summary>
-        public Int64 LogID { get; set; }
-        /// <summary>
-        /// 訂單編號
-        /// </summary>
-        public Int64 intOrderNO { get; set; }
-        /// <summary>
-        /// 專案類型
-        /// </summary>
-        public int ProjType { get; set; }
-        /// <summary>
-        /// 機車基消
-        /// </summary>
-        public double MotoBasePrice { get; set; }
-        /// <summary>
-        /// 單日計費最大分鐘數
-        /// </summary>
-        public double MotoDayMaxMins { get; set; }
-        /// <summary>
-        /// 每分鐘多少-機車平日
-        /// </summary>
-        public double MinuteOfPrice { set; get; }
-        /// <summary>
-        /// 每分鐘多少-機車假日
-        /// </summary>
-        public float MinuteOfPriceH { get; set; }
-        /// <summary>
-        /// 是否逾時
-        /// </summary>
-        public bool hasFine { get; set; }
-        /// <summary>
-        /// 實際取車時間
-        /// </summary>
-        public DateTime SD { get; set; }
-        /// <summary>
-        /// 預計還車時間
-        /// </summary>
-        public DateTime ED { get; set; }
-        /// <summary>
-        /// 實際還車時間
-        /// </summary>
-        public DateTime FED { get; set; }
-        /// <summary>
-        /// 機車基本分鐘數
-        /// </summary>
-        public int MotoBaseMins { get; set; }
-        /// <summary>
-        /// 假日列表
-        /// </summary>
-        public List<Holiday> lstHoliday { get; set; }
-        /// <summary>
-        /// 要折抵的點數
-        /// </summary>
-        public int Discount { get; set; }
-        /// <summary>
-        /// 平日每小時-汽車
-        /// </summary>
-        public int PRICE { set; get; }
-        /// <summary>
-        /// 假日每小時-汽車
-        /// </summary>
-        public int PRICE_H { set; get; }
-        /// <summary>
-        /// 汽車基本分鐘數
-        /// </summary>
-        public int carBaseMins { get; set; }
-        /// <summary>
-        /// 前n分鐘0元
-        /// </summary>
-        public double FirstFreeMins { get; set; }
-        /// <summary>
-        /// 取消所有月租
-        /// </summary>
-        public bool CancelMonthRent { get; set; } = false;
-        /// <summary>
-        /// 月租Id(可多筆)
-        /// </summary>
-        public string MonIds { get; set; }
-        /// <summary>
-        /// 每日上限金額      // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
-        /// </summary>
-        public int MaxPrice { get; set; }
-        /// <summary>
-        /// 虛擬月租
-        /// </summary>
-        public List<MonthlyRentData> VisMons { get; set; }
-    }
-    public class OBIZ_MonthRent : BIZ_CRBase
-    {
-        /// <summary>
-        /// false:無月租;true:有月租
-        /// </summary>
-        public bool UseMonthMode { get; set; }
-        /// <summary>
-        /// 月租資訊
-        /// </summary>
-        public List<MonthlyRentData> monthlyRentDatas { get; set; }
-        /// <summary>
-        /// 是否為月租
-        /// <para>0:否</para>
-        /// <para>1:是</para>
-        /// </summary>
-        public int IsMonthRent { set; get; }
-        /// <summary>
-        /// 車資料
-        /// </summary>
-        public CarRentInfo carInfo { get; set; }
-        /// <summary>
-        /// 實際使用使用的折抵點數
-        /// </summary>
-        public int useDisc { get; set; }
-        /// <summary>
-        /// 車輛租金
-        /// </summary>
-        public int CarRental { set; get; }
-    }
-    #endregion
-    #region GetPayDetail inputcheck
-    public class IBIZ_InCheck
-    {
-        /// <summary>
-        /// 訂單編號
-        /// </summary>
-        public string OrderNo { set; get; }
-        /// <summary>
-        /// 汽車使用的點數
-        /// </summary>
-        public int Discount { set; get; }
-
-        /// <summary>
-        /// 機車使用的點數
-        /// </summary>
-        public int MotorDiscount { set; get; }
-        /// <summary>
-        /// 是否為訪客
-        /// </summary>
-        public bool isGuest { get; set; }
-        /// <summary>
-        /// 月租Id(可多筆)
-        /// </summary>
-        public string MonIds { get; set; }
-    }
-    public class OBIZ_InCheck : BIZ_CRBase
-    {
-        public long longOrderNo { get; set; }
-        public int Discount { set; get; }
-    }
-    #endregion
-    #region 月租
-    public class MonthlyRentHis
-    {
-        public int MonthlyRentId { get; set; }
-        public double UseCarTotalHours { get; set; }
-        public double UseWorkDayHours { get; set; }
-        public double UseHolidayHours { get; set; }
-        public double UseMotoTotalHours { get; set; }
-        public double UseMotoWorkDayMins { get; set; }
-        public double UseMotoHolidayMins { get; set; }
-    }
-    #endregion
-    #region TraceLog
-    public class TraceLogVM
-    {
-        public string CodeVersion { get; set; } = "x";
-        public long OrderNo { get; set; } = 0;
-        public int ApiId { get; set; } = 0;
-        public string ApiNm { get; set; } = "x";
-        public string ApiMsg { get; set; } = "x";
-        public string FlowStep { get; set; } = "x";
-        public eumTraceType TraceType { get; set; } = eumTraceType.none;
-    }
-    #endregion
-    #endregion
-    #region TBVM
-    public class ProjectDiscountTBVM
-    {
-        public string ProjID { get; set; }
-        public string CARTYPE { get; set; }
-        public string CUSTOMIZE { get; set; }
-        public string CUSDAY { get; set; }
-        public int DISTYPE { get; set; }//短整數
-        public double DISRATE { get; set; }
-        public double PRICE { get; set; }
-        public double PRICE_H { get; set; }
-        public double DISCOUNT { get; set; }
-        public double PHOURS { get; set; }
-    }
-    public class NYPayList
-    {
-        public Int64 order_number { get; set; }
-        public string PAYDATE { get; set; }
-        public int PAYAMT { get; set; }
-        public int RETURNAMT { get; set; }
-        public string NORDNO { get; set; }
-    }
-    #endregion
-    #region eunm
-    public enum eumTraceType
-    {
-        none,
-        fun,
-        exception,
-        followErr,
-        logicErr,
-        mark
-    }
-    #endregion
     #region TraceVm
     public class TraceBase
     {

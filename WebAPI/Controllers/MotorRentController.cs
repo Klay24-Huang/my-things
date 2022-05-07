@@ -197,10 +197,19 @@ namespace WebAPI.Controllers
                     //春節限定，將R140專案移除
                     //var tempList = MotorList.Where(x => x.ProjID != "R140").ToList();
                     #endregion
-
+                    List<AnyRentDiscountLabel> discountLabels = new List<AnyRentDiscountLabel>();
                     if (MotorList != null && MotorList.Count() > 0)
+                    {
+                        #region 取出優惠標籤
+                        discountLabels = new CarRentCommon().GetDiscountLabelForAnyRentCars(
+                            new Domain.SP.Input.Discount.SPInput_GetDiscountLabelForAnyRentCars
+                            {
+                               LogID = LogID,
+                               CarNos = string.Join(",", MotorList.Select(o => o.CarNo.Trim()))
+                            });
+                        #endregion
                         _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(MotorList);
-
+                    }
                     if (_MotorRentObj != null && _MotorRentObj.Count() > 0)
                     {
                         #region 加入月租資訊
@@ -227,6 +236,24 @@ namespace WebAPI.Controllers
                             }
                         }
                         #endregion
+
+                        #region 加入優惠標籤
+                        if (discountLabels != null && discountLabels.Count > 0)
+                        {
+                            _MotorRentObj.ForEach(x =>
+                            {
+                                x.DiscountLabel = discountLabels.Where(t => t.CarNo == x.CarNo)
+                                   .Select(t => new DiscountLabel
+                                   {
+                                       LabelType = t.LabelType,
+                                       GiveMinute = t.GiveMinute,
+                                       Describe = $"{t.GiveMinute}分鐘優惠折抵",
+                                   }).FirstOrDefault()??new DiscountLabel();
+                            });
+
+                        }
+                        #endregion
+
                         OAnyRentAPI.MotorRentObj = _MotorRentObj;
                     }
                 }

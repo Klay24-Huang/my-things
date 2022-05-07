@@ -209,5 +209,13 @@
         /// 付款方式(0:信用卡,1:電子錢包)
         /// </summary>
         public string PayMode { get; set; }
+        /// <summary>
+        /// 優惠贈與時數
+        /// </summary>
+        public int GiveMin { get; set; }
+        /// <summary>
+        /// 實際使用贈與時數
+        /// </summary>
+        public int UseMin { get; set; }
     }
 }

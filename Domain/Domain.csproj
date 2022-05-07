@@ -49,6 +49,24 @@
     <Compile Include="Common\CodeData.cs" />
     <Compile Include="Common\Polygon.cs" />
     <Compile Include="Common\Token.cs" />
+    <Compile Include="Flow\CarRentCompute\NYPayList.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_CRBase.cs" />
+    <Compile Include="Flow\CarRentCompute\CarRentInfo.cs" />
+    <Compile Include="Flow\CarRentCompute\DayPayMins.cs" />
+    <Compile Include="Flow\CarRentCompute\IBIZ_CarMagi.cs" />
+    <Compile Include="Flow\CarRentCompute\IBIZ_ETagCk.cs" />
+    <Compile Include="Flow\CarRentCompute\IBIZ_InCheck.cs" />
+    <Compile Include="Flow\CarRentCompute\IBIZ_MonthRent.cs" />
+    <Compile Include="Flow\CarRentCompute\IBIZ_NPR270Query.cs" />
+    <Compile Include="Flow\CarRentCompute\IBIZ_SpringInit.cs" />
+    <Compile Include="Flow\CarRentCompute\MonthlyRentHis.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_CarMagi.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_ETagCk.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_InCheck.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_MonthRent.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_NPR270Query.cs" />
+    <Compile Include="Flow\CarRentCompute\OBIZ_SpringInit.cs" />
+    <Compile Include="Flow\CarRentCompute\ProjectDiscountTBVM.cs" />
     <Compile Include="Flow\Hotai\Class1.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiAddCard.cs" />
     <Compile Include="Flow\Hotai\IFN_HotaiFastAddCard.cs" />
@@ -60,7 +78,11 @@
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiFastAddCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiPaymentAuth.cs" />
+    <Compile Include="Log\TraceLogVM.cs" />
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
+    <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
+    <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />
+    <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentProject.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_GetCTBCInquiryList.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCInquiry.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCap.cs" />
@@ -91,6 +113,9 @@
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletReturn.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_GetWalletStoredErrorList.cs" />
     <Compile Include="SP\Output\Wallet\SPOutput_WalletPayGetTransId.cs" />
+    <Compile Include="TB\AnyRentDiscountLabel.cs" />
+    <Compile Include="TB\DiscountLabel.cs" />
+    <Compile Include="TB\EstimateDiscountLabel.cs" />
     <Compile Include="TB\Hotai\CreditCardInfo.cs" />
     <Compile Include="TB\Hotai\HotaiCardInfo.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiCreditCardList.cs" />
@@ -658,6 +683,7 @@
     <Compile Include="TB\Polygon.cs" />
     <Compile Include="TB\ProjectAndCarTypeData.cs" />
     <Compile Include="TB\ProjectAndCarTypeDataForMotor.cs" />
+    <Compile Include="TB\ProjectDiscountLabel.cs" />
     <Compile Include="TB\ProjectInfo.cs" />
     <Compile Include="TB\ProjectPriceBase.cs" />
     <Compile Include="TB\ProjectPriceOfMinuteBase.cs" />
@@ -949,6 +975,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Flow\Discount\" />
     <Folder Include="SP\Input\PolygonGroup\" />
     <Folder Include="SP\Output\PolygonGroup\" />
   </ItemGroup>

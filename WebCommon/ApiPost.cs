@@ -80,7 +80,7 @@ namespace WebCommon
                     valueTuple.Message = ex.Message;
                 }
 
-                valueTuple.Data = default;
+                valueTuple.Data = default(TResponse);
             }
             finally
             {

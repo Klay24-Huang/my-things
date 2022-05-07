@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Log;
 using Domain.SP.Input.Rent;
 using System;
 using System.Collections.Generic;

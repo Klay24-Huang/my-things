@@ -1,21 +1,19 @@
 ﻿using Domain.Common;
+using Domain.SP.Input.Wallet;
+using Domain.SP.Output.Wallet;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.BillFunc;
 using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
-using WebCommon;
-using WebAPI.Models.BillFunc;
-using Newtonsoft.Json;
-using Domain.SP.Input.Wallet;
 using WebAPI.Service;
-using WebAPI.Utils;
-using Domain.SP.Output.Wallet;
-using System.Configuration;
+using WebCommon;
 
 namespace WebAPI.Controllers
 {
@@ -40,7 +38,7 @@ namespace WebAPI.Controllers
             bool flag = true;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "WalletTransferCheck";
+            string funName = "WalletTransferCheckController";
             Int64 LogID = 0;
             var apiInput = new IAPI_WalletTransferCheck();
             var outputApi = new OAPI_WalletTransferCheck();
@@ -57,7 +55,6 @@ namespace WebAPI.Controllers
             string inPhoneNo = "";//輸入手機號碼          
 
             bool oldVersion = false;
-
             #endregion
 
             trace.traceAdd("apiIn", value);
@@ -115,27 +112,11 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region Token判斷
-
                 if (flag && isGuest == false)
                 {
-                    var token_in = new IBIZ_TokenCk
-                    {
-                        LogID = LogID,
-                        Access_Token = Access_Token
-                    };
-                    var token_re = cr_com.TokenCk(token_in);
-                    if (token_re != null)
-                    {
-                        trace.traceAdd(nameof(token_re), token_re);
-                        flag = token_re.flag;
-                        errCode = token_re.errCode;
-                        lstError = token_re.lstError;
-                        IDNO = token_re.IDNO;
-                    }
+                    flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
                     trace.FlowList.Add("Token判斷");
-                    trace.traceAdd("TokenCk", new { flag, errCode });
                 }
-
                 #endregion
 
                 #region TB
@@ -307,7 +288,7 @@ namespace WebAPI.Controllers
             {
                 baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             }
-            
+
             return objOutput;
             #endregion        
         }

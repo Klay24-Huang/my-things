@@ -46,11 +46,6 @@ namespace Domain.SP.BE.Input
         public int fine_price { set; get; } = 0;
 
         /// <summary>
-        /// 使用時數(汽車)
-        /// </summary>
-        public int gift_point { set; get; } = 0;
-
-        /// <summary>
         /// ETAG費用
         /// </summary>
         public int Etag { set; get; } = 0;
@@ -66,6 +61,26 @@ namespace Domain.SP.BE.Input
         public int TransDiscount { set; get; } = 0;
 
         /// <summary>
+        /// 使用時數(汽車)
+        /// </summary>
+        public int gift_point { set; get; } = 0;
+
+        /// <summary>
+        /// 使用時數(機車)
+        /// </summary>
+        public int gift_motor_point { get; set; } = 0;
+
+        /// <summary>
+        /// 使用月租平日時數
+        /// </summary>
+        public double monthly_workday { get; set; } = 0;
+
+        /// <summary>
+        /// 使用月租假日時數
+        /// </summary>
+        public double monthly_holiday { get; set; } = 0;
+
+        /// <summary>
         /// 還車里程
         /// </summary>
         public int EndMile { get; set; }
@@ -79,5 +94,10 @@ namespace Domain.SP.BE.Input
         /// API名稱
         /// </summary>
         public string APIName { get; set; }
+
+        /// <summary>
+        /// 使用標籤優惠分鐘數
+        /// </summary>
+        public int UseGiveMinute { get; set; }
     }
 }
