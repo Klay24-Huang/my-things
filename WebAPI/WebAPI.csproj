@@ -237,6 +237,7 @@
     <Compile Include="Controllers\BindQueryByEasyrentController.cs" />
     <Compile Include="Controllers\CTBCInquiryController.cs" />
     <Compile Include="Controllers\CTBCCapJobController.cs" />
+    <Compile Include="Controllers\FtpCityParkDataController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\LowPowerHintReadController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
