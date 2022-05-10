@@ -22,7 +22,7 @@ namespace WebAPI.Models.BillFunc
 
         public static List<Tuple<int, string>> FunIds = new List<Tuple<int, string>>()
         {
-            new Tuple<int, string>(99990001,"ori_TSIBCardTrade"),
+            new Tuple<int, string>(99990001,"TSIBCardTrade"),
             new Tuple<int, string>(99990002,"exeNxt"),
             new Tuple<int, string>(99990003,"MonthRentSave"),
         };
