@@ -31,6 +31,9 @@ namespace Domain.SP.Input.OtherService.CENS
         public int OrderStatus { set; get; }
         public string fwver { set; get; }
         public Int64 LogID { set; get; }
-   
+        public string CSQ { set; get; }
+        public string retrycnt { set; get; }
+        public float gaslvl { set; get; }
+
     }
 }
