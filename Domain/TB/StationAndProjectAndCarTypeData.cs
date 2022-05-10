@@ -128,5 +128,9 @@ namespace Domain.TB
         /// 是否是常用據點 20210315 ADD BY ADAM
         /// </summary>
         public int IsFavStation { set; get; }
+        /// <summary>
+        /// 尋車需響喇叭 Y/N
+        /// </summary>  20220510 ADD BY HANNIE
+        public string CarHornFlg { set; get; }
     }
 }

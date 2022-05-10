@@ -35,6 +35,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public string Content { set; get; }
         /// <summary>
+        /// 尋車需響喇叭 Y/N
+        /// </summary>  20220510 ADD BY HANNIE
+        public string CarHornFlg { set; get; }
+        /// <summary>
         /// 據點描述（app顯示）
         /// </summary>
         public string ContentForAPP { get; set; }
