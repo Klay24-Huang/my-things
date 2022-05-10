@@ -337,6 +337,7 @@ namespace WebAPI.Controllers
                                    CarTypeName = a.CarTypeName,
                                    CarTypePic = a.CarTypePic,
                                    Content = a.Content,
+                                   CarHornFlg = a.CarHornFlg,   //2022 ADD BY HANNIE REASON.為了在ContentForAPP欄位文字的最前面補上而取值
                                    ContentForAPP = a.ContentForAPP,
                                    CityName = a.CityName,
                                    AreaName = a.AreaName,
@@ -394,7 +395,9 @@ namespace WebAPI.Controllers
                             {
                                 ADDR = lstData[0].ADDR,
                                 Content = lstData[0].Content,
-                                ContentForAPP = lstData[0].ContentForAPP,
+                                CarHornFlg = lstData[0].CarHornFlg,
+                                ContentForAPP = lstData[0].CarHornFlg == "N" ? "尋車僅會閃車燈\n"+ lstData[0].ContentForAPP : lstData[0].ContentForAPP,    //2022 ADD BY HANNIE REASON.在欄位文字的最前面補上
+                                //ContentForAPP = lstData[0].ContentForAPP,
                                 CityName = lstData[0].CityName,
                                 AreaName = lstData[0].AreaName,
                                 Latitude = lstData[0].Latitude,
@@ -731,7 +734,7 @@ namespace WebAPI.Controllers
         private List<SPOutput_GetStationCarTypeOfMutiStation> GetStationCarTypeOfMutiStation(SPInput_GetStationCarTypeOfMutiStation spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             List<SPOutput_GetStationCarTypeOfMutiStation> re = new List<SPOutput_GetStationCarTypeOfMutiStation>();
-            string SPName = "usp_GetStationCarTypeOfMutiStation";
+            string SPName = "usp_GetStationCarTypeOfMutiStation_Q01";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base>(connetStr);
             DataSet ds = new DataSet();
