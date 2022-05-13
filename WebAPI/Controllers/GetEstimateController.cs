@@ -286,7 +286,7 @@ namespace WebAPI.Controllers
                                 if (reDiscountLabel != null)
                                 {
                                     outputApi.DiscountLabel = new EstimateDiscountLabel();
-                                    var discountPrice = billCommon.DiscountLabelToPrice(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday, reDiscountLabel.GiveMinute, false, 75);
+                                    var discountPrice = billCommon.DiscountLabelToPrice(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday, reDiscountLabel.GiveMinute);
                                     outputApi.DiscountLabel.LabelType = reDiscountLabel.LabelType;
                                     outputApi.DiscountLabel.GiveMinute = reDiscountLabel.GiveMinute;
                                     outputApi.DiscountLabel.Price = discountPrice;

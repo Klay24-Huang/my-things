@@ -365,14 +365,11 @@ namespace WebAPI.Models.BillFunc
             double UseGiveMinute = 0;
             if (GiveMinute > 0)
             {
-                var BillingTime = Convert.ToInt32(dayPayList.Select(x => x.xMins).Sum());   // 收費時數
-                if (BillingTime > DayBaseMinute)   // 收費時數 > 基本消費分鐘數 才可使用標籤優惠時數
+                if (mins >= DayBaseMinute)   // 使用時數 >= 基本消費分鐘數 可使用標籤優惠時數
                 {
                     double RemainGiveMinute = Convert.ToDouble(GiveMinute);
-
                     //價高先折
                     dpList = dayPayList.Where(x => x.xMins > 0).OrderByDescending(x => x.xRate).ThenBy(x => x.xDate).ToList();
-
                     dpList.ForEach(x =>
                     {
                         if (RemainGiveMinute > 0)
@@ -493,7 +490,6 @@ namespace WebAPI.Models.BillFunc
             });
 
             dpList = dpList.Where(x => x.xMins > 0).ToList();
-
             if (dpList != null && dpList.Count() > 0)
             {
                 //分類統計
@@ -509,7 +505,7 @@ namespace WebAPI.Models.BillFunc
             re.useDisc = Convert.ToInt32(Convert.ToDouble(Discount) - lastDisc);
 
             //原始總點數-使用總點數
-            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum() 
+            re.lastMonthDisc = mOri.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum()
                                                 - mFinal.Select(x => x.WorkDayHours * 60 + x.HolidayHours * 60 + x.CarTotalHours * 60).Sum();
 
             if (mFinal != null && mFinal.Count() > 0)//回傳monthData
@@ -2533,10 +2529,9 @@ namespace WebAPI.Models.BillFunc
         public int DiscountLabelToPrice(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, int GiveMinute, bool overTime = false, double baseMinutes = 60)
         {
             var re = 0;
-            //優惠標籤折抵金額 要超過基本
-            if (ED.Subtract(SD).TotalMinutes > baseMinutes)
+            // 車輛使用時間 >= 基本分鐘數 就可使用
+            if (ED.Subtract(SD).TotalMinutes >= baseMinutes)
             {
-
                 var minsPro = new MinsProcess(GetCarPayMins);
                 var dayPro = overTime ? new DayMinsProcess(CarOverTimeMinsToPayMins) : null;
 
