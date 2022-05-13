@@ -365,7 +365,7 @@ namespace WebAPI.Models.BillFunc
             double UseGiveMinute = 0;
             if (GiveMinute > 0)
             {
-                if (re.RentInMins >= DayBaseMinute)   // 使用時數 >= 基本消費分鐘數 可使用標籤優惠時數
+                if (mins >= DayBaseMinute)   // 使用時數 >= 基本消費分鐘數 可使用標籤優惠時數
                 {
                     double RemainGiveMinute = Convert.ToDouble(GiveMinute);
                     //價高先折
