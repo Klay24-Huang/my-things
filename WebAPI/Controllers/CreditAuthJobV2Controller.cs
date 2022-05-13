@@ -22,7 +22,7 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 使用信用卡付款
+    /// 排程取款
     /// </summary>
     public class CreditAuthJobV2Controller : ApiController
     {
@@ -275,7 +275,7 @@ namespace WebAPI.Controllers
         /// <returns></returns>
         private bool UpdateOrdarAuthStatus(SPInput_UpdateOrderAuthListV2 input, ref List<ErrorInfo> lstError, ref string errCode)
         {
-            string SPName = "usp_UpdateOrderAuthList_U02_20220311";
+            string SPName = "usp_UpdateOrderAuthList_U02";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_UpdateOrderAuthListV2, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_UpdateOrderAuthListV2, SPOutput_Base>(connetStr);
             var flag = SQLPayHelp.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
