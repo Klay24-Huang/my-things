@@ -395,7 +395,7 @@ namespace WebAPI.Controllers
                                 ADDR = lstData[0].ADDR,
                                 Content = lstData[0].Content,
                                 CarHornFlg = lstData[0].CarHornFlg,
-                                ContentForAPP = lstData[0].CarHornFlg == "N" ? "尋車僅會閃車燈\n"+ lstData[0].ContentForAPP : lstData[0].ContentForAPP,    //2022 ADD BY HANNIE REASON.在欄位文字的最前面補上
+                                ContentForAPP = lstData[0].CarHornFlg == "N" ? "※尋車僅會閃車燈\n" + lstData[0].ContentForAPP : lstData[0].ContentForAPP,    //2022 ADD BY HANNIE REASON.在欄位文字的最前面補上
                                 //ContentForAPP = lstData[0].ContentForAPP,
                                 CityName = lstData[0].CityName,
                                 AreaName = lstData[0].AreaName,
