@@ -758,7 +758,9 @@ namespace WebAPI.Controllers
                 Token = accessToken,
                 LogID = LogID,
                 TradeType = TradeType,
-                ProjType = ProjType
+                ProjType = ProjType,
+                PayUp = 1,
+
             };
 
             bool flag;

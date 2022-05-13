@@ -104,14 +104,14 @@ namespace WebAPI.Service
             var Rent = billCommon.CarRentCompute(input.SD, input.ED, input.WeekdayPrice, input.HoildayPrice, dayMaxHour, lstHoliday);
             //計算里程費
             float MilUnit = billCommon.GetMilageBase(input.ProjID, input.CarTypeGroupCode, input.SD, input.ED, 0);
-            int MilagePrice = Convert.ToInt32(billCommon.CarMilageCompute(input.SD, input.ED, MilUnit, Mildef, 20, lstHoliday));
+            int MilagePrice = billCommon.CarMilageCompute(input.SD, input.ED, MilUnit, Mildef, 20, lstHoliday);
 
             outData = new EstimateDetail();
             outData.InsurancePurePrice = InsurancePurePrice;
             outData.Rent = Rent;
             outData.MilUnit = MilUnit;
             outData.MilagePrice = MilagePrice;
-            outData.estimateAmt = Rent + InsurancePurePrice + MilagePrice; //(租金+安心服務+里程費)
+            outData.estimateAmt = Rent + InsurancePurePrice; //(租金+安心服務)
         }
         #endregion
 

@@ -53,6 +53,11 @@ namespace Domain.TB.Sync
         /// 建立時間
         /// </summary>
         public DateTime MKTime { get; set; }
+
+        /// <summary>
+        /// 備註
+        /// </summary>
+        public string Remark { get; set; }
     }
 
     public class Sync_OrderMain

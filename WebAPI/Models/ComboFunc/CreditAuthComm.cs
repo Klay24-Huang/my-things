@@ -767,8 +767,8 @@ namespace WebAPI.Models.ComboFunc
                 PayAmount = AuthInput.Amount;
             }
 
-            //欠費金額判斷
-            if (AuthInput.TradeType == "Pay_Arrear" || AuthInput.TradeType == "PreAuth_Motor" || AuthInput.TradeType == "PreAuth_Car")
+            //全額繳清判斷
+            if (AuthInput.PayUp == 1)
             {
                 //欠費和預售權一定要全繳
                 result.flag = IsWalletPayAmountEnough(PayAmount, AuthInput.Amount);

@@ -104,8 +104,14 @@ namespace WebAPI.Controllers
             {
                 logger.Trace("OrderAuthReservationList Count:" + OrderAuthList.Count.ToString());
 
+                //PayUpList 預約，欠費，用車10小時需全額繳清
+                List<int> payUpList = new List<int>{ 1 ,6, 11 };
+
+                List<string> exCodeList = new List<string> { "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
                 foreach (var OrderAuth in OrderAuthList)
                 {
+                    //重置
+                    errCode = "000000";
                     SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
                     {
                         authSeq = OrderAuth.authSeq,
@@ -149,15 +155,37 @@ namespace WebAPI.Controllers
                                 AuthInput.AutoStore = true;
                             }
 
+                            //必須全繳
+                            if(AuthInput.CheckoutMode == 1 && payUpList.Any(p => p == AuthInput.AuthType))
+                            {
+                                AuthInput.PayUp = 1;
+                            }
+
+
                             payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                            logger.Trace("OrderAuthReservationList Result:" + JsonConvert.SerializeObject(AuthOutput));
-                            List<string> exCodeList = new List<string> { "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
+                            logger.Trace($"OrderAuthReservationList Result: {JsonConvert.SerializeObject(AuthOutput)} | payStatus:{payStatus} | errCode:{errCode}");
 
                             UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p => p == errCode) ? -9 : -1);
-                            UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode;
-                            UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage;
-                            UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no;
-                            UpdateOrderAuthList.CardNumber = AuthOutput.CardNo;
+                            
+                            if (AuthInput.CheckoutMode == 1 && AuthInput.AuthType == 11 &&
+                                UpdateOrderAuthList.AuthFlg != 1)
+                            {
+                                //reset
+                                payStatus = true;
+                                errCode = "000000";
+                                AuthInput.CheckoutMode = 4;
+                                UpdateOrderAuthList.AuthFlg = 0;
+
+                                payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                                logger.Trace($"OrderAuthReservationList(2) Result: {JsonConvert.SerializeObject(AuthOutput)} | payStatus:{payStatus} | errCode:{errCode}");
+                                
+                                UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p => p == errCode) ? -9 : -1);
+                            }
+
+                            UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode??"";
+                            UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage??"";
+                            UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no??"";
+                            UpdateOrderAuthList.CardNumber = AuthOutput.CardNo??"";
                             UpdateOrderAuthList.CardType = AuthOutput.CardType;
                         }
                         else
@@ -261,7 +289,7 @@ namespace WebAPI.Controllers
         {
             string tradeType = "";
 
-            /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款)
+            /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款,11、使用10小時)
             ///
             //新增TradeType： PreAuth_Motor、PreAuth_Car
             /*case "Pay_Arrear":
@@ -296,6 +324,9 @@ namespace WebAPI.Controllers
                     break;
                 case 7:
                     tradeType = $"Pay_{carType}";
+                    break;
+                case 11:
+                    tradeType = $"PreAuth_Addition";
                     break;
                 default:
                     tradeType = "";

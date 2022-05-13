@@ -1755,18 +1755,18 @@ namespace OtherService
 
         private WebAPIOutput_Auth ForTest(string TradeAmount)
         {
-            return ForTestTrue(TradeAmount);
-            //Random rnd = new Random();
-            //int result = rnd.Next(1, 1);
+            //return ForTestTrue(TradeAmount);
+            Random rnd = new Random();
+            int result = rnd.Next(0, 15);
 
-            //if (result == 0)
-            //{
-            //    return ForTestTrue(TradeAmount);
-            //}
-            //else
-            //{
-            //    return ForTestFalse(TradeAmount);
-            //}
+            if (result == 0)
+            {
+                return ForTestTrue(TradeAmount);
+            }
+            else
+            {
+                return ForTestFalse(TradeAmount);
+            }
         }
 
         private WebAPIOutput_Auth ForTestTrue(string TradeAmount)
