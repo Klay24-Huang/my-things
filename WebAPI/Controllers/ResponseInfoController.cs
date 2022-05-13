@@ -206,7 +206,7 @@ namespace WebAPI.Controllers
             spInput.iButton = objResInfo.iButton;// (objResInfo.objInfo[i].iButton < 0) ? 0 : objResInfo.objInfo[i].iButton;
             spInput.iButtonKey = objResInfo.iButtonKey;// (string.IsNullOrEmpty(objResInfo.objInfo[i].iButtonKey) ? "" : objResInfo.objInfo[i].iButtonKey);
             spInput.fwver = objResInfo.fwver ?? "";
-            spInput.CSQ = objResInfo.csq ?? ""; // 
+            spInput.CSQ = objResInfo.CSQ ?? ""; // 
             spInput.retrycnt = objResInfo.retrycnt ?? ""; //
             spInput.gaslvl = Convert.ToSingle(objResInfo.gaslvl); //
 
