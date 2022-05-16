@@ -228,6 +228,7 @@ namespace OtherService
              
                 SQLHelper<SPInput_InsSendCMD, SPOutput_Base> SQLCancelHelper = new SQLHelper<SPInput_InsSendCMD, SPOutput_Base>(connetStr);
                 flag = SQLCancelHelper.ExecuteSPNonQuery(SPName, spInput, ref spout, ref lstError);
+                logger.Info(JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}"));
             }
             return flag;
         }
