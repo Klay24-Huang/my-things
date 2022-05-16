@@ -36,7 +36,6 @@ namespace WebAPI.Controllers
         private string ApiVer = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
         private string EnKey = ConfigurationManager.AppSettings["GAMEAES128KEY"].ToString();
         private string EnSalt = ConfigurationManager.AppSettings["GAMEAES128IV"].ToString();
-        private string GameUrl = ConfigurationManager.AppSettings["GAMEURL"].ToString();
         [HttpPost]
         public Dictionary<string, object> DoGetGameItem(Dictionary<string, object> value)
         {
@@ -96,7 +95,7 @@ namespace WebAPI.Controllers
                 object[][] parms1 = {
                     new object[] {
                         IDNO,
-                        54136
+                        LogID
                     }};
 
                 string returnMessage = "";
@@ -118,7 +117,7 @@ namespace WebAPI.Controllers
                     string gameToken = ds.Tables[0].Rows[0]["GameToken"].ToString();
                     apiOutput = new OAPI_GetGameItem()
                     {
-                        GameSrc = GameUrl, //外部連結
+                        GameSrc = ds.Tables[0].Rows[0]["GameUrl"].ToString(), // 路徑在TB_Game
                         P = new AESEncrypt().doEncrypt(EnKey, EnSalt, gameToken)
                     };
 
