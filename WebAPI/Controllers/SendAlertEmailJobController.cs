@@ -320,7 +320,7 @@ namespace WebAPI.Controllers
                         if (EventType == 16)
                             Body += string.Format("<p>{0}</p>", "訂單10小時授權失敗，請聯絡客戶確認訂單，將於10+3小時再次授權");
                         else
-                            Body += string.Format("<p>{0}</p>", "訂單10+3小時授權失敗，客戶用車費用差額付款再次失敗，請聯絡客戶確認用車狀況，請客戶於10小時內還車，若未還車，將啟動侵占車輛處理流程。");
+                            Body += string.Format("<p>{0}</p>", "訂單10+3小時授權失敗，客戶用車費用差額付款再次失敗，請聯絡客戶確認用車狀況，請客戶立即還車，我司有權終止合約並收回車輛使用。");
 
                         Table += string.Format("<table border=1><tr style='background-color:#8DD26F;'><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th><th>{6}</th><th>{7}</th><th>{8}</th><th>{9}</th></tr>"
                                                 , "訂單編號", "預約時間", "實際取車時間", "預計還車時間", "車號", "會員帳號", "會員姓名", "手機", "據點名稱", "管轄門市");
