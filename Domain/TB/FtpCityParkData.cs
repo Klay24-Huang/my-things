@@ -40,10 +40,7 @@ namespace Domain.TB
         /// 停車費用
         /// </summary>
         public string Ftp_amount { get; set; }
-        /// <summary>
-        /// API名稱
-        /// </summary>
-        public string APIName { get; set; }
+        
 
     }
 }

@@ -512,6 +512,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\Input\IAPI_BeSendEMail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_FtpCityParkData.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
@@ -565,6 +566,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_FtpCityParkData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GeneralTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCardBindListByEasyrent.cs" />
     <Compile Include="Models\Param\Output\OAPI_GiftTransferCheck.cs" />
