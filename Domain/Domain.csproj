@@ -97,6 +97,7 @@
     <Compile Include="SP\Input\Hotai\SP_Input_HotaiTranStep4.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
+    <Compile Include="SP\Input\MonthlyRent\SPInput_GetCanUseMonthly.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletPayGetTransId.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderExtInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletReturn.cs" />

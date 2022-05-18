@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebCommon;
 
 namespace Reposotory.Implement
@@ -19,6 +16,7 @@ namespace Reposotory.Implement
     public class MonthlyRentRepository : BaseRepository
     {
         private string _connectionString;
+
         public MonthlyRentRepository(string ConnStr)
         {
             this.ConnectionString = ConnStr;
@@ -35,7 +33,7 @@ namespace Reposotory.Implement
         /// </param>
         /// <param name="shortTermIds">短期MonthlyRentIds(可多筆),以逗號分隔</param>
         /// <returns></returns>
-        public List<MonthlyRentData> GetSubscriptionRates(string IDNO, string SD, string ED, int RateType, string shortTermIds="")
+        public List<MonthlyRentData> GetSubscriptionRates(string IDNO, string SD, string ED, int RateType, string shortTermIds = "")
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -88,8 +86,8 @@ namespace Reposotory.Implement
             }
 
             string shortTermSql = "";
-            if(!string.IsNullOrEmpty(shortTermIds) && !string.IsNullOrWhiteSpace(shortTermIds))
-                shortTermSql = " OR MonthlyRentId in ("+ shortTermIds +")"; 
+            if (!string.IsNullOrEmpty(shortTermIds) && !string.IsNullOrWhiteSpace(shortTermIds))
+                shortTermSql = " OR MonthlyRentId in (" + shortTermIds + ")";
 
             if ("" != term)
             {
@@ -153,6 +151,37 @@ namespace Reposotory.Implement
             return lstMonthlyRent;
         }
 
+        /// <summary>
+        /// 取出可使用的訂閱制
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="OrderNo"></param>
+        /// <param name="MonthlyRentIds"></param>
+        /// <param name="LogID"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public List<MonthlyRentData> GetCanUseMonthly(string IDNO, Int64 OrderNo, string MonthlyRentIds, Int64 LogID, ref string errCode)
+        {
+            bool flag = false;
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            List<MonthlyRentData> result = new List<MonthlyRentData>();
+
+            string spName = "usp_GetCanUseMonthly_Q01";
+            SPInput_GetCanUseMonthly spInput = new SPInput_GetCanUseMonthly()
+            {
+                IDNO = IDNO,
+                OrderNo = OrderNo,
+                MonthlyRentIDs = MonthlyRentIds,
+                LogID = LogID
+            };
+            SPOutput_Base spOutput = new SPOutput_Base();
+            SQLHelper<SPInput_GetCanUseMonthly, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetCanUseMonthly, SPOutput_Base>(ConnectionString);
+            DataSet ds = new DataSet();
+            flag = sqlHelp.ExeuteSP(spName, spInput, ref spOutput, ref result, ref ds, ref lstError);
+            checkSQLResult(ref flag, spOutput.Error, spOutput.ErrorCode, ref lstError, ref errCode);
+
+            return result;
+        }
 
         /// <summary>
         /// 還原月租記錄
@@ -165,11 +194,11 @@ namespace Reposotory.Implement
         /// <para>true:成功</para>
         /// <para>false:失敗</para>
         /// </returns>
-        public bool RestoreHistory(string IDNO,Int64 OrderNo,Int64 LogID,ref string errCode)
+        public bool RestoreHistory(string IDNO, Int64 OrderNo, Int64 LogID, ref string errCode)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SPName=new ObjType().GetSPName(ObjType.SPType.ClearMonthTmpHistory);
+            string SPName = new ObjType().GetSPName(ObjType.SPType.ClearMonthTmpHistory);
             SPInput_ClearMonthlyTmpHistory SPInput = new SPInput_ClearMonthlyTmpHistory()
             {
                 IDNO = IDNO,
@@ -182,15 +211,30 @@ namespace Reposotory.Implement
             checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
-        public bool InsMonthlyHistory(
-            string IDNO, Int64 OrderNo,Int64 MonthlyRentId,
+
+        /// <summary>
+        /// 寫入月租使用紀錄
+        /// </summary>
+        /// <param name="IDNO"></param>
+        /// <param name="OrderNo"></param>
+        /// <param name="MonthlyRentId"></param>
+        /// <param name="UseCarTotalHours"></param>
+        /// <param name="UseWorkDayMins"></param>
+        /// <param name="UseHolidayMins"></param>
+        /// <param name="UseMotoTotalMinutes"></param>
+        /// <param name="UseMotoWorkDayMins"></param>
+        /// <param name="UseMotoHolidayMins"></param>
+        /// <param name="LogID"></param>
+        /// <param name="errCode"></param>
+        /// <returns></returns>
+        public bool InsMonthlyHistory(string IDNO, Int64 OrderNo, Int64 MonthlyRentId,
             int UseCarTotalHours, int UseWorkDayMins, int UseHolidayMins,
             int UseMotoTotalMinutes, int UseMotoWorkDayMins, int UseMotoHolidayMins,
             Int64 LogID, ref string errCode)
         {
             bool flag = false;
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            string SPName = new ObjType().GetSPName(ObjType.SPType.InsMonthHistory);
+            string SPName = "usp_InsMonthlyHistory";
             SPInput_InsMonthlyHistory SPInput = new SPInput_InsMonthlyHistory()
             {
                 IDNO = IDNO,
@@ -210,6 +254,7 @@ namespace Reposotory.Implement
             checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);
             return flag;
         }
+
         /// <summary>
         /// 驗證SP回傳值
         /// </summary>
