@@ -846,6 +846,7 @@
     <Compile Include="Models\Param\Output\PartOfParam\OrderFinishObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PayModeObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonData.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\GetGameItemP.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\PolygonDataForWeb.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\RentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\GetWalletStoredMoneySet.cs" />

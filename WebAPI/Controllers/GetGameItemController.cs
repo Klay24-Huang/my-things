@@ -23,6 +23,8 @@ using WebAPI.Utils;
 using Domain.Flow.Hotai;
 using Domain.TB.Hotai;
 using NLog;
+using System.Security.Cryptography;
+using WebAPI.Models.Param.Output.PartOfParam;
 
 namespace WebAPI.Controllers
 {
@@ -52,6 +54,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             OAPI_GetGameItem apiOutput = null;
+            GetGameItemP itemP = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -114,12 +117,16 @@ namespace WebAPI.Controllers
 
                 if (ds.Tables.Count > 0)
                 {
-                    string gameToken = ds.Tables[0].Rows[0]["GameToken"].ToString();
+                    itemP = new GetGameItemP
+                    {
+                        GameToken = ds.Tables[0].Rows[0]["GameToken"].ToString(),
+                        GameID = (int)ds.Tables[0].Rows[0]["GameID"]
+                    };
                     apiOutput = new OAPI_GetGameItem()
                     {
                         GameSrc = ds.Tables[0].Rows[0]["GameUrl"].ToString(), // 路徑在TB_Game
-                        P = new AESEncrypt().doEncrypt(EnKey, EnSalt, gameToken)
-                    };
+                        P = AESEncrypt.EncryptAES128(JsonConvert.SerializeObject(itemP), EnKey, EnSalt, CipherMode.ECB, PaddingMode.PKCS7)
+                };
 
                 }
                 ds.Dispose();
