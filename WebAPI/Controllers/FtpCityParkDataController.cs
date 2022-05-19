@@ -36,9 +36,9 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private readonly string FTPUSERID = ConfigurationManager.AppSettings["FTPUSERID"].ToString();
-        private readonly string FTPPASSWORD = ConfigurationManager.AppSettings["FTPPASSWORD"].ToString();
-        private readonly string FTPUrl = ConfigurationManager.AppSettings["FTPUrl"].ToString();
+        private readonly string FTPUSERID = ConfigurationManager.AppSettings["FtpCityPark_USERID"].ToString();
+        private readonly string FTPPASSWORD = ConfigurationManager.AppSettings["FtpCityPark_PASSWORD"].ToString();
+        private readonly string FTPUrl = ConfigurationManager.AppSettings["FtpCityPark_Url"].ToString();
         
         [HttpPost]
         public Dictionary<string, object> DoFtpCityParkData(Dictionary<string, object> value)
@@ -110,7 +110,7 @@ namespace WebAPI.Controllers
                             ftpCityParkDataList.Add(cityParkData);
                         }
                         #endregion
-                        try
+                        if (ftpCityParkDataList.Count() > 0)
                         {
                             string SPName = "usp_FtpCityParkData_I01";
 
@@ -172,11 +172,11 @@ namespace WebAPI.Controllers
                             {
                                 baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[1].Rows[0]["Error"]), ds1.Tables[1].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
                             }
-                            
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Console.WriteLine("Exception: " + e.Message);
+                            flag = false;
+                            errCode = "ERR911";
                         }
                     }
                 }
