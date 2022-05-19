@@ -23,7 +23,7 @@ namespace Domain.TB
         /// <summary>
         /// 
         /// </summary>
-        public string Ftp_entered_at { get; set; }
+        public DateTime Ftp_entered_at { get; set; }
         /// <summary>
         /// 車輛入場車道
         /// </summary>
@@ -31,7 +31,7 @@ namespace Domain.TB
         /// <summary>
         /// 車輛離場時間
         /// </summary>
-        public string Ftp_left_at { get; set; }
+        public DateTime Ftp_left_at { get; set; }
         /// <summary>
         /// 車輛離場車道
         /// </summary>

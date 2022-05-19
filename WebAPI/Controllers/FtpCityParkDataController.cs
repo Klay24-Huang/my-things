@@ -25,7 +25,7 @@ using System.Text;
 using WebAPI.Utils;
 using System.Net;
 using NLog;
-
+using System.Globalization;
 
 namespace WebAPI.Controllers
 {
@@ -61,8 +61,8 @@ namespace WebAPI.Controllers
             OAPI_FtpCityParkData apiOutput = null;
 
             string DOCdate = "CityPark_" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + ".txt";
-            string tarUrl = FTPUrl + DOCdate;
-            //string tarUrl = FTPUrl + "CityPark_20220505.txt";
+            //string tarUrl = FTPUrl + DOCdate;
+            string tarUrl = FTPUrl + "CityPark_20220505.txt";
             #endregion
 
             try
@@ -101,9 +101,11 @@ namespace WebAPI.Controllers
                             cityParkData.Ftp_facility_id = lines[0];
                             cityParkData.Ftp_entrance_uuid = lines[1];
                             cityParkData.Ftp_license_plate_number = lines[2];
-                            cityParkData.Ftp_entered_at = lines[3];
+                            DateTime entered_at = DateTime.Parse(lines[3], CultureInfo.InvariantCulture, DateTimeStyles.None);
+                            cityParkData.Ftp_entered_at = entered_at;
                             cityParkData.Ftp_entrance_id = lines[4];
-                            cityParkData.Ftp_left_at = lines[5];
+                            DateTime left_at = DateTime.Parse(lines[5], CultureInfo.InvariantCulture, DateTimeStyles.None);
+                            cityParkData.Ftp_left_at = left_at;
                             cityParkData.Ftp_exit_id = lines[6];
                             cityParkData.Ftp_amount = lines[7];
 
