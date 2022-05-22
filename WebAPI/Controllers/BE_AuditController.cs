@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
+using Domain.SP.BE.Output;
 using Domain.SP.Output;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
@@ -227,13 +228,25 @@ namespace WebAPI.Controllers
                     MEMONEW = apiInput.MEMONEW //20210115唐加
                 };
 
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
+                //20220521 ADD BY ADAM REASON.增加首次審核通過回傳
+                //SPOutput_Base spOut = new SPOutput_Base();
+                //SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
+                SPOutput_BE_HandleAudit spOut = new SPOutput_BE_HandleAudit();
+                SQLHelper<SPInput_BE_Audit, SPOutput_BE_HandleAudit> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_BE_HandleAudit>(connetStr);
+
                 logger.Trace("AuditSave:" + JsonConvert.SerializeObject(spInput));
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 logger.Trace("AuditSaveResult:" + JsonConvert.SerializeObject(spOut) + ",Error:" + JsonConvert.SerializeObject(lstError));
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
-
+                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                //20220521 ADD BY ADAM REASON.增加首次審核通過回傳
+                if (spOut.FirstAudit == "Y" && apiInput.MEMEMAIL.ToString() != "")
+                {
+                    //發送EDM通知
+                    WebCommon.SendMail edm = new SendMail();
+                    string EDM_Body = "<a href='https://www.irentcar.com.tw/event/111event/3043/index.html' ><img src='https://www.irentcar.com.tw/event/111event/3043/img/main.jpg' /><br/>點選進入</a>";
+                    edm.DoSendMail("iRent會員通知", EDM_Body, apiInput.MEMEMAIL);
+                }
             }
             //這邊資料用api拋給sqyhi06vm
             if (flag && apiInput.AuditStatus == 1)

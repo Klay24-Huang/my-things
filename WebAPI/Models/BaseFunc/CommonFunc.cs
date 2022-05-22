@@ -5,6 +5,7 @@ using Domain.SP.Output;
 using Domain.SP.Output.Common;
 using Domain.TB;
 using Newtonsoft.Json;
+using NLog;
 using Reposotory.Implement;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace WebAPI.Models.BaseFunc
     public class CommonFunc
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         #region 要驗證的類型
         /// <summary>
@@ -574,26 +576,34 @@ namespace WebAPI.Models.BaseFunc
             bool flag = true;
             try
             {
+                //由設定檔判斷是否將Log寫入DB
+                var enableAPILogToDB = ConfigurationManager.AppSettings["EnableAPILogToDB"] ?? "Y";
+
                 SPInput_InsAPILog spInput = new SPInput_InsAPILog()
                 {
                     APIName = funName,
                     APIInput = apiInput,
                     ClientIP = ClientIP
                 };
-                SPOuptput_InsAPILog spOut = new SPOuptput_InsAPILog();
-                List<ErrorInfo> lstError = new List<ErrorInfo>();
-                string spName = new ObjType().GetSPName(ObjType.SPType.InsAPILog);
-                SQLHelper<SPInput_InsAPILog, SPOuptput_InsAPILog> sqlHelp = new SQLHelper<SPInput_InsAPILog, SPOuptput_InsAPILog>(WebApiApplication.connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
-                flag = !(spOut.Error == 1 || spOut.ErrorCode != "0000");
-                if (spOut.ErrorCode == "0000" && lstError.Count > 0)
+
+                if (enableAPILogToDB == "Y")
                 {
-                    spOut.ErrorCode = lstError[0].ErrorCode;
+                    SPOuptput_InsAPILog spOut = new SPOuptput_InsAPILog();
+                    List<ErrorInfo> lstError = new List<ErrorInfo>();
+                    string spName = new ObjType().GetSPName(ObjType.SPType.InsAPILog);
+                    SQLHelper<SPInput_InsAPILog, SPOuptput_InsAPILog> sqlHelp = new SQLHelper<SPInput_InsAPILog, SPOuptput_InsAPILog>(WebApiApplication.connetStr);
+                    flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
+                    flag = !(spOut.Error == 1 || spOut.ErrorCode != "0000");
+                    if (spOut.ErrorCode == "0000" && lstError.Count > 0)
+                    {
+                        spOut.ErrorCode = lstError[0].ErrorCode;
+                    }
+                    if (flag)
+                    {
+                        LogID = spOut.LogID;
+                    }
                 }
-                if (flag)
-                {
-                    LogID = spOut.LogID;
-                }
+                logger.Info(JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}"));
 
                 string[] tmpData = (apiInput.Replace("{", "").Replace("}", "")).Split(',');
                 int tmpLen = tmpData.Length;

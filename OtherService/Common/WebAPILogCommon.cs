@@ -3,6 +3,8 @@ using Domain.SP.Input.OtherService.Common;
 using Domain.SP.Input.OtherService.Taishin;
 using Domain.SP.Output;
 using Domain.SP.Output.Hotai;
+using Newtonsoft.Json;
+using NLog;
 using OtherService.Enum;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,7 @@ namespace OtherService.Common
     public class WebAPILogCommon
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
         /// <summary>
         /// 寫入呼叫第三方api log
         /// </summary>
@@ -29,18 +32,23 @@ namespace OtherService.Common
         /// <param name="lstError"></param>
         public void InsWebAPILog(SPInut_WebAPILog input, ref bool flag, ref string errCode, ref List<ErrorInfo> lstError)
         {
-            SQLHelper<SPInut_WebAPILog, SPOutput_Base> SqlHelper = new SQLHelper<SPInut_WebAPILog, SPOutput_Base>(connetStr);
-            SPOutput_Base spOut = new SPOutput_Base();
-            string SPName = new ObjType().GetSPName(ObjType.SPType.InsWebAPILog);
-            flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
-            if (flag)
+            //由設定檔判斷是否將Log寫入DB
+            var enableWebAPILogToDB = ConfigurationManager.AppSettings["EnableWebAPILogToDB"] ?? "Y";
+            if (enableWebAPILogToDB == "Y")
             {
-                if (spOut.Error == 1)
+                SQLHelper<SPInut_WebAPILog, SPOutput_Base> SqlHelper = new SQLHelper<SPInut_WebAPILog, SPOutput_Base>(connetStr);
+                SPOutput_Base spOut = new SPOutput_Base();
+                string SPName = new ObjType().GetSPName(ObjType.SPType.InsWebAPILog);
+                flag = SqlHelper.ExecuteSPNonQuery(SPName, input, ref spOut, ref lstError);
+                if (flag)
                 {
-                    flag = false;
+                    if (spOut.Error == 1)
+                    {
+                        flag = false;
+                    }
                 }
             }
-
+            logger.Info(JsonConvert.SerializeObject(input).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}"));
         }
         /// <summary>
         /// 寫入刷卡

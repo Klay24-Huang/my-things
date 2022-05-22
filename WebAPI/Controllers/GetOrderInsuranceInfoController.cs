@@ -84,7 +84,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SPName = "usp_GetOrderInsuranceInfo";
+                string SPName = "usp_GetOrderInsuranceInfo_V20220507";
                 SPInput_GetOrderInsuranceInfo spInput = new SPInput_GetOrderInsuranceInfo()
                 {
                     OrderNo = OrderNo,
