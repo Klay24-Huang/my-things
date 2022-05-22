@@ -240,12 +240,12 @@ namespace WebAPI.Controllers
                 //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 //20220521 ADD BY ADAM REASON.增加首次審核通過回傳
-                //if (spOut.FirstAudit == "Y" && apiInput.MEMEMAIL.ToString() != "")
-                if (apiInput.IDNO=="A122364317")
+                if (spOut.FirstAudit == "Y" && apiInput.MEMEMAIL.ToString() != "")
                 {
                     //發送EDM通知
                     WebCommon.SendMail edm = new SendMail();
-                    edm.DoSendMail("iRent會員通知", "<iframe src='https://www.irentcar.com.tw/event/111event/3043/index.html' />", apiInput.MEMEMAIL);
+                    string EDM_Body = "<a href='https://www.irentcar.com.tw/event/111event/3043/index.html' ><img src='https://www.irentcar.com.tw/event/111event/3043/img/main.jpg' /><br/>點選進入</a>";
+                    edm.DoSendMail("iRent會員通知", EDM_Body, apiInput.MEMEMAIL);
                 }
             }
             //這邊資料用api拋給sqyhi06vm
