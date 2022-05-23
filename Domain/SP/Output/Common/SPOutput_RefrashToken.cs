@@ -11,5 +11,9 @@
         /// refrash token
         /// </summary>
         public string Refrash_Token { get; set; }
+        /// <summary>
+        /// 會員流水編號
+        /// </summary>
+        public string MEMRFNBR { get; set; }
     }
 }

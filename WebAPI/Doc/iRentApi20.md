@@ -329,6 +329,8 @@
 
 20220421 新增設定停車位置(SetParkingSpaceByReturn)
 
+20220523 調整RefrashToken：增加MEMRFNBR欄位輸出
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -825,9 +827,10 @@
 
 * Data回傳參數說明
 
-| 參數名稱 | 參數說明  | 型態 | 範例 |
-| -------- | --------- | :--: | ---- |
-| Token    | Token列表 | List |      |
+| 參數名稱 | 參數說明   | 型態   | 範例 |
+| -------- | ---------  | :--:   | ---- |
+| Token    | Token列表  | List   |      |
+| MEMRFNBR | 會員流水號 | string |      |
 
 * Token 參數說明
 
@@ -853,7 +856,8 @@
             "Refrash_token": "51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF",
             "Rxpires_in": 86400,
             "Refrash_Rxpires_in": 604800
-        }
+        },
+        "MEMRFNBR": "1140213"
     }
 }
 ```

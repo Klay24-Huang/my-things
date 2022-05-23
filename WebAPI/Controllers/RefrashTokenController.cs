@@ -126,7 +126,8 @@ namespace WebAPI.Controllers
 
                     apiOutput = new OAPI_RefrashToken()
                     {
-                        Token = token
+                        Token = token,
+                        MEMRFNBR = spOut.MEMRFNBR
                     };
                 }
             }
