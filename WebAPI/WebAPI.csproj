@@ -237,6 +237,7 @@
     <Compile Include="Controllers\BindQueryByEasyrentController.cs" />
     <Compile Include="Controllers\CTBCInquiryController.cs" />
     <Compile Include="Controllers\CTBCCapJobController.cs" />
+    <Compile Include="Controllers\FtpCityParkDataCheckController .cs" />
     <Compile Include="Controllers\FtpCityParkDataController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\LowPowerHintReadController.cs" />
@@ -512,7 +513,6 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\Input\IAPI_BeSendEMail.cs" />
-    <Compile Include="Models\Param\Input\IAPI_FtpCityParkData.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
@@ -566,6 +566,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_FtpCityParkDataCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_FtpCityParkData.cs" />
     <Compile Include="Models\Param\Output\OAPI_GeneralTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCardBindListByEasyrent.cs" />

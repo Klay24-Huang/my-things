@@ -57,12 +57,11 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            IAPI_FtpCityParkData apiInput = null;
             OAPI_FtpCityParkData apiOutput = null;
 
             string DOCdate = "CityPark_" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + ".txt";
-            //string tarUrl = FTPUrl + DOCdate;
-            string tarUrl = FTPUrl + "CityPark_20220505.txt";
+            string tarUrl = FTPUrl + DOCdate;
+            //string tarUrl = FTPUrl + "CityPark_20220505.txt";
             #endregion
 
             try

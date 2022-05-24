@@ -76,6 +76,7 @@
     <Compile Include="SP\Input\Member\SPInput_MemberUnBind.cs" />
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
     <Compile Include="SP\Input\Other\SPInput_LowPowerHintRead.cs" />
+    <Compile Include="SP\Input\SPInput_FtpCityParkDataCheck.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletPayGetTransId.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderExtInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletReturn.cs" />
