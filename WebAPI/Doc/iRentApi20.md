@@ -45,6 +45,7 @@
 - [MotorRent 取得路邊租還機車](#MotorRent)
 - [GetMotorRentProject 取得專案與資費(機車)](#GetMotorRentProject)
 - [GetEstimate 資費明細(預估租金)](#GetEstimate)
+- [LowPowerHintRead 新增電量提示讀取](#LowPowerHintRead)
 
 預約以及訂單相關
 
@@ -129,6 +130,10 @@
 - [SetDefPayMode 設定預設支付方式](#SetDefPayMode)
 - [AutoStoreSetting 自動儲值設定](#AutoStoreSetting)
 - [WalletWithdrowInvoice 寫入手續費發票](#WalletWithdrowInvoice)
+
+外部功能
+
+- [BindQueryByEasyrent 查詢台新綁卡](#BindQueryByEasyrent)
 
 
 ----------
@@ -301,6 +306,8 @@
 
 20220221 查詢綁卡跟錢包(CreditAndWalletQuery)新增機車預扣款金額
 
+20220222 新增營損明細(InsertOrderOtherFee)
+
 20220222 預約(Booking)新增機車錢包餘額不足錯誤代碼
 
 20220301 機車取車(BookingStartMotor)補上output參數說明&錯誤代碼、預約(Booking)移除ERR294錯誤代碼
@@ -315,6 +322,8 @@
 
 20220329 新增上傳出還車照片(UploadCarImage)
 
+20220402 新增電量提示讀取(LowPowerHintRead)
+
 20220413 新增取車前判斷車輛狀態(CheckCarStatus)、取得汽車狀態(GetCarStatus)
 
 20220415 取得租金明細(GetPayDetail)增加可折抵時數
@@ -328,6 +337,8 @@
 20220420 新增一次性開門完成(OpenDoorFinish)
 
 20220421 新增設定停車位置(SetParkingSpaceByReturn)
+
+20220525 新增遊戲項目查詢(GetGameItem)
 
 # API位置
 
@@ -3434,7 +3445,49 @@
 }
 ```
 
+## LowPowerHintRead 電量提示讀取
 
+### [/api/LowPowerHintRead/]
+
+* 20220402發佈
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* HEADER帶入AccessToken**(必填)**
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": { }
+}
+```
 
 # 預約以及訂單相關
 
@@ -3591,6 +3644,7 @@
 | ERR905   | 11/10 02:00~06:00系統維護暫停服務                          | 定維時使用                                                 |
 | ERR602   | 因取授權失敗未完成預約，請檢查卡片餘額或是重新綁卡         | 因取授權失敗未完成預約                                     |
 | ERR292   | 請先設定支付方式，才可以預約機車哦！                       | 請先設定支付方式，才可以預約機車哦！                       |
+| ERR294   | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約。 | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約   |
 | ERR934   | 錢包餘額不足                                               | 錢包餘額不足                                               |
 
 ------
@@ -9739,4 +9793,142 @@
 ```
 
 ----
+
+# 外部功能
+
+## BindQueryByEasyrent 查詢台新綁卡
+
+### [/api/BindQueryByEasyrent/]
+
+* 20220223新增文件
+
+* ASP.NET Web API (REST API)
+
+* 傳送跟接收採JSON格式
+
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明                     | 必要 |  型態  | 範例 |
+| -------- | ---------------------------- | :--: | :----: | ---- |
+| P        | 參數帶入(帶入需要AES128加密) |  Y   | STRING |      |
+
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data 回傳參數說明
+
+| 參數名稱    | 參數說明                                  | 型態 | 範例 |
+| ----------- | ----------------------------------------- | :--: | ---- |
+| PayMode     | 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay) | int  | 0    |
+| HasBind     | 是否有綁定(0:無,1有)                      | int  | 1    |
+| BindListObj | 信用卡列表                                | list |      |
+
+
+* BindListObj 回傳參數說明
+
+| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
+| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
+| BankNo          | 銀行帳號                         | string |                                                       |
+| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
+| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
+| AvailableAmount | 剩餘額度                         | string |                                                       |
+| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
+| CardHash        | 補欄位(空白資料)                 | string |                                                       |
+| ExpDate         | 補欄位(空白資料)                 | string |                                                       |
+| CardType        | 補欄位(空白資料)                 | string |                                                       |
+| IDX             | 順序                             |  int   |                                                       |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "HasBind": 1,
+        "BindListObj": [
+            {
+                "BankNo": "",
+                "CardNumber": "414763******5601",
+                "CardName": "台新國際商業銀行",
+                "CardToken": "19f6060a-3d20-4261-9a3a-180e304c4b20_1038547268510346",
+                "CardHash": "",
+                "ExpDate": "",
+                "CardType": "",
+                "IDX": 1
+            }
+        ]
+    }
+}
+```
+
+# 活動
+
+## GetGameItem 遊戲項目查詢
+
+### [/api/GetGameItem/]
+
+* ASP.NET Web API (REST API)
+* 傳送跟接收採JSON格式
+* HEADER帶入AccessToken(必填)
+* 動作 [POST]
+
+* input傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
+| -------- | -------- | :--: | :--: | ---- |
+| 無參數   |          |      |      |      |
+
+* output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Data回傳參數說明
+
+| 參數名稱 | 參數說明               |  型態  | 範例                                                         |
+| -------- | ---------------------- | :----: | ------------------------------------------------------------ |
+| GameSrc  | 遊戲外部連結           | string | https://www.clubon.space/pages/noah                          |
+| P        | 參數(經AES128加密處理) | string | ei4NDno1KKvObLw4O84ifPdOEz/3KlGDb3UW+tT8/Xp4EcjHZu4MMM3Ggcsa3BE0102WhAtPnVuEBJBhTZur5eBTH4rH5rzTl7/jtxtcO/s= |
+
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "GameSrc": "https://www.clubon.space/pages/noah",
+        "P": "ei4NDno1KKvObLw4O84ifPdOEz/3KlGDb3UW+tT8/Xp4EcjHZu4MMM3Ggcsa3BE0102WhAtPnVuEBJBhTZur5eBTH4rH5rzTl7/jtxtcO/s="
+    }
+}
+```
+
+
+----------
 
