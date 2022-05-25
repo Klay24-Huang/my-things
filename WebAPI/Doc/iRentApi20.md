@@ -135,6 +135,10 @@
 
 - [BindQueryByEasyrent 查詢台新綁卡](#BindQueryByEasyrent)
 
+活動
+
+- [GetGameItem 遊戲項目查詢](#GetGameItem)
+
 
 ----------
 # 修改歷程
