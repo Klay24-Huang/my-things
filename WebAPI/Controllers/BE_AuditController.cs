@@ -442,32 +442,33 @@ namespace WebAPI.Controllers
               gtag('config', 'UA-194927061-1');
 
             </script>
+
             </head>
             <body>
-            <div class='container'>
-            <div class='container'>
+            <div style='text-align: center;padding: 0px;'>
+            <div style='text-align: center;padding: 0px;'>
             <div class='box pp'>
             <img id = 'banner' src='https://www.irentcar.com.tw/event/111event/3043/img/main.jpg'>
-            <p class='text'><b>Hi iRent會員您好<br>恭喜您審核通過，成為iRent的一員！</br>是否已滿心期待，準備好讓iRent陪您來趟美好旅程了呢？<br>啟程前，您不可錯過的好康活動，推薦給您。<br>內含時數贈送活動，趕快點開一探究竟～<b></p>
+            <p style='font-size: 16px; '><b>Hi iRent會員您好<br>恭喜您審核通過，成為iRent的一員！</br>是否已滿心期待，準備好讓iRent陪您來趟美好旅程了呢？<br>啟程前，您不可錯過的好康活動，推薦給您。<br>內含時數贈送活動，趕快點開一探究竟～<b></p>
             </div>
             <div class='card'>
             </br></br></br>
             <a href = 'https://www.irentcar.com.tw/event/111event/2098/index.html' target='_blank'>
             <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic1.jpg' ></ a >
-            <p><b>【限時活動】即日起至6/30止<br> 使用中信卡綁定和泰Pay，就可獲得免費汽車時數30分鐘(每ID限獲得乙次)<b></p>
+            <p  style='font-size: 16px; '><b>【限時活動】即日起至6/30止<br> 使用中信卡綁定和泰Pay，就可獲得免費汽車時數30分鐘(每ID限獲得乙次)<b></p>
             </div>
-            <div class='container'>
+            <div style='text-align: center;padding: 0px;'>
             <div class='card'>
             </br></br></br>
             <a href = 'https://www.irentcar.com.tw/event/111event/3027/index.html' target='_blank'>
             <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic2.jpg' ></ a >
-            <p><b>【限時活動】即日起至6/30止<br> 天天登入享免費機車時數6分鐘，完成指定任務最高還可獲得汽車時數60分鐘<b></p>
+            <p style='font-size: 16px; '><b>【限時活動】即日起至6/30止<br> 天天登入享免費機車時數6分鐘，完成指定任務最高還可獲得汽車時數60分鐘<b></p>
             </div>
             <div class='card'>
             </br></br></br>
             <a href = 'https://www.irentcar.com.tw/iRentSchool/' target='_blank'>
             <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic3.jpg' ></ a >
-            <p><b> 立即完成小學堂測驗，最高可獲得300分鐘iRent時數<b></p>
+            <p style='font-size: 16px; '><b> 立即完成小學堂測驗，最高可獲得300分鐘iRent時數<b></p>
             </div>
             <script src = '/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js' data-cf-settings='2ba0d8ddb35d90ceaf33e6e6-|49' defer=''></script><script defer src='https://static.cloudflareinsights.com/beacon.min.js/v652eace1692a40cfa3763df669d7439c1639079717194' integrity='sha512-Gi7xpJR8tSkrpF7aordPZQlW2DLtzUlZcumS8dMQjwDHEnw9I7ZLyiOj/6tZStRBGtGgN6ceN6cMH8z7etPGlw==' data-cf-beacon='{'rayId':'71058ce68eab6b6f','token':'032a1d9439474897bfe67e733c1a68a4','version':'2021.12.0','si':100}' crossorigin='anonymous'></script>
             </body>
