@@ -55,7 +55,6 @@ namespace WebAPI.Controllers
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             OAPI_FtpCityParkDataCheck apiOutput = null;
-            string checkDate = DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
             #endregion
 
             #region 防呆
