@@ -97,7 +97,8 @@ namespace WebAPI.Controllers
             #region TB
             if (flag)
             {
-                string spName = new ObjType().GetSPName(ObjType.SPType.RefrashToken);
+                //string spName = new ObjType().GetSPName(ObjType.SPType.RefrashToken);
+                string spName = "usp_RefrashToken_V20220527";
                 SPInput_RefrashToken spInput = new SPInput_RefrashToken()
                 {
                     APP = APPKind,
