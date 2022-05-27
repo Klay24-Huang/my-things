@@ -143,6 +143,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// 計次金額(每分鐘單位多少錢)
         /// </summary>
         public int InsuranceMotoRate { set; get; }
+        /// <summary>
+        /// 機車安心服務基消分鐘數
+        /// </summary>
+        public int BaseInsuranceMinutes { set; get; }
         #endregion
     }
 }

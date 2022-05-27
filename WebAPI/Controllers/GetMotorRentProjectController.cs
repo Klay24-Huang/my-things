@@ -200,7 +200,7 @@ namespace WebAPI.Controllers
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
 
                 // 20210617 UPD BY YEH REASON:因應會員積分<60只能用定價專案，取專案改到SP處理
-                string SPName = "usp_GetMotorRentProject_Insurance";
+                string SPName = "usp_GetMotorRentProject";
                 SPInput_GetMotorRentProject SPInput = new SPInput_GetMotorRentProject
                 {
                     IDNO = IDNO,
@@ -260,7 +260,8 @@ namespace WebAPI.Controllers
                                 DiscountLabel = reDiscountLabel,
                                 BaseMotoRate = lstData[0].BaseMotoRate,
                                 InsuranceMotoMin = lstData[0].InsuranceMotoMin,
-                                InsuranceMotoRate = lstData[0].InsuranceMotoRate
+                                InsuranceMotoRate = lstData[0].InsuranceMotoRate,
+                                BaseInsuranceMinutes = lstData[0].BaseInsuranceMinutes
                             });
                             if (DataLen > 1)
                             {

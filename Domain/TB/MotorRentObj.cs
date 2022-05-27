@@ -111,6 +111,10 @@ namespace Domain.TB
         /// 計次金額(每單位分鐘多少錢)
         /// </summary>
         public int InsuranceMotoRate { set; get; }
+        /// <summary>
+        /// 機車安心服務基消分鐘數
+        /// </summary>
+        public int BaseInsuranceMinutes { set; get; }
 
         #endregion
 

@@ -3073,6 +3073,7 @@
 | BaseMotoRate      | 計次金額(基消)               | int  |      |
 | InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | int  |      |
 | InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | int  |      |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數   | int  |      |
 
 * DiscountLabel 參數說明
 
@@ -3127,7 +3128,8 @@
                 "PerMinutesPrice": 2.5,
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             },
             {
                 "MonthlyRentId": 2455,
@@ -3167,7 +3169,8 @@
                 "PerMinutesPrice": 2.5,
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             }
         ]
     }
@@ -3257,6 +3260,8 @@
 | BaseMotoRate      | 計次金額(基消)               | int  |      |
 | InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | int  |      |
 | InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | int  |      |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數   | int  |      |
+
 
 * DiscountLabel回傳參數說明
 
@@ -3313,7 +3318,8 @@
                 },
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             },
             {
                 "ProjID": "R344",
@@ -3350,7 +3356,8 @@
                 },
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             }
         ]
     }

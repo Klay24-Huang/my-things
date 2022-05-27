@@ -94,5 +94,9 @@ namespace Domain.TB
         /// 安心服務欄位預設值(0:無法購買, 1預設不勾, 2預設勾選)
         /// </summary>
         public int InsuranceDef { set; get; }
+        /// <summary>
+        /// 機車安心服務基消分鐘數
+        /// </summary>
+        public int BaseInsuranceMinutes { set; get; }
     }
 }
