@@ -22,24 +22,12 @@ using WebCommon;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 使用信用卡付款
+    /// 取款排程
     /// </summary>
     public class CreditAuthJobV2Controller : ApiController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
-        private string APIToken = ConfigurationManager.AppSettings["TaishinWalletAPIToken"].ToString();
-        private string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
-        private string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
-        private string BaseURL = ConfigurationManager.AppSettings["TaishinWalletBaseURL"].ToString();
-        private string TaishinAPPOS = ConfigurationManager.AppSettings["TaishinAPPOS"].ToString();
-        private string BindResultURL = ConfigurationManager.AppSettings["BindResultURL"].ToString();
-        private string BindSuccessURL = ConfigurationManager.AppSettings["BindSuccessURL"].ToString();
-        private string BindFailURL = ConfigurationManager.AppSettings["BindFailURL"].ToString();
-        private string ApiVer = ConfigurationManager.AppSettings["ApiVer"].ToString();
-        private string ApiVerOther = ConfigurationManager.AppSettings["ApiVerOther"].ToString();
-        private static int iButton = (ConfigurationManager.AppSettings["IButtonCheck"] == null) ? 1 : int.Parse(ConfigurationManager.AppSettings["IButtonCheck"]);
-        private int AuthResendMin = int.Parse(ConfigurationManager.AppSettings["AuthResendMin"]);
 
         private CommonFunc baseVerify { get; set; }
 
@@ -68,8 +56,6 @@ namespace WebAPI.Controllers
             List<ErrorInfo> lstError = new List<ErrorInfo>();
             string Contentjson = "";
             bool isGuest = true;
-            string IDNO = "";
-            Int64 tmpOrder = 0;
             int Amount = 0;
 
             //input
@@ -84,10 +70,9 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 apiInput = JsonConvert.DeserializeObject<IAPI_CreditAuthJobV2>(Contentjson);
-
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
-                flag = baseVerify.InsAPLog("NA", ClientIP, funName, ref errCode, ref LogID);
+                flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
 
                 GateNo = apiInput.GateNo;
                 isRetry = apiInput.isRetry;
@@ -103,8 +88,10 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 logger.Trace("OrderAuthList Count:" + OrderAuthList.Count.ToString());
+                logger.Trace("OrderAuthList List:" + JsonConvert.SerializeObject(OrderAuthList));
+
                 //PayUpList 預約，欠費，用車10小時需全額繳清
-                List<int> payUpList = new List<int> { 1 ,6 , 11 };
+                List<int> payUpList = new List<int> { 1, 6, 11 };
 
                 List<string> exCodeList = new List<string> { "ER00A", "ER00B", "ERR918", "ERR917", "ERR913" };
 
@@ -164,12 +151,10 @@ namespace WebAPI.Controllers
 
                             payStatus = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
                             logger.Trace($"OrderAuthList Result: {JsonConvert.SerializeObject(AuthOutput)} | payStatus:{payStatus} | errCode:{errCode}");
-                            
 
                             UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p => p == errCode) ? -9 : -1);
 
-                            if (AuthInput.CheckoutMode == 1 && AuthInput.AuthType == 11 &&
-                                UpdateOrderAuthList.AuthFlg != 1)
+                            if (AuthInput.CheckoutMode == 1 && AuthInput.AuthType == 11 && UpdateOrderAuthList.AuthFlg != 1)
                             {
                                 //reset
                                 payStatus = true;
@@ -182,11 +167,11 @@ namespace WebAPI.Controllers
 
                                 UpdateOrderAuthList.AuthFlg = payStatus ? 1 : (exCodeList.Any(p => p == errCode) ? -9 : -1);
                             }
-                            
-                            UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode??"";
-                            UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage??"";
-                            UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no??"";
-                            UpdateOrderAuthList.CardNumber = AuthOutput.CardNo??"";
+
+                            UpdateOrderAuthList.AuthCode = AuthOutput.AuthCode ?? "";
+                            UpdateOrderAuthList.AuthMessage = AuthOutput.AuthMessage ?? "";
+                            UpdateOrderAuthList.transaction_no = AuthOutput.Transaction_no ?? "";
+                            UpdateOrderAuthList.CardNumber = AuthOutput.CardNo ?? "";
                             UpdateOrderAuthList.CardType = AuthOutput.CardType;
                         }
                         else
@@ -195,60 +180,25 @@ namespace WebAPI.Controllers
                             UpdateOrderAuthList.AuthCode = "1000";
                             UpdateOrderAuthList.AuthMessage = "金額為0免刷卡";
                         }
-
-
-                        //SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
-                        //{
-                        //    authSeq = OrderAuth.authSeq,
-                        //    AuthFlg = payStatus ? 1 : -1,
-                        //    AuthCode = AuthOutput.AuthCode,
-                        //    AuthMessage = AuthOutput.AuthMessage,
-                        //    OrderNo = OrderAuth.order_number,
-                        //    transaction_no = AuthOutput.Transaction_no,
-                        //    AuthType = OrderAuth.AuthType,
-                        //    isRetry = OrderAuth.isRetry,
-                        //    IDNO = OrderAuth.IDNO,
-                        //    AutoClosed = OrderAuth.AutoClosed,
-                        //    final_price = OrderAuth.final_price,
-                        //    ProName = "CreditAuthJobV2",
-                        //    CardNumber = AuthOutput.CardNo,
-                        //};
-
-                        //if(payStatus == false && OrderAuth.AuthType == 1 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace( OrderAuth.Mobile))
-                        //{
-                        //    CreditAuthJobComm creditAuthJobComm = new CreditAuthJobComm();
-
-                        //    var sendSMS = creditAuthJobComm.SendSMS(OrderAuth.Mobile);
-                        //}
                     }
                     catch (Exception ex)
                     {
                         logger.Error($"authSeq:{OrderAuth.authSeq}-- OrderAuthListloop Error:{ex.Message}");
                         UpdateOrderAuthList.AuthFlg = -9;
                         UpdateOrderAuthList.AuthMessage = ex.Message;
-
-                        //SPInput_UpdateOrderAuthListV2 UpdateOrderAuthList = new SPInput_UpdateOrderAuthListV2
-                        //{
-                        //    authSeq = OrderAuth.authSeq,
-                        //    AuthFlg = -9,
-                        //    AuthCode = "",
-                        //    AuthMessage = "",
-                        //    OrderNo = OrderAuth.order_number,
-                        //    transaction_no = "",
-                        //    AuthType = OrderAuth.AuthType,
-                        //    isRetry = OrderAuth.isRetry,
-                        //    IDNO = OrderAuth.IDNO,
-                        //    AutoClosed = OrderAuth.AutoClosed,
-                        //    final_price = OrderAuth.final_price,
-                        //    ProName = "CreditAuthJobV2",
-                        //    CardNumber = "",
-                        //};
                     }
                     finally
                     {
                         var updateFlag = UpdateOrdarAuthStatus(UpdateOrderAuthList, ref lstError, ref errCode);
                     }
-                    
+
+                    // 發簡訊
+                    if (UpdateOrderAuthList.AuthFlg != 1 && OrderAuth.AuthType == 11 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace(OrderAuth.Mobile))
+                    {
+                        CreditAuthJobComm creditAuthJobComm = new CreditAuthJobComm();
+                        var SMSmsg = "第一次用車費用差額取授權失敗通知，請確認信用卡餘額或是重新綁卡，將於3小時後再次取授權。";
+                        var SendSMS = creditAuthJobComm.SendSMS(OrderAuth.Mobile, CreditAuthJobComm.MobileTemplateCode.CustomMsg, SMSmsg);
+                    }
                 }
             }
             #endregion
@@ -265,7 +215,7 @@ namespace WebAPI.Controllers
             #endregion
         }
 
-        //取出訂單
+        #region 取出訂單
         private List<OrderAuthListV2> GetOrderAuthList(int GateNo, int isRetry, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             var OrderAuthList = new List<OrderAuthListV2>();
@@ -293,9 +243,10 @@ namespace WebAPI.Controllers
                 }
             }
             return OrderAuthList;
-
         }
+        #endregion
 
+        #region 更新授權
         /// <summary>
         /// 更新授權
         /// </summary>
@@ -319,7 +270,9 @@ namespace WebAPI.Controllers
 
             return flag;
         }
+        #endregion
 
+        #region 錢包用交易類型
         private string GetWalletTradeType(int projType, int authType)
         {
             string tradeType = "";
@@ -368,8 +321,8 @@ namespace WebAPI.Controllers
                     break;
             }
 
-
             return tradeType;
         }
+        #endregion
     }
 }
