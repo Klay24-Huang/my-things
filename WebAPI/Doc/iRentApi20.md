@@ -344,6 +344,10 @@
 
 20220525 新增遊戲項目查詢(GetGameItem)
 
+20220527 條整取得專案與資費(機車)(GetMotorRentProject)輸出內容-添加機車安心服務
+
+20220527 條整取得路邊租還機車(MotorRent)輸出內容-添加機車安心服務
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -3050,7 +3054,7 @@
 | ProjectName		| 專案名稱		| string | 10載便利北北桃 |
 | Rental			| 每小時租金	| float | 168.0 |
 | Mileage			| 每公里里程費		| float | 3.0 |
-| Insurance			| 是否有安心服務 | int | 0 |
+| Insurance			| 是否有安心服務 | int | 2 |
 | InsurancePrice	| 安心服務每小時費用 | int | 50 |
 | ShowSpecial		| 是否顯示活動文字 | int | 1 |
 | SpecialInfo		| 活動文字			| string | |
@@ -3066,6 +3070,9 @@
 | BaseMinutes		| 基本分鐘數		| int | 6 |
 | BasePrice			| 基本費			| int | 10 |
 | PerMinutesPrice	| 每分鐘幾元		| float | 	1.5 |
+| BaseMotoRate      | 計次金額(基消)               | int  |      |
+| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | int  |      |
+| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | int  |      |
 
 * DiscountLabel 參數說明
 
@@ -3117,7 +3124,10 @@
                 "ProjID": "R344",
                 "BaseMinutes": 6,
                 "BasePrice": 12,
-                "PerMinutesPrice": 2.5
+                "PerMinutesPrice": 2.5,
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             },
             {
                 "MonthlyRentId": 2455,
@@ -3154,7 +3164,10 @@
                 "ProjID": "R344",
                 "BaseMinutes": 6,
                 "BasePrice": 12,
-                "PerMinutesPrice": 2.5
+                "PerMinutesPrice": 2.5,
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             }
         ]
     }
@@ -3241,6 +3254,9 @@
 | MonthStartDate	| 開始日			| string | |
 | MonthEndDate		| 結束日			| string | |
 | DiscountLabel     | 優惠標籤物件    | object | |
+| BaseMotoRate      | 計次金額(基消)               | int  |      |
+| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | int  |      |
+| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | int  |      |
 
 * DiscountLabel回傳參數說明
 
@@ -3272,7 +3288,7 @@
                 "CarTypePic": "iretScooter",
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
-                "Insurance": 0,
+                "Insurance": 2,
                 "InsurancePerHour": 0,
                 "IsMinimum": 1,
                 "BaseMinutes": 6,
@@ -3294,7 +3310,10 @@
                     "LabelType": "CP0101",
                     "GiveMinute": 12,
                     "Describe": ""
-                }
+                },
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             },
             {
                 "ProjID": "R344",
@@ -3306,7 +3325,7 @@
                 "CarTypePic": "iretScooter",
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
-                "Insurance": 0,
+                "Insurance": 2,
                 "InsurancePerHour": 0,
                 "IsMinimum": 0,
                 "BaseMinutes": 6,
@@ -3328,7 +3347,10 @@
                     "LabelType": "CP0101",
                     "GiveMinute": 12,
                     "Describe": ""
-                }
+                },
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             }
         ]
     }

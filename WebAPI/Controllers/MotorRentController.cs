@@ -174,7 +174,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 // 20210622 UPD BY YEH REASON:因應積分<60分只能用定價專案，取資料改去SP處理
-                string SPName = "usp_GetMotorRent";
+                string SPName = "usp_GetMotorRent_Insurance";
                 SPInput_GetMotorRent spInput = new SPInput_GetMotorRent
                 {
                     IDNO = IDNO,
@@ -204,8 +204,8 @@ namespace WebAPI.Controllers
                         discountLabels = new CarRentCommon().GetDiscountLabelForAnyRentCars(
                             new Domain.SP.Input.Discount.SPInput_GetDiscountLabelForAnyRentCars
                             {
-                               LogID = LogID,
-                               CarNos = string.Join(",", MotorList.Select(o => o.CarNo.Trim()))
+                                LogID = LogID,
+                                CarNos = string.Join(",", MotorList.Select(o => o.CarNo.Trim()))
                             });
                         #endregion
                         _MotorRentObj = objUti.TTMap<List<MotorRentObj>, List<OAPI_MotorRent_Param>>(MotorList);
@@ -248,7 +248,7 @@ namespace WebAPI.Controllers
                                        LabelType = t.LabelType,
                                        GiveMinute = t.GiveMinute,
                                        Describe = $"{t.GiveMinute}分鐘優惠折抵",
-                                   }).FirstOrDefault()??new DiscountLabel();
+                                   }).FirstOrDefault() ?? new DiscountLabel();
                             });
 
                         }
