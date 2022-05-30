@@ -161,7 +161,8 @@ namespace WebAPI.Models.BillFunc
                 re.flag = monthlyRentRepository.RestoreHistory(sour.IDNO, sour.intOrderNO, sour.LogID, ref errCode);
                 re.errCode = errCode;
 
-                monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
+                //monthlyRentDatas = monthlyRentRepository.GetSubscriptionRatesByMonthlyRentId(sour.IDNO, sour.MonIds);
+                monthlyRentDatas = monthlyRentRepository.GetCanUseMonthly(sour.IDNO, sour.intOrderNO, sour.MonIds, sour.LogID,ref errCode);
 
                 //假日優惠費率置換:只限汽車月租,只置換假日
                 List<int> CarProTypes = new List<int>() { 0, 3 };

@@ -359,18 +359,39 @@ namespace Domain.SP.Output.OrderList
 
     public class OrderAuthListV2: OrderAuthList
     {
+        /// <summary>
+        /// 自動關帳(1:自動關 0:手動關)
+        /// </summary>
         public int AutoClosed { get; set; }
 
+        /// <summary>
+        /// 授權類別 (TB_Code.MapCode)
+        /// </summary>
         public int AuthType { get; set; }
-        
+
+        /// <summary>
+        /// 信用卡類別(0:和泰; 1:台新;2:錢包),本表有舊資料,故預設值調整為1
+        /// </summary>
         public int CardType { get; set; }
 
+        /// <summary>
+        /// 處理次數
+        /// </summary>
         public int isRetry { get; set; }
 
+        /// <summary>
+        /// 手機號碼
+        /// </summary>
         public string Mobile { get; set; }
 
+        /// <summary>
+        /// 專案類型
+        /// </summary>
         public int ProjType { get; set; }
 
+        /// <summary>
+        /// 單次儲值餘額(1:是 0:否)
+        /// </summary>
         public int OnceStore { get; set; }
     }
 
