@@ -241,7 +241,7 @@ namespace WebAPI.Controllers
                                 CarType = lstData[0].CarType,
                                 CarTypeName = lstData[0].CarBrend + ' ' + lstData[0].CarTypeName,
                                 CarTypePic = lstData[0].CarTypePic,
-                                Insurance = lstData[0].InsuranceDef,
+                                Insurance = (int)lstData[0].InsuranceDef,
                                 InsurancePerHour = 0,
                                 IsMinimum = isMin,
                                 Operator = lstData[0].Operator,
