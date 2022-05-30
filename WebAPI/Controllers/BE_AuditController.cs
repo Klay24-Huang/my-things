@@ -418,7 +418,7 @@ namespace WebAPI.Controllers
                 throw new Exception("MEMRFNBR格式錯誤");
         }
 
-
+        #region 和泰PAY活動EDM
         private static string EDM_Body = @"
             <html>
             <head>
@@ -473,6 +473,6 @@ namespace WebAPI.Controllers
             </body>
             </html>
             ";
-
+        #endregion
     }
 }
