@@ -134,19 +134,19 @@ namespace Domain.WebAPI.output.rootAPI
         /// <summary>
         /// 安心服務起始費用(類似機車基消)
         /// </summary>
-        public int BaseMotoRate { set; get; }
+        public double BaseMotoRate { set; get; }
         /// <summary>
         /// 計次分鐘單位(幾分鐘算一次錢)
         /// </summary>
-        public int InsuranceMotoMin { set; get; }
+        public double InsuranceMotoMin { set; get; }
         /// <summary>
         /// 計次金額(每分鐘單位多少錢)
         /// </summary>
-        public int InsuranceMotoRate { set; get; }
+        public double InsuranceMotoRate { set; get; }
         /// <summary>
         /// 機車安心服務基消分鐘數
         /// </summary>
-        public int BaseInsuranceMinutes { set; get; }
+        public double BaseInsuranceMinutes { set; get; }
         #endregion
     }
 }
