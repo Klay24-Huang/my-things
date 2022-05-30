@@ -55,6 +55,7 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
+            bool cmdRun = true;
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -145,18 +146,18 @@ namespace WebAPI.Controllers
                                         CID = spOut.CID,
                                         CMD = 0
                                     };
-                                    if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
-                                    {
-                                        wsInput.CMD = 0;
-                                    }
-                                    else
-                                    {
-                                        //晚上不要吵人
-                                        wsInput.CMD = 2;
-                                    }
+                                    
                                     if (spOut.CarHornFlg == "Y")
                                     {
-                                        wsInput.CMD = 0;
+                                        if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                        {
+                                            wsInput.CMD = 0;
+                                        }
+                                        else
+                                        {
+                                            //晚上不要吵人
+                                            wsInput.CMD = 2;
+                                        }
                                     }
                                     else
                                     {
@@ -187,10 +188,19 @@ namespace WebAPI.Controllers
                                 {
                                     if (FetAPI.IsSupportCombineCmd(spOut.CID))
                                     {
-                                        if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                        if (spOut.CarHornFlg == "Y")
                                         {
-                                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
-                                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                            if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                            {
+                                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
+                                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                            }
+                                            else
+                                            {
+                                                //晚上不要吵人
+                                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                                            }
                                         }
                                         else
                                         {
@@ -203,29 +213,28 @@ namespace WebAPI.Controllers
                                     {
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
+                                        cmdRun = false;
                                     }
-                                    if (spOut.CarHornFlg == "Y")
-                                    {
-                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
-                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
-                                    }
-                                    else
-                                    {
-                                        //晚上不要吵人
-                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
-                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
-                                    }
+                                    
                                 }
                                 else
                                 {
-                                    if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                    if (spOut.CarHornFlg == "Y")
                                     {
-                                        CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
-                                        CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
+                                        if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                        {
+                                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
+                                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
+                                        }
+                                        else
+                                        {
+                                            //晚上不要吵人
+                                            CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
+                                            CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
+                                        }
                                     }
                                     else
                                     {
-                                        //晚上不要吵人
                                         CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
                                         CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
                                     }
@@ -239,35 +248,42 @@ namespace WebAPI.Controllers
                                 };
                                 requestId = input.requestId;
                                 string method = CommandType;
-                                flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
-                                if (flag)
+                                if (cmdRun)
                                 {
-                                    int nowCount = 0;
-                                    bool waitFlag = false;
-                                    while (nowCount < 30)
+                                    flag = FetAPI.DoSendCmd(spOut.deviceToken, spOut.CID, CmdType, input, LogID);
+                                    if (flag)
                                     {
-                                        Thread.Sleep(1000);
-                                        CarCMDResponse obj = new CarCMDRepository(connetStr).GetCMDData(requestId, method);
-                                        if (obj != null)
+                                        int nowCount = 0;
+                                        bool waitFlag = false;
+                                        while (nowCount < 30)
                                         {
-                                            waitFlag = true;
-                                            if (obj.CmdReply != "Okay")
+                                            Thread.Sleep(1000);
+                                            CarCMDResponse obj = new CarCMDRepository(connetStr).GetCMDData(requestId, method);
+                                            if (obj != null)
                                             {
-                                                waitFlag = false;
-                                                errCode = "ERR167";
+                                                waitFlag = true;
+                                                if (obj.CmdReply != "Okay")
+                                                {
+                                                    waitFlag = false;
+                                                    errCode = "ERR167";
+                                                }
+                                                break;
                                             }
-                                            break;
+                                            nowCount++;
                                         }
-                                        nowCount++;
-                                    }
-                                    if (waitFlag == false)
-                                    {
-                                        if (errCode != "ERR167")
+                                        if (waitFlag == false)
                                         {
-                                            flag = false;
-                                            errCode = "ERR166";
+                                            if (errCode != "ERR167")
+                                            {
+                                                flag = false;
+                                                errCode = "ERR166";
+                                            }
                                         }
                                     }
+                                }
+                                else
+                                {
+
                                 }
                                 #endregion
                             }

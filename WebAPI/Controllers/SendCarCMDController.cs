@@ -55,6 +55,8 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             bool isGuest = true;
             string method = "", requestId = "";
+            string CarHornFlg = "";
+            CarCommonFunc carCommon = new CarCommonFunc();
             OtherService.Enum.MachineCommandType.CommandType CmdType = new OtherService.Enum.MachineCommandType.CommandType();
             #endregion
             #region 防呆
@@ -149,7 +151,6 @@ namespace WebAPI.Controllers
                             case 0:
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicle);
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicle;
-
                                 break;
                             case 1:
                                 CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.QueryUnivCardNo);
@@ -230,6 +231,18 @@ namespace WebAPI.Controllers
                                 CmdType = OtherService.Enum.MachineCommandType.CommandType.ReportNow;
                                 break;
                         }
+                        //針對尋車響喇叭做特別處理
+                        if (apiInput.CmdType == 0 || apiInput.CmdType == 51)
+                        {
+                            if (!carCommon.BE_CheckCarHornFlgByCID(apiInput.CID, LogID, apiInput.UserId, ref errCode))
+                            {
+                                //晚上不要吵人
+                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash);
+                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SearchVehicleLightFlash;
+                            }
+                            
+                        }
+
                         if (apiInput.CmdType == 2)
                         {
                             WSInput_Base<UnivCardNoObj> input = new WSInput_Base<UnivCardNoObj>()
@@ -311,8 +324,19 @@ namespace WebAPI.Controllers
                         switch (apiInput.CmdType)
                         {
                             case 15:
-
-                                flag = CensAPI.SearchCar(CENSCID, ref wsOutput);
+                                if (!carCommon.BE_CheckCarHornFlgByCID(apiInput.CID, LogID, apiInput.UserId, ref errCode))
+                                {
+                                    SearchCarForSituation = new WSInput_SearchCarForSituation()
+                                    {
+                                        CID = CENSCID,
+                                        CMD = 2
+                                    };
+                                    flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
+                                }
+                                else
+                                {
+                                    flag = CensAPI.SearchCar(CENSCID, ref wsOutput);
+                                }
                                 if (!flag || wsOutput.Result == 1)
                                 {
                                     errCode = wsOutput.ErrorCode;
@@ -531,6 +555,10 @@ namespace WebAPI.Controllers
                                     CID = CENSCID,
                                     CMD = 1
                                 };
+                                if (!carCommon.BE_CheckCarHornFlgByCID(apiInput.CID, LogID, apiInput.UserId, ref errCode))
+                                {
+                                    SearchCarForSituation.CMD = 2;
+                                }
                                 flag = CensAPI.SearchCarForSituation(SearchCarForSituation, ref wsOutput);
                                 if (false == flag || wsOutput.Result == 1)
                                 {

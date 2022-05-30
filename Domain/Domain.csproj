@@ -79,6 +79,8 @@
     <Compile Include="Flow\Hotai\OFN_HotaiFastAddCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiPaymentAuth.cs" />
     <Compile Include="Log\TraceLogVM.cs" />
+    <Compile Include="SP\BE\Input\SPInput_BE_GetCarHornFlgByCID.cs" />
+    <Compile Include="SP\BE\Output\SPOutput_BE_GetCarHornFlgByCID.cs" />
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />

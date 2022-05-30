@@ -1,5 +1,6 @@
 ﻿using Domain.CarMachine;
 using Domain.SP.BE.Input;
+using Domain.SP.BE.Output;
 using Domain.SP.Input.Rent;
 using Domain.SP.Output;
 using Domain.SP.Output.Rent;
@@ -2736,5 +2737,57 @@ namespace WebAPI.Models.BaseFunc
             return flag;
         }
         #endregion
+
+
+        public bool BE_CheckCarHornFlgByCID(string CID, Int64 LogID, string UserID, ref string errCode)
+        {
+            string CarHornFlg = "Y";
+            if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)
+            {
+                //取據點參數
+                if (!BE_GetCarHornFlgByCID(CID, LogID, UserID, ref errCode, ref CarHornFlg))
+                {
+                    //這邊預設查詢失敗就不響喇叭
+                    CarHornFlg = "N";
+                }
+            }
+            else
+            {
+                CarHornFlg = "N";
+            }
+            return CarHornFlg == "Y" ? true : false;
+        }
+
+        /// <summary>
+        /// 取得車輛是否可以響喇叭 20220530 ADD BY ADAM
+        /// </summary>
+        /// <param name="CID"></param>
+        /// <param name="LogID"></param>
+        /// <param name="UserID"></param>
+        /// <param name="errCode"></param>
+        /// <param name="CarHornFlg"></param>
+        /// <returns></returns>
+        public bool BE_GetCarHornFlgByCID(string CID, Int64 LogID, string UserID, ref string errCode,ref string CarHornFlg)
+        {
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            CommonFunc baseVerify = new CommonFunc();
+            bool flag = false;
+            SPInput_BE_GetCarHornFlgByCID spInput = new SPInput_BE_GetCarHornFlgByCID()
+            {
+                CID = CID,
+                LogID = LogID
+            };
+            string SPName = "usp_BE_GetCarHornFlg_Q01";
+            SPOutput_BE_GetCarHornFlgByCID spOut = new SPOutput_BE_GetCarHornFlgByCID();
+            SQLHelper<SPInput_BE_GetCarHornFlgByCID, SPOutput_BE_GetCarHornFlgByCID> sqlHelp = new SQLHelper<SPInput_BE_GetCarHornFlgByCID, SPOutput_BE_GetCarHornFlgByCID>(connetStr);
+            flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
+            baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            if (flag)
+            {
+                CarHornFlg = spOut.CarHornFlg;
+            }
+
+            return flag;
+        }
     }
 }

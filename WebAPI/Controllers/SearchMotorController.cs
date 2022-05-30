@@ -134,22 +134,19 @@ namespace WebAPI.Controllers
                             string CommandType = "";
                             OtherService.Enum.MachineCommandType.CommandType CmdType;
 
-                            if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
-                            {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
-                            }
-                            else
-                            {
-                                //晚上不要吵人
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
-                            }
-
                             if (spOut.CarHornFlg == "Y")
                             {
-                                CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
-                                CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
+                                if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 22)//白天
+                                {
+                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetHornOn);
+                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetHornOn;
+                                }
+                                else
+                                {
+                                    //晚上不要吵人
+                                    CommandType = new OtherService.Enum.MachineCommandType().GetCommandName(OtherService.Enum.MachineCommandType.CommandType.SetLightFlash);
+                                    CmdType = OtherService.Enum.MachineCommandType.CommandType.SetLightFlash;
+                                }
                             }
                             else
                             {
