@@ -134,5 +134,17 @@
         /// 是否為和雲特殊身分 Y/N 暫用和泰的特殊身分
         /// </summary>
         public string IsHIMS { get; set; }
+        /// <summary>
+        /// 虛擬實境解謎 GameMode 顯示 
+        /// </summary>
+        public int GameMode { get; set; }
+        /// <summary>
+        /// 虛擬實境解謎 GameMsg 顯示 
+        /// </summary>
+        public string GameMsg { get; set; }
+        /// <summary>
+        /// 虛擬實境解謎 GameCover 顯示 
+        /// </summary>
+        public string GameCover { get; set; }
     }
 }
