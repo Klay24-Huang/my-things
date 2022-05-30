@@ -145,6 +145,6 @@
         /// <summary>
         /// 虛擬實境解謎 GameCover 顯示 
         /// </summary>
-        public string GameCover { get; set; }
+        public int GameCover { get; set; }
     }
 }
