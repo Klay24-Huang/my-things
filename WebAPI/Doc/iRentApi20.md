@@ -837,6 +837,7 @@
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
+| MEMRFNBR     | 會員流水號           | string |               |
 
 * Data回傳參數說明
 
@@ -869,7 +870,8 @@
             "Rxpires_in": 86400,
             "Refrash_Rxpires_in": 604800
         }
-    }
+    },
+    "MEMRFNBR": "1140213"
 }
 ```
 
