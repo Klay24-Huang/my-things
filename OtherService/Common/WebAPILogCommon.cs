@@ -48,7 +48,7 @@ namespace OtherService.Common
                     }
                 }
             }
-            logger.Info(JsonConvert.SerializeObject(input).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}"));
+            logger.Info(JsonConvert.SerializeObject(input).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}").Replace("\r\n", ""));
         }
         /// <summary>
         /// 寫入刷卡
