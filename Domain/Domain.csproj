@@ -79,6 +79,7 @@
     <Compile Include="Flow\Hotai\OFN_HotaiFastAddCard.cs" />
     <Compile Include="Flow\Hotai\OFN_HotaiPaymentAuth.cs" />
     <Compile Include="Log\TraceLogVM.cs" />
+    <Compile Include="SP\Input\Bill\SPInput_GetEstimateMotor.cs" />
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="SP\Input\Wallet\SPInput_WalletTransfer.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletReturn.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletStoredErrorHandle.cs" />
+    <Compile Include="SP\Output\Bill\SPOutput_GetEstimateMotor_Q01.cs" />
     <Compile Include="SP\Output\Common\SPOutput_IDReturnToken.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_MemberUnBind.cs" />
     <Compile Include="SP\Output\Hotai\SPOutput_CTBCCapList.cs" />
