@@ -343,7 +343,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                SPName = "usp_Booking";
+                SPName = "usp_Booking_U01";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
