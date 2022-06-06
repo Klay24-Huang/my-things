@@ -3070,9 +3070,10 @@
 | BaseMinutes		| 基本分鐘數		| int | 6 |
 | BasePrice			| 基本費			| int | 10 |
 | PerMinutesPrice	| 每分鐘幾元		| float | 	1.5 |
-| BaseMotoRate      | 計次金額(基消)               | int  |      |
-| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | int  |      |
-| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | int  |      |
+| BaseMotoRate      | 計次金額(基消)               | double  |      |
+| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | double  |      |
+| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | double  |      |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數   | double  |      |
 
 * DiscountLabel 參數說明
 
@@ -3127,7 +3128,8 @@
                 "PerMinutesPrice": 2.5,
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             },
             {
                 "MonthlyRentId": 2455,
@@ -3167,7 +3169,8 @@
                 "PerMinutesPrice": 2.5,
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             }
         ]
     }
@@ -3254,9 +3257,11 @@
 | MonthStartDate	| 開始日			| string | |
 | MonthEndDate		| 結束日			| string | |
 | DiscountLabel     | 優惠標籤物件    | object | |
-| BaseMotoRate      | 計次金額(基消)               | int  |      |
-| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | int  |      |
-| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | int  |      |
+| BaseMotoRate      | 計次金額(基消)               | double  |      |
+| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢) | double  |      |
+| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)   | double  |      |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數   | double  |      |
+
 
 * DiscountLabel回傳參數說明
 
@@ -3313,7 +3318,8 @@
                 },
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             },
             {
                 "ProjID": "R344",
@@ -3350,7 +3356,8 @@
                 },
 				"BaseMotoRate": 3,
 				"InsuranceMotoMin": 5,
-				"InsuranceMotoRate": 1
+				"InsuranceMotoRate": 1,
+				"BaseInsuranceMinutes": 6
             }
         ]
     }
@@ -4408,6 +4415,11 @@
 | MainInsurancePerHour  | 主承租人每小時安心服務價格                                   |  int   | 50                                                     |
 | JointInsurancePerHour | 單一共同承租人每小時安心服務價格                             |  int   | 若該訂單沒有共同承租邀請對象，該欄位為0                |
 | JointAlertMessage     | 共同承租提示訊息                                             | string | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| BaseInsuranceMinutes  | 機車安心服務低消分鐘數                                       | float | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| BaseMotoRate     		| 機車安心服務低消金額                                         | float | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| InsuranceMotoMin     	| 機車安心服務分鐘(幾分鐘算一次錢)                             | float | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| InsuranceMotoRate     | 機車安心服務金額(一次算多少錢)                               | float | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| Partners     			| 共同承租人數                                             	   | int | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
 
 
 * Output範例
@@ -4424,7 +4436,12 @@
         "Insurance": 1,
         "MainInsurancePerHour": 50,
         "JointInsurancePerHour": 20,
-        "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認"
+        "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認",
+		"BaseInsuranceMinutes": 6.0,
+		"BaseMotoRate": 3.0,
+		"InsuranceMotoMin": 5.0,
+		"InsuranceMotoRate": 1.0,
+		"Partners": 0
     }
 }
 ```

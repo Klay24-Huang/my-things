@@ -200,7 +200,11 @@ namespace WebAPI.Controllers
                                 CarLatitude = OrderDataLists[i].CarLatitude,
                                 CarLongitude = OrderDataLists[i].CarLongitude,
                                 OpenDoorDeadLine = (string.IsNullOrWhiteSpace(OrderDataLists[i].OpenDoorDeadLine)) ? "" : Convert.ToDateTime(OrderDataLists[i].OpenDoorDeadLine).ToString("yyyy-MM-dd HH:mm:ss"),
-                                RenterType = OrderDataLists[i].RenterType   // 20210830 UPD BY YEH REASON:增加承租人類型
+                                RenterType = OrderDataLists[i].RenterType,   // 20210830 UPD BY YEH REASON:增加承租人類型
+                                BaseInsuranceMinutes= OrderDataLists[i].BaseInsuranceMinutes,
+                                BaseMotoRate= OrderDataLists[i].BaseMotoRate,
+                                InsuranceMotoMin= OrderDataLists[i].InsuranceMotoMin,
+                                InsuranceMotoRate= OrderDataLists[i].InsuranceMotoRate //20220531 UPD BY YANKEY REASON : 增加機車安心服務費用
                             };
                             obj.MileageBill = billCommon.CarMilageCompute(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>());
 
