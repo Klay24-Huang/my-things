@@ -19,5 +19,9 @@ namespace WebAPI.Models.Param.Input
         /// 手機的定位(經度) 20211012 ADD BY ADAM
         /// </summary>
         public double PhoneLon { get; set; } = 0;
+        /// <summary>
+        /// 加購安心服務(0:否;1:有)
+        /// </summary> 20220526 ADD BY 映韓
+        public int Insurance { get; set; }
     }
 }
