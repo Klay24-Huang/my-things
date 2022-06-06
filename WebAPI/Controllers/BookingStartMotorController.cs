@@ -259,7 +259,7 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         //20211012 ADD BY ADAM REASON.增加手機定位點
-                        string BookingStartName = "usp_BookingStart_U01";
+                        string BookingStartName = "usp_BookingStart";
                         Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                         {
                             IDNO = IDNO,
@@ -268,7 +268,7 @@ namespace WebAPI.Controllers
                             Token = Access_Token,
                             NowMileage = Convert.ToSingle(mil),
                             StopTime = "",
-                            Insurance = apiInput.Insurance //20220526 ADD BY 映韓 REASON.增加Insurance apiInput
+                            Insurance = 0
                             //20211012 ADD BY ADAM REASON.增加手機定位點
                             //PhoneLat = apiInput.PhoneLat,
                             //PhoneLon = apiInput.PhoneLon
