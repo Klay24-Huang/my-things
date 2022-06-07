@@ -194,7 +194,7 @@ namespace WebAPI.Controllers
                     if (UpdateOrderAuthList.AuthFlg != 1 && OrderAuth.AuthType == 11 && OrderAuth.isRetry == 1 && !string.IsNullOrWhiteSpace(OrderAuth.Mobile))
                     {
                         CreditAuthJobComm creditAuthJobComm = new CreditAuthJobComm();
-                        var SMSmsg = "第二次用車費用差額取授權失敗通知，依照用車規範，和雲行動服務得終止合約，為避免您的用車行程中斷受到影響，請立即還車。";
+                        var SMSmsg = "iRent用戶您好，用車滿十小時第二次取授權失敗通知，為避免您的用車行程受到影響，請聯繫客服。";
                         var SendSMS = creditAuthJobComm.SendSMS(OrderAuth.Mobile, CreditAuthJobComm.MobileTemplateCode.CustomMsg, SMSmsg);
                     }
                 }
