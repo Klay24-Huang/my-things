@@ -455,14 +455,14 @@ namespace WebAPI.Controllers
             </br></br></br>
             <a href = 'https://www.irentcar.com.tw/event/111event/2098/index.html' target='_blank'>
             <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic1.jpg' ></ a >
-            <p  style='font-size: 16px; '><b>【限時活動】即日起至6/30止<br> 使用中信卡綁定和泰Pay，就可獲得免費汽車時數30分鐘(每ID限獲得乙次)<b></p>
+            <p  style='font-size: 16px; '><b>【限時活動】即日起至12/31止<br> 於iRentAPP使用中信卡綁定和泰Pay，就可獲得免費汽車時數30分鐘(每ID限獲得乙次)<b></p>
             </div>
             <div style='text-align: center;padding: 0px;'>
             <div class='card'>
             </br></br></br>
             <a href = 'https://www.irentcar.com.tw/event/111event/3027/index.html' target='_blank'>
             <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic2.jpg' ></ a >
-            <p style='font-size: 16px; '><b>【限時活動】即日起至6/30止<br> 天天登入享免費機車時數6分鐘，完成指定任務最高還可獲得汽車時數60分鐘<b></p>
+            <p style='font-size: 16px; '><b>【限時活動】即日起至6/30止<br> 天天登入享免費機車時數6分鐘，完成指定任務最高還可獲得汽車時數90分鐘<b></p>
             </div>
             <div class='card'>
             </br></br></br>
