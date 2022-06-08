@@ -348,6 +348,8 @@
 
 20220527 條整取得路邊租還機車(MotorRent)輸出內容-添加機車安心服務
 
+20220608 調整機車取車(BookingStartMotor)增加輸入內容-添加機車安心服務
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -4880,6 +4882,7 @@
 | OrderNo  | 訂單編號 |  Y   | string | H10641049 |
 | PhoneLat | 手機定位點(緯度) | N | double | 25.0212444 |
 | PhoneLon | 手機定位點(經度) | N | double | 121.4780778 |
+| Insurance | 加購安心服務 | N | int | 0:否 1:是 |
 
 * input範例
 
@@ -4887,7 +4890,8 @@
 {
     "OrderNo": "H10641049",
 	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778
+	"PhoneLon": 121.4780778,
+    "Insurance": 1
 }
 ```
 
