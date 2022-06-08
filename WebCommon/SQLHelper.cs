@@ -892,31 +892,79 @@ namespace WebCommon
                 {
                     // PropertyName.Add(wMembers[i].Name, wMembers[i].PropertyType.Name);
                     Object pValue = ds.Tables[0].Rows[RowIndx][wMembers[i].Name.ToString()];
-                    switch (wMembers[i].PropertyType.ToString().Replace("System.", ""))
-                    {
-                        case "String":
-                            pValue = pValue.ToString();
-                            break;
-                        case "Int32":
-                            pValue = Convert.ToInt32(pValue);
-                            break;
-                        case "Int64":
-                            pValue = Convert.ToInt64(pValue);
-                            break;
-                        case "Int16":
-                            pValue = Convert.ToInt16(pValue);
-                            break;
-                        case "Double":
-                            pValue = Convert.ToDouble(pValue);
-                            break;
-                        case "Single":
-                            pValue = Convert.ToSingle(pValue);
-                            break;
-                        case "DateTime":
-                            pValue = Convert.ToDateTime(pValue);
-                            break;
-                    }
+                    //switch (wMembers[i].PropertyType.ToString().Replace("System.", ""))
+                    //{
+                    //    case "String":
+                    //        pValue = pValue.ToString();
+                    //        break;
+                    //    case "Int32":
+                    //        pValue = Convert.ToInt32(pValue);
+                    //        break;
+                    //    case "Int64":
+                    //        pValue = Convert.ToInt64(pValue);
+                    //        break;
+                    //    case "Int16":
+                    //        pValue = Convert.ToInt16(pValue);
+                    //        break;
+                    //    case "Double":
+                    //        pValue = Convert.ToDouble(pValue);
+                    //        break;
+                    //    case "Single":
+                    //        pValue = Convert.ToSingle(pValue);
+                    //        break;
+                    //    case "DateTime":
+                    //        pValue = Convert.ToDateTime(pValue);
+                    //        break;
+                    //}
 
+                    Type ptype = wMembers[i].PropertyType;
+                    if (ptype.Equals(typeof(string)))
+                    {
+                        pValue = pValue.ToString();
+                    }
+                    else if (ptype.Equals(typeof(Boolean)))
+                    {
+                        pValue = pValue.ToString().ToLower().StartsWith("true");
+                    }
+                    else if (ptype.Equals(typeof(Int16)))
+                    {
+                        pValue = Convert.ToInt16(pValue);
+                    }
+                    else if (ptype.Equals(typeof(Int32)))
+                    {
+                        pValue = Convert.ToInt32(pValue);
+                    }
+                    else if (ptype.Equals(typeof(Int64)))
+                    {
+                        pValue = Convert.ToInt64(pValue);
+                    }
+                    else if (ptype.Equals(typeof(int)))
+                    {
+                        pValue = int.Parse(pValue.ToString());
+                    }
+                    else if (ptype.Equals(typeof(double)))
+                    {
+                        pValue = Convert.ToDouble(pValue);
+                    }
+                    else if (ptype.Equals(typeof(Decimal)))
+                    {
+                        pValue = Convert.ToDecimal(pValue);
+                    }
+                    else if (ptype.Equals(typeof(Single)))
+                    {
+                        pValue = Convert.ToSingle(pValue);
+                    }
+                    else if (ptype.Equals(typeof(DateTime)))
+                    {
+                        pValue = Convert.ToDateTime(pValue);
+                    }
+                    else if (ptype.Equals(typeof(DateTime?)))
+                    {
+                        if (string.IsNullOrEmpty(pValue.ToString()))
+                            pValue = null;
+                        else
+                            pValue = DateTime.Parse(pValue.ToString());
+                    }
                     obj.GetType().GetProperty(wMembers[i].Name).SetValue(obj, pValue, null);
                 }
                 lstOutput.Add(obj);

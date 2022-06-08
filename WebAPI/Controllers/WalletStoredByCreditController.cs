@@ -1,45 +1,34 @@
 ﻿using Domain.Common;
-using Domain.MemberData;
 using Domain.SP.Input.Wallet;
-using Domain.SP.Output;
 using Domain.SP.Output.Wallet;
-using Domain.WebAPI.Input.Taishin;
-using Domain.WebAPI.Input.Taishin.GenerateCheckSum;
 using Domain.WebAPI.Input.Taishin.Wallet;
-using Domain.WebAPI.output.Taishin;
 using Domain.WebAPI.output.Taishin.Wallet;
 using Newtonsoft.Json;
-using NLog;
 using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.ComboFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Bill.Input;
 using WebAPI.Models.Param.Bill.Output;
-using WebAPI.Models.Param.CusFun.Input;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Service;
-using WebAPI.Utils;
 using WebCommon;
 
 namespace WebAPI.Controllers
 {
-
     public class WalletStoredByCreditController : ApiController
     {
         private readonly string APIKey = ConfigurationManager.AppSettings["TaishinWalletAPIKey"].ToString();
         private readonly string MerchantId = ConfigurationManager.AppSettings["TaishiWalletMerchantId"].ToString();
         private readonly string ApiVersion = ConfigurationManager.AppSettings["TaishinWalletApiVersion"].ToString();
-
+        private readonly string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
 
         /// <summary>
         /// 錢包儲值-信用卡
@@ -79,8 +68,6 @@ namespace WebAPI.Controllers
             string IDNO = "";
             string TradeType = ""; ///交易類別
             string exMsg = "";
-
-
             #endregion
             trace.traceAdd("apiIn", value);
 
@@ -135,7 +122,6 @@ namespace WebAPI.Controllers
                 if (flag && isGuest == false)
                 {
                     flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
-
                 }
                 #endregion
                 #region 取錢包會員資料&儲值金額限制檢核
@@ -151,36 +137,39 @@ namespace WebAPI.Controllers
                 #region 信用卡授權
                 if (flag)
                 {
-                    var AuthInput = new IFN_CreditAuthRequest
+                    if (isDebug == "0") // isDebug = 1，不送刷卡
                     {
-                        CheckoutMode = apiInput.StoreType,
-                        OrderNo = 0,
-                        IDNO = IDNO,
-                        Amount = apiInput.StoreMoney,
-                        PayType = 7,
-                        autoClose = 1,
-                        funName = funName,
-                        insUser = funName,
-                        AuthType = 9,
-                        InputSource = 1,
-                        LogID = LogID,
-                        Token = Access_Token
-                    };
+                        var AuthInput = new IFN_CreditAuthRequest
+                        {
+                            CheckoutMode = apiInput.StoreType,
+                            OrderNo = 0,
+                            IDNO = IDNO,
+                            Amount = apiInput.StoreMoney,
+                            PayType = 7,
+                            autoClose = 1,
+                            funName = funName,
+                            insUser = funName,
+                            AuthType = 9,
+                            InputSource = 1,
+                            LogID = LogID,
+                            Token = Access_Token
+                        };
 
-                    try
-                    {
-                        CreditAuthComm creditAuthComm = new CreditAuthComm();
-                        flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
-                    }
-                    catch (Exception ex)
-                    {
-                        flag = false;
-                        errCode = "ERR197";
-                        trace.BaseMsg = ex.Message;
-                    }
+                        try
+                        {
+                            CreditAuthComm creditAuthComm = new CreditAuthComm();
+                            flag = creditAuthComm.DoAuthV4(AuthInput, ref errCode, ref AuthOutput);
+                        }
+                        catch (Exception ex)
+                        {
+                            flag = false;
+                            errCode = "ERR197";
+                            trace.BaseMsg = ex.Message;
+                        }
 
-                    trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
-                    trace.FlowList.Add("刷卡授權");
+                        trace.traceAdd("DoAuthV4", new { flag, AuthInput, AuthOutput, errCode });
+                        trace.FlowList.Add("刷卡授權");
+                    }
                 }
                 #endregion
                 #region 台新錢包儲值
@@ -192,7 +181,7 @@ namespace WebAPI.Controllers
                         DateTime NowTime = DateTime.Now;
                         int nowCount = 1;
                         Thread.Sleep(1000);
-                       
+
                         wallet = new WebAPI_CreateAccountAndStoredMoney()
                         {
                             ApiVersion = ApiVersion,
@@ -271,15 +260,15 @@ namespace WebAPI.Controllers
                 if (flag)
                 {
                     string formatString = "yyyyMMddHHmmss";
-                    string cardNum = AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0);
+                    string cardNum = (isDebug == "0") ? AuthOutput.CardNo.Substring((AuthOutput.CardNo.Length - 5) > 0 ? AuthOutput.CardNo.Length - 5 : 0) : "";
                     SPInput_WalletStore spInput_Wallet = new SPInput_WalletStore()
                     {
                         IDNO = IDNO,
                         WalletMemberID = output.Result.MemberId,
                         WalletAccountID = output.Result.AccountId,
                         Status = Convert.ToInt32(output.Result.Status),
-                        Email = output?.Result?.Email??"",
-                        PhoneNo = output?.Result?.PhoneNo??"",
+                        Email = output?.Result?.Email ?? "",
+                        PhoneNo = output?.Result?.PhoneNo ?? "",
                         StoreAmount = apiInput.StoreMoney,
                         WalletBalance = output.Result.Amount,
                         CreateDate = DateTime.ParseExact(output.Result.CreateDate, formatString, null),
@@ -309,8 +298,6 @@ namespace WebAPI.Controllers
                         StoreMoney = apiInput.StoreMoney
                     };
                 }
-
-
                 #endregion
             }
             catch (Exception ex)
@@ -335,7 +322,6 @@ namespace WebAPI.Controllers
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;
             #endregion
-
         }
     }
 }

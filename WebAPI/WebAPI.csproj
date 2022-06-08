@@ -316,6 +316,7 @@
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\LowPowerHintReadController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
+    <Compile Include="Controllers\SendAlertEmailJobController.cs" />
     <Compile Include="Controllers\WalletToolsController.cs" />
     <Compile Include="Controllers\WalletTransferJobController.cs" />
     <Compile Include="Controllers\WalletReturnJobController.cs" />
@@ -896,6 +897,7 @@
     <Compile Include="Models\Param\Output\OAPI_WalletTransferStoredValue.cs" />
     <Compile Include="Models\Param\Output\OPAI_ForgetPwd.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ActiveOrderData.cs" />
+    <Compile Include="Models\Param\Output\PartOfParam\AlertMailObj.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\ArrearsQueryDetail.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CarRentBase.cs" />
     <Compile Include="Models\Param\Output\PartOfParam\CreditCardBindList.cs" />

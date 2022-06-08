@@ -40,7 +40,7 @@ namespace WebAPI.Models.Param.Bill.Input
         /// </summary>
         public string insUser { get; set; }
         /// <summary>
-        /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款)
+        /// 授權目的(1、預約,2、訂金,4、延長用車,3、取車,5、逾時,6、欠費,7、還車,8、訂閱制,9、錢包儲值,10、主動取款,11、用車10小時)
         /// </summary>
         public int AuthType { get; set; }
         /// <summary>
@@ -71,6 +71,11 @@ namespace WebAPI.Models.Param.Bill.Input
         /// 單次錢包自動儲值
         /// </summary>
         public int OnceStore { get; set; } = 0;
+
+        /// <summary>
+        /// 全額繳清(錢包) 1:全繳 0:部分繳交
+        /// </summary>
+        public int PayUp { get; set; } = 0;
 
     }
 }
