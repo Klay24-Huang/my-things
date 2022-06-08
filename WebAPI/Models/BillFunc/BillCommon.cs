@@ -2572,11 +2572,14 @@ namespace WebAPI.Models.BillFunc
         /// <summary>
         /// 計算機車安心服務總金額
         /// </summary>
-        /// <param name="TotalRentMinute">總租用時數</param>
-        /// <param name="BaseMinute">基本分鐘數</param>
-        /// <param name="BaseRate">基本消費金額</param>
-        /// <param name="InsuranceMotoMin">幾分鐘算一次錢</param>
-        /// <param name="InsuranceMotoRate">計算1次多少錢</param>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <param name="BaseMinute">基本分鐘</param>
+        /// <param name="BaseRate">基本消費</param>
+        /// <param name="InsuranceMotoMin">機車安心服務分鐘(幾分鐘算一次錢)</param>
+        /// <param name="InsuranceMotoRate">機車安心服務金額(計算1次多少錢)</param>
+        /// <param name="DayMaxMinute">單日上限</param>
+        /// <param name="lstHoliday">假日清單</param>
         /// <returns></returns>
         public int MotorInsurancePrice(DateTime SD, DateTime ED, int BaseMinute, double BaseRate, double InsuranceMotoMin, double InsuranceMotoRate, double DayMaxMinute, List<Holiday> lstHoliday)
         {
