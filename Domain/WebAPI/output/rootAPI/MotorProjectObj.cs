@@ -99,7 +99,6 @@ namespace Domain.WebAPI.output.rootAPI
         public float RemainingMileage { set; get; }
 
         #region 訂閱制月租
-
         /// <summary>
         /// 訂閱制月租Id
         /// </summary>
@@ -132,6 +131,10 @@ namespace Domain.WebAPI.output.rootAPI
 
         #region 機車安心服務
         /// <summary>
+        /// 機車安心服務基消分鐘數
+        /// </summary>
+        public double BaseInsuranceMinutes { set; get; }
+        /// <summary>
         /// 安心服務起始費用(類似機車基消)
         /// </summary>
         public double BaseMotoRate { set; get; }
@@ -143,10 +146,6 @@ namespace Domain.WebAPI.output.rootAPI
         /// 計次金額(每分鐘單位多少錢)
         /// </summary>
         public double InsuranceMotoRate { set; get; }
-        /// <summary>
-        /// 機車安心服務基消分鐘數
-        /// </summary>
-        public double BaseInsuranceMinutes { set; get; }
         #endregion
     }
 }
