@@ -372,7 +372,7 @@ namespace WebAPI.Controllers
                     if (flag)
                     {
                         //20211012 ADD BY ADAM REASON.增加手機定位點
-                        string BookingStartName = "usp_BookingStart_U01";
+                        string BookingStartName = "usp_BookingStart";
                         Domain.SP.Input.Rent.SPInput_BookingStart SPBookingStartInput = new Domain.SP.Input.Rent.SPInput_BookingStart()
                         {
                             IDNO = IDNO,
