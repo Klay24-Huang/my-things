@@ -3072,10 +3072,10 @@
 | BaseMinutes		| 基本分鐘數								| int 	  | 6 			|
 | BasePrice			| 基本費									| int 	  | 10 			|
 | PerMinutesPrice	| 每分鐘幾元								| float   | 1.5 		|
-| BaseInsuranceMinutes	| 安心服務基礎分鐘數	| double |  |
-| BaseMotoRate      | 計次金額(基消)                			| double  |      		|
-| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢)  			| double  |      		|
-| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)    			| double  |      		|
+| BaseInsuranceMinutes	| 安心服務基礎分鐘數					| int  	  |  |
+| BaseMotoRate      | 計次金額(基消)                			| int  	  |      		|
+| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢)  			| int  	  |      		|
+| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)    			| int  	  |      		|
 
 * DiscountLabel 參數說明
 
@@ -3258,10 +3258,10 @@
 | MonthStartDate       | 開始日                                   | string |                |
 | MonthEndDate         | 結束日                                   | string |                |
 | DiscountLabel        | 優惠標籤物件                             | object |                |
-| BaseInsuranceMinutes | 安心服務基礎分鐘數                       | double |                |
-| BaseMotoRate         | 計次金額(基消)                           | double |                |
-| InsuranceMotoMin     | 計次分鐘單位(幾分鐘算一次錢)             | double |                |
-| InsuranceMotoRate    | 計次金額(每單位分鐘多少錢)               | double |                |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數                       | int    |                |
+| BaseMotoRate         | 計次金額(基消)                           | int    |                |
+| InsuranceMotoMin     | 計次分鐘單位(幾分鐘算一次錢)             | int    |                |
+| InsuranceMotoRate    | 計次金額(每單位分鐘多少錢)               | int    |                |
 
 
 * DiscountLabel回傳參數說明
