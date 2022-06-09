@@ -7,6 +7,6 @@ namespace Domain.SP.Output.Car
         /// <summary>
         /// 里程數
         /// </summary>
-        public int Millage { get; set; }
+        public float Millage { get; set; }
     }
 }
