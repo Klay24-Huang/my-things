@@ -4438,10 +4438,10 @@
         "MainInsurancePerHour": 50,
         "JointInsurancePerHour": 20,
         "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認",
-		"BaseInsuranceMinutes": 6.0,
-		"BaseMotoRate": 3.0,
-		"InsuranceMotoMin": 5.0,
-		"InsuranceMotoRate": 1.0,
+		"BaseInsuranceMinutes": 6,
+		"BaseMotoRate": 3,
+		"InsuranceMotoMin": 5,
+		"InsuranceMotoRate": 1,
 		"Partners": 0
     }
 }
