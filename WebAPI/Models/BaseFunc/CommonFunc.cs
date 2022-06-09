@@ -603,7 +603,7 @@ namespace WebAPI.Models.BaseFunc
                         LogID = spOut.LogID;
                     }
                 }
-                logger.Info(JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}"));
+                logger.Info(JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}").Replace("\r\n", ""));
 
                 string[] tmpData = (apiInput.Replace("{", "").Replace("}", "")).Split(',');
                 int tmpLen = tmpData.Length;
