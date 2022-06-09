@@ -24,19 +24,19 @@
         /// <summary>
         /// 機車安心服務低消分鐘數
         /// </summary>
-        public float BaseInsuranceMinutes { get; set; }
+        public int BaseInsuranceMinutes { get; set; }
         /// <summary>
         /// 機車安心服務低消金額
         /// </summary>
-        public float BaseMotoRate { get; set; }
+        public int BaseMotoRate { get; set; }
         /// <summary>
         /// 機車安心服務分鐘(幾分鐘算一次錢)
         /// </summary>
-        public float InsuranceMotoMin { get; set; }
+        public int InsuranceMotoMin { get; set; }
         /// <summary>
         /// 機車安心服務金額(一次算多少錢)
         /// </summary>
-        public float InsuranceMotoRate { get; set; }
+        public int InsuranceMotoRate { get; set; }
         /// <summary>
         /// 共同承租人數
         /// </summary>
