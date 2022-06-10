@@ -174,7 +174,9 @@ namespace WebAPI.Controllers
             {
                 projectRepository = new ProjectRepository(connetStr);
                 BillCommon billCommon = new BillCommon();
-                float MilUnit = billCommon.GetMilageBase(apiInput.ProjID, apiInput.CarType, SDate, EDate, LogID);
+                float MilUnit = billCommon.GetMilageBase(apiInput.ProjID, apiInput.CarType, apiInput.CarNo, SDate, EDate, LogID);
+                if (MilUnit <= 0)
+                    MilUnit = Mildef;
 
                 List<Holiday> lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
                 if (QueryMode == 0 || (QueryMode == 1 && ProjType == 3))
@@ -255,7 +257,7 @@ namespace WebAPI.Controllers
                                         CarRentBill = xre.RentInPay,
                                         InsuranceBill = (apiInput.Insurance == 1) ? Convert.ToInt32(Math.Floor(InsurBill)) : 0,
                                         InsurancePerHour = priceBase[0].InsurancePerHours,
-                                        MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
+                                        MileagePerKM = Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
                                         MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday)
                                     };
                                 }
@@ -269,7 +271,7 @@ namespace WebAPI.Controllers
                                     CarRentBill = billCommon.CarRentCompute(SDate, EDate, priceBase[0].PRICE, priceBase[0].PRICE_H, 10, lstHoliday),
                                     InsuranceBill = (apiInput.Insurance == 1) ? billCommon.CarRentCompute(SDate, EDate, InsurancePer10Hours, InsurancePer10Hours, 10, lstHoliday) : 0,
                                     InsurancePerHour = priceBase[0].InsurancePerHours,
-                                    MileagePerKM = (MilUnit <= 0) ? Mildef : Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
+                                    MileagePerKM = Math.Round(MilUnit, 2),  //20201205 ADD BY ADAM REASON.小數點四捨五入
                                     MileageBill = billCommon.CarMilageCompute(SDate, EDate, MilUnit, Mildef, 20, lstHoliday),
                                     //DiscountLabel = new EstimateDiscountLabel(),
                                 };

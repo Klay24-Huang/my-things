@@ -71,7 +71,7 @@ namespace WebAPI.Models.BillFunc
         /// <param name="EDate">迄日</param>
         /// <param name="LogID">此筆呼叫的id</param>
         /// <returns></returns>
-        public float GetMilageBase(string ProjID, string CarType, DateTime SDate, DateTime EDate, Int64 LogID)
+        public float GetMilageBase(string ProjID, string CarType, string CarNo, DateTime SDate, DateTime EDate, Int64 LogID)
         {
             bool flag = true;
             float MilageBase = -1;
@@ -81,6 +81,7 @@ namespace WebAPI.Models.BillFunc
             {
                 ProjID = ProjID,
                 CarType = CarType,
+                CarNo = CarNo,
                 EDate = EDate,
                 SDate = SDate,
                 LogID = LogID
@@ -89,7 +90,7 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                string SPName = "usp_GetMilageSetting";
+                string SPName = "usp_GetMilageSetting_U01";
                 SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting> sqlHelp = new SQLHelper<SPInput_GetMilageSetting, SPOutput_GetMilageSetting>(WebApiApplication.connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
                 new CommonFunc().checkSQLResult(ref flag, SPOutput.Error, SPOutput.ErrorCode, ref lstError, ref errCode);

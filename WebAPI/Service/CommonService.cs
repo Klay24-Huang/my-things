@@ -103,7 +103,7 @@ namespace WebAPI.Service
             //計算預估租金
             var Rent = billCommon.CarRentCompute(input.SD, input.ED, input.WeekdayPrice, input.HoildayPrice, dayMaxHour, lstHoliday);
             //計算里程費
-            float MilUnit = billCommon.GetMilageBase(input.ProjID, input.CarTypeGroupCode, input.SD, input.ED, 0);
+            float MilUnit = billCommon.GetMilageBase(input.ProjID, input.CarTypeGroupCode, input.CarNo, input.SD, input.ED, 0);
             int MilagePrice = billCommon.CarMilageCompute(input.SD, input.ED, MilUnit, Mildef, 20, lstHoliday);
 
             outData = new EstimateDetail();
