@@ -603,6 +603,12 @@ namespace WebAPI.Models.BaseFunc
                         LogID = spOut.LogID;
                     }
                 }
+                //20220610 ADD BY ADAM REASON.LogID改寫入時間流水號
+                else
+                {
+                    LogID = Int64.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
+                }
+
                 logger.Info(JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}").Replace("\r\n", ""));
 
                 string[] tmpData = (apiInput.Replace("{", "").Replace("}", "")).Split(',');
