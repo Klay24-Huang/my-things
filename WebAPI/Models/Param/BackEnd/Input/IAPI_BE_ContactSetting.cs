@@ -61,5 +61,29 @@ namespace WebAPI.Models.Param.BackEnd.Input
         /// 操作者
         /// </summary>
         public string UserID { set; get; }
+        /// <summary>
+        /// 減免費用
+        /// </summary>
+        public int costRelife_cost { get; set; }
+        /// <summary>
+        /// 減免分鐘數
+        /// </summary>
+        public int costRelife_minute { get; set; }
+        /// <summary>
+        /// 未用車取消
+        /// </summary>
+        public bool notUseCar { get; set; }
+        /// <summary>
+        /// 取消逾時
+        /// </summary>
+        public bool cancelOvertime { get; set; }
+        /// <summary>
+        /// 機車折抵時數
+        /// </summary>
+        public int timeDiscount_motor { get; set; }
+        /// <summary>
+        /// 汽車折抵時數
+        /// </summary>
+        public int timeDiscount_car { get; set; }
     }
 }

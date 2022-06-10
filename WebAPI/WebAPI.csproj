@@ -317,6 +317,7 @@
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\LowPowerHintReadController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
+    <Compile Include="Controllers\BE_SaveContractSettingHisController.cs" />
     <Compile Include="Controllers\SendAlertEmailJobController.cs" />
     <Compile Include="Controllers\WalletToolsController.cs" />
     <Compile Include="Controllers\WalletTransferJobController.cs" />
@@ -582,6 +583,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\Input\IAPI_BeSendEMail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BE_SaveContractSettingHis.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />

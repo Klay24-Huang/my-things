@@ -81,6 +81,7 @@
     <Compile Include="Log\TraceLogVM.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_HandleAudit.cs" />
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
+    <Compile Include="SP\Input\Contract\SPInput_InsContractSettingHis.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentProject.cs" />
