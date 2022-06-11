@@ -543,6 +543,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BaseFunc\BE_CommonFunc.cs" />
     <Compile Include="Models\BaseFunc\CarCommonFunc.cs" />
     <Compile Include="Models\BaseFunc\CommonFunc.cs" />
     <Compile Include="Models\BillFunc\BillCommon.cs" />

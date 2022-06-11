@@ -244,8 +244,11 @@ namespace WebAPI.Controllers
                 {
                     //發送EDM通知
                     WebCommon.SendMail edm = new SendMail();
-                    //string EDM_Body = "<a href='https://www.irentcar.com.tw/event/111event/3043/index.html' ><img src='https://www.irentcar.com.tw/event/111event/3043/img/main.jpg' /><br/>點選進入</a>";
                     edm.DoSendMail("iRent會員通知", EDM_Body, apiInput.MEMEMAIL);
+
+                    //紀錄LOG-IDNO,EMAIL
+                    BE_CommonFunc beCommonFunc = new BE_CommonFunc();
+                    beCommonFunc.InsEDMLog(apiInput.IDNO, apiInput.MEMEMAIL, apiInput.UserID, LogID);
                 }
             }
             //這邊資料用api拋給sqyhi06vm
