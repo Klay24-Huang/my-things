@@ -350,6 +350,8 @@
 
 20220608 調整機車取車(BookingStartMotor)增加輸入內容-添加機車安心服務
 
+20220613 調整BookingQuery欄位Insurance狀態
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
