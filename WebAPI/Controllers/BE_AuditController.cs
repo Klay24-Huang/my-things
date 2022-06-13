@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.SP.BE.Input;
+using Domain.SP.BE.Output;
 using Domain.SP.Output;
 using Domain.WebAPI.Input.HiEasyRentAPI;
 using Domain.WebAPI.output.HiEasyRentAPI;
@@ -227,13 +228,28 @@ namespace WebAPI.Controllers
                     MEMONEW = apiInput.MEMONEW //20210115唐加
                 };
 
-                SPOutput_Base spOut = new SPOutput_Base();
-                SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
+                //20220521 ADD BY ADAM REASON.增加首次審核通過回傳
+                //SPOutput_Base spOut = new SPOutput_Base();
+                //SQLHelper<SPInput_BE_Audit, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_Base>(connetStr);
+                SPOutput_BE_HandleAudit spOut = new SPOutput_BE_HandleAudit();
+                SQLHelper<SPInput_BE_Audit, SPOutput_BE_HandleAudit> sqlHelp = new SQLHelper<SPInput_BE_Audit, SPOutput_BE_HandleAudit>(connetStr);
+
                 logger.Trace("AuditSave:" + JsonConvert.SerializeObject(spInput));
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spOut, ref lstError);
                 logger.Trace("AuditSaveResult:" + JsonConvert.SerializeObject(spOut) + ",Error:" + JsonConvert.SerializeObject(lstError));
-                baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                //20220521 ADD BY ADAM REASON.增加首次審核通過回傳
+                if (spOut.FirstAudit == "Y" && apiInput.MEMEMAIL.ToString() != "" && DateTime.Now < DateTime.Parse("2022-06-30 23:59"))
+                {
+                    //發送EDM通知
+                    WebCommon.SendMail edm = new SendMail();
+                    edm.DoSendMail("iRent會員通知", EDM_Body, apiInput.MEMEMAIL);
 
+                    //紀錄LOG-IDNO,EMAIL
+                    BE_CommonFunc beCommonFunc = new BE_CommonFunc();
+                    beCommonFunc.InsEDMLog(apiInput.IDNO, apiInput.MEMEMAIL, apiInput.UserID, LogID);
+                }
             }
             //這邊資料用api拋給sqyhi06vm
             if (flag && apiInput.AuditStatus == 1)
@@ -404,5 +420,63 @@ namespace WebAPI.Controllers
             else
                 throw new Exception("MEMRFNBR格式錯誤");
         }
+
+        #region 和泰PAY活動EDM
+        private static string EDM_Body = @"
+            <html>
+            <head>
+            <link rel='stylesheet' href='https://www.irentcar.com.tw/event/111event/3043/all.css'>
+            <title>歡迎iRent新會員審核通過</title>
+            <meta name = 'description' content='iRent新會員' />
+            <meta name = 'viewport' content='width=device-width, initial-scale=1.0'>
+            <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+
+            <script async src='https://www.googletagmanager.com/gtag/js?id=UA-194927061-1' type='2ba0d8ddb35d90ceaf33e6e6-text/javascript'></script>
+            <script type = '2ba0d8ddb35d90ceaf33e6e6-text/javascript' >
+
+              window.dataLayer = window.dataLayer || [];
+
+                    function gtag() { dataLayer.push(arguments); }
+
+                    gtag('js', new Date());
+
+ 
+
+              gtag('config', 'UA-194927061-1');
+
+            </script>
+
+            </head>
+            <body>
+            <div style='text-align: center;padding: 0px;'>
+            <div style='text-align: center;padding: 0px;'>
+            <div class='box pp'>
+            <img id = 'banner' src='https://www.irentcar.com.tw/event/111event/3043/img/main.jpg'>
+            <p style='font-size: 16px; '><b>Hi iRent會員您好<br>恭喜您審核通過，成為iRent的一員！</br>是否已滿心期待，準備好讓iRent陪您來趟美好旅程了呢？<br>啟程前，您不可錯過的好康活動，推薦給您。<br>內含時數贈送活動，趕快點開一探究竟～<b></p>
+            </div>
+            <div class='card'>
+            </br></br></br>
+            <a href = 'https://www.irentcar.com.tw/event/111event/2098/index.html' target='_blank'>
+            <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic1.jpg' ></ a >
+            <p  style='font-size: 16px; '><b>【限時活動】即日起至12/31止<br> 於iRentAPP使用中信卡綁定和泰Pay，就可獲得免費汽車時數30分鐘(每ID限獲得乙次)<b></p>
+            </div>
+            <div style='text-align: center;padding: 0px;'>
+            <div class='card'>
+            </br></br></br>
+            <a href = 'https://www.irentcar.com.tw/event/111event/3027/index.html' target='_blank'>
+            <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic2.jpg' ></ a >
+            <p style='font-size: 16px; '><b>【限時活動】即日起至6/30止<br> 天天登入享免費機車時數6分鐘，完成指定任務最高還可獲得汽車時數90分鐘<b></p>
+            </div>
+            <div class='card'>
+            </br></br></br>
+            <a href = 'https://www.irentcar.com.tw/iRentSchool/' target='_blank'>
+            <img src = 'https://www.irentcar.com.tw/event/111event/3043/img/pic3.jpg' ></ a >
+            <p style='font-size: 16px; '><b> 立即完成小學堂測驗，最高可獲得300分鐘iRent時數<b></p>
+            </div>
+            <script src = '/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js' data-cf-settings='2ba0d8ddb35d90ceaf33e6e6-|49' defer=''></script><script defer src='https://static.cloudflareinsights.com/beacon.min.js/v652eace1692a40cfa3763df669d7439c1639079717194' integrity='sha512-Gi7xpJR8tSkrpF7aordPZQlW2DLtzUlZcumS8dMQjwDHEnw9I7ZLyiOj/6tZStRBGtGgN6ceN6cMH8z7etPGlw==' data-cf-beacon='{'rayId':'71058ce68eab6b6f','token':'032a1d9439474897bfe67e733c1a68a4','version':'2021.12.0','si':100}' crossorigin='anonymous'></script>
+            </body>
+            </html>
+            ";
+        #endregion
     }
 }
