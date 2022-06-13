@@ -240,7 +240,7 @@ namespace WebAPI.Controllers
                 //baseVerify.checkSQLResult(ref flag, ref spOut, ref lstError, ref errCode);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 //20220521 ADD BY ADAM REASON.增加首次審核通過回傳
-                if (spOut.FirstAudit == "Y" && apiInput.MEMEMAIL.ToString() != "" && DateTime.Now < DateTime.Parse("2022-06-30 23:59"))
+                if (spOut.FirstAudit == "Y" && apiInput.MEMEMAIL.ToString() != "" && DateTime.Now < DateTime.Parse("2022-12-31 23:59"))
                 {
                     //發送EDM通知
                     WebCommon.SendMail edm = new SendMail();
