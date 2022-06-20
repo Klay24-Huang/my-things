@@ -292,7 +292,7 @@ namespace WebAPI.Controllers
                         //BE_ReturnControl obj = rentRepository.GetReturnControl(tmpOrder);
 
                         //string spName2 = new ObjType().GetSPName(ObjType.SPType.BE_GetReturnCarControl);
-                        string spName2 = "usp_BE_GetReturnCarControl_V20220325";
+                        string spName2 = "usp_BE_GetReturnCarControl_V20220616";
 
                         SPInput_BE_GetReturnCarControl spInput2 = new SPInput_BE_GetReturnCarControl()
                         {
@@ -364,6 +364,9 @@ namespace WebAPI.Controllers
 
                                 for (int z = 0; z < ReturnControlList.Count; z++)
                                 {
+                                    //20220618 ADD BY ADAM REASON.因應混和支付的關係，取最後一筆
+                                    input.CARDNO = ReturnControlList[z].CARDNO;
+                                    input.AUTHCODE = ReturnControlList[z].AUTHCODE;
                                     //最後一筆處理ETAG
                                     if (obj.eTag > 0 && z == ReturnControlList.Count -1)
                                     {

@@ -226,7 +226,7 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 關帳金額
         /// </summary>
-        public int CloseAmout { get; set; }
+        //public int CloseAmout { get; set; }
         /// <summary>
         /// 商代代碼
         /// </summary>
@@ -234,11 +234,11 @@ namespace Domain.TB.BackEnd
         /// <summary>
         /// 刷卡的訂單編號(專給中信使用)
         /// </summary>
-        public string MerchantTradeNo { get; set; }
+        //public string MerchantTradeNo { get; set; }
         /// <summary>
         /// 錢包支付金額 20220307 ADD BY ADAM 
         /// </summary>
-        public int WalletAmount { get; set; }
+        //public int WalletAmount { get; set; }
         /// <summary>
         /// 支付金額
         /// </summary>
