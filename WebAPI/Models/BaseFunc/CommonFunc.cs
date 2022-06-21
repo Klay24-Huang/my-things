@@ -609,7 +609,9 @@ namespace WebAPI.Models.BaseFunc
                     LogID = Int64.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
                 }
 
-                logger.Info(JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}").Replace("\r\n", ""));
+                //string loginfo = JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"").Replace("\"{", "{").Replace("}\"", "}").Replace("\r\n", "");
+                string loginfo = JsonConvert.SerializeObject(spInput).Replace("\\\"", "\"");
+                logger.Info(loginfo);
 
                 string[] tmpData = (apiInput.Replace("{", "").Replace("}", "")).Split(',');
                 int tmpLen = tmpData.Length;
