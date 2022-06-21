@@ -193,12 +193,12 @@ namespace WebAPI.Controllers
                     }
 
                     // 發簡訊
-                    if (UpdateOrderAuthList.AuthFlg != 1 && OrderAuth.AuthType == 11 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace(OrderAuth.Mobile))
-                    {
-                        CreditAuthJobComm creditAuthJobComm = new CreditAuthJobComm();
-                        var SMSmsg = "iRent用戶您好，用車滿十小時取授權失敗通知，請確認信用卡餘額，請檢查卡片餘額或是重新綁卡，將於3小時後再次取授權。";
-                        var SendSMS = creditAuthJobComm.SendSMS(OrderAuth.Mobile, CreditAuthJobComm.MobileTemplateCode.CustomMsg, SMSmsg);
-                    }
+                    //if (UpdateOrderAuthList.AuthFlg != 1 && OrderAuth.AuthType == 11 && OrderAuth.isRetry == 0 && !string.IsNullOrWhiteSpace(OrderAuth.Mobile))
+                    //{
+                    //    CreditAuthJobComm creditAuthJobComm = new CreditAuthJobComm();
+                    //    var SMSmsg = "iRent用戶您好，用車滿十小時取授權失敗通知，請確認信用卡餘額，請檢查卡片餘額或是重新綁卡，將於3小時後再次取授權。";
+                    //    var SendSMS = creditAuthJobComm.SendSMS(OrderAuth.Mobile, CreditAuthJobComm.MobileTemplateCode.CustomMsg, SMSmsg);
+                    //}
                 }
             }
             #endregion
