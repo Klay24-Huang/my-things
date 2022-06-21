@@ -292,7 +292,7 @@ namespace WebAPI.Controllers
                         //BE_ReturnControl obj = rentRepository.GetReturnControl(tmpOrder);
 
                         //string spName2 = new ObjType().GetSPName(ObjType.SPType.BE_GetReturnCarControl);
-                        string spName2 = "usp_BE_GetReturnCarControl_V20220616";
+                        string spName2 = "usp_BE_GetReturnCarControl_V20220325";
 
                         SPInput_BE_GetReturnCarControl spInput2 = new SPInput_BE_GetReturnCarControl()
                         {
@@ -491,8 +491,7 @@ namespace WebAPI.Controllers
                                         MEMIDNO = SavePassengerList[z].MEMIDNO,
                                         MEMCNAME = SavePassengerList[z].MEMCNAME,
                                         InsurancePerHours = SavePassengerList[z].InsurancePerHours,
-                                        InsuranceAMT = SavePassengerList[z].InsuranceAMT,
-                                        InsuranceOtherAMT = SavePassengerList[z].InsuranceOtherAMT
+                                        InsuranceAMT = SavePassengerList[z].InsuranceAMT
                                     };
                                 }
                             }
@@ -504,8 +503,7 @@ namespace WebAPI.Controllers
                                     MEMIDNO = "",
                                     MEMCNAME = "",
                                     InsurancePerHours = 0,
-                                    InsuranceAMT = 0,
-                                    InsuranceOtherAMT = 0
+                                    InsuranceAMT = 0
                                 };
                             }
                             #endregion

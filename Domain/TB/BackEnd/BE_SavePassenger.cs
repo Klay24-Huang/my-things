@@ -24,9 +24,5 @@ namespace Domain.TB.BackEnd
         /// 承租人安心服務費用
         /// </summary>
         public int InsuranceAMT { get; set; }
-        /// <summary>
-        /// 副承租人安心服務費用
-        /// </summary>
-        public int InsuranceOtherAMT { get; set; }
     }
 }
