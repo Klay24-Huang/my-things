@@ -1128,7 +1128,7 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;          //ETAG費用 20201202 ADD BY ADAM
             int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH
-            int End_Mile = 0;           //還車里程
+            float End_Mile = 0;           //還車里程
             int PreAmount = 0;          // 預授權金額 20211108 ADD BY YEH
             int DiffAmount = 0;         // 差額 20211108 ADD BY YEH
             float MillageUnit = 0;      // 每公里里程費
@@ -1141,6 +1141,10 @@ namespace WebAPI.Controllers
             int OrderPrice = 0;//原始訂金
 
             int GiveMinute = 0;     // 優惠分鐘數
+            int MainInsurancePrice = 0;     //安心服務費用
+            int JointInsurancePrice = 0;    //副承租人安心服務費用(單人)
+            int MainyInsuranceFinePrice = 0;    //安心服務費用(逾時)
+            int JointInsuranceFinePrice = 0;    //副承租人安心服務費用(單人)(逾時)
             #endregion
             #endregion
             #region trace-in
@@ -1304,7 +1308,7 @@ namespace WebAPI.Controllers
                         if (item.end_mile > 0)
                         {
                             //用已記錄的還車里程
-                            End_Mile = Convert.ToInt32(item.end_mile);
+                            End_Mile = item.end_mile;
                         }
                         else
                         {
@@ -1800,7 +1804,15 @@ namespace WebAPI.Controllers
                             }
                             trace.FlowList.Add("機車非月租租金計算");
                         }
-
+                        #region 安心服務
+                        if (item.Insurance == 1)    // 有安心服務
+                        {
+                            MainInsurancePrice = billCommon.MotorInsurancePrice(SD, ED, motoBaseMins, item.BaseMotoRate, item.InsuranceMotoMin, item.InsuranceMotoRate, DayMaxMinute, lstHoliday);
+                            if (item.JointPassenger > 0)   // 有副承租人
+                                JointInsurancePrice = billCommon.MotorInsurancePrice(SD, ED, motoBaseMins, item.BaseMotoRate, item.InsuranceMotoMin, item.InsuranceMotoRate, DayMaxMinute, lstHoliday);
+                            outputApi.Rent.InsurancePurePrice = MainInsurancePrice + (item.JointPassenger * JointInsurancePrice);
+                        }
+                        #endregion
                         outputApi.Rent.RentBasicPrice = item.BaseMinutesPrice;
                     }
                     else
@@ -1834,19 +1846,24 @@ namespace WebAPI.Controllers
                         }
 
                         #region 安心服務
-                        // 20210908 UPD BY YEH REASON:使用安心服務，安心服務每小時金額 = 主承租人每小時價格 + 副承租人每小時費率總和
-                        InsurancePerHours = item.Insurance == 1 ? (Convert.ToInt32(item.InsurancePerHours) + item.JointInsurancePerHour) : 0;
-                        if (InsurancePerHours > 0)
+                        if (item.Insurance == 1)    // 有安心服務
                         {
-                            outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((car_payInMins / 30.0) * InsurancePerHours / 2)));
+                            MainInsurancePrice = car_payInMins / 30 * item.InsurancePerHours / 2;
+                            if (item.JointPassenger > 0)   // 有副承租人
+                                JointInsurancePrice = car_payInMins / 30 * item.JointInsurancePerHour / 2;
 
-                            //逾時安心服務計算
-                            if (TotalFineRentMinutes > 0)
+                            if (TotalFineRentMinutes > 0)   //逾時安心服務計算
                             {
-                                outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((car_payOutMins / 30.0) * InsurancePerHours / 2)));
+                                MainyInsuranceFinePrice = car_payOutMins / 30 * item.InsurancePerHours / 2;
+                                if (item.JointPassenger > 0)   // 有副承租人
+                                    JointInsuranceFinePrice = car_payOutMins / 30 * item.JointInsurancePerHour / 2;
                             }
+
+                            outputApi.Rent.InsurancePurePrice = MainInsurancePrice + (item.JointPassenger * JointInsurancePrice);
+                            outputApi.Rent.InsuranceExtPrice = MainyInsuranceFinePrice + (item.JointPassenger * JointInsuranceFinePrice);
+
+                            trace.FlowList.Add("安心服務");
                         }
-                        trace.FlowList.Add("安心服務");
                         #endregion
 
                         outputApi.Rent.CarRental = CarRentPrice;
@@ -1995,7 +2012,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region sp存檔
-                    string SPName = "usp_BE_CalFinalPrice_U02";
+                    string SPName = "usp_BE_CalFinalPrice_U01";
                     SPInput_BE_CalFinalPrice SPInput = new SPInput_BE_CalFinalPrice()
                     {
                         IDNO = IDNO,
@@ -2017,6 +2034,8 @@ namespace WebAPI.Controllers
                         DiffAmount = DiffAmount,
                         APIName = funName,
                         UseGiveMinute = UseGiveMinute,
+                        InsurancePriceByMain = MainInsurancePrice + MainyInsuranceFinePrice,
+                        InsurancePriceByJoint = JointInsurancePrice + JointInsuranceFinePrice,
                         LogID = LogID
                     };
 

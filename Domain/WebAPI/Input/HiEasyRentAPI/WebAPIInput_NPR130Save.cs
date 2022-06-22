@@ -257,5 +257,10 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// 副承租人安心服務每小時金額
         /// </summary>
         public int InsurancePerHours { get; set; }
+        /// <summary>
+        /// 承租人安心服務費用
+        /// </summary>
+        public int InsuranceAMT { get; set; }
+
     }
 }

@@ -493,7 +493,8 @@ namespace WebAPI.Controllers
                                     {
                                         MEMIDNO = SavePassengerList[z].MEMIDNO,
                                         MEMCNAME = SavePassengerList[z].MEMCNAME,
-                                        InsurancePerHours = SavePassengerList[z].InsurancePerHours
+                                        InsurancePerHours = SavePassengerList[z].InsurancePerHours,
+                                        InsuranceAMT = SavePassengerList[z].InsuranceAMT
                                     };
                                 }
                             }
@@ -504,7 +505,8 @@ namespace WebAPI.Controllers
                                 {
                                     MEMIDNO = "",
                                     MEMCNAME = "",
-                                    InsurancePerHours = 0
+                                    InsurancePerHours = 0,
+                                    InsuranceAMT = 0
                                 };
                             }
                             #endregion

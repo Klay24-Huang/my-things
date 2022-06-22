@@ -21,5 +21,25 @@
         /// 共同承租提示訊息
         /// </summary>
         public string JointAlertMessage { get; set; }
+        /// <summary>
+        /// 機車安心服務低消分鐘數
+        /// </summary>
+        public int BaseInsuranceMinutes { get; set; }
+        /// <summary>
+        /// 機車安心服務低消金額
+        /// </summary>
+        public int BaseMotoRate { get; set; }
+        /// <summary>
+        /// 機車安心服務分鐘(幾分鐘算一次錢)
+        /// </summary>
+        public int InsuranceMotoMin { get; set; }
+        /// <summary>
+        /// 機車安心服務金額(一次算多少錢)
+        /// </summary>
+        public int InsuranceMotoRate { get; set; }
+        /// <summary>
+        /// 共同承租人數
+        /// </summary>
+        public int Partners { get; set; }
     }
 }

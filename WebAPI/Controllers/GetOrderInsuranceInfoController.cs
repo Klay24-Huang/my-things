@@ -84,7 +84,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SPName = "usp_GetOrderInsuranceInfo_V20220507";
+                string SPName = "usp_GetOrderInsuranceInfo_Insurance";
                 SPInput_GetOrderInsuranceInfo spInput = new SPInput_GetOrderInsuranceInfo()
                 {
                     OrderNo = OrderNo,
@@ -102,6 +102,11 @@ namespace WebAPI.Controllers
                     outputApi.MainInsurancePerHour = spOut.MainInsurancePerHour;
                     outputApi.JointInsurancePerHour = spOut.JointInsurancePerHour;
                     outputApi.JointAlertMessage = spOut.JointAlertMessage;
+                    outputApi.BaseInsuranceMinutes = spOut.BaseInsuranceMinutes;
+                    outputApi.BaseMotoRate = spOut.BaseMotoRate;
+                    outputApi.InsuranceMotoMin = spOut.InsuranceMotoMin;
+                    outputApi.InsuranceMotoRate = spOut.InsuranceMotoRate;
+                    outputApi.Partners = spOut.Partners;
                 }
             }
             #endregion

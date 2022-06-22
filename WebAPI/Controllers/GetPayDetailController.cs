@@ -131,6 +131,10 @@ namespace WebAPI.Controllers
             string MonIds = "";     //短期月租Id可多筆
 
             int GiveMinute = 0;     // 優惠分鐘數
+            int MainInsurancePrice = 0;     //安心服務費用
+            int JointInsurancePrice = 0;    //副承租人安心服務費用(單人)
+            int MainyInsuranceFinePrice = 0;    //安心服務費用(逾時)
+            int JointInsuranceFinePrice = 0;    //副承租人安心服務費用(單人)(逾時)
             #endregion
             #endregion
             try
@@ -819,6 +823,15 @@ namespace WebAPI.Controllers
                                 trace.FlowList.Add("機車非月租租金計算");
                             }
 
+                            #region 安心服務
+                            if (item.Insurance == 1)    // 有安心服務
+                            {
+                                MainInsurancePrice = billCommon.MotorInsurancePrice(SD, ED, motoBaseMins, item.BaseMotoRate, item.InsuranceMotoMin, item.InsuranceMotoRate, DayMaxMinute, lstHoliday);
+                                if (item.JointPassenger > 0)   // 有副承租人
+                                    JointInsurancePrice = billCommon.MotorInsurancePrice(SD, ED, motoBaseMins, item.BaseMotoRate, item.InsuranceMotoMin, item.InsuranceMotoRate, DayMaxMinute, lstHoliday);
+                                outputApi.Rent.InsurancePurePrice = MainInsurancePrice + (item.JointPassenger * JointInsurancePrice);
+                            }
+                            #endregion
                             outputApi.Rent.RentBasicPrice = item.BaseMinutesPrice;
                         }
                         else
@@ -852,19 +865,24 @@ namespace WebAPI.Controllers
                             }
 
                             #region 安心服務
-                            // 20210903 UPD BY YEH REASON:使用安心服務，安心服務每小時金額 = 主承租人每小時價格 + 副承租人每小時費率總和
-                            InsurancePerHours = item.Insurance == 1 ? (Convert.ToInt32(item.InsurancePerHours) + item.JointInsurancePerHour) : 0;
-                            if (InsurancePerHours > 0)
+                            if (item.Insurance == 1)    // 有安心服務
                             {
-                                outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((car_payInMins / 30.0) * InsurancePerHours / 2)));
+                                MainInsurancePrice = car_payInMins / 30 * item.InsurancePerHours / 2;
+                                if (item.JointPassenger > 0)   // 有副承租人
+                                    JointInsurancePrice = car_payInMins / 30 * item.JointInsurancePerHour / 2;
 
-                                //逾時安心服務計算
-                                if (TotalFineRentMinutes > 0)
+                                if (TotalFineRentMinutes > 0)   //逾時安心服務計算
                                 {
-                                    outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((car_payOutMins / 30.0) * InsurancePerHours / 2)));
+                                    MainyInsuranceFinePrice = car_payOutMins / 30 * item.InsurancePerHours / 2;
+                                    if (item.JointPassenger > 0)   // 有副承租人
+                                        JointInsuranceFinePrice = car_payOutMins / 30 * item.JointInsurancePerHour / 2;
                                 }
+
+                                outputApi.Rent.InsurancePurePrice = MainInsurancePrice + (item.JointPassenger * JointInsurancePrice);
+                                outputApi.Rent.InsuranceExtPrice = MainyInsuranceFinePrice + (item.JointPassenger * JointInsuranceFinePrice);
+
+                                trace.FlowList.Add("安心服務");
                             }
-                            trace.FlowList.Add("安心服務");
                             #endregion
 
                             outputApi.Rent.CarRental = CarRentPrice;
@@ -938,7 +956,7 @@ namespace WebAPI.Controllers
                         DiffAmount = xTotalRental - PreAmount;  // 差額 = 訂單總價 - 預授權金額
 
                         xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
-                        
+
                         outputApi.Rent.TotalRental = xTotalRental;
 
                         // 20211229 UPD BY YEH REASON:output增加預授權金額、差額
@@ -1029,7 +1047,7 @@ namespace WebAPI.Controllers
                         #endregion
 
                         #region SP存檔
-                        string SPName = "usp_CalFinalPrice_U02";
+                        string SPName = "usp_CalFinalPrice_U01";
                         SPInput_CalFinalPrice SPInput = new SPInput_CalFinalPrice()
                         {
                             IDNO = IDNO,
@@ -1041,8 +1059,7 @@ namespace WebAPI.Controllers
                             fine_price = outputApi.Rent.OvertimeRental,
                             gift_point = gift_point,
                             gift_motor_point = gift_motor_point,
-                            //20210720 ADD BY ADAM REASON.訂閱制儲存沿用舊格式汽車採小時計
-                            monthly_workday = carInfo.useMonthDiscW / 60,
+                            monthly_workday = carInfo.useMonthDiscW / 60,   //20210720 ADD BY ADAM REASON.訂閱制儲存沿用舊格式汽車採小時計
                             monthly_holiday = carInfo.useMonthDiscH / 60,
                             Etag = outputApi.Rent.ETAGRental,
                             parkingFee = outputApi.Rent.ParkingFee,
@@ -1051,6 +1068,8 @@ namespace WebAPI.Controllers
                             DiffAmount = DiffAmount,
                             APIName = funName,
                             UseGiveMinute = UseGiveMinute,
+                            InsurancePriceByMain = MainInsurancePrice + MainyInsuranceFinePrice,
+                            InsurancePriceByJoint = JointInsurancePrice + JointInsuranceFinePrice,
                             LogID = LogID
                         };
                         SPOutput_Base SPOutput = new SPOutput_Base();
@@ -1064,9 +1083,9 @@ namespace WebAPI.Controllers
                         trace.traceAdd(nameof(SPInput), SPInput);
                         trace.traceAdd(nameof(carInfo), carInfo);
                         trace.traceAdd(nameof(outputApi), outputApi);
-                        #endregion
 
                         trace.FlowList.Add("sp存檔");
+                        #endregion
                         #endregion
                     }
                     #endregion

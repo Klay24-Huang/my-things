@@ -2527,6 +2527,7 @@ namespace WebAPI.Models.BillFunc
         }
         #endregion
 
+        #region 計算優惠標籤折抵金額(汽車)
         public int DiscountLabelToPrice(DateTime SD, DateTime ED, int Price, int PriceH, double dayMaxHour, List<Holiday> lstHoliday, int GiveMinute, bool overTime = false, double baseMinutes = 60)
         {
             var re = 0;
@@ -2566,6 +2567,35 @@ namespace WebAPI.Models.BillFunc
 
             return re;
         }
+        #endregion
+
+        #region 計算機車安心服務總金額
+        /// <summary>
+        /// 計算機車安心服務總金額
+        /// </summary>
+        /// <param name="SD">起日</param>
+        /// <param name="ED">迄日</param>
+        /// <param name="BaseMinute">基本分鐘</param>
+        /// <param name="BaseRate">基本消費</param>
+        /// <param name="InsuranceMotoMin">機車安心服務分鐘(幾分鐘算一次錢)</param>
+        /// <param name="InsuranceMotoRate">機車安心服務金額(計算1次多少錢)</param>
+        /// <param name="DayMaxMinute">單日上限</param>
+        /// <param name="lstHoliday">假日清單</param>
+        /// <returns></returns>
+        public int MotorInsurancePrice(DateTime SD, DateTime ED, int BaseMinute, double BaseRate, double InsuranceMotoMin, double InsuranceMotoRate, double DayMaxMinute, List<Holiday> lstHoliday)
+        {
+            int re = 0;
+
+            var RangeMins = GetMotoRangeMins(SD, ED, BaseMinute, DayMaxMinute, lstHoliday);
+            var TotalRentMinute = Convert.ToInt32(RangeMins.Item1 + RangeMins.Item2);
+
+            // 機車安心服務算法：基本消費金額 + (幾分鐘算一次錢 * 計算1次多少錢)
+            var Groups = Math.Ceiling((TotalRentMinute - BaseMinute) / InsuranceMotoMin);
+            re = Convert.ToInt32(BaseRate + Math.Round(Groups * InsuranceMotoRate, 0, MidpointRounding.AwayFromZero));
+
+            return re;
+        }
+        #endregion
     }
 
     #region eumDateType

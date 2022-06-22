@@ -249,7 +249,7 @@ namespace Domain.SP.Output.OrderList
         /// <summary>
         /// 安心服務每小時價
         /// </summary>
-        public float InsurancePerHours { set; get; }
+        public int InsurancePerHours { set; get; }
         /// <summary>
         /// 平日價
         /// </summary>
@@ -260,7 +260,7 @@ namespace Domain.SP.Output.OrderList
         public int HoildayPrice { get; set; }
 
         /// <summary>
-        /// 副承租人每小時費率總和
+        /// 副承租人每小時費率
         /// </summary>
         public int JointInsurancePerHour { get; set; }
 
@@ -268,6 +268,26 @@ namespace Domain.SP.Output.OrderList
         /// 預授權金額
         /// </summary>
         public int PreAmount { get; set; }
+
+        /// <summary>
+        /// 副承租人人數
+        /// </summary>
+        public int JointPassenger { get; set; }
+
+        /// <summary>
+        /// 機車安心服務基消價格
+        /// </summary>
+        public double BaseMotoRate { get; set; }
+
+        /// <summary>
+        /// 機車安心服務分鐘(幾分鐘算一次錢)
+        /// </summary>
+        public double InsuranceMotoMin { get; set; }
+
+        /// <summary>
+        /// 機車安心服務金額(計算1次多少錢)
+        /// </summary>
+        public double InsuranceMotoRate { get; set; }
         #endregion
 
         #region 春節相關

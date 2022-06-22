@@ -288,5 +288,21 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int GiveMinute { get; set; }
         #endregion
+        /// <summary>
+        /// 機車安心服務低消分鐘數
+        /// </summary>
+        public float BaseInsuranceMinutes { get; set; }
+        /// <summary>
+        /// 機車安心服務低消金額
+        /// </summary>
+        public float BaseMotoRate { get; set; }
+        /// <summary>
+        /// 機車安心服務分鐘(幾分鐘算一次錢)
+        /// </summary>
+        public float InsuranceMotoMin { get; set; }
+        /// <summary>
+        /// 機車安心服務金額(一次算多少錢)
+        /// </summary>
+        public float InsuranceMotoRate { get; set; }
     }
 }

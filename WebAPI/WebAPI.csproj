@@ -313,6 +313,7 @@
     <Compile Include="Controllers\BindQueryByEasyrentController.cs" />
     <Compile Include="Controllers\CTBCInquiryController.cs" />
     <Compile Include="Controllers\CTBCCapJobController.cs" />
+    <Compile Include="Controllers\GetEstimateMotorController.cs" />
     <Compile Include="Controllers\GiftTransferCheckController.cs" />
     <Compile Include="Controllers\LowPowerHintReadController.cs" />
     <Compile Include="Controllers\MemberUnbindController.cs" />
@@ -584,6 +585,7 @@
     <Compile Include="Models\Param\Input\IAPI_BeSendEMail.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetEstimateMotor.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTools.cs" />
@@ -637,6 +639,7 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\Output\OAPI_GeneralTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetCardBindListByEasyrent.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetEstimateMotor.cs" />
     <Compile Include="Models\Param\Output\OAPI_GiftTransferCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_WalletWithdrowInvoice.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_HandleCarBind.cs" />

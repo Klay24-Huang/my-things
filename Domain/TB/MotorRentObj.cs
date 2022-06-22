@@ -97,5 +97,24 @@ namespace Domain.TB
         /// 每分鐘N元
         /// </summary>
         public Single PerMinutesPrice { set; get; }
+
+        #region 機車安心服務
+        /// <summary>
+        /// 機車安心服務基消分鐘數
+        /// </summary>
+        public int BaseInsuranceMinutes { set; get; }
+        /// <summary>
+        /// 安心服務起始費用(類似機車基消)
+        /// </summary>
+        public int BaseMotoRate { set; get; }
+        /// <summary>
+        /// 計次分鐘單位(幾分鐘算一次錢)
+        /// </summary>
+        public int InsuranceMotoMin { set; get; }
+        /// <summary>
+        /// 計次金額(每單位分鐘多少錢)
+        /// </summary>
+        public int InsuranceMotoRate { set; get; }
+        #endregion
     }
 }

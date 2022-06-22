@@ -345,6 +345,14 @@
 20220523 調整RefrashToken：增加MEMRFNBR欄位輸出
 20220525 新增遊戲項目查詢(GetGameItem)
 
+20220527 條整取得專案與資費(機車)(GetMotorRentProject)輸出內容-添加機車安心服務
+
+20220527 條整取得路邊租還機車(MotorRent)輸出內容-添加機車安心服務
+
+20220608 調整機車取車(BookingStartMotor)增加輸入內容-添加機車安心服務
+
+20220613 調整BookingQuery欄位Insurance狀態
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -2669,36 +2677,36 @@
 
 * AnyRentObj 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| MonthlyRentId		| 訂閱制月租ID		| int | 123456 |
-| MonProjNM			| 訂閱制月租名稱	| string | 測試_汽包機66-3	|
-| CarWDHours		| 汽車平日時數	| double | 3.0	|
-| CarHDHours		| 汽車假日時數	| double | 3.0 |
-| MotoTotalMins		| 機車不分平假日分鐘數 | int | 300 |
-| WDRateForCar		| 汽車平日優惠價 | double | 99.0  |
-| HDRateForCar		| 汽車假日優惠價 | double | 168.0  |
-| WDRateForMoto		| 機車平日優惠價 | dluble | 1.0  |
-| HDRateForMoto		| 機車假日優惠價 | double | 1.2 |
-| DiscountLabel     | 優惠標籤      | object |     |
-| CarNo				| 車號			 | string | RCG-2305 |
-| CarType			| 車型代碼		| string | PRIUSC |
-| CarTypeName		| 車型名稱		| string | TOYOTA PRIUSc |
-| CarOfArea			| 車輛地區		| string | 北區 |
-| ProjectName		| 專案名稱		| string | 北區路邊汽車推廣專案 |
-| Rental			| 每小時租金	| float | 168.0 |
-| Mileage			| 每公里里程費		| float | 3.0 |
-| Insurance			| 是否有安心服務 | int | 0 |
-| InsurancePrice	| 安心服務每小時費用 | int | 50 |
-| ShowSpecial		| 是否顯示活動文字 | int | 1 |
-| SpecialInfo		| 活動文字			| string | |
-| Latitude			| 緯度			| float | 25.0692639 |
-| Longitude			| 經度			| float | 121.5308611 |
-| Operator			| 供應商圖片		| string | supplierIrent |
-| OperatorScore		| 供應商評價		| float | 5.0 |
-| CarTypePic		| 車輛圖示名稱		| string | priusC |
-| Seat				| 座位數			| int | 5 |
-| ProjID			| 專案代碼			| string | P621 |
+| 參數名稱       | 參數說明                                 | 型態   | 範例                 |
+| -------------- | ---------------------------------------- | ------ | -------------------- |
+| MonthlyRentId  | 訂閱制月租ID                             | int    | 123456               |
+| MonProjNM      | 訂閱制月租名稱                           | string | 測試_汽包機66-3      |
+| CarWDHours     | 汽車平日時數                             | double | 3.0                  |
+| CarHDHours     | 汽車假日時數                             | double | 3.0                  |
+| MotoTotalMins  | 機車不分平假日分鐘數                     | int    | 300                  |
+| WDRateForCar   | 汽車平日優惠價                           | double | 99.0                 |
+| HDRateForCar   | 汽車假日優惠價                           | double | 168.0                |
+| WDRateForMoto  | 機車平日優惠價                           | double | 1.0                  |
+| HDRateForMoto  | 機車假日優惠價                           | double | 1.2                  |
+| DiscountLabel  | 優惠標籤                                 | object |                      |
+| CarNo          | 車號                                     | string | RCG-2305             |
+| CarType        | 車型代碼                                 | string | PRIUSC               |
+| CarTypeName    | 車型名稱                                 | string | TOYOTA PRIUSc        |
+| CarOfArea      | 車輛地區                                 | string | 北區                 |
+| ProjectName    | 專案名稱                                 | string | 北區路邊汽車推廣專案 |
+| Rental         | 每小時租金                               | float  | 168.0                |
+| Mileage        | 每公里里程費                             | float  | 3.0                  |
+| Insurance      | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0                    |
+| InsurancePrice | 安心服務每小時費用                       | int    | 50                   |
+| ShowSpecial    | 是否顯示活動文字                         | int    | 1                    |
+| SpecialInfo    | 活動文字                                 | string |                      |
+| Latitude       | 緯度                                     | float  | 25.0692639           |
+| Longitude      | 經度                                     | float  | 121.5308611          |
+| Operator       | 供應商圖片                               | string | supplierIrent        |
+| OperatorScore  | 供應商評價                               | float  | 5.0                  |
+| CarTypePic     | 車輛圖示名稱                             | string | priusC               |
+| Seat           | 座位數                                   | int    | 5                    |
+| ProjID         | 專案代碼                                 | string | P621                 |
 
 * DiscountLabel 參數說明
 
@@ -2839,41 +2847,41 @@
 
 * GetAnyRentProjectObj 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| StationID 		| 據點代碼		| string | X0SR |
-| ProjID			| 專案代碼		| string | P621 |
-| ProjName			| 專案名稱		| string | 北區路邊汽車推廣專案 |
-| ProDesc			| 專案說明		| string | |
-| CarBrend			| 車輛廠牌		| string | TOYOTA |
-| CarType 			| 車輛型號		| string | PRIUSC |
-| CarTypeName		| 車型名稱		| string | TOYOTA PRIUSc |
-| CarTypePic		| 車型圖片		| string | priusC |
-| Seat				| 座椅數		| int | 5 |
-| Operator			| 業者ICON圖片	| string | supplierIrent |
-| OperatorScore 	| 供應商評價	| float | 5.0 |
-| Insurance			| 是否有安心服務 | int | 0 |
-| InsurancePrice	| 安心服務每小時費用 | int | 50 |
-| IsMinimum			| 是否是最低價	| int | 1 |
-| Price				| 預估費用		| int | 159 |
-| WorkdayPerHour	| 工作日每小時金額 | int | 99 |
-| HolidayPerHour	| 假日每小時金額 | int | 168 |
-| CarOfArea			| 車輛地區		| string | 北區 |
-| Content			| 其他備註		| string |   |
-| IsRent			| 是否可租		| int | 1 |
-| IsFavStation		| 是否為喜好站點 | int | 1 |
-| IsShowCard		| 是否顯示牌卡	| int | 1 |
-| MonthlyRentId		| 訂閱制月租ID		| int | 123456 |
-| CarWDHours		| 汽車平日時數	| double |	|
-| CarHDHours		| 汽車假日時數	| double |  |
-| MotoTotalMins		| 機車不分平假日分鐘數 | int |  |
-| WDRateForCar		| 汽車平日優惠價 | double |   |
-| HDRateForCar		| 汽車假日優惠價 | double |   |
-| WDRateForMoto		| 機車平日優惠價 | dluble |   |
-| HDRateForMoto		| 機車假日優惠價 | double |   |
-| MonthStartDate	| 開始日			| string | |
-| MonthEndDate		| 結束日			| string | |
-| DiscountLabel		| 優惠標籤			| object | |
+| 參數名稱       | 參數說明                                 | 型態   | 範例                 |
+| -------------- | ---------------------------------------- | ------ | -------------------- |
+| StationID      | 據點代碼                                 | string | X0SR                 |
+| ProjID         | 專案代碼                                 | string | P621                 |
+| ProjName       | 專案名稱                                 | string | 北區路邊汽車推廣專案 |
+| ProDesc        | 專案說明                                 | string |                      |
+| CarBrend       | 車輛廠牌                                 | string | TOYOTA               |
+| CarType        | 車輛型號                                 | string | PRIUSC               |
+| CarTypeName    | 車型名稱                                 | string | TOYOTA PRIUSc        |
+| CarTypePic     | 車型圖片                                 | string | priusC               |
+| Seat           | 座椅數                                   | int    | 5                    |
+| Operator       | 業者ICON圖片                             | string | supplierIrent        |
+| OperatorScore  | 供應商評價                               | float  | 5.0                  |
+| Insurance      | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0                    |
+| InsurancePrice | 安心服務每小時費用                       | int    | 50                   |
+| IsMinimum      | 是否是最低價                             | int    | 1                    |
+| Price          | 預估費用                                 | int    | 159                  |
+| WorkdayPerHour | 工作日每小時金額                         | int    | 99                   |
+| HolidayPerHour | 假日每小時金額                           | int    | 168                  |
+| CarOfArea      | 車輛地區                                 | string | 北區                 |
+| Content        | 其他備註                                 | string |                      |
+| IsRent         | 是否可租                                 | int    | 1                    |
+| IsFavStation   | 是否為喜好站點                           | int    | 1                    |
+| IsShowCard     | 是否顯示牌卡                             | int    | 1                    |
+| MonthlyRentId  | 訂閱制月租ID                             | int    | 123456               |
+| CarWDHours     | 汽車平日時數                             | double |                      |
+| CarHDHours     | 汽車假日時數                             | double |                      |
+| MotoTotalMins  | 機車不分平假日分鐘數                     | int    |                      |
+| WDRateForCar   | 汽車平日優惠價                           | double |                      |
+| HDRateForCar   | 汽車假日優惠價                           | double |                      |
+| WDRateForMoto  | 機車平日優惠價                           | double |                      |
+| HDRateForMoto  | 機車假日優惠價                           | double |                      |
+| MonthStartDate | 開始日                                   | string |                      |
+| MonthEndDate   | 結束日                                   | string |                      |
+| DiscountLabel  | 優惠標籤                                 | object |                      |
 
 * DiscountLabel回傳參數說明
 
@@ -3034,41 +3042,45 @@
 
 * MotorRentObj 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| MonthlyRentId		| 訂閱制月租ID		| int | 123456 |
-| MonProjNM			| 訂閱制月租名稱	| string | 	|
-| CarWDHours		| 汽車平日時數	| double |	|
-| CarHDHours		| 汽車假日時數	| double |  |
-| MotoTotalMins		| 機車不分平假日分鐘數 | int |  |
-| WDRateForCar		| 汽車平日優惠價 | double |   |
-| HDRateForCar		| 汽車假日優惠價 | double |   |
-| WDRateForMoto		| 機車平日優惠價 | dluble |   |
-| HDRateForMoto		| 機車假日優惠價 | double |   |
-| DiscountLabel     | 優惠標籤      | object |   |
-| CarNo				| 車號			 | string | EWG-1235 |
-| CarType			| 車型代碼		| string | MANY-110 |
-| CarTypeName		| 車型名稱		| string | KYMCO MANY-110 |
-| CarOfArea			| 車輛地區		| string | 北北桃 |
-| ProjectName		| 專案名稱		| string | 10載便利北北桃 |
-| Rental			| 每小時租金	| float | 168.0 |
-| Mileage			| 每公里里程費		| float | 3.0 |
-| Insurance			| 是否有安心服務 | int | 0 |
-| InsurancePrice	| 安心服務每小時費用 | int | 50 |
-| ShowSpecial		| 是否顯示活動文字 | int | 1 |
-| SpecialInfo		| 活動文字			| string | |
-| Power				| 機車電量			| float | 90.5 |
-| RemainingMileage	| 預估里程			| float | 30.5 |
-| Latitude			| 緯度			| float | 25.0692639 |
-| Longitude			| 經度			| float | 121.5308611 |
-| Operator			| 供應商圖片		| string | supplierIrent |
-| OperatorScore		| 供應商評價		| float | 5.0 |
-| CarTypePic		| 車輛圖示名稱		| string | priusC |
-| Seat				| 座位數			| int | 5 |
-| ProjID			| 專案代碼			| string | P621 |
-| BaseMinutes		| 基本分鐘數		| int | 6 |
-| BasePrice			| 基本費			| int | 10 |
-| PerMinutesPrice	| 每分鐘幾元		| float | 	1.5 |
+| 參數名稱      	| 參數說明 									|  型態   | 範例       |
+| ----------------	| ----------------------------------------- | :----:  | ---------- |
+| MonthlyRentId		| 訂閱制月租ID								| int 	  | 123456 		|
+| MonProjNM			| 訂閱制月租名稱							| string  | 			|
+| CarWDHours		| 汽車平日時數								| double  | 			|
+| CarHDHours		| 汽車假日時數								| double  | 			|
+| MotoTotalMins		| 機車不分平假日分鐘數 						| int 	  | 			|
+| WDRateForCar		| 汽車平日優惠價 							| double  | 			|
+| HDRateForCar		| 汽車假日優惠價 							| double  | 			|
+| WDRateForMoto		| 機車平日優惠價 							| dluble  | 			|
+| HDRateForMoto		| 機車假日優惠價 							| double  | 			|
+| DiscountLabel     | 優惠標籤      							| object  |   			|
+| CarNo				| 車號			 							| string  | EWG-1235 	|
+| CarType			| 車型代碼									| string  | MANY-110 	|
+| CarTypeName		| 車型名稱									| string  | KYMCO MANY-110 |
+| CarOfArea			| 車輛地區									| string  | 北北桃 		|
+| ProjectName		| 專案名稱									| string  | 10載便利北北桃 |
+| Rental			| 每小時租金								| float   | 168.0 		|
+| Mileage			| 每公里里程費								| float   | 3.0 		|
+| Insurance			| 是否有安心服務(0:禁用;1:預設關;2:預設開) 	| int 	  | 0 			|
+| InsurancePrice	| 安心服務每小時費用 						| int 	  | 50 			|
+| ShowSpecial		| 是否顯示活動文字 							| int 	  | 1 			|
+| SpecialInfo		| 活動文字									| string  | 			|
+| Power				| 機車電量									| float   | 90.5 		|
+| RemainingMileage	| 預估里程									| float   | 30.5 		|
+| Latitude			| 緯度										| float   | 25.0692639 |
+| Longitude			| 經度										| float   | 121.5308611 |
+| Operator			| 供應商圖片								| string  | supplierIrent |
+| OperatorScore		| 供應商評價								| float   | 5.0 		|
+| CarTypePic		| 車輛圖示名稱								| string  | priusC 		|
+| Seat				| 座位數									| int 	  | 5 			|
+| ProjID			| 專案代碼									| string  | P621 		|
+| BaseMinutes		| 基本分鐘數								| int 	  | 6 			|
+| BasePrice			| 基本費									| int 	  | 10 			|
+| PerMinutesPrice	| 每分鐘幾元								| float   | 1.5 		|
+| BaseInsuranceMinutes	| 安心服務基礎分鐘數					| int  	  |  |
+| BaseMotoRate      | 計次金額(基消)                			| int  	  |      		|
+| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢)  			| int  	  |      		|
+| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)    			| int  	  |      		|
 
 * DiscountLabel 參數說明
 
@@ -3120,7 +3132,11 @@
                 "ProjID": "R344",
                 "BaseMinutes": 6,
                 "BasePrice": 12,
-                "PerMinutesPrice": 2.5
+                "PerMinutesPrice": 2.5,
+                "BaseInsuranceMinutes": 6,
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             },
             {
                 "MonthlyRentId": 2455,
@@ -3157,7 +3173,11 @@
                 "ProjID": "R344",
                 "BaseMinutes": 6,
                 "BasePrice": 12,
-                "PerMinutesPrice": 2.5
+                "PerMinutesPrice": 2.5,
+                "BaseInsuranceMinutes": 6,
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             }
         ]
     }
@@ -3212,38 +3232,42 @@
 | ------------------ | ---------------- | :--: | ---- |
 | GetMotorProjectObj | 路邊機車專案清單 | List |      |
 
-
 * GetMotorProjectObj 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| ProjID			| 專案代碼		| string | P686 |
-| ProjName			| 專案名稱		| string | 10載便利北北桃 |
-| ProDesc			| 專案說明		| string | |
-| CarBrend			| 車輛廠牌		| string | KYMCO |
-| CarType 			| 車輛型號		| string | IMOTO |
-| CarTypeName		| 車型名稱		| string | KYMCO MANY-110 |
-| CarTypePic		| 車型圖片		| string | iretScooter |
-| Operator			| 業者ICON圖片	| string | supplierIrent |
-| OperatorScore 	| 供應商評價	| float | 5.0 |
-| Insurance			| 是否有安心服務 | int | 0 |
-| InsurancePrice	| 安心服務每小時費用 | int | 50 |
-| IsMinimum			| 是否是最低價	| int | 1 |
-| BaseMinutes		| 基本分鐘數		| int | 6 |
-| BasePrice			| 基本費			| int | 10 |
-| PerMinutesPrice	| 每分鐘幾元		| float | 	1.5 |
-| MaxPrice			| 每日金額上限		| int | 901 |
-| CarOfArea			| 車輛地區		| string | 北北桃 |
-| Content			| 其他備註		| string |   |
-| Power				| 電量				| int | 50.0	|
-| RemainingMileage	| 預估里程			| float | 30.5 |
-| MonthlyRentId		| 訂閱制月租ID		| int | 123456 |
-| MotoTotalMins		| 機車不分平假日分鐘數 | int |  |
-| WDRateForMoto		| 機車平日優惠價 | dluble |   |
-| HDRateForMoto		| 機車假日優惠價 | double |   |
-| MonthStartDate	| 開始日			| string | |
-| MonthEndDate		| 結束日			| string | |
-| DiscountLabel     | 優惠標籤物件    | object | |
+| 參數名稱             | 參數說明                                 | 型態   | 範例           |
+| -------------------- | ---------------------------------------- | ------ | -------------- |
+| ProjID               | 專案代碼                                 | string | P686           |
+| ProjName             | 專案名稱                                 | string | 10載便利北北桃 |
+| ProDesc              | 專案說明                                 | string |                |
+| CarBrend             | 車輛廠牌                                 | string | KYMCO          |
+| CarType              | 車輛型號                                 | string | IMOTO          |
+| CarTypeName          | 車型名稱                                 | string | KYMCO MANY-110 |
+| CarTypePic           | 車型圖片                                 | string | iretScooter    |
+| Operator             | 業者ICON圖片                             | string | supplierIrent  |
+| OperatorScore        | 供應商評價                               | float  | 5.0            |
+| Insurance            | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0              |
+| InsurancePrice       | 安心服務每小時費用                       | int    | 50             |
+| IsMinimum            | 是否是最低價                             | int    | 1              |
+| BaseMinutes          | 基本分鐘數                               | int    | 6              |
+| BasePrice            | 基本費                                   | int    | 10             |
+| PerMinutesPrice      | 每分鐘幾元                               | float  | 1.5            |
+| MaxPrice             | 每日金額上限                             | int    | 901            |
+| CarOfArea            | 車輛地區                                 | string | 北北桃         |
+| Content              | 其他備註                                 | string |                |
+| Power                | 電量                                     | int    | 50.0           |
+| RemainingMileage     | 預估里程                                 | float  | 30.5           |
+| MonthlyRentId        | 訂閱制月租ID                             | int    | 123456         |
+| MotoTotalMins        | 機車不分平假日分鐘數                     | int    |                |
+| WDRateForMoto        | 機車平日優惠價                           | double |                |
+| HDRateForMoto        | 機車假日優惠價                           | double |                |
+| MonthStartDate       | 開始日                                   | string |                |
+| MonthEndDate         | 結束日                                   | string |                |
+| DiscountLabel        | 優惠標籤物件                             | object |                |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數                       | int    |                |
+| BaseMotoRate         | 計次金額(基消)                           | int    |                |
+| InsuranceMotoMin     | 計次分鐘單位(幾分鐘算一次錢)             | int    |                |
+| InsuranceMotoRate    | 計次金額(每單位分鐘多少錢)               | int    |                |
+
 
 * DiscountLabel回傳參數說明
 
@@ -3275,7 +3299,7 @@
                 "CarTypePic": "iretScooter",
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
-                "Insurance": 0,
+                "Insurance": 1,
                 "InsurancePerHour": 0,
                 "IsMinimum": 1,
                 "BaseMinutes": 6,
@@ -3297,7 +3321,11 @@
                     "LabelType": "CP0101",
                     "GiveMinute": 12,
                     "Describe": ""
-                }
+                },
+                "BaseInsuranceMinutes": 6,
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             },
             {
                 "ProjID": "R344",
@@ -3309,7 +3337,7 @@
                 "CarTypePic": "iretScooter",
                 "Operator": "supplierIrent",
                 "OperatorScore": 5.0,
-                "Insurance": 0,
+                "Insurance": 1,
                 "InsurancePerHour": 0,
                 "IsMinimum": 0,
                 "BaseMinutes": 6,
@@ -3331,7 +3359,11 @@
                     "LabelType": "CP0101",
                     "GiveMinute": 12,
                     "Describe": ""
-                }
+                },
+                "BaseInsuranceMinutes": 6,
+				"BaseMotoRate": 3,
+				"InsuranceMotoMin": 5,
+				"InsuranceMotoRate": 1
             }
         ]
     }
@@ -3738,7 +3770,7 @@
 | CarRentBill       | 預估租金                                                     |   int   | 110                   |
 | MileagePerKM      | 每一公里里程費                                               |  float  | 3.1                   |
 | MileageBill       | 預估里程費                                                   |   int   | 62                    |
-| Insurance         | 是否可以使用安心服務(1:可 0:否)                              |   int   | 0                     |
+| Insurance         | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預設沒選<br>2:可使用，預設有選|   int   | 0                     |
 | InsurancePerHour  | 安心保險每小時                                               |   int   | 50                    |
 | InsuranceBill     | 預估安心保險費用                                             |   int   | 0                     |
 | TransDiscount     | 轉乘優惠                                                     |   int   | 0                     |
@@ -4383,12 +4415,17 @@
 
 * Data回傳參數說明
 
-| 參數名稱              | 參數說明                                                     |  型態  | 範例                                                   |
-| --------------------- | ------------------------------------------------------------ | :----: | ------------------------------------------------------ |
-| Insurance             | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預約沒選<br>2:可使用，預約有選 |  int   | 0                                                      |
-| MainInsurancePerHour  | 主承租人每小時安心服務價格                                   |  int   | 50                                                     |
-| JointInsurancePerHour | 單一共同承租人每小時安心服務價格                             |  int   | 若該訂單沒有共同承租邀請對象，該欄位為0                |
-| JointAlertMessage     | 共同承租提示訊息                                             | string | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| 參數名稱              | 參數說明                                                     				|  型態  | 範例                                                   |
+| --------------------- | ------------------------------------------------------------ 				| :----: | ------------------------------------------------------ |
+| Insurance             | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預設沒選<br>2:可使用，預設有選 |  int   | 0                                           			|
+| MainInsurancePerHour  | 主承租人每小時安心服務價格                                   				|  int   | 50                                                     |
+| JointInsurancePerHour | 單一共同承租人每小時安心服務價格                             				|  int   | 若該訂單沒有共同承租邀請對象，該欄位為0                |
+| JointAlertMessage     | 共同承租提示訊息                                             				| string | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| BaseInsuranceMinutes  | 機車安心服務低消分鐘數                                       				| int 	| 														 |
+| BaseMotoRate     		| 機車安心服務低消金額                                         				| int 	| 														 |
+| InsuranceMotoMin     	| 機車安心服務分鐘(幾分鐘算一次錢)                             				| int 	| 														 |
+| InsuranceMotoRate     | 機車安心服務金額(一次算多少錢)                               				| int 	| 														 |
+| Partners     			| 共同承租人數                                             	   				| int 	| 														 |
 
 
 * Output範例
@@ -4405,7 +4442,12 @@
         "Insurance": 1,
         "MainInsurancePerHour": 50,
         "JointInsurancePerHour": 20,
-        "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認"
+        "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認",
+		"BaseInsuranceMinutes": 6,
+		"BaseMotoRate": 3,
+		"InsuranceMotoMin": 5,
+		"InsuranceMotoRate": 1,
+		"Partners": 0
     }
 }
 ```
@@ -4845,6 +4887,7 @@
 | OrderNo  | 訂單編號 |  Y   | string | H10641049 |
 | PhoneLat | 手機定位點(緯度) | N | double | 25.0212444 |
 | PhoneLon | 手機定位點(經度) | N | double | 121.4780778 |
+| Insurance | 加購安心服務 | N | int | 0:否 1:是 |
 
 * input範例
 
@@ -4852,7 +4895,8 @@
 {
     "OrderNo": "H10641049",
 	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778
+	"PhoneLon": 121.4780778,
+    "Insurance": 1
 }
 ```
 
