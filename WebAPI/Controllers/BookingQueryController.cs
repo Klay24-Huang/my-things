@@ -127,6 +127,7 @@ namespace WebAPI.Controllers
                     OrderNo = tmpOrder,
                     LogID = LogID
                 };
+                //string SPName = new ObjType().GetSPName(ObjType.SPType.GetOrderList);
                 string SPName = "usp_OrderListQuery";
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_GetOrderList, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetOrderList, SPOutput_Base>(connetStr);

@@ -48,13 +48,14 @@ namespace WebAPI.Controllers
             string Contentjson = "";
             #endregion
             #region 防呆
-            //public bool baseCheck(Dictionary<string, object> value, ref string Contentjson, ref string errCode, string funName)
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName);
 
             List<string> allowList = new List<string>()
             {
                 "usp_MonthlyRentNotifyPrepare_Q01",
-                "SP_DelCarRawDataByDate"        //20220315新增
+                "usp_EventMillion_Send_U01",
+                "SP_DelCarRawDataByDate",        //20220315新增
+                "usp_EventPuzzle_Notification_I01"
             };
 
             if (flag)
@@ -74,7 +75,7 @@ namespace WebAPI.Controllers
                 if (allowList.Any(p => p == apiInput.RunSPName))
                 {
                     var RunFlag = RunSP(apiInput.RunSPName, ref lstError, ref errCode);
-                    
+
                 }
                 else
                 {
@@ -83,7 +84,7 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-            
+
             #region 寫入錯誤Log
             if (flag == false && isWriteError == false)
             {
@@ -97,10 +98,10 @@ namespace WebAPI.Controllers
         }
 
 
-        
-        private bool RunSP(string SP ,ref List<ErrorInfo> lstError, ref string errCode)
+
+        private bool RunSP(string SP, ref List<ErrorInfo> lstError, ref string errCode)
         {
-            
+
             string SPName = SP;
             SPOutput_Base spOutBase = new SPOutput_Base();
             SPInput_SPJobCentralized spInput = new SPInput_SPJobCentralized();

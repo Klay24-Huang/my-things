@@ -247,4 +247,45 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         public string NOCAMT { set; get; }
         public List<PaymentDetail> tbPaymentDetail { set; get; }
     }
+
+    public class WebAPIInput_NPR136V2Save
+    {
+        /// <summary>
+        /// 使用者代碼
+        /// </summary>
+        public string user_id { set; get; }
+        /// <summary>
+        /// 認證簽章
+        /// </summary>
+        public string sig { set; get; }
+        /// <summary>
+        /// 使用者
+        /// </summary>
+        public string USERID { get; set; }
+        /// <summary>
+        /// 合約編號
+        /// </summary>
+        public string CNTRNO { get; set; }
+        /// <summary>
+        /// IRENT訂單號
+        /// </summary>
+        public string IRENTORDNO { get; set; }
+        /// <summary>
+        /// 調度費
+        /// </summary>
+        public int CarDispatch { get; set; }
+        /// <summary>
+        /// 調度費備註
+        /// </summary>
+        public string DispatchRemark { get; set; }
+        /// <summary>
+        /// 停車費
+        /// </summary>
+        public int ParkingFee { get; set; }
+        /// <summary>
+        /// 停車費備註
+        /// </summary>
+        public string ParkingFeeRemark { get; set; }
+    }
+
 }

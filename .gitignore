@@ -272,8 +272,6 @@ iRentClearWeb/Properties/ServiceDependencies/iRentV2-clear-web - Web Deploy/prof
 /WebAPI/Models/Param/Output/PartOfParam/GetProject_SeatGroup.cs
 iRentClearWeb/Properties/PublishProfiles/iRentV2-AS-clear-web - FTP.pubxml
 iRentClearWeb/Properties/PublishProfiles/iRentV2-AS-clear-web - Web Deploy.pubxml
-/WebAPI/App_Data/Logs/2021-09-22
-/WebAPI/App_Data/Logs
 iRentClearWeb/Properties/ServiceDependencies/iRentV2-AS-clear-web - Web Deploy/profile.arm.json
 Web/Properties/PublishProfiles/iRent-Backend-Web - Web Deploy.pubxml
 Web/Properties/PublishProfiles/iRent-Backend-Web-Test - Web Deploy.pubxml

@@ -1374,6 +1374,7 @@ namespace OtherService
                 else
                 {
                     output = ForTest(input.RequestParams.TradeAmount);
+                    output.ResponseParams.ResultData.MerchantTradeNo = input.RequestParams.MerchantTradeNo;
                 }
             }
             catch (Exception ex)

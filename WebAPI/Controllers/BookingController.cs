@@ -664,6 +664,15 @@ namespace WebAPI.Controllers
                     WalletNotice = WalletNotice
                 };
             }
+            else
+            {
+                flag = false;
+                //20210113 ADD BY ADAM REASON.修正預約顯示錯誤
+                if (errCode == "000000")
+                {
+                    errCode = "ERR161";
+                }
+            }
             #endregion
 
             #region 寫入錯誤Log

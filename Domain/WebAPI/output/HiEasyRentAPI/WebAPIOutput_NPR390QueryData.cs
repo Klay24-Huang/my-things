@@ -15,5 +15,6 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         public string MEMO { set; get; }
         public string ETAG_PARK { set; get; }
         public string TOTAMT { set; get; }
+        public string TRDMEMO { get; set; }
     }
 }
