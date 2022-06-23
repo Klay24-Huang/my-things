@@ -600,6 +600,7 @@ namespace WebAPI.Controllers
                                         AuthInput.TradeType = "Pay_Arrear";
                                         AuthInput.AutoStore = true;
                                         AuthInput.OnceStore = apiInput.OnceStore;
+                                        AuthInput.PayUp = 1;
                                         payCD = "2";
                                     }
 
