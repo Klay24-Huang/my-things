@@ -229,7 +229,7 @@ namespace WebAPI.Service
             List<OrderQueryFullData> result = new List<OrderQueryFullData>();
             flag = false;
             var lstError = new List<ErrorInfo>();
-            string spName = "usp_GetOrderStatusByOrderNo_V20220325";        //里程費設定先跳開，後續在合併版本
+            string spName = "usp_GetOrderStatusByOrderNo";        //里程費設定先跳開，後續在合併版本
             SPOutput_Base spOutput = new SPOutput_Base();
             SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
             DataSet ds = new DataSet();
