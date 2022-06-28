@@ -57,8 +57,13 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            OAPI_FtpCityParkData apiOutput = null;
+            IAPI_FtpCityPark apiInput = new IAPI_FtpCityPark();
 
+            OAPI_FtpCityParkData apiOutput = null;
+            bool isGuest = true;
+            string Contentjson = "";
+            string Access_Token = "";
+            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             string DOCdate = "CityPark_" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + ".txt";
             string tarUrl = FTPUrl + DOCdate;
             //string tarUrl = FTPUrl + "CityPark_20220505.txt";
@@ -67,8 +72,14 @@ namespace WebAPI.Controllers
             try
             {
                 #region 防呆
+                flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
+                    apiInput = JsonConvert.DeserializeObject<IAPI_FtpCityPark>(Contentjson);
+                    if (apiInput.process_date != "")
+                    {
+                        DOCdate = "CityPark_" + apiInput.process_date + ".txt";
+                    }
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog("no Input", ClientIP, funName, ref errCode, ref LogID);
