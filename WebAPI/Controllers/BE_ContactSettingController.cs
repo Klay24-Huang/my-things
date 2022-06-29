@@ -1242,6 +1242,13 @@ namespace WebAPI.Controllers
                     }
                     FED = Convert.ToDateTime(returnDate);
                     FED = FED.AddSeconds(FED.Second * -1);  //去秒數
+
+                    //如果有減免分鐘，則減免後再計算後續金額與時間
+                    if(costRelife_minute > 0)
+                    {
+                        FED = FED.AddMinutes(costRelife_minute * -1);
+                    }
+
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
 
                     if (FineDate != null)
@@ -1420,8 +1427,8 @@ namespace WebAPI.Controllers
                     TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
 
                     //如果有減免分鐘
-                    if (costRelife_minute > 0) TotalRentMinutes -= costRelife_minute;
-                    if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //if (costRelife_minute > 0) TotalRentMinutes -= costRelife_minute;
+                    //if (TotalRentMinutes < 0) TotalRentMinutes = 0;
                 }
                 else
                 {
@@ -1446,28 +1453,28 @@ namespace WebAPI.Controllers
                     }
 
                     //如果有減免分鐘
-                    if(costRelife_minute > 0)
-                    {
-                        if(TotalFineRentMinutes > 0)
-                        {
-                            if(TotalFineRentMinutes > costRelife_minute)
-                            {
-                                TotalFineRentMinutes -= costRelife_minute;
-                            }
-                            else
-                            {
-                                costRelife_minute -= TotalFineRentMinutes;
-                                TotalFineRentMinutes = 0;
-                                TotalRentMinutes -= costRelife_minute;
-                                if (TotalRentMinutes < 0) TotalRentMinutes = 0;
-                            }
-                        }
-                        else
-                        {
-                            TotalRentMinutes -= costRelife_minute;
-                            if (TotalRentMinutes < 0) TotalRentMinutes = 0;
-                        }
-                    }
+                    //if(costRelife_minute > 0)
+                    //{
+                    //    if(TotalFineRentMinutes > 0)
+                    //    {
+                    //        if(TotalFineRentMinutes > costRelife_minute)
+                    //        {
+                    //            TotalFineRentMinutes -= costRelife_minute;
+                    //        }
+                    //        else
+                    //        {
+                    //            costRelife_minute -= TotalFineRentMinutes;
+                    //            TotalFineRentMinutes = 0;
+                    //            TotalRentMinutes -= costRelife_minute;
+                    //            if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        TotalRentMinutes -= costRelife_minute;
+                    //        if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //    }
+                    //}
 
                 }
                 TotalRentMinutes = TotalRentMinutes > 0 ? TotalRentMinutes : 0;
@@ -2322,6 +2329,13 @@ namespace WebAPI.Controllers
                     }
                     FED = Convert.ToDateTime(returnDate);
                     FED = FED.AddSeconds(FED.Second * -1);  //去秒數
+
+                    //如果有減免分鐘，則減免後再計算後續金額與時間
+                    if (costRelife_minute > 0)
+                    {
+                        FED = FED.AddMinutes(costRelife_minute * -1);
+                    }
+
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
 
                     if (FineDate != null)
@@ -2457,8 +2471,8 @@ namespace WebAPI.Controllers
                     TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
 
                     //如果有減免分鐘
-                    if (costRelife_minute > 0) TotalRentMinutes -= costRelife_minute;
-                    if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //if (costRelife_minute > 0) TotalRentMinutes -= costRelife_minute;
+                    //if (TotalRentMinutes < 0) TotalRentMinutes = 0;
                 }
                 else
                 {
@@ -2483,28 +2497,28 @@ namespace WebAPI.Controllers
                     }
 
                     //如果有減免分鐘
-                    if (costRelife_minute > 0)
-                    {
-                        if (TotalFineRentMinutes > 0)
-                        {
-                            if (TotalFineRentMinutes > costRelife_minute)
-                            {
-                                TotalFineRentMinutes -= costRelife_minute;
-                            }
-                            else
-                            {
-                                costRelife_minute -= TotalFineRentMinutes;
-                                TotalFineRentMinutes = 0;
-                                TotalRentMinutes -= costRelife_minute;
-                                if (TotalRentMinutes < 0) TotalRentMinutes = 0;
-                            }
-                        }
-                        else
-                        {
-                            TotalRentMinutes -= costRelife_minute;
-                            if (TotalRentMinutes < 0) TotalRentMinutes = 0;
-                        }
-                    }
+                    //if (costRelife_minute > 0)
+                    //{
+                    //    if (TotalFineRentMinutes > 0)
+                    //    {
+                    //        if (TotalFineRentMinutes > costRelife_minute)
+                    //        {
+                    //            TotalFineRentMinutes -= costRelife_minute;
+                    //        }
+                    //        else
+                    //        {
+                    //            costRelife_minute -= TotalFineRentMinutes;
+                    //            TotalFineRentMinutes = 0;
+                    //            TotalRentMinutes -= costRelife_minute;
+                    //            if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        TotalRentMinutes -= costRelife_minute;
+                    //        if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //    }
+                    //}
 
                 }
                 TotalRentMinutes = TotalRentMinutes > 0 ? TotalRentMinutes : 0;
