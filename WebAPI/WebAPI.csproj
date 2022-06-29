@@ -309,6 +309,7 @@
     <Compile Include="Controllers\BE_GetParkingController.cs" />
     <Compile Include="Controllers\BE_GetStationListController.cs" />
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
+    <Compile Include="Controllers\BE_GiveGiftMinsController.cs" />
     <Compile Include="Controllers\BE_SendEMailController.cs" />
     <Compile Include="Controllers\BindQueryByEasyrentController.cs" />
     <Compile Include="Controllers\GetGameItemController.cs" />
@@ -583,6 +584,7 @@
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetOrderModifyInfo.cs" />
     <Compile Include="Models\Param\BackEnd\Input\IAPI_BE_GetUserGroupByOperator.cs" />
     <Compile Include="Models\Param\Input\IAPI_BeSendEMail.cs" />
+    <Compile Include="Models\Param\Input\IAPI_BE_GiveGiftMins.cs" />
     <Compile Include="Models\Param\Input\IAPI_BE_SaveContractSettingHis.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
