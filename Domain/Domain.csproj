@@ -104,6 +104,7 @@
     <Compile Include="SP\Input\Member\SPInput_MemberUnBindCheck.cs" />
     <Compile Include="SP\Input\Other\SPInput_LowPowerHintRead.cs" />
     <Compile Include="SP\Input\MonthlyRent\SPInput_GetCanUseMonthly.cs" />
+    <Compile Include="SP\Input\SPInput_FtpCityParkDataCheck.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_WalletPayGetTransId.cs" />
     <Compile Include="SP\Input\Rent\SPInput_OrderExtInfo.cs" />
     <Compile Include="SP\Input\Wallet\SPInput_GetWalletReturn.cs" />
@@ -680,6 +681,7 @@
     <Compile Include="TB\Maintain\MemberCleanSetting.cs" />
     <Compile Include="TB\Mochi\SyncMachiParkId.cs" />
     <Compile Include="TB\MonthlyRentData.cs" />
+    <Compile Include="TB\FtpCityParkData.cs" />
     <Compile Include="TB\MotorPowerInfoBase.cs" />
     <Compile Include="TB\MotorBillBase.cs" />
     <Compile Include="TB\MotorInfo.cs" />
