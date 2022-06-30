@@ -79,6 +79,7 @@ namespace WebAPI.Controllers
                     if (apiInput.process_date != "")
                     {
                         DOCdate = "CityPark_" + apiInput.process_date + ".txt";
+                        tarUrl = FTPUrl + DOCdate;
                     }
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
@@ -102,8 +103,9 @@ namespace WebAPI.Controllers
                         #region 處裡檔案文字
                         string DataList = GetFileStr(tarUrl, FTPUSERID, FTPPASSWORD);
                         List<FtpCityParkData> ftpCityParkDataList = new List<FtpCityParkData>();
-                        string[] stringSeparators = new string[] { "\r\n" };
-                        string[] resultTxt = DataList.Split(stringSeparators, StringSplitOptions.None);
+                        string[] stringSeparators = new string[] { "\\n" };
+                        //string[] resultTxt = DataList.Split(stringSeparators, StringSplitOptions.None);
+                        string[] resultTxt = DataList.Split(new char[] { '\n' });
                         foreach (string d in resultTxt)
                         {
                             string[] lines = d.Split(',');
@@ -182,7 +184,7 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-                                baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[1].Rows[0]["Error"]), ds1.Tables[1].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                                baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
                             }
                         }
                         else
@@ -226,6 +228,7 @@ namespace WebAPI.Controllers
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(tarUrl);
             request.Credentials = new NetworkCredential(FTPUSERID, FTPPASSWORD);
             request.Method = WebRequestMethods.Ftp.GetFileSize;
+            request.EnableSsl = true;   //20220630 ADD BY ADAM REASON.強制使用ftps
 
             try
             {
@@ -258,6 +261,7 @@ namespace WebAPI.Controllers
                 reqFTP = (FtpWebRequest)FtpWebRequest.Create(tarUrl);
                 reqFTP.Method = WebRequestMethods.Ftp.DownloadFile;
                 reqFTP.Credentials = new NetworkCredential(FTPUSERID, FTPPASSWORD);
+                reqFTP.EnableSsl = true;    //20220630 ADD BY ADAM REASON.強制使用ftps
                 FtpWebResponse response = (FtpWebResponse)reqFTP.GetResponse();
                 Stream ftpStream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(ftpStream);
