@@ -311,6 +311,8 @@
     <Compile Include="Controllers\BE_GetUserGroupByOperatorController.cs" />
     <Compile Include="Controllers\BE_SendEMailController.cs" />
     <Compile Include="Controllers\BindQueryByEasyrentController.cs" />
+    <Compile Include="Controllers\DeleteEnterpriseUserController.cs" />
+    <Compile Include="Controllers\SetEnterpriseUserController.cs" />
     <Compile Include="Controllers\GetGameItemController.cs" />
     <Compile Include="Controllers\CTBCInquiryController.cs" />
     <Compile Include="Controllers\CTBCCapJobController.cs" />
@@ -591,6 +593,7 @@
     <Compile Include="Models\Param\Input\IAPI_FtpCityPark.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimateMotor.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetEnterpriseUserMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTools.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletWithdrowInvoice.cs" />
