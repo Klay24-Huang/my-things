@@ -1,4 +1,6 @@
-﻿namespace Domain.MemberData
+﻿using System;
+
+namespace Domain.MemberData
 {
     public class StatusData
     {
@@ -146,5 +148,12 @@
         /// 虛擬實境解謎 GameCover 顯示 
         /// </summary>
         public int GameCover { get; set; }
+
+        /// <summary>
+        /// 是否有企業月結身分
+        /// 0=否 
+        /// 1=是
+        /// </summary>
+        public Int16 IsCompMemAudit { get; set; }
     }
 }
