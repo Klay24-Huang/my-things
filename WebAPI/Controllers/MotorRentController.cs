@@ -17,12 +17,14 @@ using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebAPI.Utils;
 using WebCommon;
+using NLog;
 
 namespace WebAPI.Controllers
 {
     public class MotorRentController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+        private static Logger logger = NLog.LogManager.GetCurrentClassLogger();
         [HttpPost]
         public Dictionary<string, object> DoMotorRent(Dictionary<string, object> value)
         {
@@ -83,6 +85,46 @@ namespace WebAPI.Controllers
                             }
                         }
                     }
+                }
+
+                //20220702 ADD BY ADAM REASON.目前這個ip猛打api
+                if (ClientIP == "104.199.135.175" || ClientIP == "114.47.83.187")
+                {
+                    logger.Debug(Environment.MachineName + "=>" + ClientIP + " Is Block!!");
+                    #region 作假資料
+                    OAnyRentAPI.MotorRentObj = new List<OAPI_MotorRent_Param>();
+                    OAnyRentAPI.MotorRentObj.Add(new OAPI_MotorRent_Param()
+                    {
+                        MonthlyRentId = 0,
+                        MonProjNM = "",
+                        CarWDHours = 0,
+                        CarHDHours = 0,
+                        MotoTotalMins = 0,
+                        WDRateForCar = 0,
+                        HDRateForCar = 0,
+                        WDRateForMoto = 0,
+                        HDRateForMoto = 0,
+                        CarNo = "EWA-"+ (new Random().Next(1000,9999).ToString()),
+                        CarType = "MANY-110",
+                        CarTypeName = "KYMCO MANY-110",
+                        CarOfArea = "北北桃",
+                        ProjectName = "北區路邊機車推廣專案",
+                        Rental = 2.5f,
+                        Mileage = 2.5f,
+                        RemainingMileage = 20,
+                        Operator = "supplierIrent",
+                        OperatorScore = 5.0f,
+                        Latitude = (decimal)apiInput.Latitude,
+                        Longitude = (decimal)apiInput.Longitude,
+                        Power = 80,
+                        ProjID = "R344",
+                        BaseMinutes = 6,
+                        BasePrice = 15,
+                        PerMinutesPrice = 2.5f
+                    });
+                    baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, OAnyRentAPI, token);
+                    return objOutput;
+                    #endregion
                 }
             }
             #endregion
@@ -262,7 +304,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (flag == false && isWriteError == false)
+            if (flag == false && isWriteError == true)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
