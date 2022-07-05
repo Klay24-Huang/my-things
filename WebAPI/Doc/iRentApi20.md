@@ -1025,7 +1025,7 @@
 | HasNoticeMsg    | 是否有推播訊息 (Y:是 N:否)                                   | string | Y          |
 | AuthStatus      | 預授權條款狀態 (Y:重新確認 N:不需重新確認)                   | string | Y          |
 | BindHotai       | 和泰OneID綁定狀態 (Y：綁定 N：未綁)                          | string | N          |
-| IsCompMemAudit  | 是否有企業月結身分      (0:否 1:是)                          | string | 1          |
+| IsCompMemAudit  | 是否有企業月結身分      (0:否 1:是)                          | int    | 1          |
 
 * Output範例
 
