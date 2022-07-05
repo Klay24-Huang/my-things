@@ -16,5 +16,10 @@ namespace Domain.SP.Input.Enterprise
         /// APIName
         /// </summary>
         public string ApiName { get; set; }
+
+        /// <summary>
+        /// 統一編號
+        /// </summary>
+        public string TaxID { get; set; }
     }
 }
