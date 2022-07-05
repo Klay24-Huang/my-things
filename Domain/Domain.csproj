@@ -737,6 +737,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR138Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR172Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_EnterpriseList.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR271Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR320Query.cs" />
@@ -882,6 +883,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData4.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR420Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_TransIRentMemCMK.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_Enterprise.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\ResponseErrorInfo.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_BenefitsAndPrivacyVersion.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_CheckSignup.cs" />

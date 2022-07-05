@@ -27,6 +27,7 @@
 - [TransWebMemCMK 拋轉官網會員同意資料](#TransWebMemCMK)
 - [GetMemberRedPoint 取得會員紅點通知](#GetMemberRedPoint)
 - [GiftTransferCheck 會員轉贈對象查詢](#GiftTransferCheck)
+- [GetEnterpriseList 取得企業部門清單](#GetEnterpriseList)
 - [MemberUnbind 會員解綁](#MemberUnbind)
 
 首頁地圖相關
@@ -352,6 +353,8 @@
 20220608 調整機車取車(BookingStartMotor)增加輸入內容-添加機車安心服務
 
 20220613 調整BookingQuery欄位Insurance狀態
+
+20220704 新增GetEnterpriseList 取得企業部門清單
 
 # API位置
 
@@ -1550,6 +1553,80 @@
     }
 }
 ```
+
+
+## GetEnterpriseList 取得企業部門清單
+
+### [/api/GetEnterpriseList/]
+
+- 20210521發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態 	| 範例 			|
+| -------- | -------- | :--: | :--: 	| ---- 			|
+| TaxID	   | 統一編號 |   Y  | string  	| "12354548"   |
+
+* output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+* MedalList 參數說明
+
+| 參數名稱      | 參數說明                   |  型態  | 範例                |
+| ------------- | -------------------------- | :----: | ------------------- |
+| CUSTNM     	| 企業名稱                   | string | "運輪齒輪工業有限公司"  |
+| TaxID 	 	| 統一編號                   | string | "12354548"           |
+| DeptNo        | 部門代碼                   |  int   | 1                   |
+| DeptName      | 部門名稱                   | string | "營業部"            |
+
+* Output 範例
+
+```
+{
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": [
+		{
+			"CUSTNM": "運輪齒輪工業有限公司",
+			"TaxID": "12354548",
+			"DeptNo": 1,
+			"DeptName": "企劃部"
+		},
+		{
+			"CUSTNM": "運輪齒輪工業有限公司",
+			"TaxID": "12354548",
+			"DeptNo": 2,
+			"DeptName": "資訊部"
+		},
+		{
+			"CUSTNM": "運輪齒輪工業有限公司",
+			"TaxID": "12354548",
+			"DeptNo": 4,
+			"DeptName": "營業部"
+		}
+	]
+}
+```
+
+
 
 ## MemberUnbind 會員解綁
 
