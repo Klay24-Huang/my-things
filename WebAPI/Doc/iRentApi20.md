@@ -29,6 +29,8 @@
 - [GiftTransferCheck 會員轉贈對象查詢](#GiftTransferCheck)
 - [GetEnterpriseList 取得企業部門清單](#GetEnterpriseList)
 - [MemberUnbind 會員解綁](#MemberUnbind)
+- [SetEnterpriseUser 儲存企業月結用戶](#SetEnterpriseUser)
+- [DeleteEnterpriseUser 企業月結用戶取消申請](#DeleteEnterpriseUser)
 
 首頁地圖相關
 
@@ -355,6 +357,8 @@
 20220613 調整BookingQuery欄位Insurance狀態
 
 20220704 新增GetEnterpriseList 取得企業部門清單
+
+20220705 新增SetEnterpriseUser 儲存企業月結用戶，新增DeleteEnterpriseUser 企業月結用戶取消申請，修改GetMemberStatus 取得會員狀態
 
 # API位置
 
@@ -1021,7 +1025,7 @@
 | HasNoticeMsg    | 是否有推播訊息 (Y:是 N:否)                                   | string | Y          |
 | AuthStatus      | 預授權條款狀態 (Y:重新確認 N:不需重新確認)                   | string | Y          |
 | BindHotai       | 和泰OneID綁定狀態 (Y：綁定 N：未綁)                          | string | N          |
-
+| IsCompMemAudit  | 是否有企業月結身分      (0:否 1:是)                          | string | 1          |
 
 * Output範例
 
@@ -1669,6 +1673,101 @@
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {}
+}
+```
+
+## SetEnterpriseUser 儲存企業月結用戶
+
+### [/api/SetEnterpriseUser/]
+
+- 20220705發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* input 傳入參數說明
+
+| 參數名稱     | 參數說明 | 必要 | 型態 	| 範例 		   |
+| --------     | -------- | :--: | :--: 	| ---- 		   |
+| TaxID        | 統一編號 |   Y  | string  	| "12354548"   |
+| CompanyName  | 公司名稱 |   Y  | string  	| "和運"       |
+| Depart	   | 單位部門 |   N  | int  	| 1            |
+| EmployeeID   | 員工編號 |   N  | string  	| "74214"      |
+| MEMCNAME	   | 員工姓名 |   N  | string  	| "張三"       |
+
+* output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+
+* Output 範例
+
+```
+{
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": []
+}
+```
+
+## DeleteEnterpriseUser 企業月結用戶取消申請
+
+### [/api/DeleteEnterpriseUser/]
+
+- 20220705發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+
+
+* 動作 [POST]
+* input 傳入參數說明
+
+| 參數名稱     | 參數說明 | 必要 | 型態 	| 範例 		   |
+| --------     | -------- | :--: | :--: 	| ---- 		   |
+| TaxID        | 統一編號 |   Y  | string  	| "12354548"   |
+
+
+* output 回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+
+* Output 範例
+
+```
+{
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": []
 }
 ```
 
