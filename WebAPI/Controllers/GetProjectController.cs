@@ -365,7 +365,8 @@ namespace WebAPI.Controllers
                                    StationID = a.StationID,
                                    StationName = a.StationName,
                                    StationPicJson = a.StationPicJson,
-                                   IsFavStation = a.IsFavStation //常用據點
+                                   IsFavStation = a.IsFavStation,//常用據點
+                                   TaxID = a.TaxID
                                }).OrderByDescending(x => x.IsRent).ThenBy(x => x.Price).ThenBy(x => x.CarType).ToList();    // 20210813 UPD BY YEH REASON:增加排序，排序:IsRent(可>不可)>Price(低>高)>CarType
 
                     #region 過濾查詢結果
@@ -445,7 +446,8 @@ namespace WebAPI.Controllers
                                 Content = "",
                                 IsRent = lstData[0].IsRent,      //20201024 ADD BY ADAM REASON.增加是否可租
                                 IsFavStation = lstData[0].IsFavStation,
-                                IsShowCard = lstData[0].IsShowCard
+                                IsShowCard = lstData[0].IsShowCard,
+                                TaxID = lstData[0].TaxID
                             });
                             //lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Bill;
                             lstTmpData[0].Minimum = lstTmpData[0].ProjectObj[0].Price;
@@ -735,7 +737,7 @@ namespace WebAPI.Controllers
         private List<SPOutput_GetStationCarTypeOfMutiStation> GetStationCarTypeOfMutiStation(SPInput_GetStationCarTypeOfMutiStation spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             List<SPOutput_GetStationCarTypeOfMutiStation> re = new List<SPOutput_GetStationCarTypeOfMutiStation>();
-            string SPName = "usp_GetStationCarTypeOfMutiStation_Q01";
+            string SPName = "usp_GetStationCarTypeOfMutiStation_Q02";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base>(connetStr);
             DataSet ds = new DataSet();

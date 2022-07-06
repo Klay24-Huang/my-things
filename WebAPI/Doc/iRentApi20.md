@@ -2361,8 +2361,9 @@
 | Longitude | 經度(Mode=1必填) | | double | |
 | Radius 	| 半徑(Mode=1必填) | | double | 0 |
 | Insurance | 是否使用安心服務 | Y | int | 0 |
-| CarTypes | 車型代碼 | N | array string | [ "PRIUSC" ] |
-| Seats		| 座椅數 | N |  array int | [ 4 ] |
+| CarTypes  | 車型代碼 | N | array string | [ "PRIUSC" ] |
+| Seats		| 座椅數   | N |  array int | [ 4 ] |
+| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| N |   int      | 1     |
 
 * input範例
 ```
@@ -2375,7 +2376,8 @@
     "Radius": "0",
     "Mode": "0",
     "Longitude": "",
-    "Insurance": 0
+    "Insurance": 0,
+	"CarTrip":1
 }
 ```
 
@@ -2453,8 +2455,9 @@
 | HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
 | WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
 | HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
-| MonthStartDate | 月租全期(開始日) | string | 2021/05/21 |
-| MonthEndDate | 月租全期(結束日) | string | 2021/05/21 |
+| MonthStartDate| 月租全期(開始日) | string | 2021/05/21 |
+| MonthEndDate  |月租全期(結束日) | string | 2021/05/21 |
+| TaxID         | 統一編號  | string | 12345678 |
 
 * StationInfoObj參數說明
 
@@ -2523,7 +2526,8 @@
                         "WDRateForMoto": 0.0,
                         "HDRateForMoto": 0.0,
                         "MonthStartDate": "",
-                        "MonthEndDate": ""
+                        "MonthEndDate": "",
+						"TaxID": "1235454890",
                     },
                     {
                         "StationID": "XXXX",
@@ -2557,7 +2561,8 @@
                         "WDRateForMoto": 1.0,
                         "HDRateForMoto": 1.2,
                         "MonthStartDate": "2021/06/07",
-                        "MonthEndDate": "2021/09/05"
+                        "MonthEndDate": "2021/09/05",
+						"TaxID": "1235454890",
                     }
                 ],
                 "StationInfoObj": [

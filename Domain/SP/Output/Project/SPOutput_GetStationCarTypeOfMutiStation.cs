@@ -165,5 +165,10 @@ namespace Domain.SP.Output.Project
         /// 尋車需響喇叭 Y/N
         /// </summary>  20220510 ADD BY HANNIE
         public string CarHornFlg { set; get; }
+
+        /// <summary>
+        /// 企業身分統編
+        /// </summary>
+        public string TaxID { get; set; } = "";
     }
 }
