@@ -737,7 +737,7 @@ namespace WebAPI.Controllers
         private List<SPOutput_GetStationCarTypeOfMutiStation> GetStationCarTypeOfMutiStation(SPInput_GetStationCarTypeOfMutiStation spInput, ref bool flag, ref List<ErrorInfo> lstError, ref string errCode)
         {
             List<SPOutput_GetStationCarTypeOfMutiStation> re = new List<SPOutput_GetStationCarTypeOfMutiStation>();
-            string SPName = "usp_GetStationCarTypeOfMutiStation_Q02";
+            string SPName = "usp_GetStationCarTypeOfMutiStation_Q01";
             SPOutput_Base spOut = new SPOutput_Base();
             SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetStationCarTypeOfMutiStation, SPOutput_Base>(connetStr);
             DataSet ds = new DataSet();
