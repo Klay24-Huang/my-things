@@ -153,6 +153,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// 結束日(月租全期)
         /// </summary>
         public string MonthEndDate { get; set; } = "";
+        /// <summary>
+        /// 統編
+        /// </summary>
+        public string TaxID { get; set; }
         #endregion
 
         /// <summary>

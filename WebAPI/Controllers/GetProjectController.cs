@@ -214,7 +214,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = 0
+                        IsMoto = 0,
+                        CarTrip = apiInput.CarTrip
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
@@ -666,7 +667,7 @@ namespace WebAPI.Controllers
                                             //newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
                                             //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
                                             newItem.HDRateForCar = y.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
-
+                                            newItem.TaxID = z.TaxID; //20220706  ADD BY Eddie REASON:如果有訂閱制要多回傳統編
                                             newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                             newItem.HDRateForMoto = z.HoildayRateForMoto;
                                             newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位

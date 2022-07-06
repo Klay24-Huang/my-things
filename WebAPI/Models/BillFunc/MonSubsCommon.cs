@@ -1472,14 +1472,15 @@ namespace WebAPI.Models.BillFunc
 
             try
             {
-                string SPName = "usp_GetNowSubs_Q1";
+                string SPName = "usp_GetNowSubs_Q2";
                 object[][] parms1 = {
                     new object[] {
                         spInput.IDNO,
                         spInput.LogID,
                         spInput.SD,
                         spInput.ED,
-                        spInput.IsMoto
+                        spInput.IsMoto,
+                        spInput.CarTrip
                     },
                 };
 
