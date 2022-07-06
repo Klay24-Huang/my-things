@@ -53,6 +53,15 @@ namespace Domain.TB
         /// 結束時間
         /// </summary>
         public DateTime ED { get; set; }
+
+        /// <summary>
+        /// 企業客戶統一編號
+        /// </summary>
+        public string TaxID { get; set; }
+        /// <summary>
+        /// 企業客戶安心服務費用是否月結
+        /// </summary>
+        public bool EnterpriseInsurance { get; set; }
     }
 
 

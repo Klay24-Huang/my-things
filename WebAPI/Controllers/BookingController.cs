@@ -5,12 +5,14 @@ using Domain.SP.Input.Notification;
 using Domain.SP.Input.Rent;
 using Domain.SP.Input.Subscription;
 using Domain.SP.Input.Wallet;
+using Domain.SP.Output;
 using Domain.SP.Output.Bill;
 using Domain.SP.Output.Booking;
 using Domain.SP.Output.Wallet;
 using Domain.TB;
 using Domain.WebAPI.Input.FET;
 using Domain.WebAPI.Input.Param;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
 using Reposotory.Implement;
 using System;
@@ -80,6 +82,7 @@ namespace WebAPI.Controllers
             int MotorRentDefaultPickTime = 30;
             int price = 0, InsurancePurePrice = 0;
             int InsurancePerHours = 0;
+            bool EnterpriseInsuFLG = false;
             string IDNO = "";
             string CarTypeCode = "";
             string SPName = "";
@@ -92,7 +95,9 @@ namespace WebAPI.Controllers
             BillCommon billCommon = new BillCommon();
             CommonService commonService = new CommonService();
             CreditAuthComm creditAuthComm = new CreditAuthComm();
+            WebAPIOutput_CheckoutOption wsOutput_CO = new WebAPIOutput_CheckoutOption();
             WalletSp walletSp = new WalletSp();
+            bool isEnterprise = false; //是否為企業訂單
             bool CreditFlag = true;     // 信用卡綁卡
             string CreditErrCode = "";  // 信用卡綁卡錯誤訊息
             bool WalletFlag = false;    // 綁定錢包
@@ -120,6 +125,7 @@ namespace WebAPI.Controllers
                 SDate = apiInput.SDate == "" ? DateTime.Now : Convert.ToDateTime(apiInput.SDate);
                 EDate = apiInput.EDate == "" ? DateTime.Now.AddHours(1) : Convert.ToDateTime(apiInput.EDate);
                 lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
+                isEnterprise = apiInput.TaxID != null && apiInput.TaxID.Length == 8; ;
             }
             //不開放訪客
             if (flag)
@@ -286,6 +292,37 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
+
+
+            #region 取得企業月結項目
+
+            //開始送短租查詢
+            if (flag && isEnterprise)
+            {
+                HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                DateTime inputDate = apiInput.SDate == "" ? System.DateTime.Now : Convert.ToDateTime(apiInput.SDate);
+                flag = wsAPI.EnterpriseCheckoutOption(apiInput.TaxID, inputDate.ToString("yyyMMdd hh:mm:ss"), ref wsOutput_CO);
+
+                if (flag)
+                {
+                    if (wsOutput_CO.Data.Length > 0)
+                    {
+                        EnterpriseInsuFLG = wsOutput_CO.Data[0].SafeServ == "Y";
+                        //wsOutput_CO.Data[0].TaxID;
+                        //wsOutput_CO.Data[0].Etag;
+                        //wsOutput_CO.Data[0].Parking;
+                        //wsOutput_CO.Data[0].EnableDate;
+
+                    }
+                }
+                else
+                {
+                    errCode = "ERR";
+                    errMsg = wsOutput_CO.Message;
+                }
+            }
+            #endregion
+
             #region 取得最晚取車時間
             if (flag)
             {
@@ -371,6 +408,27 @@ namespace WebAPI.Controllers
             }
             #endregion
 
+            #region 寫入企業月結項目
+            if (flag && isEnterprise) {
+
+                //將查詢結果寫入AZ_DB
+                string spName = "usp_GetEnterpriseCheckoutOption_I01";
+                SPOutput_Base spBaseOut = new SPOutput_Base();
+                SPInput_EnterpriseCheckoutOption spInput = new SPInput_EnterpriseCheckoutOption()
+                {
+                    LOGID = LogID,
+                    OrderNo = spOut.OrderNum,
+                    IDNO = IDNO,
+                    TaxID = apiInput.TaxID,
+                    Etag = wsOutput_CO.Data[0].Etag == "Y" ? 1 : 0,
+                    Insurance = wsOutput_CO.Data[0].SafeServ == "Y" ? 1 : 0,
+                    Parking = wsOutput_CO.Data[0].Parking == "Y" ? 1 : 0
+                };
+                SQLHelper<SPInput_EnterpriseCheckoutOption, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_EnterpriseCheckoutOption, SPOutput_Base>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spBaseOut, ref lstError);
+            }
+            #endregion
+
             #region 寫入訂單對應訂閱制月租
             if (flag && spOut.haveCar == 1 && apiInput.MonId > 0)
             {
@@ -384,6 +442,7 @@ namespace WebAPI.Controllers
                 monSp.sp_SetSubsBookingMonth(sp_in, ref errCode);
             }
             #endregion
+
             #region 預扣機制
             if (flag && spOut.haveCar == 1)
             {
@@ -428,7 +487,9 @@ namespace WebAPI.Controllers
                             HoildayPrice = orderData.PRICE_H,
                             Insurance = apiInput.Insurance,
                             InsurancePerHours = orderData.InsurancePerHours,
-                            ProjType = orderData.ProjType
+                            ProjType = orderData.ProjType,
+                            TaxID = apiInput.TaxID,
+                            EnterpriseInsurance = EnterpriseInsuFLG
                         };
 
                         if (ProjType == 0)
@@ -449,8 +510,10 @@ namespace WebAPI.Controllers
                         trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt, wallet.PayMode });
                         trace.FlowList.Add("計算預授權金");
                     }
+                
                 }
                 string TradeType = ProjType == 4 ? "PreAuth_Motor" : "PreAuth_Car";
+                motoPreAmt = isEnterprise ? 0 : motoPreAmt; //企業用戶訂單機車不取預授權
                 preAuthAmt = ProjType == 4 ? motoPreAmt : preAuthAmt;
                 #endregion
                 #region 扣款流程

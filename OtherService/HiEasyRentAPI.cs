@@ -55,6 +55,7 @@ namespace OtherService
         protected string NPR420SaveURL;  //錢包介面轉檔
 
         protected string EnterpriseListURL; //取得企業名單 20220704 ADD BY YANKEY 
+        protected string CheckoutOptionURL; //取得企業月結項目 20220706 ADD BY YANKEY 
 
         /// <summary>
         /// 建構式
@@ -103,7 +104,7 @@ namespace OtherService
             //20220309 ADD BY ADAM REASON.營損匯入使用
             NPR136V2SaveURL = (ConfigurationManager.AppSettings.Get("NPR136V2SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR136V2SaveURL").ToString();
             NPR420SaveURL = (ConfigurationManager.AppSettings.Get("NPR420SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR420SaveURL").ToString();
-
+            CheckoutOptionURL = ConfigurationManager.AppSettings.Get("CheckoutOptionURL").ToString();
             EnterpriseListURL = ConfigurationManager.AppSettings.Get("EnterpriseListURL").ToString();
         }
 
@@ -2667,9 +2668,10 @@ namespace OtherService
         }
 
         /// <summary>
-        /// 點數查詢
+        /// 企業客戶部門清單查詢
         /// </summary>
-        /// <param name="input"></param>
+        /// 輸入：WebAPIInput_EnterpriseList
+        /// 輸出：WebAPIOutput_EnterpriseList
         /// <returns></returns>
         private async Task<WebAPIOutput_EnterpriseList> DoEnterpriseList(WebAPIInput_EnterpriseList input)
         {
@@ -2705,6 +2707,95 @@ namespace OtherService
             {
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_EnterpriseList()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "EnterpriseList",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + EnterpriseListURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+        #endregion
+        #region 企業客戶-查詢企業月結設定 20220705 ADD BY YANKEY
+        /// <summary>
+        /// 企業客戶-查詢公司資料
+        /// </summary>
+        /// <param name="TaxID"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool EnterpriseCheckoutOption(string TaxID, string QryDate, ref WebAPIOutput_CheckoutOption output)
+        {
+            bool flag = false;
+            WebAPIInput_CheckoutOption input = new WebAPIInput_CheckoutOption()
+            {
+                sig = GenerateSig(),
+                user_id = userid,
+                TaxID = TaxID,
+                QryDate = QryDate
+            };
+
+            output = DoCheckoutOption(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 企業客戶月結設定
+        /// </summary>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_CheckoutOption> DoCheckoutOption(WebAPIInput_CheckoutOption input)
+        {
+            WebAPIOutput_CheckoutOption output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + CheckoutOptionURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_CheckoutOption>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_CheckoutOption()
                 {
                     Message = "發生異常錯誤",
                     Result = false

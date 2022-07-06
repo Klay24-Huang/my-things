@@ -21,4 +21,23 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// </summary>
         public string TaxID { set; get; }
     }
+    public class WebAPIInput_CheckoutOption
+    {
+        /// <summary>
+        /// 使用者代碼
+        /// </summary>
+        public string user_id { set; get; }
+        /// <summary>
+        /// 認證簽章
+        /// </summary>
+        public string sig { set; get; }
+        /// <summary>
+        /// 統一編號
+        /// </summary>
+        public string TaxID { set; get; }
+        /// <summary>
+        /// 查詢基準日
+        /// </summary>
+        public string QryDate { set; get; }
+    }
 }

@@ -28,7 +28,6 @@ namespace WebAPI.Controllers
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
-            //string[] headers=httpContext.Request.Headers.AllKeys;
             string Access_Token = "";
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
@@ -40,18 +39,14 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_GetEnterpriseList apiInput = null;
-            //List<OAPI_GetEnterpriseList> outputApi = new List<OAPI_GetEnterpriseList>();
             List<OAPI_GetEnterpriseList> outputApi = new List<OAPI_GetEnterpriseList>();
-            Int64 tmpOrder = -1;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
-            Int16 APPKind = 2;
             string Contentjson = "";
             bool isGuest = true;
 
-            string IDNO = "";
 
             #endregion
             #region 防呆

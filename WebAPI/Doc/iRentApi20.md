@@ -3635,21 +3635,22 @@
 | MonId     | 選擇的訂閱制月租 |  Y   |  int   | 123456      |
 | PhoneLat  | 手機定位點(緯度) |  N   | double | 25.0212444  |
 | PhoneLon  | 手機定位點(經度) |  N   | double | 121.4780778 |
+| TaxID	 	| 統一編號         |  N   | string | "50885758"  |
 
 * input範例 -同站預約
 
 ```
 {
-	"ProjID": "P735",
-	"SDate": "2021-05-11 10:30:00",
-    "EDate": "2021-05-11 11:30:00",
+    "ProjID": "R424",
+    "SDate": "2022-07-06 15:30:00",
+    "EDate": "2022-07-06 16:30:00",
     "CarNo": "",
-    "CarType": "COROLLA CROSS",
-    "Insurance": 0,
-    "StationID": "XXXX"
-    "MonId": 0,
+    "CarType": "YARIS",
+    "Insurance": 1,
+    "StationID": "X0N8",
 	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778
+	"PhoneLon": 121.4780778,
+    "TaxID": "12354548"
 }
 ```
 
@@ -3657,16 +3658,16 @@
 
 ```
 {
-    "ProjID": "R221",
+    "ProjID": "R222",
     "SDate": "",
     "EDate": "",
-    "CarNo": "RDD-6775",
-    "CarType": "PRIUSC",
-    "Insurance": 0,
+    "CarNo": "RBX-9631",
+    "CarType": "PRIUSc",
+    "Insurance": 1,
     "StationID": "",
-    "MonId": 0,
 	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778
+	"PhoneLon": 121.4780778,
+    "TaxID": "12354548"
 }
 ```
 
@@ -3674,16 +3675,16 @@
 
 ```
 {
-	"ProjID": "P686",
-	"SDate": "",
-	"EDate": "",
-	"CarNo": "EWJ-8339",
-	"CarType": "MANY-110",
-	"Insurance": 0,
-	"StationID": ""
-	"MonId": 0,
+    "ProjID": "R344",
+    "SDate": "",
+    "EDate": "",
+    "CarNo": "EWA-3353",
+    "CarType": "MANY-110",
+    "Insurance": 1,
+    "StationID": "",
 	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778
+	"PhoneLon": 121.4780778,
+    "TaxID": "12354548"
 }
 ```
 

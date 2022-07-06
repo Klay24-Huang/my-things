@@ -38,6 +38,40 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// 部門名稱
         /// </summary>
         public string DeptName { set; get; }
+    }
 
+    public class WebAPIOutput_CheckoutOption
+    {
+        /// <summary>
+        /// 處理結果
+        /// <para>True:成功</para>
+        /// <para>False:失敗</para>
+        /// </summary>
+        public bool Result { set; get; }
+        public string Message { set; get; }
+        public WebAPIOutput_CheckoutOptionData[] Data { set; get; }
+    }
+    public class WebAPIOutput_CheckoutOptionData
+    {
+        /// <summary>
+        /// 統一編號
+        /// </summary>
+        public string TaxID { set; get; }
+        /// <summary>
+        /// Etag
+        /// </summary>
+        public string Etag { set; get; }
+        /// <summary>
+        /// 安心服務
+        /// </summary>
+        public string SafeServ { set; get; }
+        /// <summary>
+        /// 停車費
+        /// </summary>
+        public string Parking { set; get; }
+        /// <summary>
+        /// 啟用日期
+        /// </summary>
+        public string EnableDate { set; get; }
     }
 }
