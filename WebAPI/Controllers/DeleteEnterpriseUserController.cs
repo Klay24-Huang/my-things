@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Enterprise;
 using Domain.SP.Output;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -10,6 +11,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
+using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output.PartOfParam;
 using WebCommon;
 
@@ -35,6 +37,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
 
+            IAPI_DeleteEnterpriseUserMode apiInput = null;
             NullOutput outputApi = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
@@ -49,7 +52,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-
+                apiInput = JsonConvert.DeserializeObject<IAPI_DeleteEnterpriseUserMode>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -93,6 +96,7 @@ namespace WebAPI.Controllers
                     Token = Access_Token,
                     ApiName = funName,
                     LogID = LogID,
+                    TaxID= apiInput.TaxID
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_DeleteEnterpriseUser, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_DeleteEnterpriseUser, SPOutput_Base>(connetStr);

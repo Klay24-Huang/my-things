@@ -592,6 +592,7 @@
     <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEnterpriseList.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
+    <Compile Include="Models\Param\Input\IAPI_DeleteEnterpriseUserMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_FtpCityPark.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimateMotor.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />

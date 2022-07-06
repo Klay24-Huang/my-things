@@ -13,5 +13,11 @@ namespace Domain.SP.Input.Subscription
         public DateTime? SD { get; set; }
         public DateTime? ED { get; set; }
         public int IsMoto { get; set; } = -1;
+
+        /// <summary>
+        /// 用車行程
+        /// 1 = 個人身分，2 = 企業身分
+        /// </summary>
+        public Int16 CarTrip { get; set; } 
     }
 }
