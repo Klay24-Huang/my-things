@@ -156,7 +156,7 @@ namespace Domain.WebAPI.output.rootAPI
         /// <summary>
         /// 統編
         /// </summary>
-        public string TaxID { get; set; }
+        public string TaxID { get; set; } = "";
         #endregion
 
         /// <summary>
