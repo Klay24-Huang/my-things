@@ -72,6 +72,11 @@ namespace Domain.SP.Output.OrderList
         /// <summary>
         /// 是否為共同承租訂單
         /// </summary>
-        public int IsJointOrder { get; set; } 
+        public int IsJointOrder { get; set; }
+
+        /// <summary>
+        /// 是否為企業客戶訂單 1:是 0:否
+        /// </summary>
+        public int IsEnterpriseOrder { get; set; }
     }
 }

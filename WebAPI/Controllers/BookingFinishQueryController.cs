@@ -118,7 +118,7 @@ namespace WebAPI.Controllers
             //Token判斷
             if (flag)
             {
-                string CheckTokenName = "usp_GetFinishOrderList_20210901";
+                string spName = "usp_GetFinishOrderList_20210901";
                 SPInput_GetFinishOrder spCheckTokenInput = new SPInput_GetFinishOrder()
                 {
                     LogID = LogID,
@@ -132,7 +132,7 @@ namespace WebAPI.Controllers
                 SQLHelper<SPInput_GetFinishOrder, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_GetFinishOrder, SPOutput_Base>(connetStr);
                 List<OrderFinishDataList> orderFinishDataLists = new List<OrderFinishDataList>();
                 DataSet ds = new DataSet();
-                flag = sqlHelp.ExeuteSP(CheckTokenName, spCheckTokenInput, ref spOut, ref orderFinishDataLists, ref ds, ref lstError);
+                flag = sqlHelp.ExeuteSP(spName, spCheckTokenInput, ref spOut, ref orderFinishDataLists, ref ds, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
                 if (flag)
                 {
@@ -168,7 +168,8 @@ namespace WebAPI.Controllers
                                 TotalRentTime = string.Format("{0}天{1}時{2}分", td, th, tm),
                                 CarNo = orderFinishDataLists[i].CarNo.Replace(" ", ""),
                                 IsMotor = orderFinishDataLists[i].ProjType == 4 ? 1 : 0 ,    //增加IsMotor
-                                IsJointOrder = orderFinishDataLists[i].IsJointOrder
+                                IsJointOrder = orderFinishDataLists[i].IsJointOrder,
+                                IsEnterpriseOrder = orderFinishDataLists[i].IsEnterpriseOrder
                             };
                             outputApi.OrderFinishObjs.Add(obj);
                         }

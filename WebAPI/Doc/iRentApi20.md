@@ -362,6 +362,8 @@
 
 20220707 調整CreditAndWalletQuery輸出參數
 
+20220707 調整BookingFinishQuery輸出參數
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -4273,21 +4275,22 @@
 
 * OrderFinishObjs回傳參數說明
 
-| 參數名稱      | 參數說明           |  型態  | 範例                 |
-| ------------- | ------------------ | :----: | -------------------- |
-| RentYear      | 年分               |  int   |                      |
-| OrderNo       | 訂單編號           | string | supplierIrent        |
-| CarNo         | 車號               | string | 5.0                  |
-| ProjType      | 專案類型           |  int   | 0:同站 3:路邊 4:機車 |
-| RentDateTime  | 取車時間 月日時分  | string |                      |
-| TotalRentTime | 總租用時數         | string |                      |
-| Bill          | 總租金             | string | YARIS                |
-| UniCode       | 統編               | string | 5                    |
-| StationName   |                    | string |                      |
-| CarOfArea     | 車輛圖顯示地區     | string | 0:否 1:是            |
-| CarTypePic    | 車輛圖片           | string | 台北市               |
-| IsMotor       | 是否為機車         |  int   | 1:是 0:否            |
-| IsJointOrder  | 是否為共同承租訂單 |  int   | 1:是 0:否            |
+| 參數名稱      	| 參數說明           |  型態  | 範例                 |
+| ------------- 	| ------------------ | :----: | -------------------- |
+| RentYear      	| 年分               |  int   |                      |
+| OrderNo       	| 訂單編號           | string | supplierIrent        |
+| CarNo         	| 車號               | string | 5.0                  |
+| ProjType      	| 專案類型           |  int   | 0:同站 3:路邊 4:機車 |
+| RentDateTime  	| 取車時間 月日時分  | string |                      |
+| TotalRentTime 	| 總租用時數         | string |                      |
+| Bill          	| 總租金             | string | YARIS                |
+| UniCode       	| 統編               | string | 5                    |
+| StationName   	|                    | string |                      |
+| CarOfArea     	| 車輛圖顯示地區     | string | 0:否 1:是            |
+| CarTypePic    	| 車輛圖片           | string | 台北市               |
+| IsMotor       	| 是否為機車         |  int   | 1:是 0:否            |
+| IsJointOrder  	| 是否為共同承租訂單 |  int   | 1:是 0:否            |
+| IsEnterpriseOrder | 是否為企業客戶訂單 |  int   | 1:是 0:否            |
 
 * Output範例
 
@@ -4314,7 +4317,8 @@
                 "CarOfArea": "北北桃",
                 "CarTypePic": "iretScooter",
                 "IsMotor": 1,
-                "IsJointOrder":"0"
+                "IsJointOrder":"0",
+                "IsEnterpriseOrder": 0
             },
             {
                 "RentYear": 2021,
@@ -4329,7 +4333,8 @@
                 "CarOfArea": "北北桃",
                 "CarTypePic": "iretScooter",
                 "IsMotor": 1,
-                "IsJointOrder":"0"
+                "IsJointOrder":"0",
+                "IsEnterpriseOrder": 0
             }
         ]
     }
