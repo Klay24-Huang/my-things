@@ -360,6 +360,8 @@
 
 20220705 新增SetEnterpriseUser 儲存企業月結用戶，新增DeleteEnterpriseUser 企業月結用戶取消申請，修改GetMemberStatus 取得會員狀態
 
+20220707 調整CreditAndWalletQuery輸出參數
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -8946,21 +8948,26 @@
 
 * Data 回傳參數說明
 
-| 參數名稱     | 參數說明                                                     |  型態  | 範例     |
-| ------------ | ------------------------------------------------------------ | :----: | -------- |
-| PayMode      | 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay)                    |  int   | 0        |
-| HasBind      | 是否有綁定(0:無,1有)                                         |  int   | 1        |
-| HasWallet    | 是否有錢包(0:無,1有)                                         |  int   | 0        |
-| TotalAmount  | 錢包剩餘金額                                                 |  int   | 0        |
-| BindListObj  | 信用卡列表                                                   |  list  |          |
-| MEMSENDCD    | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 |  int   | 5        |
-| UNIMNO       | 統編                                                         | string |          |
-| CARRIERID    | 手機條碼                                                     | string | /N37H2JD |
-| NPOBAN       | 愛心碼                                                       | string |          |
-| AutoStored   | 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
-| HasHotaiPay  | 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
-| HotaiListObj | 和泰PAY卡清單                                                |  list  |          |
-| MotorPreAmt  | 機車預扣款金額                                               |  int   | 50       |
+| 參數名稱     		| 參數說明                                                     |  型態  | 範例     |
+| ------------ 		| ------------------------------------------------------------ | :----: | -------- |
+| PayMode      		| 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay)                    |  int   | 0        |
+| HasBind      		| 是否有綁定(0:無,1有)                                         |  int   | 1        |
+| HasWallet    		| 是否有錢包(0:無,1有)                                         |  int   | 0        |
+| TotalAmount  		| 錢包剩餘金額                                                 |  int   | 0        |
+| BindListObj  		| 信用卡列表                                                   |  list  |          |
+| MEMSENDCD    		| 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 |  int   | 5        |
+| UNIMNO       		| 統編                                                         | string |          |
+| CARRIERID    		| 手機條碼                                                     | string | /N37H2JD |
+| NPOBAN       		| 愛心碼                                                       | string |          |
+| AutoStored   		| 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
+| HasHotaiPay  		| 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
+| HotaiListObj 		| 和泰PAY卡清單                                                |  list  |          |
+| MotorPreAmt  		| 機車預扣款金額                                               |  int   | 50       |
+| TaxID       		| 統一編號                                                     | string |"50885758"|
+| EnterpriseDeptCN  | 企業會員部門名稱                                             | string | "資訊部" |
+| EnterpriseStatus  | 企業會員會員狀態(0:待審;1:通過;2:失敗;3:合約到期)            |  int   | 0        |
+| EnterpriseCmpCN   | 企業會員公司名稱                                             | string | "和雲"   |
+| EmployeeID        | 企業會員員工編號                                             | string | "8026"   |
 
 * BindListObj 回傳參數說明
 
@@ -9034,7 +9041,12 @@
                 "IsDefault": 1
             }
         ],
-        "MotorPreAmt": 50
+        "MotorPreAmt": 50,
+        "TaxID": "12354548",
+        "EnterpriseStatus": 1,
+        "EnterpriseDeptCN": "資訊部",
+        "EnterpriseCmpCN": "",
+        "EmployeeID": "8006"
     }
 }
 ```

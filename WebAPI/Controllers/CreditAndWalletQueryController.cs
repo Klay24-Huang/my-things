@@ -220,7 +220,7 @@ namespace WebAPI.Controllers
             #region 回傳結果
             if (flag)
             {
-                string SPName = "usp_CreditAndWalletQuery_Q01";
+                string SPName = "usp_CreditAndWalletQuery_Q03";
                 SPInput_CreditAndWalletQuery spInput = new SPInput_CreditAndWalletQuery
                 {
                     IDNO = IDNO,
@@ -244,6 +244,11 @@ namespace WebAPI.Controllers
                     apiOutput.NPOBAN = spOut.NPOBAN;
                     apiOutput.AutoStored = spOut.AutoStored;
                     apiOutput.MotorPreAmt = spOut.MotorPreAmt;      // 20220221 UPD BY YEH REASON:增加機車預扣款金額
+                    apiOutput.TaxID = spOut.TaxID;                  //20220707 ADD BY YANKEY REASON:企業客戶需求
+                    apiOutput.EnterpriseStatus = spOut.EnterpriseStatus;
+                    apiOutput.EnterpriseDeptCN = spOut.EnterpriseDeptCN;
+                    apiOutput.EnterpriseCmpCN = spOut.EnterpriseCmpCN;
+                    apiOutput.EmployeeID = spOut.EmployeeID;
                 }
             }
             #endregion
