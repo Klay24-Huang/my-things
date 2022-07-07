@@ -2827,6 +2827,7 @@
 | Latitude	| 緯度	| Y | double | 25.0688361 |
 | Longitude | 經度	| Y | double | 121.5335611 |
 | Radius 	| 半徑	| Y | double | 2.5 |
+| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| N |   int      | 1     |
 
 * input範例
 ```
@@ -2834,7 +2835,8 @@
     "ShowALL": "0",
     "Latitude": 25.060368,
     "Longitude": 121.520260,
-    "Radius": 2.5
+    "Radius": 2.5,
+	"CarTrip":1
 }
 ```
 
@@ -2888,6 +2890,7 @@
 | CarTypePic     | 車輛圖示名稱                             | string | priusC               |
 | Seat           | 座位數                                   | int    | 5                    |
 | ProjID         | 專案代碼                                 | string | P621                 |
+| TaxID          | 統一編號                                 | string | 123456789            |
 
 * DiscountLabel 參數說明
 
@@ -2919,6 +2922,7 @@
                 "WDRateForMoto": 2.5,
                 "HDRateForMoto": 2.5,
                 "DiscountLabel": null,
+				"TaxID": "12354548",
                 "CarNo": "RBX-9661",
                 "CarType": "PRIUSC",
                 "CarTypeName": "TOYOTA PRIUSc",
@@ -2953,6 +2957,7 @@
                     "GiveMinute": 30,
                     "Describe": "30分鐘優惠折抵"
                 },
+				"TaxID": "12354548",
                 "CarNo": "RCG-2261",
                 "CarType": "PRIUSC",
                 "CarTypeName": "TOYOTA PRIUSc",

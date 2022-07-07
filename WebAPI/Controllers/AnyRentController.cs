@@ -116,7 +116,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = 0
+                        IsMoto = 0,
+                        CarTrip = apiInput.CarTrip
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
@@ -255,10 +256,12 @@ namespace WebAPI.Controllers
                                     x.HDRateForCar = f.HoildayRateForCar;
                                     x.WDRateForMoto = f.WorkDayRateForMoto;
                                     x.HDRateForMoto = f.HoildayRateForMoto;
+                                    x.TaxID = f.TaxID;
                                 });
                             }
                         }
                         #endregion
+
                         #region 加入優惠標籤
                         if (discountLabels != null && discountLabels.Count > 0)
                         {
@@ -270,7 +273,7 @@ namespace WebAPI.Controllers
                                        LabelType = t.LabelType,
                                        GiveMinute = t.GiveMinute,
                                        Describe = $"{t.GiveMinute}分鐘優惠折抵",
-                                   }).FirstOrDefault()??new DiscountLabel();
+                                   }).FirstOrDefault() ?? new DiscountLabel();
                             });
 
                         }
