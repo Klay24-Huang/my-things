@@ -205,7 +205,6 @@ namespace WebAPI.Controllers
 
                 // 20210616 UPD BY YEH REASON:因應會員積分<60只能用定價專案，取專案改到SP處理
                 string SPName = "usp_GetAnyRentProject";
-                // string SPName = "usp_GetAnyRentProject_01";
                 SPInput_GetAnyRentProject SPInput = new SPInput_GetAnyRentProject
                 {
                     IDNO = IDNO,
