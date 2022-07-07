@@ -3842,6 +3842,7 @@
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
+		"NowOrderFlg" : "Y",
         "OrderObj": [
             {
                 "StationInfo": {
