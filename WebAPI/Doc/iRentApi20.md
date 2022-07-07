@@ -353,6 +353,8 @@
 
 20220613 調整BookingQuery欄位Insurance狀態
 
+20220707 增加BookingQuery欄位NowOrderFlg
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -3732,6 +3734,7 @@
 
 | 參數名稱 | 參數說明     | 型態 | 範例 |
 | -------- | ------------ | :--: | ---- |
+| NowOrderFlg | 目前是否有訂單(定義為有效訂單) | string | Y |
 | OrderObj | 訂單明細物件 | list |      |
 
 * OrderObj回傳參數說明

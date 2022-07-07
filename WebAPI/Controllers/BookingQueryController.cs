@@ -283,6 +283,19 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
+
+                #region 判斷是否有效訂單 20220707 ADD BY ADAM
+                if (flag)
+                {
+                    outputApi.OrderObj.ForEach(x =>
+                    {
+                        if (x.CAR_MGT_STATUS < 16)
+                        {
+                            outputApi.NowOrderFlg = "Y";
+                        }
+                    });
+                }
+                #endregion
             }
             #endregion
 
