@@ -89,5 +89,26 @@ namespace WebAPI.Models.Param.Output
         /// 機車預扣款金額
         /// </summary>
         public int MotorPreAmt { get; set; }
+
+        /// <summary>
+        /// 企業會員統一編號
+        /// </summary>
+        public string TaxID { get; set; }
+        /// <summary>
+        /// 機車預扣款金額
+        /// </summary>
+        public int EnterpriseStatus { get; set; }
+        /// <summary>
+        /// 企業會員部門名稱
+        /// </summary>
+        public string EnterpriseDeptCN { get; set; }
+        /// <summary>
+        /// 企業會員公司名稱
+        /// </summary>
+        public string EnterpriseCmpCN { get; set; }
+        /// <summary>
+        /// 企業會員員工編號
+        /// </summary>
+        public string EmployeeID { get; set; }
     }
 }

@@ -360,6 +360,10 @@
 
 20220705 新增SetEnterpriseUser 儲存企業月結用戶，新增DeleteEnterpriseUser 企業月結用戶取消申請，修改GetMemberStatus 取得會員狀態
 
+20220707 調整CreditAndWalletQuery輸出參數
+
+20220707 調整BookingFinishQuery輸出參數
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -4283,21 +4287,22 @@
 
 * OrderFinishObjs回傳參數說明
 
-| 參數名稱      | 參數說明           |  型態  | 範例                 |
-| ------------- | ------------------ | :----: | -------------------- |
-| RentYear      | 年分               |  int   |                      |
-| OrderNo       | 訂單編號           | string | supplierIrent        |
-| CarNo         | 車號               | string | 5.0                  |
-| ProjType      | 專案類型           |  int   | 0:同站 3:路邊 4:機車 |
-| RentDateTime  | 取車時間 月日時分  | string |                      |
-| TotalRentTime | 總租用時數         | string |                      |
-| Bill          | 總租金             | string | YARIS                |
-| UniCode       | 統編               | string | 5                    |
-| StationName   |                    | string |                      |
-| CarOfArea     | 車輛圖顯示地區     | string | 0:否 1:是            |
-| CarTypePic    | 車輛圖片           | string | 台北市               |
-| IsMotor       | 是否為機車         |  int   | 1:是 0:否            |
-| IsJointOrder  | 是否為共同承租訂單 |  int   | 1:是 0:否            |
+| 參數名稱      	| 參數說明           |  型態  | 範例                 |
+| ------------- 	| ------------------ | :----: | -------------------- |
+| RentYear      	| 年分               |  int   |                      |
+| OrderNo       	| 訂單編號           | string | supplierIrent        |
+| CarNo         	| 車號               | string | 5.0                  |
+| ProjType      	| 專案類型           |  int   | 0:同站 3:路邊 4:機車 |
+| RentDateTime  	| 取車時間 月日時分  | string |                      |
+| TotalRentTime 	| 總租用時數         | string |                      |
+| Bill          	| 總租金             | string | YARIS                |
+| UniCode       	| 統編               | string | 5                    |
+| StationName   	|                    | string |                      |
+| CarOfArea     	| 車輛圖顯示地區     | string | 0:否 1:是            |
+| CarTypePic    	| 車輛圖片           | string | 台北市               |
+| IsMotor       	| 是否為機車         |  int   | 1:是 0:否            |
+| IsJointOrder  	| 是否為共同承租訂單 |  int   | 1:是 0:否            |
+| IsEnterpriseOrder | 是否為企業客戶訂單 |  int   | 1:是 0:否            |
 
 * Output範例
 
@@ -4324,7 +4329,8 @@
                 "CarOfArea": "北北桃",
                 "CarTypePic": "iretScooter",
                 "IsMotor": 1,
-                "IsJointOrder":"0"
+                "IsJointOrder":"0",
+                "IsEnterpriseOrder": 0
             },
             {
                 "RentYear": 2021,
@@ -4339,7 +4345,8 @@
                 "CarOfArea": "北北桃",
                 "CarTypePic": "iretScooter",
                 "IsMotor": 1,
-                "IsJointOrder":"0"
+                "IsJointOrder":"0",
+                "IsEnterpriseOrder": 0
             }
         ]
     }
@@ -8958,21 +8965,26 @@
 
 * Data 回傳參數說明
 
-| 參數名稱     | 參數說明                                                     |  型態  | 範例     |
-| ------------ | ------------------------------------------------------------ | :----: | -------- |
-| PayMode      | 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay)                    |  int   | 0        |
-| HasBind      | 是否有綁定(0:無,1有)                                         |  int   | 1        |
-| HasWallet    | 是否有錢包(0:無,1有)                                         |  int   | 0        |
-| TotalAmount  | 錢包剩餘金額                                                 |  int   | 0        |
-| BindListObj  | 信用卡列表                                                   |  list  |          |
-| MEMSENDCD    | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 |  int   | 5        |
-| UNIMNO       | 統編                                                         | string |          |
-| CARRIERID    | 手機條碼                                                     | string | /N37H2JD |
-| NPOBAN       | 愛心碼                                                       | string |          |
-| AutoStored   | 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
-| HasHotaiPay  | 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
-| HotaiListObj | 和泰PAY卡清單                                                |  list  |          |
-| MotorPreAmt  | 機車預扣款金額                                               |  int   | 50       |
+| 參數名稱     		| 參數說明                                                     |  型態  | 範例     |
+| ------------ 		| ------------------------------------------------------------ | :----: | -------- |
+| PayMode      		| 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay)                    |  int   | 0        |
+| HasBind      		| 是否有綁定(0:無,1有)                                         |  int   | 1        |
+| HasWallet    		| 是否有錢包(0:無,1有)                                         |  int   | 0        |
+| TotalAmount  		| 錢包剩餘金額                                                 |  int   | 0        |
+| BindListObj  		| 信用卡列表                                                   |  list  |          |
+| MEMSENDCD    		| 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 |  int   | 5        |
+| UNIMNO       		| 統編                                                         | string |          |
+| CARRIERID    		| 手機條碼                                                     | string | /N37H2JD |
+| NPOBAN       		| 愛心碼                                                       | string |          |
+| AutoStored   		| 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
+| HasHotaiPay  		| 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
+| HotaiListObj 		| 和泰PAY卡清單                                                |  list  |          |
+| MotorPreAmt  		| 機車預扣款金額                                               |  int   | 50       |
+| TaxID       		| 統一編號                                                     | string |"50885758"|
+| EnterpriseDeptCN  | 企業會員部門名稱                                             | string | "資訊部" |
+| EnterpriseStatus  | 企業會員會員狀態(0:待審;1:通過;2:失敗;3:合約到期)            |  int   | 0        |
+| EnterpriseCmpCN   | 企業會員公司名稱                                             | string | "和雲"   |
+| EmployeeID        | 企業會員員工編號                                             | string | "8026"   |
 
 * BindListObj 回傳參數說明
 
@@ -9046,7 +9058,12 @@
                 "IsDefault": 1
             }
         ],
-        "MotorPreAmt": 50
+        "MotorPreAmt": 50,
+        "TaxID": "12354548",
+        "EnterpriseStatus": 1,
+        "EnterpriseDeptCN": "資訊部",
+        "EnterpriseCmpCN": "",
+        "EmployeeID": "8006"
     }
 }
 ```
