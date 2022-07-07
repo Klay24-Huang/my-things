@@ -139,7 +139,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = 0
+                        IsMoto = 0,
+                        CarTrip = apiInput.CarTrip
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
@@ -204,6 +205,7 @@ namespace WebAPI.Controllers
 
                 // 20210616 UPD BY YEH REASON:因應會員積分<60只能用定價專案，取專案改到SP處理
                 string SPName = "usp_GetAnyRentProject";
+                // string SPName = "usp_GetAnyRentProject_01";
                 SPInput_GetAnyRentProject SPInput = new SPInput_GetAnyRentProject
                 {
                     IDNO = IDNO,
@@ -220,7 +222,7 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
                 ProjectDiscountLabel reDiscountLabel = new ProjectDiscountLabel();
-                
+
                 if (flag)
                 {
                     if (lstData != null)
@@ -264,6 +266,7 @@ namespace WebAPI.Controllers
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = lstData[0].Content,
                                 DiscountLabel = reDiscountLabel,
+                                TaxID = lstData[0].TaxID
                             });
 
                             if (DataLen > 1)
@@ -307,12 +310,13 @@ namespace WebAPI.Controllers
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
-                                        Content = lstData[i].Content
+                                        Content = lstData[i].Content,
+                                        TaxID = lstData[i].TaxID,
                                     });
                                 }
                             }
 
-                            
+
                         }
                     }
                 }

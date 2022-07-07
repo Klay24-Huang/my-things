@@ -19,5 +19,11 @@ namespace WebAPI.Models.Param.Input
         /// 預計還車時間
         /// </summary>
         public string EDate { set; get; }
+
+        /// <summary>
+        /// 用車行程
+        /// 1 = 個人身分，2 = 企業身分
+        /// </summary>
+        public Int16 CarTrip { get; set; }
     }
 }
