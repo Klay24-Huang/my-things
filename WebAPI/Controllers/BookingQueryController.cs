@@ -287,13 +287,22 @@ namespace WebAPI.Controllers
                 #region 判斷是否有效訂單 20220707 ADD BY ADAM
                 if (flag)
                 {
-                    outputApi.OrderObj.ForEach(x =>
+                    if (outputApi != null && outputApi.OrderObj != null && outputApi.OrderObj.Count() > 0)
                     {
-                        if (x.CAR_MGT_STATUS < 16)
+                        outputApi.OrderObj.ForEach(x =>
                         {
-                            outputApi.NowOrderFlg = "Y";
-                        }
-                    });
+                            if (x.CAR_MGT_STATUS < 16)
+                            {
+                                outputApi.NowOrderFlg = "Y";
+                            }
+                        });
+                    }
+                    else
+                    {
+                        outputApi = new OAPI_BookingQuery();
+                        outputApi.NowOrderFlg = "N";
+                        //outputApi.OrderObj = null;
+                    }
                 }
                 #endregion
             }
