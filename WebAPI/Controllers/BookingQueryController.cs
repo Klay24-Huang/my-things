@@ -301,7 +301,7 @@ namespace WebAPI.Controllers
                     {
                         outputApi = new OAPI_BookingQuery();
                         outputApi.NowOrderFlg = "N";
-                        //outputApi.OrderObj = null;
+                        outputApi.OrderObj = new List<ActiveOrderData>();
                     }
                 }
                 #endregion
