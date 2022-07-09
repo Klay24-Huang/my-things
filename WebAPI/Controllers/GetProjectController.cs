@@ -117,6 +117,26 @@ namespace WebAPI.Controllers
                     //判斷日期
                     if (flag)
                     {
+                        if (apiInput.SDate.ToLower().IndexOf("am") > 0)
+                        {
+                            apiInput.SDate = apiInput.SDate.Substring(0, apiInput.SDate.ToLower().IndexOf("am"));
+                        }
+                        else if (apiInput.SDate.ToLower().IndexOf("pm") > 0)
+                        {
+                            string ChkSD = apiInput.SDate.Substring(0, apiInput.SDate.ToLower().IndexOf("pm"));
+                            apiInput.SDate = DateTime.Parse(ChkSD).AddHours(12).ToString("yyyy/MM/dd HH:ss");
+                        }
+
+                        if (apiInput.EDate.ToLower().IndexOf("am") > 0)
+                        {
+                            apiInput.EDate = apiInput.EDate.Substring(0, apiInput.EDate.ToLower().IndexOf("am"));
+                        }
+                        else if (apiInput.EDate.ToLower().IndexOf("pm") > 0)
+                        {
+                            string ChkED = apiInput.EDate.Substring(0, apiInput.EDate.ToLower().IndexOf("pm"));
+                            apiInput.EDate = DateTime.Parse(ChkED).AddHours(12).ToString("yyyy/MM/dd HH:ss");
+                        }
+
                         if (string.IsNullOrWhiteSpace(apiInput.SDate) == false && string.IsNullOrWhiteSpace(apiInput.EDate) == false)
                         {
                             flag = DateTime.TryParse(apiInput.SDate, out SDate);
