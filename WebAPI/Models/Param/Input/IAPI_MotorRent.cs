@@ -28,5 +28,11 @@ namespace WebAPI.Models.Param.Input
         /// 半徑
         /// </summary>
         public double? Radius { set; get; }
+
+        /// <summary>
+        /// 用車行程
+        /// 1 = 個人身分，2 = 企業身分
+        /// </summary>
+        public Int16 CarTrip { get; set; }
     }
 }

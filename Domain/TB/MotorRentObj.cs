@@ -98,6 +98,11 @@ namespace Domain.TB
         /// </summary>
         public Single PerMinutesPrice { set; get; }
 
+        /// <summary>
+        /// 企業身分的統一編號
+        /// </summary>
+        public string TaxID { get;set;}
+
         #region 機車安心服務
         /// <summary>
         /// 機車安心服務基消分鐘數

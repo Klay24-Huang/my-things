@@ -3402,13 +3402,16 @@
 | CarNo 	| 車號  | Y | string | EWA-0127 |
 | SDate		| 預計取車時間	|  | string |  |
 | EDate 	| 預計還車時間	|  | string |  |
+| EDate 	| 預計還車時間	|  | string |  |
+| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| N |   int      | 1     |
 
 * input範例
 ```
 {
     "CarNo":"EWA-0127",
     "SDate":"",
-    "EDate":""
+    "EDate":"",
+	"CarTrip":1
 }
 ```
 
@@ -3459,6 +3462,7 @@
 | HDRateForMoto        | 機車假日優惠價                           | double |                |
 | MonthStartDate       | 開始日                                   | string |                |
 | MonthEndDate         | 結束日                                   | string |                |
+| TaxID                | 統一編號                                 | string | 12354548       |
 | DiscountLabel        | 優惠標籤物件                             | object |                |
 | BaseInsuranceMinutes | 安心服務基礎分鐘數                       | int    |                |
 | BaseMotoRate         | 計次金額(基消)                           | int    |                |
@@ -3513,6 +3517,7 @@
                 "HDRateForMoto": 1.8,
                 "MonthStartDate": "2022/03/24 09:52",
                 "MonthEndDate": "2022/09/20 09:52",
+				"TaxID": "12354548",
                 "DiscountLabel": {
                     "AppDescribe":"\r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n",
                     "LabelType": "CP0101",
@@ -3551,6 +3556,7 @@
                 "HDRateForMoto": 0.0,
                 "MonthStartDate": "",
                 "MonthEndDate": "",
+				"TaxID": "12354548",
                 "DiscountLabel": {
                     "AppDescribe:"\r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n",
                     "LabelType": "CP0101",

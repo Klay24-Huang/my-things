@@ -52,6 +52,11 @@ namespace WebAPI.Models.Param.Output
         public double HDRateForMoto { get; set; } = 0;
 
         /// <summary>
+        /// 企業身分的統一編號
+        /// </summary>
+        public string TaxID { get; set; }
+
+        /// <summary>
         /// 優惠標籤
         /// </summary>
         public DiscountLabel DiscountLabel { get; set; } = new DiscountLabel();

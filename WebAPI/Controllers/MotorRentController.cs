@@ -112,7 +112,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = -1
+                        IsMoto = -1,
+                        CarTrip = apiInput.CarTrip
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
