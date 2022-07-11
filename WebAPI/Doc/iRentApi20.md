@@ -3029,7 +3029,7 @@
 | NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
-| Data | 資料物件           | object |               |
+| Data         | 資料物件           | object |               |
 
 * Data回傳參數說明
 
@@ -3207,6 +3207,8 @@
 | Latitude	| 緯度	| Y | double | 25.0688361 |
 | Longitude | 經度	| Y | double | 121.5335611 |
 | Radius 	| 半徑	| Y | double | 2.5 |
+| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| N |   int      | 1     |
+
 
 * input範例
 ```
@@ -3214,7 +3216,8 @@
     "ShowALL": "0",
     "Latitude": 25.060368,
     "Longitude": 121.520260,
-    "Radius": 2.5
+    "Radius": 2.5,
+	"CarTrip":2
 }
 ```
 
@@ -3250,6 +3253,7 @@
 | HDRateForCar		| 汽車假日優惠價 							| double  | 			|
 | WDRateForMoto		| 機車平日優惠價 							| dluble  | 			|
 | HDRateForMoto		| 機車假日優惠價 							| double  | 			|
+| TaxID             | 統一編號                                  | string  | 12354548    |
 | DiscountLabel     | 優惠標籤      							| object  |   			|
 | CarNo				| 車號			 							| string  | EWG-1235 	|
 | CarType			| 車型代碼									| string  | MANY-110 	|
@@ -3308,6 +3312,7 @@
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.8,
                 "HDRateForMoto": 1.8,
+				"TaxID": "12354548",
                 "DiscountLabel": null,
                 "CarNo": "EWH-7525",
                 "CarType": "MANY-110",
@@ -3345,6 +3350,7 @@
                 "HDRateForCar": 168.0,
                 "WDRateForMoto": 1.8,
                 "HDRateForMoto": 1.8,
+				"TaxID": "12354548",
                 "DiscountLabel": {
                     "LabelType": "CP0101",
                     "GiveMinute": 12,
@@ -3511,13 +3517,13 @@
                 "Content": "1.開放租還區域：\n台北市、新北市、桃園市部分區域，詳見APP內範圍顯示。\n2.還車規範：\n請停放於路邊公有機車停車格合法停車區域(限時停車格除外)，若違停遭到拖吊須自行負責承擔罰緩及拖吊費用。\n3.換電方式：\n若電量不足或需長途使用，可透過APP搜尋最近能源站進行自助換電。\n4.車內配備：\n車廂內備有兩頂安全帽(3/4罩、半罩各一)、擦車布、拋棄式衛生帽套，除衛生帽套外使用完請歸回原位，違者依法求償並停權處分。",
                 "Power": 59.0,
                 "RemainingMileage": 41.0,
+				"TaxID": "12354548",
                 "MonthlyRentId": 2455,
                 "MotoTotalMins": 168.0,
                 "WDRateForMoto": 1.8,
                 "HDRateForMoto": 1.8,
                 "MonthStartDate": "2022/03/24 09:52",
                 "MonthEndDate": "2022/09/20 09:52",
-				"TaxID": "12354548",
                 "DiscountLabel": {
                     "AppDescribe":"\r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n",
                     "LabelType": "CP0101",
@@ -3550,13 +3556,13 @@
                 "Content": "1.開放租還區域：\n台北市、新北市、桃園市部分區域，詳見APP內範圍顯示。\n2.還車規範：\n請停放於路邊公有機車停車格合法停車區域(限時停車格除外)，若違停遭到拖吊須自行負責承擔罰緩及拖吊費用。\n3.換電方式：\n若電量不足或需長途使用，可透過APP搜尋最近能源站進行自助換電。\n4.車內配備：\n車廂內備有兩頂安全帽(3/4罩、半罩各一)、擦車布、拋棄式衛生帽套，除衛生帽套外使用完請歸回原位，違者依法求償並停權處分。",
                 "Power": 59.0,
                 "RemainingMileage": 41.0,
+				"TaxID": "12354548",				
                 "MonthlyRentId": 0,
                 "MotoTotalMins": 0.0,
                 "WDRateForMoto": 0.0,
                 "HDRateForMoto": 0.0,
                 "MonthStartDate": "",
                 "MonthEndDate": "",
-				"TaxID": "12354548",
                 "DiscountLabel": {
                     "AppDescribe:"\r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n",
                     "LabelType": "CP0101",

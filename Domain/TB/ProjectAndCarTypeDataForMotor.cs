@@ -98,5 +98,11 @@ namespace Domain.TB
         /// 機車安心服務基消分鐘數
         /// </summary>
         public int BaseInsuranceMinutes { set; get; }
+
+        /// <summary>
+        /// 企業身分統一編號
+        /// </summary>
+
+        public string TaxID { get; set; }
     }
 }

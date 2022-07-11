@@ -136,7 +136,8 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = 1
+                        IsMoto = 1,
+                        CarTrip = apiInput.CarTrip
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
@@ -261,7 +262,8 @@ namespace WebAPI.Controllers
                                 BaseMotoRate = lstData[0].BaseMotoRate,
                                 InsuranceMotoMin = lstData[0].InsuranceMotoMin,
                                 InsuranceMotoRate = lstData[0].InsuranceMotoRate,
-                                BaseInsuranceMinutes = lstData[0].BaseInsuranceMinutes
+                                BaseInsuranceMinutes = lstData[0].BaseInsuranceMinutes,
+                                TaxID = lstData[0].TaxID
                             });
                             if (DataLen > 1)
                             {
@@ -298,7 +300,8 @@ namespace WebAPI.Controllers
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = lstData[i].Content,
                                         Power = Convert.ToInt32(lstData[i].Power),
-                                        RemainingMileage = Convert.ToInt32(lstData[i].RemainingMileage)
+                                        RemainingMileage = Convert.ToInt32(lstData[i].RemainingMileage),
+                                        TaxID = lstData[0].TaxID
                                     });
                                 }
                             }
