@@ -293,7 +293,6 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-
             #region 取得企業月結項目
 
             //開始送短租查詢
@@ -305,7 +304,7 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    if (wsOutput_CO.Data.Length > 0)
+                    if (wsOutput_CO != null && wsOutput_CO.Data.Length > 0)
                     {
                         EnterpriseInsuFLG = wsOutput_CO.Data[0].SafeServ == "Y";
                         //wsOutput_CO.Data[0].TaxID;
@@ -380,7 +379,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                SPName = "usp_Booking";
+                SPName = "usp_Booking_V2";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
@@ -400,7 +399,11 @@ namespace WebAPI.Controllers
                     PayMode = PayMode,
                     LogID = LogID,
                     PhoneLat = apiInput.PhoneLat,
-                    PhoneLon = apiInput.PhoneLon
+                    PhoneLon = apiInput.PhoneLon,
+                    co_TaxID = wsOutput_CO.Data[0].TaxID.Length ==8 ? wsOutput_CO.Data[0].TaxID.ToString() : "",
+                    co_SafeServ = wsOutput_CO.Data[0].SafeServ == "Y" ? 1 : 0,
+                    co_Etag = wsOutput_CO.Data[0].Etag == "Y" ? 1 : 0,
+                    co_Parking = wsOutput_CO.Data[0].Parking == "Y" ? 1 : 0
                 };
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);

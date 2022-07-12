@@ -2797,7 +2797,7 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_CheckoutOption()
                 {
-                    Message = "發生異常錯誤",
+                    Message = ex.Message ,//"發生異常錯誤",
                     Result = false
                 };
             }

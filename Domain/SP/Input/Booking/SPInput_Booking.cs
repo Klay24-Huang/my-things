@@ -82,5 +82,22 @@ namespace Domain.SP.Input.Booking
         /// 手機的定位(緯度) 20211012 ADD BY ADAM
         /// </summary>
         public double PhoneLat { get; set; }
+
+        /// <summary>
+        /// 預估租金
+        /// </summary>
+        public string co_TaxID { set; get; }
+        /// <summary>
+        /// 預估租金
+        /// </summary>
+        public int co_SafeServ { set; get; }
+        /// <summary>
+        /// 預估租金
+        /// </summary>
+        public int co_Etag { set; get; }
+        /// <summary>
+        /// 預估租金
+        /// </summary>
+        public int co_Parking { set; get; }
     }
 }
