@@ -291,7 +291,8 @@ namespace WebAPI.Controllers
                     {
                         outputApi.OrderObj.ForEach(x =>
                         {
-                            if (x.CAR_MGT_STATUS < 16)
+                            //20220712 ADD BY ADAM REASON.調整判斷邏輯，需要出車才標註
+                            if (x.CAR_MGT_STATUS < 16 && x.CAR_MGT_STATUS >=4)
                             {
                                 outputApi.NowOrderFlg = "Y";
                             }
