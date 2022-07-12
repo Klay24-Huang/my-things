@@ -379,6 +379,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
+                var co_data = wsOutput_CO.Data == null ? new WebAPIOutput_CheckoutOptionData() : wsOutput_CO.Data[0];
                 SPName = "usp_Booking_V2";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
@@ -400,10 +401,10 @@ namespace WebAPI.Controllers
                     LogID = LogID,
                     PhoneLat = apiInput.PhoneLat,
                     PhoneLon = apiInput.PhoneLon,
-                    co_TaxID = wsOutput_CO.Data[0].TaxID.Length ==8 ? wsOutput_CO.Data[0].TaxID.ToString() : "",
-                    co_SafeServ = wsOutput_CO.Data[0].SafeServ == "Y" ? 1 : 0,
-                    co_Etag = wsOutput_CO.Data[0].Etag == "Y" ? 1 : 0,
-                    co_Parking = wsOutput_CO.Data[0].Parking == "Y" ? 1 : 0
+                    co_TaxID = co_data.TaxID.Length == 8 ? co_data.TaxID.ToString() : "",
+                    co_SafeServ = co_data.SafeServ == "Y" ? 1 : 0,
+                    co_Etag = co_data.Etag == "Y" ? 1 : 0,
+                    co_Parking = co_data.Parking == "Y" ? 1 : 0
                 };
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);

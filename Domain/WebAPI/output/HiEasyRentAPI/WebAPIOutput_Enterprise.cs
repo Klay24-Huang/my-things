@@ -56,22 +56,22 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// <summary>
         /// 統一編號
         /// </summary>
-        public string TaxID { set; get; }
+        public string TaxID { set; get; } = "";
         /// <summary>
         /// Etag
         /// </summary>
-        public string Etag { set; get; }
+        public string Etag { set; get; } = "N";
         /// <summary>
         /// 安心服務
         /// </summary>
-        public string SafeServ { set; get; }
+        public string SafeServ { set; get; } = "N";
         /// <summary>
         /// 停車費
         /// </summary>
-        public string Parking { set; get; }
+        public string Parking { set; get; } = "N";
         /// <summary>
         /// 啟用日期
         /// </summary>
-        public string EnableDate { set; get; }
+        public string EnableDate { set; get; } = "N";
     }
 }
