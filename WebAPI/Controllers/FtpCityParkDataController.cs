@@ -26,6 +26,8 @@ using WebAPI.Utils;
 using System.Net;
 using NLog;
 using System.Globalization;
+using System.Net.Security;
+using FluentFTP;
 
 namespace WebAPI.Controllers
 {
@@ -36,10 +38,10 @@ namespace WebAPI.Controllers
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        private readonly string FTPUSERID = ConfigurationManager.AppSettings["FtpCityPark_USERID"].ToString();
-        private readonly string FTPPASSWORD = ConfigurationManager.AppSettings["FtpCityPark_PASSWORD"].ToString();
-        private readonly string FTPUrl = ConfigurationManager.AppSettings["FtpCityPark_Url"].ToString();
-        
+        private readonly string FTPuserID = ConfigurationManager.AppSettings["FtpCityPark_UserID"].ToString();
+        private readonly string FTPpassWord = ConfigurationManager.AppSettings["FtpCityPark_PassWord"].ToString();
+        private readonly string IP_address = ConfigurationManager.AppSettings["FtpCityPark_IPaddress"].ToString();
+
         [HttpPost]
         public Dictionary<string, object> DoFtpCityParkData(Dictionary<string, object> value)
         {
@@ -57,30 +59,18 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            IAPI_FtpCityPark apiInput = new IAPI_FtpCityPark();
-
             OAPI_FtpCityParkData apiOutput = null;
-            bool isGuest = true;
-            string Contentjson = "";
-            string Access_Token = "";
-            string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
-            string DOCdate = "CityPark_" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + ".txt";
-            string tarUrl = FTPUrl + DOCdate;
-            //string tarUrl = FTPUrl + "CityPark_20220505.txt";
+
+            string filePath = "/CityParkingStation/CityPark_" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + ".txt";
+
+            //string filePath = "/CityParkingStation/CityPark_20220505.txt";
             #endregion
 
             try
             {
                 #region 防呆
-                flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
                 if (flag)
                 {
-                    apiInput = JsonConvert.DeserializeObject<IAPI_FtpCityPark>(Contentjson);
-                    if (apiInput.process_date != "")
-                    {
-                        DOCdate = "CityPark_" + apiInput.process_date + ".txt";
-                        tarUrl = FTPUrl + DOCdate;
-                    }
                     //寫入API Log
                     string ClientIP = baseVerify.GetClientIp(Request);
                     flag = baseVerify.InsAPLog("no Input", ClientIP, funName, ref errCode, ref LogID);
@@ -88,11 +78,11 @@ namespace WebAPI.Controllers
                 #endregion
 
                 #region TB
-                
+
                 if (flag)
                 {
                     //先檢查是FTP上否有資料
-                    bool exist = CheckFtpFile(tarUrl, FTPUSERID, FTPPASSWORD);
+                    bool exist = CheckFtpFile(filePath);
                     if (exist == false)
                     {
                         flag = false;
@@ -100,30 +90,9 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
-                        #region 處裡檔案文字
-                        string DataList = GetFileStr(tarUrl, FTPUSERID, FTPPASSWORD);
-                        List<FtpCityParkData> ftpCityParkDataList = new List<FtpCityParkData>();
-                        string[] stringSeparators = new string[] { "\\n" };
-                        //string[] resultTxt = DataList.Split(stringSeparators, StringSplitOptions.None);
-                        string[] resultTxt = DataList.Split(new char[] { '\n' });
-                        foreach (string d in resultTxt)
-                        {
-                            string[] lines = d.Split(',');
-                            FtpCityParkData cityParkData = new FtpCityParkData();
-                            cityParkData.Ftp_facility_id = lines[0];
-                            cityParkData.Ftp_entrance_uuid = lines[1];
-                            cityParkData.Ftp_license_plate_number = lines[2];
-                            DateTime entered_at = DateTime.Parse(lines[3], CultureInfo.InvariantCulture, DateTimeStyles.None);
-                            cityParkData.Ftp_entered_at = entered_at;
-                            cityParkData.Ftp_entrance_id = lines[4];
-                            DateTime left_at = DateTime.Parse(lines[5], CultureInfo.InvariantCulture, DateTimeStyles.None);
-                            cityParkData.Ftp_left_at = left_at;
-                            cityParkData.Ftp_exit_id = lines[6];
-                            cityParkData.Ftp_amount = lines[7];
+                        // 取得檔案&處理檔案文字
+                        List<FtpCityParkData> ftpCityParkDataList = GetFileList(filePath);
 
-                            ftpCityParkDataList.Add(cityParkData);
-                        }
-                        #endregion
                         if (ftpCityParkDataList.Count() > 0)
                         {
                             string SPName = "usp_FtpCityParkData_I01";
@@ -184,7 +153,7 @@ namespace WebAPI.Controllers
                             }
                             else
                             {
-                                baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[0].Rows[0]["Error"]), ds1.Tables[0].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
+                                baseVerify.checkSQLResult(ref flag, Convert.ToInt32(ds1.Tables[1].Rows[0]["Error"]), ds1.Tables[1].Rows[0]["ErrorCode"].ToString(), ref lstError, ref errCode);
                             }
                         }
                         else
@@ -215,7 +184,7 @@ namespace WebAPI.Controllers
             return objOutput;
             #endregion
         }
-
+        #region 檢查FTP檔案
         /// <summary>
         /// 檢查FTP檔案
         /// </summary>
@@ -223,63 +192,74 @@ namespace WebAPI.Controllers
         /// <param name="USERID"></param>
         /// <param name="PASSWORD"></param>
         /// <returns></returns>
-        public static bool CheckFtpFile(string tarUrl, string FTPUSERID, string FTPPASSWORD)
+        private bool CheckFtpFile(string filePath)
         {
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(tarUrl);
-            request.Credentials = new NetworkCredential(FTPUSERID, FTPPASSWORD);
-            request.Method = WebRequestMethods.Ftp.GetFileSize;
-            request.EnableSsl = true;   //20220630 ADD BY ADAM REASON.強制使用ftps
-
             try
             {
-                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-                return true;
+                FtpClient client = new FtpClient(IP_address);
+                // 設定連線為FTPS 隱式模式
+                client.EncryptionMode = FtpEncryptionMode.Implicit;
+                client.Credentials = new NetworkCredential(FTPuserID, FTPpassWord);
+                client.AutoConnect();
+                bool checkFile = client.FileExists(filePath);
+                client.Disconnect();
+                return checkFile;
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
-                FtpWebResponse response = (FtpWebResponse)ex.Response;
-                if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
-                {
-                    return false;
-                }
-                return true;
+                logger.Error(ex.Message);
+                throw ex;
             }
         }
-
+        #endregion
+        #region 檔案獲取及處理
         /// <summary>
-        /// 從ftp伺服器上獲取檔案並將內容全部轉換成string返回
+        /// 從ftp伺服器上獲取檔案並處理傳回List
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="dir"></param>
         /// <returns></returns> 
-        public static string GetFileStr(string tarUrl, string FTPUSERID, string FTPPASSWORD)
+        private List<FtpCityParkData> GetFileList(string filePath)
         {
-            FtpWebRequest reqFTP;
-            StringBuilder txt = new StringBuilder();
+            FtpClient client = new FtpClient(IP_address);
+            // 設定連線為FTPS 隱式模式
+            client.EncryptionMode = FtpEncryptionMode.Implicit;
+            client.Credentials = new NetworkCredential(FTPuserID, FTPpassWord);
+            client.AutoConnect();
             try
             {
-                reqFTP = (FtpWebRequest)FtpWebRequest.Create(tarUrl);
-                reqFTP.Method = WebRequestMethods.Ftp.DownloadFile;
-                reqFTP.Credentials = new NetworkCredential(FTPUSERID, FTPPASSWORD);
-                reqFTP.EnableSsl = true;    //20220630 ADD BY ADAM REASON.強制使用ftps
-                FtpWebResponse response = (FtpWebResponse)reqFTP.GetResponse();
-                Stream ftpStream = response.GetResponseStream();
+                Stream ftpStream = client.OpenRead(filePath);
                 StreamReader reader = new StreamReader(ftpStream);
-                string fileStr = reader.ReadToEnd();
-
+                #region 資料處理
+                string line;
+                List<FtpCityParkData> dataList = new List<FtpCityParkData>();
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] lines = line.Split(',');
+                    dataList.Add(new FtpCityParkData
+                    {
+                        Ftp_facility_id = lines[0],
+                        Ftp_entrance_uuid = lines[1],
+                        Ftp_license_plate_number = lines[2],
+                        Ftp_entered_at = DateTime.Parse(lines[3], CultureInfo.InvariantCulture, DateTimeStyles.None),
+                        Ftp_entrance_id = lines[4],
+                        Ftp_left_at = DateTime.Parse(lines[5], CultureInfo.InvariantCulture, DateTimeStyles.None),
+                        Ftp_exit_id = lines[6],
+                        Ftp_amount = lines[7],
+                    });
+                }
+                #endregion
                 reader.Close();
                 ftpStream.Close();
-                response.Close();
-                return fileStr;
+                client.Disconnect();
+                return dataList;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("獲取ftp檔案並讀取內容失敗︰" + ex.Message);
-                return null;
+                logger.Error(ex.Message);
+                throw ex;
             }
         }
-
-
-        
+        #endregion
     }
 }
