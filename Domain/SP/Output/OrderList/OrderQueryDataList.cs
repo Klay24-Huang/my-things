@@ -304,5 +304,11 @@ namespace Domain.SP.Output.OrderList
         /// 機車安心服務金額(一次算多少錢)
         /// </summary>
         public float InsuranceMotoRate { get; set; }
+
+        /// <summary>
+        /// 是否為企業客戶訂單 1:是 0:否
+        /// </summary>
+        public int IsEnterpriseOrder { get; set; }
+
     }
 }
