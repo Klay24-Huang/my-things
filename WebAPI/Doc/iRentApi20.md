@@ -3929,14 +3929,15 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           |        |               |
+| 參數名稱          | 參數說明           |  型態  | 範例          |
+| ------------      | ------------------ | :----: | ------------- |
+| Result            | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode         | 錯誤碼             | string | 000000        |
+| NeedRelogin       | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade       | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage      | 錯誤訊息           | string | Success       |
+| Data              | 資料物件           |        |               |
+
 
 * Data回傳參數說明
 
@@ -3991,6 +3992,7 @@
 | RenterType        | 承租人類型<br>1:主要承租人 2:共同承租人                      |   int   | 1                     |
 | PreviousCarPath   | 前車照片                                                     | string  |                       |
 | DiscountLabel     | 優惠標籤                                                     | object  |                       |
+| IsEnterpriseOrder | 是否為企業客戶訂單                                           |  int    | 1:是 0:否             |
 
 * StationInfo回傳參數說明
 
@@ -4104,6 +4106,7 @@
                 "CAR_MGT_STATUS": 13,
                 "AppStatus": 0,
                 "RenterType": 1,
+				"IsEnterpriseOrder": 0,
                 "DiscountLabel": {
                     "LabelType": "CP0101",
                     "GiveMinute": 30,
@@ -4166,6 +4169,7 @@
                 "Insurance": 0,
                 "InsurancePerHour": 0,
                 "InsuranceBill": 0,
+				"IsEnterpriseOrder": 0,
                 "TransDiscount": 0,
                 "Bill": 2,
                 "DailyMaxHour": 10,
@@ -4235,6 +4239,7 @@
                 "Insurance": 1,
                 "InsurancePerHour": 70,
                 "InsuranceBill": 0,
+				"IsEnterpriseOrder": 0,
                 "TransDiscount": 0,
                 "Bill": 195,
                 "DailyMaxHour": 10,
