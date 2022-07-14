@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Domain.TB;
+﻿using System.Collections.Generic;
 
 namespace WebAPI.Models.Param.Output
 {
@@ -11,13 +7,16 @@ namespace WebAPI.Models.Param.Output
         /// <summary>
         /// 公司名稱
         /// </summary>
-        public string CUSTNM { set; get; }
+        public string CUSTNM { set; get; } = "";
         /// <summary>
         /// 統一編號
         /// </summary>
-        public string TaxID { set; get; }
+        public string TaxID { set; get; } = "";
+        /// <summary>
+        /// 部門清單
+        /// </summary>
         public List<OAPI_GetEnterpriseDept_List> list { set; get; }
-}
+    }
     public class OAPI_GetEnterpriseDept_List
     {
         /// <summary>
@@ -29,5 +28,4 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public string DeptName { set; get; }
     }
-
 }

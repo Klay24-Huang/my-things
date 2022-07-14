@@ -1,7 +1,4 @@
 ﻿using Domain.Common;
-using Domain.SP.Input.Common;
-using Domain.SP.Output.Common;
-using Domain.TB;
 using Domain.WebAPI.output.HiEasyRentAPI;
 using OtherService;
 using System;
@@ -10,19 +7,19 @@ using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
-using WebAPI.Models.Enum;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
 using WebCommon;
+
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// 點數查詢
+    /// 取得企業名單
     /// </summary>
     public class GetEnterpriseListController : ApiController
     {
-
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
+
         [HttpPost()]
         public Dictionary<string, object> DoGetEnterpriseList([FromBody] Dictionary<string, object> value)
         {
@@ -40,31 +37,52 @@ namespace WebAPI.Controllers
             Int16 ErrType = 0;
             IAPI_GetEnterpriseList apiInput = null;
             OAPI_GetEnterpriseList outputApi = new OAPI_GetEnterpriseList();
+            outputApi.list = new List<OAPI_GetEnterpriseDept_List>();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
 
             string Contentjson = "";
             bool isGuest = true;
-
-
+            string IDNO = "";
             #endregion
             #region 防呆
-
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
-
             if (flag)
             {
                 apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_GetEnterpriseList>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
-
+            }
+            if (flag)
+            {
                 if (string.IsNullOrWhiteSpace(apiInput.TaxID))
                 {
                     flag = false;
-                    errCode = "ERR900";
+                    errCode = "ERR190";
                 }
+                else
+                {
+                    if (apiInput.TaxID.Length == 8)
+                    {
+                        flag = baseVerify.checkUniNum(apiInput.TaxID);
+                        if (!flag)
+                        {
+                            flag = false;
+                            errCode = "ERR191";
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR190";
+                    }
+                }
+            }
+            //不開放訪客
+            if (flag)
+            {
                 if (isGuest)
                 {
                     flag = false;
@@ -73,67 +91,64 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region TB
-            //Token判斷
+            #region Token判斷
             if (flag && isGuest == false)
             {
-                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
-                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
-                {
-
-                    LogID = LogID,
-                    Token = Access_Token
-                };
-                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
-                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
-                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
-                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+                flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
+            #endregion
             //開始送短租查詢
-            if (flag && apiInput.TaxID.Length == 8)
+            if (flag)
             {
-                WebAPIOutput_EnterpriseList wsOutput = new WebAPIOutput_EnterpriseList();
-                HiEasyRentAPI wsAPI = new HiEasyRentAPI();
-                flag = wsAPI.EnterpriseList(apiInput.TaxID, ref wsOutput);
-
-
-                if (flag)
+                try
                 {
-                    if (wsOutput.Data != null)
+                    WebAPIOutput_EnterpriseList wsOutput = new WebAPIOutput_EnterpriseList();
+                    HiEasyRentAPI wsAPI = new HiEasyRentAPI();
+                    flag = wsAPI.EnterpriseList(apiInput.TaxID, ref wsOutput);
+                    if (flag)
                     {
-                        outputApi.TaxID = wsOutput.Data.TaxID;
-                        outputApi.CUSTNM = wsOutput.Data.CUSTNM;
-
-                        if (outputApi.TaxID == "")
+                        if (wsOutput.Data != null)
                         {
-                            errCode = "ERR311";
-                            errMsg = "查無企業資料";
-                        }
-                        else
-                        if (wsOutput.Data.depList != null && wsOutput.Data.depList.Count > 0)
-                        {
-                            outputApi.list = new List<OAPI_GetEnterpriseDept_List>();
-                            foreach (var row in wsOutput.Data.depList)
+                            if (!string.IsNullOrEmpty(wsOutput.Data.TaxID))
                             {
-                                OAPI_GetEnterpriseDept_List l_data = new OAPI_GetEnterpriseDept_List();
-                                l_data.DeptNo = row.DeptNo;
-                                l_data.DeptName = row.DeptName;
-                                outputApi.list.Add(l_data);
+                                outputApi.TaxID = wsOutput.Data.TaxID;
+                                outputApi.CUSTNM = wsOutput.Data.CUSTNM;
+                                if (wsOutput.Data.depList != null && wsOutput.Data.depList.Count > 0)
+                                {
+                                    outputApi.list = new List<OAPI_GetEnterpriseDept_List>();
+                                    foreach (var row in wsOutput.Data.depList)
+                                    {
+                                        OAPI_GetEnterpriseDept_List l_data = new OAPI_GetEnterpriseDept_List();
+                                        l_data.DeptNo = row.DeptNo;
+                                        l_data.DeptName = row.DeptName;
+                                        outputApi.list.Add(l_data);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception();
                             }
                         }
+                        else
+                        {
+                            throw new Exception();
+                        }
                     }
-
+                    else
+                    {
+                        throw new Exception();
+                    }
                 }
-
-            }else
-            {
-                errCode = "ERR312";
-                errMsg = "統一編號格式不符";
+                catch
+                {
+                    flag = false;
+                    errCode = "ERR311";
+                }
             }
-
             #endregion
-
             #region 寫入錯誤Log
-            if (false == flag && false == isWriteError)
+            if (!flag && !isWriteError)
             {
                 baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
             }
