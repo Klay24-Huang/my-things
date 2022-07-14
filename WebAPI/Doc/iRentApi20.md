@@ -9002,21 +9002,8 @@
 | HasHotaiPay  		| 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
 | HotaiListObj 		| 和泰PAY卡清單                                                |  list  |          |
 | MotorPreAmt  		| 機車預扣款金額                                               |  int   | 50       |
-| TaxID       		| 統一編號                                                     | string |"50885758"|
-| EnterpriseDeptCN  | 企業會員部門名稱                                             | string | "資訊部" |
-| EnterpriseStatus  | 企業會員會員狀態(0:待審;1:通過;2:失敗;3:已註冊，合約失效;4:未註冊)            |  int   | 0        |
-| EnterpriseCmpCN   | 企業會員公司名稱                                             | string | "和雲"   |
-| EmployeeID        | 企業會員員工編號                                             | string | "8026"   |
-
-* BindListObj 回傳參數說明
-
-| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
-| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
-| BankNo          | 銀行帳號                         | string |                                                       |
-| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
-| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
-| AvailableAmount | 剩餘額度                         | string |                                                       |
-| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
+| EnterpriseStatus  | 企業會員會員狀態<br>(-1:未註冊;0:待審;1:通過;2:失敗;3:合約失效;) |  int   | 0        |
+| EnterpriseObj | 企業客戶資訊 | list |  |
 
 * BindListObj 回傳參數說明
 
@@ -9040,6 +9027,16 @@
 | CardNumber  | 卡號(隱碼)                | string | ****-****-****-5278                  |
 | IsDefault   | 是否為預設卡(0:否/1:是)   |  int   | 1                                    |
 
+* EnterpriseObj 回傳參數說明
+
+| 參數名稱         | 參數說明 | 型態   | 範例     |
+| ---------------- | -------- | ------ | -------- |
+| TaxID            | 統一編號 | string | 12354548 |
+| EnterpriseCmpCN  | 公司名稱 | string | 和運     |
+| EnterpriseDeptCN | 部門名稱 | string | 企劃部   |
+| EmployeeID       | 員工編號 | string | 80238    |
+| EmployeeName     | 員工姓名 | string | 曾O宇    |
+
 * Output範例
 
 ```
@@ -9050,42 +9047,37 @@
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-        "PayMode": 0,
+        "PayMode": 1,
         "HasBind": 1,
-        "HasWallet": 0,
-        "TotalAmount": 0,
+        "HasWallet": 1,
+        "TotalAmount": 864,
         "BindListObj": [
             {
                 "BankNo": "",
-                "CardNumber": "432102******1234",
-                "CardName": "商業銀行",
+                "CardNumber": "414763******0502",
+                "CardName": "台新銀行測試卡",
                 "AvailableAmount": "",
-                "CardToken": "db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456"
+                "CardToken": "aa217aad-7f84-4c6f-95d3-7d759677f253_3567201844206513"
             }
         ],
         "MEMSENDCD": 5,
         "UNIMNO": "",
-        "CARRIERID": "/N37H2JD",
+        "CARRIERID": "/VDNXBSD",
         "NPOBAN": "",
-        "AutoStored": 0,
-        "HasHotaiPay": 1,
-        "HotaiListObj": [
-            {
-                "MemberOneID": "0064fb4f-8250-4690-954b-2ba94862606b",
-                "CardToken": "1385",
-                "CardName": "",
-                "CardType": "Visa",
-                "BankDesc": "國外卡",
-                "CardNumber": "****-****-****-5278",
-                "IsDefault": 1
-            }
-        ],
+        "AutoStored": 1,
+        "HasHotaiPay": 0,
+        "HotaiListObj": [],
         "MotorPreAmt": 50,
-        "TaxID": "12354548",
         "EnterpriseStatus": 1,
-        "EnterpriseDeptCN": "資訊部",
-        "EnterpriseCmpCN": "",
-        "EmployeeID": "8006"
+        "EnterpriseObj": [
+            {
+                "TaxID": "12354548",
+                "EnterpriseCmpCN": "和運",
+                "EnterpriseDeptCN": "企劃部",
+                "EmployeeID": "80238",
+                "EmployeeName": "曾O宇"
+            }
+        ]
     }
 }
 ```
