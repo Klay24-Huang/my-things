@@ -89,14 +89,15 @@ namespace WebAPI.Controllers
             #endregion
 
             if (flag)
-            { 
-                string SpName = "usp_DeleteEnterpriseUser";
+            {
+                string SpName = "usp_DeleteEnterpriseUser_01";
                 SPInput_DeleteEnterpriseUser SPInput = new SPInput_DeleteEnterpriseUser()
                 {
                     Token = Access_Token,
                     ApiName = funName,
                     LogID = LogID,
-                    TaxID= apiInput.TaxID
+                    TaxID = apiInput.TaxID,
+                    IDNO = IDNO
                 };
                 SPOutput_Base spOut = new SPOutput_Base();
                 SQLHelper<SPInput_DeleteEnterpriseUser, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_DeleteEnterpriseUser, SPOutput_Base>(connetStr);

@@ -11,6 +11,11 @@ namespace Domain.SP.Input.Enterprise
         public string Token { set; get; }
 
         /// <summary>
+        /// 帳號
+        /// </summary>
+        public string IDNO { get; set; }
+
+        /// <summary>
         /// 統一編號
         /// </summary>
         public string TaxID { get; set; }
