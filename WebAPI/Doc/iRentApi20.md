@@ -3727,6 +3727,7 @@
 | ErrorCode    | 錯誤碼             | string | 000000        |
 | NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| NowOrderFlg | 目前是否有訂單(定義為有效訂單) | string | Y |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           |        |               |
 
@@ -3840,6 +3841,7 @@
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
+    "NowOrderFlg" : "Y",
     "ErrorMessage": "Success",
     "Data": {
 		"NowOrderFlg" : "Y",
