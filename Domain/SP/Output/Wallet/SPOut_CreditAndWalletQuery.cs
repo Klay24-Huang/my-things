@@ -65,7 +65,7 @@
         /// </summary>
         public string TaxID { get; set; }
         /// <summary>
-        /// 企業會員會員狀態
+        /// 企業會員會員狀態 0=審核中，1=審核成功，2=審核失敗，3=已註冊，4=未註冊
         /// </summary>
         public int EnterpriseStatus { get; set; }
         /// <summary>

@@ -1593,7 +1593,6 @@
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
-* MedalList 參數說明
 
 | 參數名稱      | 參數說明                   |  型態  | 範例                |
 | ------------- | -------------------------- | :----: | ------------------- |
@@ -1601,6 +1600,7 @@
 | TaxID 	 	| 統一編號                   | string | "12354548"           |
 | DeptNo        | 部門代碼                   |  int   | 1                   |
 | DeptName      | 部門名稱                   | string | "營業部"            |
+| IsExitT      | 部門名稱                   | string | "營業部"            |
 
 * Output 範例
 
@@ -1615,8 +1615,13 @@
 		{
 			"CUSTNM": "運輪齒輪工業有限公司",
 			"TaxID": "12354548",
-			"DeptNo": 1,
+			
+			obj:{
+			  "DeptNo": 1,
 			"DeptName": "企劃部"
+			
+			
+			}
 		},
 		{
 			"CUSTNM": "運輪齒輪工業有限公司",
@@ -8999,7 +9004,7 @@
 | MotorPreAmt  		| 機車預扣款金額                                               |  int   | 50       |
 | TaxID       		| 統一編號                                                     | string |"50885758"|
 | EnterpriseDeptCN  | 企業會員部門名稱                                             | string | "資訊部" |
-| EnterpriseStatus  | 企業會員會員狀態(0:待審;1:通過;2:失敗;3:合約到期)            |  int   | 0        |
+| EnterpriseStatus  | 企業會員會員狀態(0:待審;1:通過;2:失敗;3:已註冊，合約失效;4:未註冊)            |  int   | 0        |
 | EnterpriseCmpCN   | 企業會員公司名稱                                             | string | "和雲"   |
 | EmployeeID        | 企業會員員工編號                                             | string | "8026"   |
 
