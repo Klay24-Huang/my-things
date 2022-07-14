@@ -55,6 +55,7 @@ namespace WebAPI.Controllers
             string IDNO = "";
             Int64 tmpOrder = -1;
             bool HasInput = false;
+            string NowOrderFlg = "N";
 
             var monSp = new MonSubsSp();
             BillCommon billCommon = new BillCommon();
@@ -295,15 +296,16 @@ namespace WebAPI.Controllers
                             if (x.CAR_MGT_STATUS < 16 && x.CAR_MGT_STATUS >=4)
                             {
                                 outputApi.NowOrderFlg = "Y";
+                                NowOrderFlg = "Y";
                             }
                         });
                     }
-                    else
-                    {
-                        outputApi = new OAPI_BookingQuery();
-                        outputApi.NowOrderFlg = "N";
-                        outputApi.OrderObj = new List<ActiveOrderData>();
-                    }
+                    //else
+                    //{
+                    //    outputApi = new OAPI_BookingQuery();
+                    //    outputApi.NowOrderFlg = "N";
+                    //    outputApi.OrderObj = new List<ActiveOrderData>();
+                    //}
                 }
                 #endregion
             }
@@ -316,7 +318,8 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+            //baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+            baseVerify.GenerateOutputByBookingQuery(ref objOutput, flag, errCode, errMsg, outputApi, token, NowOrderFlg);
             return objOutput;
             #endregion
         }

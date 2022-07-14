@@ -1129,6 +1129,7 @@ namespace WebAPI.Models.BaseFunc
             {
                 objOutput.Add("Data", apiOutput);
             }
+
             #endregion
 
 
@@ -1163,6 +1164,54 @@ namespace WebAPI.Models.BaseFunc
         where TBase : class
         where T : class
         {
+
+        }
+
+        /// <summary>
+        /// 20220714 Booking Query增加特別輸出
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objOutput"></param>
+        /// <param name="flag"></param>
+        /// <param name="errCode"></param>
+        /// <param name="errMsg"></param>
+        /// <param name="apiOutput"></param>
+        /// <param name="token"></param>
+        /// <param name="NowOrderFlg"></param>
+        public void GenerateOutputByBookingQuery<T>(ref Dictionary<string, object> objOutput, bool flag, string errCode, string errMsg, T apiOutput, Token token, string NowOrderFlg)
+  where T : class
+        {
+
+            objOutput.Add("Result", (flag == true && errCode == "000000") ? "1" : "0");
+            objOutput.Add("ErrorCode", errCode);
+            int NeedReloadin = (errCode == "ERR101") ? 1 : 0;
+            int NeedUpgrade = (errCode == "ERR102") ? 1 : 0;
+
+            objOutput.Add("NeedRelogin", NeedReloadin);
+            objOutput.Add("NeedUpgrade", NeedUpgrade);
+            objOutput.Add("NowOrderFlg", NowOrderFlg);
+
+            if (errCode != "000000" && errCode != "ERR")
+            {
+                errMsg = GetErrorMsg(errCode);
+            }
+
+            objOutput.Add("ErrorMessage", errMsg);
+            if (token != null) { objOutput.Add("Token", token); }
+            //  if (apiOutput != null) { objOutput.Add("Data", apiOutput); }
+            WebAPI.Models.Param.Output.PartOfParam.NullOutput obj = new Param.Output.PartOfParam.NullOutput(); //配合app的人調整
+            #region 配合app的人調整的部份
+            if (apiOutput == null)
+            {
+                objOutput.Add("Data", obj);
+            }
+            else
+            {
+                objOutput.Add("Data", apiOutput);
+            }
+
+            #endregion
+
 
         }
         #endregion
