@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
             Int64 LogID = 0;
             Int16 ErrType = 0;
             IAPI_GetEnterpriseList apiInput = null;
-            List<OAPI_GetEnterpriseList> outputApi = new List<OAPI_GetEnterpriseList>();
+            OAPI_GetEnterpriseList outputApi = new OAPI_GetEnterpriseList();
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -73,9 +73,23 @@ namespace WebAPI.Controllers
             }
             #endregion
             #region TB
+            //Token判斷
+            if (flag && isGuest == false)
+            {
+                string CheckTokenName = new ObjType().GetSPName(ObjType.SPType.CheckTokenReturnID);
+                SPInput_CheckTokenOnlyToken spCheckTokenInput = new SPInput_CheckTokenOnlyToken()
+                {
 
+                    LogID = LogID,
+                    Token = Access_Token
+                };
+                SPOutput_CheckTokenReturnID spOut = new SPOutput_CheckTokenReturnID();
+                SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID> sqlHelp = new SQLHelper<SPInput_CheckTokenOnlyToken, SPOutput_CheckTokenReturnID>(connetStr);
+                flag = sqlHelp.ExecuteSPNonQuery(CheckTokenName, spCheckTokenInput, ref spOut, ref lstError);
+                baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
+            }
             //開始送短租查詢
-            if (flag)
+            if (flag && apiInput.TaxID.Length == 8)
             {
                 WebAPIOutput_EnterpriseList wsOutput = new WebAPIOutput_EnterpriseList();
                 HiEasyRentAPI wsAPI = new HiEasyRentAPI();
@@ -84,25 +98,36 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-                    if (wsOutput.Data.Length > 0)
+                    if (wsOutput.Data != null)
                     {
-                        foreach (var row in wsOutput.Data)
+                        outputApi.TaxID = wsOutput.Data.TaxID;
+                        outputApi.CUSTNM = wsOutput.Data.CUSTNM;
+
+                        if (outputApi.TaxID == "")
                         {
-                            var rowData = new OAPI_GetEnterpriseList();
-                            rowData.CUSTNM      = row.CUSTNM;
-                            rowData.TaxID       = row.TaxID;
-                            rowData.DeptNo      = row.DeptNo;
-                            rowData.DeptName    = row.DeptName;
-                            outputApi.Add(rowData);
+                            errCode = "ERR311";
+                            errMsg = "查無企業資料";
+                        }
+                        else
+                        if (wsOutput.Data.depList != null && wsOutput.Data.depList.Count > 0)
+                        {
+                            outputApi.list = new List<OAPI_GetEnterpriseDept_List>();
+                            foreach (var row in wsOutput.Data.depList)
+                            {
+                                OAPI_GetEnterpriseDept_List l_data = new OAPI_GetEnterpriseDept_List();
+                                l_data.DeptNo = row.DeptNo;
+                                l_data.DeptName = row.DeptName;
+                                outputApi.list.Add(l_data);
+                            }
                         }
                     }
-                }
-                else
-                {
-                    errCode = "ERR";
-                    errMsg = wsOutput.Message;
+
                 }
 
+            }else
+            {
+                errCode = "ERR312";
+                errMsg = "統一編號格式不符";
             }
 
             #endregion

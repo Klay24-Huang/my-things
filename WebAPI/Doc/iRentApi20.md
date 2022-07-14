@@ -1593,13 +1593,15 @@
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           | object |               |
-* MedalList 參數說明
-
+* Data 參數說明
 | 參數名稱      | 參數說明                   |  型態  | 範例                |
 | ------------- | -------------------------- | :----: | ------------------- |
 | CUSTNM     	| 企業名稱                   | string | "運輪齒輪工業有限公司"  |
 | TaxID 	 	| 統一編號                   | string | "12354548"           |
-| DeptNo        | 部門代碼                   |  int   | 1                   |
+| list      	| 			                 | object |            			|
+
+* list 參數說明
+| DeptNo        | 部門代碼(-1為不存在)       |  int   | 1                   |
 | DeptName      | 部門名稱                   | string | "營業部"            |
 
 * Output 範例
@@ -1611,28 +1613,67 @@
 	"NeedRelogin": 0,
 	"NeedUpgrade": 0,
 	"ErrorMessage": "Success",
-	"Data": [
-		{
-			"CUSTNM": "運輪齒輪工業有限公司",
-			"TaxID": "12354548",
-			"DeptNo": 1,
-			"DeptName": "企劃部"
-		},
-		{
-			"CUSTNM": "運輪齒輪工業有限公司",
-			"TaxID": "12354548",
-			"DeptNo": 2,
-			"DeptName": "資訊部"
-		},
-		{
-			"CUSTNM": "運輪齒輪工業有限公司",
-			"TaxID": "12354548",
-			"DeptNo": 4,
-			"DeptName": "營業部"
-		}
-	]
+	"Data": {
+		"CUSTNM": "運輪齒輪工業有限公司",
+		"TaxID": "12354548",
+		"list": [
+			{
+				"DeptNo": 1,
+				"DeptName": "企劃部"
+			},
+			{
+				"DeptNo": 2,
+				"DeptName": "資訊部"
+			},
+			{
+				"DeptNo": 4,
+				"DeptName": "營業部"
+			},
+			{
+				"DeptNo": 12,
+				"DeptName": "客服部"
+			}
+		]
+	}
+}
+{
+	"Result": "1",
+	"ErrorCode": "000000",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "Success",
+	"Data": {
+		"CUSTNM": "葆丞工程有限公司",
+		"TaxID": "16701464",
+		"list": [
+			{
+				"DeptNo": -1,
+				"DeptName": ""
+			}
+		]
+	}
+}
+{
+	"Result": "0",
+	"ErrorCode": "ERR312",
+	"NeedRelogin": 0,
+	"NeedUpgrade": 0,
+	"ErrorMessage": "統一編號格式不符",
+	"Data": {
+		"CUSTNM": null,
+		"TaxID": null,
+		"list": null
+	}
 }
 ```
+* 錯誤代碼
+
+| 錯誤代碼 | 錯誤訊息                                      | 說明 |
+| -------- | --------------------------------------------- | ---- |
+| ERR900   | 參數遺漏									   |      |
+| ERR101   | 請重新登入									   |      |
+| ERR311   | 查無企業會員資料							   |      |
+| ERR312   | 統一編號格式不符							   |      |
 
 
 

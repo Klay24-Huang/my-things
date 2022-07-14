@@ -18,10 +18,11 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// </summary>
         public bool Result { set; get; }
         public string Message { set; get; }
-        public WebAPIOutput_EnterpriseListData[] Data { set; get; }
+        public string RtnCode { set; get; }
+        public WebAPIOutput_EnterpriseListData Data { set; get; }
     }
-
-    public class WebAPIOutput_EnterpriseListData {
+    public class WebAPIOutput_EnterpriseListData
+    {
         /// <summary>
         /// 公司名稱
         /// </summary>
@@ -30,6 +31,12 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// 統一編號
         /// </summary>
         public string TaxID { set; get; }
+        public List<WebAPIOutput_EnterpriseDept> depList { set; get; }
+
+    }
+
+    public class WebAPIOutput_EnterpriseDept
+    {
         /// <summary>
         /// 部門代碼
         /// </summary>
@@ -51,6 +58,7 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         public string Message { set; get; }
         public WebAPIOutput_CheckoutOptionData[] Data { set; get; }
     }
+
     public class WebAPIOutput_CheckoutOptionData
     {
         /// <summary>

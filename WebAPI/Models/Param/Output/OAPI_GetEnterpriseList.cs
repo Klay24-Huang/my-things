@@ -16,6 +16,10 @@ namespace WebAPI.Models.Param.Output
         /// 統一編號
         /// </summary>
         public string TaxID { set; get; }
+        public List<OAPI_GetEnterpriseDept_List> list { set; get; }
+}
+    public class OAPI_GetEnterpriseDept_List
+    {
         /// <summary>
         /// 部門代碼
         /// </summary>
@@ -25,4 +29,5 @@ namespace WebAPI.Models.Param.Output
         /// </summary>
         public string DeptName { set; get; }
     }
+
 }
