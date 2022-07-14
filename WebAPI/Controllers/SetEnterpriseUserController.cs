@@ -90,10 +90,11 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SpName = "usp_SetEnterpriseUser";
+                string SpName = "usp_SetEnterpriseUser_01";
                 SPInput_EnterpriseUser SPInput = new SPInput_EnterpriseUser()
                 {
                     Token = Access_Token,
+                    IDNO = IDNO,
                     ApiName = funName,
                     LogID = LogID,
                     CompanyName = apiInput.CompanyName,
