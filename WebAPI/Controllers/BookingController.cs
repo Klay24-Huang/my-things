@@ -252,7 +252,7 @@ namespace WebAPI.Controllers
             if (flag)
             {
                 #region 檢查錢包是否開通
-                string spName = "usp_CreditAndWalletQuery_Q01";
+                string spName = "usp_CreditAndWalletQuery_Q03";
                 SPInput_CreditAndWalletQuery spWalletInput = new SPInput_CreditAndWalletQuery
                 {
                     IDNO = IDNO,

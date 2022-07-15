@@ -311,6 +311,28 @@ namespace Domain.SP.Output.OrderList
         /// </summary>
         public int GiveMinute { get; set; }
         #endregion
+
+        #region 企業客戶
+        /// <summary>
+        /// 企業客戶統一編號
+        /// </summary>
+        public string EnterpriseTaxID { get; set; }
+
+        /// <summary>
+        /// 企業客戶Etag請款項目 (0:個人 1:公司)
+        /// </summary>
+        public int EnterpriseEtag { get; set; }
+
+        /// <summary>
+        /// 企業客戶安心服務請款項目 (0:個人 1:公司)
+        /// </summary>
+        public int EnterpriseInsurance { get; set; }
+
+        /// <summary>
+        /// 企業客戶停車費請款項目 (0:個人 1:公司)
+        /// </summary>
+        public int EnterpriseParking { get; set; }
+        #endregion
     }
 
     /// <summary>

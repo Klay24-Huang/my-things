@@ -5461,34 +5461,40 @@
 
 * Rent資料物件說明
 
-| 參數名稱                     | 參數說明               |  型態  | 範例                |
-| ---------------------------- | ---------------------- | :----: | ------------------- |
-| CarNo                        | 車號                   | string | RCG-2261            |
-| BookingStartDate             | 實際取車時間           | string | 2022-03-24 13:41:00 |
-| BookingEndDate               | 預計還車時間           | string | 2022-03-24 15:41:00 |
-| RentalDate                   | 實際還車時間           | string | 2022-03-24 15:41:00 |
-| RentalTimeInterval           | 實際租用時數           | string | 120                 |
-| CanDiscountTime              | 可折抵時數             |  int   | 90                  |
-| RedeemingTimeInterval        | 可使用的折抵總時數     | string | 600                 |
-| RedeemingTimeCarInterval     | 可使用的折抵時數(汽車) | string | 600                 |
-| RedeemingTimeMotorInterval   | 可使用的折抵時數(機車) | string | 0                   |
-| ActualRedeemableTimeInterval | 實際可折抵的時數       | string | 90                  |
-| RemainRentalTimeInterval     | 折抵後的租用時數       | string | 90                  |
-| UseMonthlyTimeInterval       | 月租折抵時數           | string | 0                   |
-| UseNorTimeInterval           | 一般時段時數折抵       | string | 0                   |
-| UseGiveMinute                | 標籤優惠折抵時數       |  int   | 30                  |
-| RentBasicPrice               | 每小時基本租金         |  int   | 0                   |
-| CarRental                    | 車輛租金               |  int   | 165                 |
-| MileageRent                  | 里程費用               |  int   | 0                   |
-| ETAGRental                   | ETAG費用               |  int   | 0                   |
-| OvertimeRental               | 逾時費用               |  int   | 0                   |
-| ParkingFee                   | 停車費用               |  int   | 0                   |
-| TransferPrice                | 轉乘費用               |  int   | 0                   |
-| InsurancePurePrice           | 安心服務               |  int   | 0                   |
-| InsuranceExtPrice            | 安心服務延長費用       |  int   | 0                   |
-| TotalRental                  | 總計                   |  int   | 165                 |
-| PreAmount                    | 預授權金額             |  int   | 172                 |
-| DiffAmount                   | 差額                   |  int   | -7                  |
+| 參數名稱                     | 參數說明                                    |  型態  | 範例                |
+| ---------------------------- | ------------------------------------------- | :----: | ------------------- |
+| CarNo                        | 車號                                        | string | RCG-2261            |
+| BookingStartDate             | 實際取車時間                                | string | 2022-03-24 13:41:00 |
+| BookingEndDate               | 預計還車時間                                | string | 2022-03-24 15:41:00 |
+| RentalDate                   | 實際還車時間                                | string | 2022-03-24 15:41:00 |
+| RentalTimeInterval           | 實際租用時數                                | string | 120                 |
+| CanDiscountTime              | 可折抵時數                                  |  int   | 90                  |
+| RedeemingTimeInterval        | 可使用的折抵總時數                          | string | 600                 |
+| RedeemingTimeCarInterval     | 可使用的折抵時數(汽車)                      | string | 600                 |
+| RedeemingTimeMotorInterval   | 可使用的折抵時數(機車)                      | string | 0                   |
+| ActualRedeemableTimeInterval | 實際可折抵的時數                            | string | 90                  |
+| RemainRentalTimeInterval     | 折抵後的租用時數                            | string | 90                  |
+| UseMonthlyTimeInterval       | 月租折抵時數                                | string | 0                   |
+| UseNorTimeInterval           | 一般時段時數折抵                            | string | 0                   |
+| UseGiveMinute                | 標籤優惠折抵時數                            |  int   | 30                  |
+| RentBasicPrice               | 每小時基本租金                              |  int   | 0                   |
+| CarRental                    | 車輛租金                                    |  int   | 165                 |
+| MileageRent                  | 里程費用                                    |  int   | 0                   |
+| ETAGRental                   | ETAG費用                                    |  int   | 0                   |
+| OvertimeRental               | 逾時費用                                    |  int   | 0                   |
+| ParkingFee                   | 停車費用                                    |  int   | 0                   |
+| TransferPrice                | 轉乘費用                                    |  int   | 0                   |
+| InsurancePurePrice           | 安心服務                                    |  int   | 0                   |
+| InsuranceExtPrice            | 安心服務延長費用                            |  int   | 0                   |
+| TotalRental                  | 總計                                        |  int   | 165                 |
+| PreAmount                    | 預授權金額                                  |  int   | 172                 |
+| DiffAmount                   | 差額                                        |  int   | -7                  |
+| EnterpriseTaxID              | 企業客戶統一編號                            | string | 12354548            |
+| EnterpriseEtag               | 企業客戶Etag請款項目<br>(0:個人 1:公司)     |  int   | 1                   |
+| EnterpriseInsurance          | 企業客戶安心服務請款項目<br>(0:個人 1:公司) |  int   | 0                   |
+| EnterpriseParking            | 企業客戶停車費請款項目<br>(0:個人 1:公司)   |  int   | 0                   |
+| EnterpriseFee                | 企業月結金額                                |  int   | 110                 |
+| PersonalFee                  | 自付款項金額                                |  int   | 50                  |
 
 * CarRent資料物件說明
 
@@ -5539,36 +5545,42 @@
         "CanUseMonthRent": 1,
         "IsMonthRent": 0,
         "IsMotor": 0,
-        "UseOrderPrice": 170,
+        "UseOrderPrice": 50,
         "ReturnOrderPrice": 0,
         "FineOrderPrice": 0,
         "Rent": {
-            "CarNo": "RCF-8151",
-            "BookingStartDate": "2022-04-15 09:00:00",
-            "BookingEndDate": "2022-04-15 11:03:00",
-            "RentalDate": "2022-04-15 11:03:00",
-            "RentalTimeInterval": "120",
-            "CanDiscountTime": 90,
-            "RedeemingTimeInterval": "600",
-            "RedeemingTimeCarInterval": "600",
+            "CarNo": "RBX-9661",
+            "BookingStartDate": "2022-07-15 16:40:00",
+            "BookingEndDate": "2022-07-15 16:40:00",
+            "RentalDate": "2022-07-15 16:40:00",
+            "RentalTimeInterval": "60",
+            "CanDiscountTime": 60,
+            "RedeemingTimeInterval": "0",
+            "RedeemingTimeCarInterval": "0",
             "RedeemingTimeMotorInterval": "0",
-            "ActualRedeemableTimeInterval": "90",
-            "RemainRentalTimeInterval": "90",
+            "ActualRedeemableTimeInterval": "60",
+            "RemainRentalTimeInterval": "60",
             "UseMonthlyTimeInterval": "0",
             "UseNorTimeInterval": "0",
-            "UseGiveMinute": 30,
+            "UseGiveMinute": 0,
             "RentBasicPrice": 0,
-            "CarRental": 165,
+            "CarRental": 110,
             "MileageRent": 0,
             "ETAGRental": 0,
             "OvertimeRental": 0,
             "ParkingFee": 0,
             "TransferPrice": 0,
-            "InsurancePurePrice": 0,
+            "InsurancePurePrice": 50,
             "InsuranceExtPrice": 0,
-            "TotalRental": 165,
-            "PreAmount": 170,
-            "DiffAmount": -5
+            "TotalRental": 160,
+            "PreAmount": 50,
+            "DiffAmount": 110,
+            "EnterpriseTaxID": "12354548",
+            "EnterpriseEtag": 1,
+            "EnterpriseInsurance": 0,
+            "EnterpriseParking": 0,
+            "EnterpriseFee": 110,
+            "PersonalFee": 50
         },
         "CarRent": {
             "HourOfOneDay": 10,
@@ -5576,7 +5588,7 @@
             "WorkdayPrice": 1100,
             "HoildayOfHourPrice": 168,
             "WorkdayOfHourPrice": 110,
-            "MilUnit": 3.0
+            "MilUnit": 3.2
         },
         "MotorRent": {
             "BaseMinutes": 0,
@@ -5607,37 +5619,44 @@
     "Data": {
         "CanUseDiscount": 1,
         "CanUseMonthRent": 1,
-        "IsMonthRent": 1,
+        "IsMonthRent": 0,
         "IsMotor": 1,
         "UseOrderPrice": 0,
         "ReturnOrderPrice": 0,
         "FineOrderPrice": 0,
         "Rent": {
-            "CarNo": "EWB-8812",
-            "BookingStartDate": "2022-03-24 15:56:00",
-            "BookingEndDate": "2022-03-24 16:25:00",
-            "RentalDate": "2022-03-24 16:25:00",
-            "RentalTimeInterval": "29",
-            "RedeemingTimeInterval": "600",
-            "RedeemingTimeCarInterval": "600",
+            "CarNo": "EWA-5032",
+            "BookingStartDate": "2022-07-15 17:09:00",
+            "BookingEndDate": "2022-07-15 17:10:00",
+            "RentalDate": "2022-07-15 17:10:00",
+            "RentalTimeInterval": "6",
+            "CanDiscountTime": 6,
+            "RedeemingTimeInterval": "0",
+            "RedeemingTimeCarInterval": "0",
             "RedeemingTimeMotorInterval": "0",
-            "ActualRedeemableTimeInterval": "0",
-            "RemainRentalTimeInterval": "0",
-            "UseMonthlyTimeInterval": "17",
+            "ActualRedeemableTimeInterval": "6",
+            "RemainRentalTimeInterval": "6",
+            "UseMonthlyTimeInterval": "0",
             "UseNorTimeInterval": "0",
-            "UseGiveMinute": 12,
-            "RentBasicPrice": 12,
-            "CarRental": 0,
+            "UseGiveMinute": 0,
+            "RentBasicPrice": 15,
+            "CarRental": 15,
             "MileageRent": 0,
             "ETAGRental": 0,
             "OvertimeRental": 0,
             "ParkingFee": 0,
-            "TransferPrice": 0,
-            "InsurancePurePrice": 0,
+            "TransferPrice": 15,
+            "InsurancePurePrice": 3,
             "InsuranceExtPrice": 0,
-            "TotalRental": 0,
+            "TotalRental": 3,
             "PreAmount": 0,
-            "DiffAmount": 0
+            "DiffAmount": 3,
+            "EnterpriseTaxID": "",
+            "EnterpriseEtag": 0,
+            "EnterpriseInsurance": 0,
+            "EnterpriseParking": 0,
+            "EnterpriseFee": 0,
+            "PersonalFee": 0
         },
         "CarRent": {
             "HourOfOneDay": 0,
@@ -5649,12 +5668,12 @@
         },
         "MotorRent": {
             "BaseMinutes": 6,
-            "BaseMinutePrice": 12,
+            "BaseMinutePrice": 15,
             "MinuteOfPrice": 2.5
         },
         "MonthRent": {
-            "WorkdayRate": 1.8,
-            "HoildayRate": 1.8
+            "WorkdayRate": 0.0,
+            "HoildayRate": 0.0
         },
         "MonBase": [],
         "ProType": 4,

@@ -20,6 +20,7 @@ using WebAPI.Models.BaseFunc;
 using WebAPI.Models.BillFunc;
 using WebAPI.Models.Param.Input;
 using WebAPI.Models.Param.Output;
+using WebAPI.Models.Param.Output.PartOfParam;
 using WebAPI.Service;
 using WebCommon;
 
@@ -626,18 +627,18 @@ namespace WebAPI.Controllers
                     {
                         int Mode = ProjType == 4 ? 1 : 0;
                         //outputApi.MonBase = carRepo.GetMonths(IDNO, SD, FED, Mode); //短期下拉選項
-                        outputApi.MonBase = new List<Models.Param.Output.PartOfParam.MonBase>();
+                        outputApi.MonBase = new List<MonBase>();
                         outputApi.CanUseDiscount = 1;   //先暫時寫死，之後改專案設定，由專案設定引入
                         outputApi.CanUseMonthRent = 1;  //先暫時寫死，之後改專案設定，由專案設定引入
-                        outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase();
+                        outputApi.CarRent = new CarRentBase();
                         outputApi.DiscountAlertMsg = "";
                         outputApi.IsMonthRent = 0;  //先暫時寫死，之後改專案設定，由專案設定引入，第二包才會引入月租專案
                         outputApi.IsMotor = (ProjType == 4) ? 1 : 0;    //是否為機車
-                        outputApi.MonthRent = new Models.Param.Output.PartOfParam.MonthRentBase();  //月租資訊
-                        outputApi.MotorRent = new Models.Param.Output.PartOfParam.MotorRentBase();  //機車資訊
+                        outputApi.MonthRent = new MonthRentBase();  //月租資訊
+                        outputApi.MotorRent = new MotorRentBase();  //機車資訊
                         outputApi.PayMode = (ProjType == 4) ? 1 : 0;    //目前只有機車才會有以分計費模式
                         outputApi.ProType = ProjType;
-                        outputApi.Rent = new Models.Param.Output.PartOfParam.RentBase() //訂單基本資訊
+                        outputApi.Rent = new RentBase() //訂單基本資訊
                         {
                             BookingEndDate = ED.ToString("yyyy-MM-dd HH:mm:ss"),
                             BookingStartDate = SD.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -652,7 +653,7 @@ namespace WebAPI.Controllers
                         if (ProjType == 4)
                         {
                             TotalPoint = (CarPoint + MotorPoint);
-                            outputApi.MotorRent = new Models.Param.Output.PartOfParam.MotorRentBase()
+                            outputApi.MotorRent = new MotorRentBase()
                             {
                                 BaseMinutePrice = item.BaseMinutesPrice,
                                 BaseMinutes = item.BaseMinutes,
@@ -662,7 +663,7 @@ namespace WebAPI.Controllers
                         else
                         {
                             TotalPoint = CarPoint;
-                            outputApi.CarRent = new Models.Param.Output.PartOfParam.CarRentBase()
+                            outputApi.CarRent = new CarRentBase()
                             {
                                 HoildayOfHourPrice = item.PRICE_H,
                                 HourOfOneDay = 10,
@@ -1019,6 +1020,28 @@ namespace WebAPI.Controllers
                             gift_motor_point = 0;
                             outputApi.Rent.OvertimeRental = car_outPrice;//逾時費用
                         }
+                        #region 企業客戶
+                        if (!string.IsNullOrEmpty(item.EnterpriseTaxID))
+                        {
+                            outputApi.Rent.EnterpriseTaxID = item.EnterpriseTaxID;
+                            outputApi.Rent.EnterpriseEtag = item.EnterpriseEtag;
+                            outputApi.Rent.EnterpriseInsurance = item.EnterpriseInsurance;
+                            outputApi.Rent.EnterpriseParking = item.EnterpriseParking;
+                            outputApi.Rent.EnterpriseFee = xCarRental + outputApi.Rent.OvertimeRental + outputApi.Rent.MileageRent; // 企業月結金額 = 租金 + 逾時租金 + 里程費
+                            if (item.EnterpriseEtag == 0)   // Etag請款項目 (0:個人 1:公司)
+                                outputApi.Rent.PersonalFee += outputApi.Rent.ETAGRental;
+                            else
+                                outputApi.Rent.EnterpriseFee += outputApi.Rent.ETAGRental;
+                            if (item.EnterpriseInsurance ==0)   // 安心服務請款項目 (0:個人 1:公司)
+                                outputApi.Rent.PersonalFee += outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice;
+                            else
+                                outputApi.Rent.EnterpriseFee += outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice;
+                            if (item.EnterpriseParking == 0)    // 停車費請款項目 (0:個人 1:公司)
+                                outputApi.Rent.PersonalFee += outputApi.Rent.ParkingFee;
+                            else
+                                outputApi.Rent.EnterpriseFee += outputApi.Rent.ParkingFee;
+                        }
+                        #endregion
                         trace.FlowList.Add("修正輸出欄位");
                         #endregion
 
