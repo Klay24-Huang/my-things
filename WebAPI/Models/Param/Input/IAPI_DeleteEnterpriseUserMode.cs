@@ -11,10 +11,5 @@ namespace WebAPI.Models.Param.Input
         /// 統一編號
         /// </summary>
         public string TaxID { get; set; }
-
-        /// <summary>
-        /// 帳號
-        /// </summary>
-        public string IDNO { get; set; }
     }
 }

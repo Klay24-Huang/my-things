@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebAPI.Models.Param.Input
 {
@@ -24,11 +21,6 @@ namespace WebAPI.Models.Param.Input
         /// 用車行程
         /// 1 = 個人身分，2 = 企業身分
         /// </summary>
-        public Int16 CarTrip { get; set; }
-
-        /// <summary>
-        /// 企業身分統一編號
-        /// </summary>
-        public string TaxID { set; get; }
+        public Int16 CarTrip { get; set; } = 1;
     }
 }

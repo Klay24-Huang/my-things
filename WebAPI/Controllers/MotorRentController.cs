@@ -100,11 +100,10 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region 取得機車使用中訂閱制月租
-            //取得機車使用中訂閱制月租
+            #region 取得使用中訂閱制月租
             if (flag)
             {
-                if (!string.IsNullOrWhiteSpace(IDNO))
+                if (!string.IsNullOrWhiteSpace(IDNO) && apiInput.CarTrip != 2)
                 {
                     var sp_in = new SPInput_GetNowSubs()
                     {
@@ -112,8 +111,7 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = -1,
-                        CarTrip = apiInput.CarTrip
+                        IsMoto = -1
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
@@ -213,6 +211,10 @@ namespace WebAPI.Controllers
                     }
                     if (_MotorRentObj != null && _MotorRentObj.Count() > 0)
                     {
+                        #region 企業客戶判斷
+                        _MotorRentObj.ForEach(x => { x.TaxID = apiInput.CarTrip == 2 ? x.TaxID : ""; });
+                        #endregion
+
                         #region 加入月租資訊
                         bool isSpring = new CarRentCommon().isSpring(SDate, EDate); //是否為春節時段
 
@@ -251,7 +253,6 @@ namespace WebAPI.Controllers
                                        Describe = $"{t.GiveMinute}分鐘優惠折抵",
                                    }).FirstOrDefault() ?? new DiscountLabel();
                             });
-
                         }
                         #endregion
 
@@ -259,7 +260,6 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-
             #endregion
 
             #region 寫入錯誤Log

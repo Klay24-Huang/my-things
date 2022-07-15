@@ -63,10 +63,5 @@ namespace WebAPI.Models.Param.Output
         /// 優惠標籤
         /// </summary>
         public DiscountLabel DiscountLabel { get; set; } = new DiscountLabel();
-
-        /// <summary>
-        /// 企業身分統編
-        /// </summary>
-        public string TaxID { get; set; } = "";
     }
 }

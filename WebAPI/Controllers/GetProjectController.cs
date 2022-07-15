@@ -167,10 +167,6 @@ namespace WebAPI.Controllers
                             LstCarTypes = LstCarTypes.GroupBy(x => x).Select(y => y.FirstOrDefault()).ToList();
                         #endregion
 
-                        //Seat處理
-                        //if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
-                        //    LstSeats = apiInput.Seats.Select(x => x.ToString()).ToList();
-
                         if (!string.IsNullOrWhiteSpace(apiInput.StationID))
                             LstStationIDs.Add(apiInput.StationID);
                     }
@@ -202,11 +198,10 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region 取得汽車使用中訂閱制月租
-            //取得汽車使用中訂閱制月租
+            #region 取得使用中訂閱制月租
             if (flag)
             {
-                if (!string.IsNullOrWhiteSpace(IDNO))
+                if (!string.IsNullOrWhiteSpace(IDNO) && apiInput.CarTrip != 2)
                 {
                     var sp_in = new SPInput_GetNowSubs()
                     {
@@ -214,8 +209,7 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = 0,
-                        CarTrip = apiInput.CarTrip
+                        IsMoto = 0
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
@@ -366,17 +360,12 @@ namespace WebAPI.Controllers
                                    StationName = a.StationName,
                                    StationPicJson = a.StationPicJson,
                                    IsFavStation = a.IsFavStation,//常用據點
-                                   TaxID = a.TaxID
+                                   TaxID = apiInput.CarTrip == 2 ? a.TaxID : ""
                                }).OrderByDescending(x => x.IsRent).ThenBy(x => x.Price).ThenBy(x => x.CarType).ToList();    // 20210813 UPD BY YEH REASON:增加排序，排序:IsRent(可>不可)>Price(低>高)>CarType
 
                     #region 過濾查詢結果
                     if (lstData != null && lstData.Count() > 0)
                         lstData.ForEach(x => { if ((string.IsNullOrWhiteSpace(x.IsRent) ? "" : x.IsRent.ToLower()) == "n") { x.IsShowCard = 0; } });
-
-                    //if (apiInput.Seats != null && apiInput.Seats.Count() > 0)
-                    //{
-                    //    lstData.ForEach(x => { if (!apiInput.Seats.Contains(x.Seat)) { x.IsRent = "N"; x.IsShowCard = 0; } });
-                    //}
 
                     if (LstCarTypes != null && LstCarTypes.Count() > 0)
                     {
@@ -653,7 +642,6 @@ namespace WebAPI.Controllers
                                             ProjectObj newItem = objUti.Clone(y);
 
                                             #region 月租卡片欄位給值
-                                            //newItem.ProjName += "_" + z.MonProjNM;
                                             //20210706 ADD BY ADAM REASON.改為月租方案名稱顯示
                                             newItem.ProjName = z.MonProjNM;
                                             newItem.CarWDHours = z.WorkDayHours == 0 ? -999 : z.WorkDayHours;
@@ -665,11 +653,8 @@ namespace WebAPI.Controllers
                                             newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
                                             newItem.MonthlyRentId = z.MonthlyRentId;
                                             newItem.WDRateForCar = z.WorkDayRateForCar;
-                                            //newItem.HDRateForCar = z.HoildayRateForCar;
-                                            //newItem.HDRateForCar = y.HDRateForCar;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
                                             //20211025 ADD BY ADAM REASON.原本的修改並沒有處理到HDRateForCar，改為使用HolidayPerHour
                                             newItem.HDRateForCar = y.HolidayPerHour;//月租假日優惠費率用一般假日優惠費率(前端顯示用)
-                                            newItem.TaxID = z.TaxID; //20220706  ADD BY Eddie REASON:如果有訂閱制要多回傳統編
                                             newItem.WDRateForMoto = z.WorkDayRateForMoto;
                                             newItem.HDRateForMoto = z.HoildayRateForMoto;
                                             newItem.ProDesc = z.MonProDisc; //20210715 ADD BY ADAM REASON.補上說明欄位
@@ -695,7 +680,6 @@ namespace WebAPI.Controllers
                                     if (newGetProjObj.ProjectObj != null && newGetProjObj.ProjectObj.Count() > 0)
                                     {
                                         //20210620 ADD BY ADAM REASON.排序，抓最小的出來設定IsMinimun
-                                        //newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.ProjID).ThenBy(b=>b.CarType).ThenBy(c => c.MonthlyRentId).ToList();
                                         newGetProjObj.ProjectObj = newGetProjObj.ProjectObj.OrderBy(a => a.Price).ThenByDescending(c => c.MonthlyRentId).ToList();
                                         newGetProjObj.ProjectObj.First().IsMinimum = 1;
                                         VisProObjs.Add(newGetProjObj);

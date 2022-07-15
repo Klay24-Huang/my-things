@@ -127,11 +127,10 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region 取得汽車使用中訂閱制月租
-            //取得汽車使用中訂閱制月租
+            #region 取得使用中訂閱制月租
             if (flag)
             {
-                if (flag && !string.IsNullOrWhiteSpace(IDNO))
+                if (flag && !string.IsNullOrWhiteSpace(IDNO) && apiInput.CarTrip != 2)
                 {
                     var sp_in = new SPInput_GetNowSubs()
                     {
@@ -139,8 +138,7 @@ namespace WebAPI.Controllers
                         LogID = LogID,
                         SD = SDate,
                         ED = EDate,
-                        IsMoto = 0,
-                        CarTrip = apiInput.CarTrip
+                        IsMoto = 0
                     };
                     var sp_list = new MonSubsSp().sp_GetNowSubs(sp_in, ref errCode);
                     if (sp_list != null && sp_list.Count() > 0)
@@ -265,7 +263,7 @@ namespace WebAPI.Controllers
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = lstData[0].Content,
                                 DiscountLabel = reDiscountLabel,
-                                TaxID = lstData[0].TaxID
+                                TaxID = apiInput.CarTrip == 2 ? lstData[0].TaxID : ""
                             });
 
                             if (DataLen > 1)
@@ -310,12 +308,10 @@ namespace WebAPI.Controllers
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
                                         Content = lstData[i].Content,
-                                        TaxID = lstData[i].TaxID,
+                                        TaxID = apiInput.CarTrip == 2 ? lstData[i].TaxID : "",
                                     });
                                 }
                             }
-
-
                         }
                     }
                 }

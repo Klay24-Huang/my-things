@@ -56,12 +56,10 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public List<string> CarTypes { get; set; } = new List<string>();
 
-        //public List<int> Seats { get; set; } = new List<int>();
-
         /// <summary>
         /// 用車行程
         /// 1 = 個人身分，2 = 企業身分
         /// </summary>
-        public Int16 CarTrip { get; set; }
+        public Int16 CarTrip { get; set; } = 1;
     }
 }

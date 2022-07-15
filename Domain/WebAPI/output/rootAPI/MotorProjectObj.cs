@@ -98,11 +98,6 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public float RemainingMileage { set; get; }
 
-        /// <summary>
-        /// 企業身分統一編號
-        /// </summary>
-        public string TaxID { get; set; }
-
         #region 訂閱制月租
         /// <summary>
         /// 訂閱制月租Id
@@ -129,6 +124,7 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public string MonthEndDate { get; set; } = "";
         #endregion
+
         /// <summary>
         /// 優惠標籤
         /// </summary>
@@ -152,5 +148,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public int InsuranceMotoRate { set; get; }
         #endregion
+
+        /// <summary>
+        /// 企業身分統一編號
+        /// </summary>
+        public string TaxID { get; set; }
     }
 }
