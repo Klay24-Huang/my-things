@@ -67,15 +67,26 @@ namespace WebAPI.Controllers
                     errCode = "ERR101";
                 }
             }
-            #endregion
 
-            #region 不支援訪客
+            //統一編號未輸入
             if (flag)
             {
-                if (isGuest)
+                if (string.IsNullOrEmpty(apiInput.TaxID))
                 {
                     flag = false;
-                    errCode = "ERR150";
+                    errCode = "ERR190";
+                }
+            }
+
+            //公司名稱未輸入
+            if (flag)
+            {
+                if (string.IsNullOrEmpty(apiInput.CompanyName))
+                {
+
+                    flag = false;
+                    errCode = "ERR406";
+
                 }
             }
             #endregion
@@ -90,7 +101,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SpName = "usp_SetEnterpriseUser_01";
+                string SpName = "usp_SetEnterpriseUser";
                 SPInput_EnterpriseUser SPInput = new SPInput_EnterpriseUser()
                 {
                     Token = Access_Token,

@@ -67,17 +67,17 @@ namespace WebAPI.Controllers
                     errCode = "ERR101";
                 }
             }
-            #endregion
 
-            #region 不支援訪客
+            //統一編號未輸入
             if (flag)
             {
-                if (isGuest)
+                if (string.IsNullOrEmpty(apiInput.TaxID))
                 {
                     flag = false;
-                    errCode = "ERR150";
+                    errCode = "ERR190";
                 }
             }
+
             #endregion
 
             #region TB
@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
 
             if (flag)
             {
-                string SpName = "usp_DeleteEnterpriseUser_01";
+                string SpName = "usp_DeleteEnterpriseUser";
                 SPInput_DeleteEnterpriseUser SPInput = new SPInput_DeleteEnterpriseUser()
                 {
                     Token = Access_Token,
