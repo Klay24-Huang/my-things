@@ -353,6 +353,8 @@
 
 20220613 調整BookingQuery欄位Insurance狀態
 
+20220707 增加BookingQuery欄位NowOrderFlg
+
 # API位置
 
 | 裝置    | 正式環境                            | 測試環境                                 |
@@ -3725,6 +3727,7 @@
 | ErrorCode    | 錯誤碼             | string | 000000        |
 | NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
 | NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| NowOrderFlg | 目前是否有訂單(定義為有效訂單) | string | Y |
 | ErrorMessage | 錯誤訊息           | string | Success       |
 | Data         | 資料物件           |        |               |
 
@@ -3732,6 +3735,7 @@
 
 | 參數名稱 | 參數說明     | 型態 | 範例 |
 | -------- | ------------ | :--: | ---- |
+| NowOrderFlg | 目前是否有訂單(定義為有效訂單) | string | Y |
 | OrderObj | 訂單明細物件 | list |      |
 
 * OrderObj回傳參數說明
@@ -3837,8 +3841,10 @@
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
+    "NowOrderFlg" : "Y",
     "ErrorMessage": "Success",
     "Data": {
+		"NowOrderFlg" : "Y",
         "OrderObj": [
             {
                 "StationInfo": {
