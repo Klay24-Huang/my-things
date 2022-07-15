@@ -31,8 +31,5 @@ namespace Domain.SP.Output.Subscription
         public int IsMoto { get; set; }
         public int IsMix { get; set; }
         public string MonProDisc { get; set; }
-        public string TaxID { get; set; }
-
     }
-
 }
