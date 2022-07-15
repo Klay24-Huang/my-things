@@ -5,9 +5,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -22,7 +19,7 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
-        public Dictionary<string, object> DoGetMemberStatus(Dictionary<string, object> value)
+        public Dictionary<string, object> DoSetEnterpriseUser(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -76,6 +73,23 @@ namespace WebAPI.Controllers
                     flag = false;
                     errCode = "ERR190";
                 }
+                else
+                {
+                    if (apiInput.TaxID.Length == 8)
+                    {
+                        flag = baseVerify.checkUniNum(apiInput.TaxID);
+                        if (!flag)
+                        {
+                            flag = false;
+                            errCode = "ERR191";
+                        }
+                    }
+                    else
+                    {
+                        flag = false;
+                        errCode = "ERR191";
+                    }
+                }
             }
 
             //公司名稱未輸入
@@ -83,10 +97,8 @@ namespace WebAPI.Controllers
             {
                 if (string.IsNullOrEmpty(apiInput.CompanyName))
                 {
-
                     flag = false;
                     errCode = "ERR406";
-
                 }
             }
             #endregion

@@ -82,7 +82,6 @@ namespace WebAPI.Controllers
             int MotorRentDefaultPickTime = 30;
             int price = 0, InsurancePurePrice = 0;
             int InsurancePerHours = 0;
-            bool EnterpriseInsuFLG = false;
             string IDNO = "";
             string CarTypeCode = "";
             string SPName = "";
@@ -97,7 +96,6 @@ namespace WebAPI.Controllers
             CreditAuthComm creditAuthComm = new CreditAuthComm();
             WebAPIOutput_CheckoutOption wsOutput_CO = new WebAPIOutput_CheckoutOption();
             WalletSp walletSp = new WalletSp();
-            bool isEnterprise = false; //是否為企業訂單
             bool CreditFlag = true;     // 信用卡綁卡
             string CreditErrCode = "";  // 信用卡綁卡錯誤訊息
             bool WalletFlag = false;    // 綁定錢包
@@ -105,6 +103,11 @@ namespace WebAPI.Controllers
             int WalletAmout = 0;        // 錢包餘額
             int motoPreAmt = 0;         // 機車預扣金額
 
+            bool isEnterprise = false; //是否為企業訂單
+            string EnterpriseTaxID = "";    // 企業客戶統一編號
+            bool EnterpriseInsuFLG = false; // 企業訂單Etag請款項目
+            bool EnterpriseeTagFLG = false; // 企業訂單安心服務請款項目
+            bool EnterpriseParkFLG = false; // 企業訂單停車費請款項目
             #endregion
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
@@ -125,7 +128,6 @@ namespace WebAPI.Controllers
                 SDate = apiInput.SDate == "" ? DateTime.Now : Convert.ToDateTime(apiInput.SDate);
                 EDate = apiInput.EDate == "" ? DateTime.Now.AddHours(1) : Convert.ToDateTime(apiInput.EDate);
                 lstHoliday = new CommonRepository(connetStr).GetHolidays(SDate.ToString("yyyyMMdd"), EDate.ToString("yyyyMMdd"));
-                isEnterprise = apiInput.TaxID != null && apiInput.TaxID.Length == 8; ;
             }
             //不開放訪客
             if (flag)
@@ -202,6 +204,30 @@ namespace WebAPI.Controllers
                         {
                             CarType = apiInput.CarType;
                             StationID = apiInput.StationID;
+                        }
+                    }
+                }
+                if (flag)
+                {
+                    if (!string.IsNullOrEmpty(apiInput.TaxID))
+                    {
+                        if (apiInput.TaxID.Length == 8)
+                        {
+                            flag = baseVerify.checkUniNum(apiInput.TaxID);
+                            if (!flag)
+                            {
+                                flag = false;
+                                errCode = "ERR191";
+                            }
+                            else
+                            {
+                                isEnterprise = true;
+                            }
+                        }
+                        else
+                        {
+                            flag = false;
+                            errCode = "ERR191";
                         }
                     }
                 }
@@ -292,36 +318,29 @@ namespace WebAPI.Controllers
                 }
             }
             #endregion
-
             #region 取得企業月結項目
-
             //開始送短租查詢
             if (flag && isEnterprise)
             {
                 HiEasyRentAPI wsAPI = new HiEasyRentAPI();
-                DateTime inputDate = apiInput.SDate == "" ? System.DateTime.Now : Convert.ToDateTime(apiInput.SDate);
-                flag = wsAPI.EnterpriseCheckoutOption(apiInput.TaxID, inputDate.ToString("yyyMMdd hh:mm:ss"), ref wsOutput_CO);
-
+                flag = wsAPI.EnterpriseCheckoutOption(apiInput.TaxID, SDate.ToString("yyyMMdd hh:mm:ss"), ref wsOutput_CO);
                 if (flag)
                 {
                     if (wsOutput_CO != null && wsOutput_CO.Data.Length > 0)
                     {
+                        EnterpriseTaxID = wsOutput_CO.Data[0].TaxID;
                         EnterpriseInsuFLG = wsOutput_CO.Data[0].SafeServ == "Y";
-                        //wsOutput_CO.Data[0].TaxID;
-                        //wsOutput_CO.Data[0].Etag;
-                        //wsOutput_CO.Data[0].Parking;
-                        //wsOutput_CO.Data[0].EnableDate;
-
+                        EnterpriseeTagFLG = wsOutput_CO.Data[0].Etag == "Y";
+                        EnterpriseParkFLG = wsOutput_CO.Data[0].Parking == "Y";
                     }
                 }
                 else
                 {
-                    errCode = "ERR";
+                    errCode = "ERR161";
                     errMsg = wsOutput_CO.Message;
                 }
             }
             #endregion
-
             #region 取得最晚取車時間
             if (flag)
             {
@@ -379,8 +398,7 @@ namespace WebAPI.Controllers
             #region 預約
             if (flag)
             {
-                var co_data = wsOutput_CO.Data == null ? new WebAPIOutput_CheckoutOptionData() : wsOutput_CO.Data[0];
-                SPName = "usp_Booking_V2";
+                SPName = "usp_Booking";
                 SPInput_Booking spInput = new SPInput_Booking()
                 {
                     IDNO = IDNO,
@@ -400,34 +418,28 @@ namespace WebAPI.Controllers
                     PayMode = PayMode,
                     LogID = LogID,
                     PhoneLat = apiInput.PhoneLat,
-                    PhoneLon = apiInput.PhoneLon,
-                    co_TaxID = co_data.TaxID.Length == 8 ? co_data.TaxID.ToString() : "",
-                    co_SafeServ = co_data.SafeServ == "Y" ? 1 : 0,
-                    co_Etag = co_data.Etag == "Y" ? 1 : 0,
-                    co_Parking = co_data.Parking == "Y" ? 1 : 0
+                    PhoneLon = apiInput.PhoneLon
                 };
                 SQLHelper<SPInput_Booking, SPOutput_Booking> sqlHelp = new SQLHelper<SPInput_Booking, SPOutput_Booking>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(SPName, spInput, ref spOut, ref lstError);
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
             #endregion
-
             #region 寫入企業月結項目
-            if (flag && isEnterprise) {
-
-                //將查詢結果寫入AZ_DB
+            if (flag && isEnterprise)
+            {
                 string spName = "usp_GetEnterpriseCheckoutOption_I01";
-                SPOutput_Base spBaseOut = new SPOutput_Base();
                 SPInput_EnterpriseCheckoutOption spInput = new SPInput_EnterpriseCheckoutOption()
                 {
-                    LOGID = LogID,
                     OrderNo = spOut.OrderNum,
                     IDNO = IDNO,
-                    TaxID = apiInput.TaxID,
-                    Etag = wsOutput_CO.Data[0].Etag == "Y" ? 1 : 0,
-                    Insurance = wsOutput_CO.Data[0].SafeServ == "Y" ? 1 : 0,
-                    Parking = wsOutput_CO.Data[0].Parking == "Y" ? 1 : 0
+                    TaxID = EnterpriseTaxID,
+                    Etag = EnterpriseeTagFLG ? 1 : 0,
+                    Insurance = EnterpriseInsuFLG ? 1 : 0,
+                    Parking = EnterpriseParkFLG ? 1 : 0,
+                    LogID = LogID
                 };
+                SPOutput_Base spBaseOut = new SPOutput_Base();
                 SQLHelper<SPInput_EnterpriseCheckoutOption, SPOutput_Base> sqlHelp = new SQLHelper<SPInput_EnterpriseCheckoutOption, SPOutput_Base>(connetStr);
                 flag = sqlHelp.ExecuteSPNonQuery(spName, spInput, ref spBaseOut, ref lstError);
             }
@@ -492,7 +504,7 @@ namespace WebAPI.Controllers
                             Insurance = apiInput.Insurance,
                             InsurancePerHours = orderData.InsurancePerHours,
                             ProjType = orderData.ProjType,
-                            TaxID = apiInput.TaxID,
+                            TaxID = EnterpriseTaxID,
                             EnterpriseInsurance = EnterpriseInsuFLG
                         };
 
@@ -514,7 +526,6 @@ namespace WebAPI.Controllers
                         trace.traceAdd("GetEsimateAuthAmt", new { estimateData, estimateDetail, preAuthAmt, wallet.PayMode });
                         trace.FlowList.Add("計算預授權金");
                     }
-                
                 }
                 string TradeType = ProjType == 4 ? "PreAuth_Motor" : "PreAuth_Car";
                 motoPreAmt = isEnterprise ? 0 : motoPreAmt; //企業用戶訂單機車不取預授權

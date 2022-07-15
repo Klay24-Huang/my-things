@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Booking
 {
     /// <summary>
     /// 從EASYRENT_WEB 查詢回來要寫入的值
     /// </summary>
-    public class SPInput_EnterpriseCheckoutOption
+    public class SPInput_EnterpriseCheckoutOption : SPInput_Base
     {
-        /// <summary>
-        /// 執行此筆的api log
-        /// </summary>
-        public Int64 LOGID { set; get; }
         /// <summary>
         /// 訂單編號
         /// </summary>
@@ -39,6 +31,5 @@ namespace Domain.SP.Input.Booking
         /// 停車費是否為月結(0:否;1:是)
         /// </summary>
         public int Parking { set; get; }
-        
     }
 }

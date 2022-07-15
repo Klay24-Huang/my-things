@@ -58,6 +58,7 @@ namespace Domain.TB
         /// 企業客戶統一編號
         /// </summary>
         public string TaxID { get; set; }
+
         /// <summary>
         /// 企業客戶安心服務費用是否月結
         /// </summary>

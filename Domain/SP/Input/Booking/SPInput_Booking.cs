@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.SP.Input.Booking
 {
@@ -11,31 +7,31 @@ namespace Domain.SP.Input.Booking
         /// <summary>
         /// 帳號
         /// </summary>
-       public string  IDNO { set; get; }
+        public string IDNO { set; get; }
         /// <summary>
         /// 專案代碼
         /// </summary>
-        public string  ProjID { set; get; }
+        public string ProjID { set; get; }
         /// <summary>
         /// 專案類型
         /// </summary>
-        public Int16  ProjType { set; get; }
+        public Int16 ProjType { set; get; }
         /// <summary>
         /// 取車據點
         /// </summary>
-        public string  StationID { set; get; }
+        public string StationID { set; get; }
         /// <summary>
         /// 車型
         /// </summary>
-        public string  CarType { set; get; }
+        public string CarType { set; get; }
         /// <summary>
         /// 還車據點
         /// </summary>
-        public string  RStationID { set; get; }
+        public string RStationID { set; get; }
         /// <summary>
         /// 預計取車時間
         /// </summary>
-        public DateTime  SD { set; get; }
+        public DateTime SD { set; get; }
         /// <summary>
         /// 預計還車時間
         /// </summary>
@@ -47,15 +43,15 @@ namespace Domain.SP.Input.Booking
         /// <summary>
         /// 預估租金
         /// </summary>
-        public int  Price { set; get; }
+        public int Price { set; get; }
         /// <summary>
         /// 車號
         /// </summary>
-        public string  CarNo { set; get; }
+        public string CarNo { set; get; }
         /// <summary>
         /// token
         /// </summary>
-        public string  Token { set; get; }
+        public string Token { set; get; }
         /// <summary>
         /// 是否加購安心服務
         /// </summary>
@@ -63,7 +59,7 @@ namespace Domain.SP.Input.Booking
         /// <summary>
         /// 安心服務預估租金
         /// </summary>
-        public int  InsurancePurePrice { set; get; }
+        public int InsurancePurePrice { set; get; }
         /// <summary>
         /// 計費模式
         /// </summary>
@@ -82,22 +78,5 @@ namespace Domain.SP.Input.Booking
         /// 手機的定位(緯度) 20211012 ADD BY ADAM
         /// </summary>
         public double PhoneLat { get; set; }
-
-        /// <summary>
-        /// 預估租金
-        /// </summary>
-        public string co_TaxID { set; get; }
-        /// <summary>
-        /// 預估租金
-        /// </summary>
-        public int co_SafeServ { set; get; }
-        /// <summary>
-        /// 預估租金
-        /// </summary>
-        public int co_Etag { set; get; }
-        /// <summary>
-        /// 預估租金
-        /// </summary>
-        public int co_Parking { set; get; }
     }
 }

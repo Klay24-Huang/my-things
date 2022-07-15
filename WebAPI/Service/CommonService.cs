@@ -106,10 +106,10 @@ namespace WebAPI.Service
             float MilUnit = billCommon.GetMilageBase(input.ProjID, input.CarTypeGroupCode, input.CarNo, input.SD, input.ED, 0);
             int MilagePrice = billCommon.CarMilageCompute(input.SD, input.ED, MilUnit, Mildef, 20, lstHoliday);
 
-            if (input.TaxID != null && input.TaxID.Length == 8) {//是否為企業月結
-                InsurancePurePrice =  input.EnterpriseInsurance ?  0 : InsurancePurePrice; //判斷企業是否將安心服務列為月結
-                Rent = 0;
-                MilagePrice = 0;
+            if (!string.IsNullOrEmpty(input.TaxID))
+            {
+                Rent = 0;   // 企業月結不收租金預授權
+                InsurancePurePrice = input.EnterpriseInsurance ? 0 : InsurancePurePrice;    //判斷企業是否將安心服務列為月結
             }
 
             outData = new EstimateDetail();

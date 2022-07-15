@@ -53,7 +53,7 @@ namespace WebAPI.Models.Param.Input
         /// </summary>
         public double PhoneLon { get; set; } = 0;
         /// <summary>
-        /// 手機的定位(經度) 20211012 ADD BY ADAM
+        /// 企業客戶統一編號
         /// </summary>
         public string TaxID { get; set; } 
     }
