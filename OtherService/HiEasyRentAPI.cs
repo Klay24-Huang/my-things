@@ -53,6 +53,7 @@ namespace OtherService
         protected string connetStr;
         protected string NPR138SaveURL;  //春節定金收款發票
         protected string NPR420SaveURL;  //錢包介面轉檔
+        protected string NPR388SaveURL;  //匯入贈與時數
 
         /// <summary>
         /// 建構式
@@ -101,6 +102,9 @@ namespace OtherService
             //20220309 ADD BY ADAM REASON.營損匯入使用
             NPR136V2SaveURL = (ConfigurationManager.AppSettings.Get("NPR136V2SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR136V2SaveURL").ToString();
             NPR420SaveURL = (ConfigurationManager.AppSettings.Get("NPR420SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR420SaveURL").ToString();
+
+            //20220629 ADD BY FRANK REASON.匯入贈與時數
+            NPR388SaveURL = (ConfigurationManager.AppSettings.Get("NPR388SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR388SaveURL").ToString();
         }
 
         #region 產生簽章
@@ -2727,6 +2731,81 @@ namespace OtherService
 
             }
 
+
+            return output;
+        }
+        #endregion
+
+        #region 匯入會員點數
+        public bool NPR388Save(WebAPIInput_NPR388Save input, ref WebAPIOutput_NPR388Save output)
+        {
+            bool flag = false;
+
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
+            output = DoNPR388Save(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+        public async Task<WebAPIOutput_NPR388Save> DoNPR388Save(WebAPIInput_NPR388Save input)
+        {
+            WebAPIOutput_NPR388Save output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + NPR388SaveURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_NPR388Save>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_NPR388Save()
+                {
+                    Message = "發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "NPR388URL",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + NPR390QueryURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
 
             return output;
         }

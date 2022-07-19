@@ -85,6 +85,7 @@
     <Compile Include="SP\BE\Output\SPOutput_BE_HandleAudit.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarHornFlgByCID.cs" />
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
+    <Compile Include="SP\Input\Contract\SPInput_InsContractSettingHis.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentProject.cs" />
@@ -742,6 +743,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Check.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR370Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR350Check.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR388Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR420Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR380Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_TransIRentMemCMK.cs" />
@@ -874,6 +876,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR370SaveData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR380Save.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR388Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData2.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData3.cs" />
