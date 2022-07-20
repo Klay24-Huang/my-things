@@ -296,6 +296,7 @@
     <Compile Include="Controllers\BE_CheckUserGroupController.cs" />
     <Compile Include="Controllers\BE_ContactSettingCheckController.cs" />
     <Compile Include="Controllers\BE_ContactSettingController.cs" />
+    <Compile Include="Controllers\BE_ContactSetting_TestController.cs" />
     <Compile Include="Controllers\BE_DeleteBlackListController.cs" />
     <Compile Include="Controllers\BE_DeleteMemberScoreController.cs" />
     <Compile Include="Controllers\BE_FeedBackHandleController.cs" />

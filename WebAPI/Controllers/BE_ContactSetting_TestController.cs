@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
     /// <summary>
     /// 【後台】強取強還
     /// </summary>
-    public class BE_ContactSettingController : ApiController
+    public class BE_ContactSetting_TestController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
         private string isDebug = ConfigurationManager.AppSettings["isDebug"].ToString();
@@ -367,7 +367,14 @@ namespace WebAPI.Controllers
                                     else
                                     {
                                         //重新計價
-                                        flag = DoReCalRent(tmpOrder, IDNO, LogID, apiInput.UserID, apiInput.returnDate, ref errCode, ref FinalPrice);
+                                        if(apiInput.notUseCar == false)
+                                        {
+                                            flag = DoReCalRent(tmpOrder, IDNO, LogID, apiInput.UserID, apiInput.returnDate, apiInput.costRelife_minute, apiInput.costRelife_cost, apiInput.timeDiscount_car, apiInput.timeDiscount_motor, apiInput.cancelOvertime, ref errCode, ref FinalPrice);
+                                        }
+                                        else //未取消用車則所有金額均為0
+                                        {
+                                            flag = DoReCalRent_notUseCar(tmpOrder, IDNO, LogID, apiInput.UserID, apiInput.returnDate, apiInput.costRelife_minute, apiInput.costRelife_cost, apiInput.cancelOvertime, ref errCode, ref FinalPrice);
+                                        }
                                         if (flag)
                                         {
                                             if (clearFlag)
@@ -474,7 +481,7 @@ namespace WebAPI.Controllers
                                                             RewardPoint = Convert.ToInt32(ds1.Tables[0].Rows[0]["Reward"]);
                                                             if (RewardPoint > 0)
                                                             {
-                                                                flag = DoNPR380(IDNO, RewardPoint, tmpOrder, LogID, ref errCode);
+                                                                flag = DoNPR380(IDNO, RewardPoint, tmpOrder, LogID,ref errCode);
                                                             }
                                                         }
                                                     }
@@ -1066,7 +1073,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region 重新計價
-        private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, ref string errCode, ref int FinalPrice)
+        private bool DoReCalRent(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, int costRelife_minute, int costRelife_cost, int timeDiscount_car, int timeDiscount_motor, bool cancelOvertime, ref string errCode, ref int FinalPrice)
         {
             #region 初始宣告
             #region API共用
@@ -1105,7 +1112,7 @@ namespace WebAPI.Controllers
             int TotalPoint = 0; //總點數
             int MotorPoint = 0; //機車點數
             int CarPoint = 0;   //汽車點數
-            int Discount = 0;   //要折抵的點數
+            int Discount = timeDiscount_car + timeDiscount_motor;   //要折抵的點數
             int gift_point = 0;         //使用時數(汽車)
             int gift_motor_point = 0;   //使用時數(機車)
             int ActualRedeemableTimePoint = 0; //實際可抵折點數
@@ -1128,7 +1135,7 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;          //ETAG費用 20201202 ADD BY ADAM
             int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH
-            float End_Mile = 0;           //還車里程
+            int End_Mile = 0;           //還車里程
             int PreAmount = 0;          // 預授權金額 20211108 ADD BY YEH
             int DiffAmount = 0;         // 差額 20211108 ADD BY YEH
             float MillageUnit = 0;      // 每公里里程費
@@ -1141,10 +1148,6 @@ namespace WebAPI.Controllers
             int OrderPrice = 0;//原始訂金
 
             int GiveMinute = 0;     // 優惠分鐘數
-            int MainInsurancePrice = 0;     //安心服務費用
-            int JointInsurancePrice = 0;    //副承租人安心服務費用(單人)
-            int MainyInsuranceFinePrice = 0;    //安心服務費用(逾時)
-            int JointInsuranceFinePrice = 0;    //副承租人安心服務費用(單人)(逾時)
             #endregion
             #endregion
             #region trace-in
@@ -1191,7 +1194,7 @@ namespace WebAPI.Controllers
                         }
                     }
                 }
-
+                
                 if (flag)
                 {
                     trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
@@ -1213,6 +1216,13 @@ namespace WebAPI.Controllers
                     SD = Convert.ToDateTime(item.final_start_time);
                     SD = SD.AddSeconds(SD.Second * -1); //去秒數
 
+                    //取消逾時
+                    if (cancelOvertime)
+                    {
+                        item.fine_Time = null;
+                        
+                    }
+
                     if (!string.IsNullOrWhiteSpace(item.fine_Time) && Convert.ToDateTime(item.fine_Time) > Convert.ToDateTime("1911-01-01 00:00:00"))
                     {
                         FineDate = Convert.ToDateTime(item.fine_Time);
@@ -1232,6 +1242,13 @@ namespace WebAPI.Controllers
                     }
                     FED = Convert.ToDateTime(returnDate);
                     FED = FED.AddSeconds(FED.Second * -1);  //去秒數
+
+                    //如果有減免分鐘，則減免後再計算後續金額與時間
+                    if(costRelife_minute > 0)
+                    {
+                        FED = FED.AddMinutes(costRelife_minute * -1);
+                    }
+
                     lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
 
                     if (FineDate != null)
@@ -1241,6 +1258,11 @@ namespace WebAPI.Controllers
                             hasFine = true;
                             ED = FineDate.Value;
                         }
+                    }
+                    else if (FineDate == null && cancelOvertime)
+                    {
+                        hasFine = false;
+                        ED = FED;
                     }
                     else
                     {
@@ -1269,7 +1291,7 @@ namespace WebAPI.Controllers
                     #endregion
                 }
                 #endregion
-
+                
                 #region 取得使用中訂閱制月租
                 //取得使用中訂閱制月租
                 if (flag)
@@ -1308,7 +1330,7 @@ namespace WebAPI.Controllers
                         if (item.end_mile > 0)
                         {
                             //用已記錄的還車里程
-                            End_Mile = item.end_mile;
+                            End_Mile = Convert.ToInt32(item.end_mile);
                         }
                         else
                         {
@@ -1403,6 +1425,10 @@ namespace WebAPI.Controllers
                 {
                     var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, DayMaxMinute, lstHoliday);
                     TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+
+                    //如果有減免分鐘
+                    //if (costRelife_minute > 0) TotalRentMinutes -= costRelife_minute;
+                    //if (TotalRentMinutes < 0) TotalRentMinutes = 0;
                 }
                 else
                 {
@@ -1425,6 +1451,31 @@ namespace WebAPI.Controllers
                         if (xre != null)
                             TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
                     }
+
+                    //如果有減免分鐘
+                    //if(costRelife_minute > 0)
+                    //{
+                    //    if(TotalFineRentMinutes > 0)
+                    //    {
+                    //        if(TotalFineRentMinutes > costRelife_minute)
+                    //        {
+                    //            TotalFineRentMinutes -= costRelife_minute;
+                    //        }
+                    //        else
+                    //        {
+                    //            costRelife_minute -= TotalFineRentMinutes;
+                    //            TotalFineRentMinutes = 0;
+                    //            TotalRentMinutes -= costRelife_minute;
+                    //            if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        TotalRentMinutes -= costRelife_minute;
+                    //        if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //    }
+                    //}
+
                 }
                 TotalRentMinutes = TotalRentMinutes > 0 ? TotalRentMinutes : 0;
                 #endregion
@@ -1804,15 +1855,7 @@ namespace WebAPI.Controllers
                             }
                             trace.FlowList.Add("機車非月租租金計算");
                         }
-                        #region 安心服務
-                        if (item.Insurance == 1)    // 有安心服務
-                        {
-                            MainInsurancePrice = billCommon.MotorInsurancePrice(SD, ED, motoBaseMins, item.BaseMotoRate, item.InsuranceMotoMin, item.InsuranceMotoRate, DayMaxMinute, lstHoliday);
-                            if (item.JointPassenger > 0)   // 有副承租人
-                                JointInsurancePrice = billCommon.MotorInsurancePrice(SD, ED, motoBaseMins, item.BaseMotoRate, item.InsuranceMotoMin, item.InsuranceMotoRate, DayMaxMinute, lstHoliday);
-                            outputApi.Rent.InsurancePurePrice = MainInsurancePrice + (item.JointPassenger * JointInsurancePrice);
-                        }
-                        #endregion
+
                         outputApi.Rent.RentBasicPrice = item.BaseMinutesPrice;
                     }
                     else
@@ -1846,24 +1889,19 @@ namespace WebAPI.Controllers
                         }
 
                         #region 安心服務
-                        if (item.Insurance == 1)    // 有安心服務
+                        // 20210908 UPD BY YEH REASON:使用安心服務，安心服務每小時金額 = 主承租人每小時價格 + 副承租人每小時費率總和
+                        InsurancePerHours = item.Insurance == 1 ? (Convert.ToInt32(item.InsurancePerHours) + item.JointInsurancePerHour) : 0;
+                        if (InsurancePerHours > 0)
                         {
-                            MainInsurancePrice = car_payInMins / 30 * item.InsurancePerHours / 2;
-                            if (item.JointPassenger > 0)   // 有副承租人
-                                JointInsurancePrice = car_payInMins / 30 * item.JointInsurancePerHour / 2;
+                            outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((car_payInMins / 30.0) * InsurancePerHours / 2)));
 
-                            if (TotalFineRentMinutes > 0)   //逾時安心服務計算
+                            //逾時安心服務計算
+                            if (TotalFineRentMinutes > 0)
                             {
-                                MainyInsuranceFinePrice = car_payOutMins / 30 * item.InsurancePerHours / 2;
-                                if (item.JointPassenger > 0)   // 有副承租人
-                                    JointInsuranceFinePrice = car_payOutMins / 30 * item.JointInsurancePerHour / 2;
+                                outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((car_payOutMins / 30.0) * InsurancePerHours / 2)));
                             }
-
-                            outputApi.Rent.InsurancePurePrice = MainInsurancePrice + (item.JointPassenger * JointInsurancePrice);
-                            outputApi.Rent.InsuranceExtPrice = MainyInsuranceFinePrice + (item.JointPassenger * JointInsuranceFinePrice);
-
-                            trace.FlowList.Add("安心服務");
                         }
+                        trace.FlowList.Add("安心服務");
                         #endregion
 
                         outputApi.Rent.CarRental = CarRentPrice;
@@ -1921,7 +1959,12 @@ namespace WebAPI.Controllers
                     }
                     #endregion
 
+                    //如果有減免則減免最終金額
+                    if (costRelife_cost > 0) xTotalRental -= costRelife_cost;
+                    if (xTotalRental < 0) xTotalRental = 0;
+
                     FinalPrice = xTotalRental;
+
                     DiffAmount = xTotalRental - PreAmount;  // 差額 = 訂單總價 - 預授權金額
 
                     xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
@@ -2012,7 +2055,7 @@ namespace WebAPI.Controllers
                     #endregion
 
                     #region sp存檔
-                    string SPName = "usp_BE_CalFinalPrice_U01";
+                    string SPName = "usp_BE_CalFinalPrice_U02";
                     SPInput_BE_CalFinalPrice SPInput = new SPInput_BE_CalFinalPrice()
                     {
                         IDNO = IDNO,
@@ -2034,8 +2077,6 @@ namespace WebAPI.Controllers
                         DiffAmount = DiffAmount,
                         APIName = funName,
                         UseGiveMinute = UseGiveMinute,
-                        InsurancePriceByMain = MainInsurancePrice + MainyInsuranceFinePrice,
-                        InsurancePriceByJoint = JointInsurancePrice + JointInsuranceFinePrice,
                         LogID = LogID
                     };
 
@@ -2113,6 +2154,751 @@ namespace WebAPI.Controllers
             SQLHelper<SPInput_SetRewardResult, SPOutput_Base> SQLPayHelp = new SQLHelper<SPInput_SetRewardResult, SPOutput_Base>(connetStr);
             flag = SQLPayHelp.ExecuteSPNonQuery(SPName, NPR380Input, ref NPR380Output, ref lstError);
             baseVerify.checkSQLResult(ref flag, ref NPR380Output, ref lstError, ref errCode);
+
+            return flag;
+        }
+        #endregion
+
+        #region 重新計價(未用車取消)
+        private bool DoReCalRent_notUseCar(Int64 tmpOrder, string IDNO, Int64 LogID, string UserID, string returnDate, int costRelife_minute, int costRelife_cost, bool cancelOvertime, ref string errCode, ref int FinalPrice)
+        {
+            #region 初始宣告
+            #region API共用
+            bool flag = true;
+            string funName = "BE_ContactSettingController";
+            float Mildef = (ConfigurationManager.AppSettings["Mildef"] == null) ? 3 : Convert.ToSingle(ConfigurationManager.AppSettings["Mildef"].ToString());
+            CommonFunc baseVerify = new CommonFunc();
+            List<ErrorInfo> lstError = new List<ErrorInfo>();
+            OAPI_GetPayDetail outputApi = new OAPI_GetPayDetail();
+            string errMsg = "";
+            #endregion
+            #region 計算用
+            var cr_com = new CarRentCommon();
+            var cr_sp = new CarRentSp();
+            var carRepo = new CarRentRepo(connetStr);
+            var monSp = new MonSubsSp();
+            var trace = new TraceCom();
+            MonthlyRentRepository monthlyRentRepository = new MonthlyRentRepository(connetStr);
+            BillCommon billCommon = new BillCommon();
+            CarRentInfo carInfo = new CarRentInfo();//汽車資料
+            #endregion
+            #region 一堆參數
+            List<OrderQueryFullData> OrderDataLists = null;
+            OrderQueryFullData item = new OrderQueryFullData();
+            List<Holiday> lstHoliday = null; //假日列表
+            List<MonthlyRentData> monthlyRentDatas = new List<MonthlyRentData>(); //月租列表
+            var visMons = new List<MonthlyRentData>();//虛擬月租
+
+            int ProjType = 0;   //專案類型
+            string ProjID = ""; //專案代碼
+
+            int motoBaseMins = 6;   //機車基本分鐘數
+            int carBaseMins = 60;   //汽車基本分鐘數
+            int DayMaxMinute = 600; //單日分鐘數上限
+
+            int TotalPoint = 0; //總點數
+            int MotorPoint = 0; //機車點數
+            int CarPoint = 0;   //汽車點數
+            int Discount = 0;   //要折抵的點數
+            int gift_point = 0;         //使用時數(汽車)
+            int gift_motor_point = 0;   //使用時數(機車)
+            int ActualRedeemableTimePoint = 0; //實際可抵折點數
+
+            DateTime NowTime = DateTime.Now;
+            DateTime SD = new DateTime();
+            DateTime ED = new DateTime();
+            DateTime FED = new DateTime();
+            DateTime? FineDate = null;
+            bool hasFine = false;   //是否逾時
+            DateTime sprSD = Convert.ToDateTime(SiteUV.strSpringSd);
+            DateTime sprED = Convert.ToDateTime(SiteUV.strSpringEd);
+            bool isSpring = false;  //是否為春節時段
+
+            int TotalRentMinutes = 0;       //總租車時數
+            int TotalFineRentMinutes = 0;   //總逾時時數
+            int CarRentPrice = 0;       //車輛租金
+            int TransferPrice = 0;      //轉乘優惠折抵金額  20201201 ADD BY ADAM
+            bool UseMonthMode = false;  //false:無月租;true:有月租
+            int InsurancePerHours = 0;  //安心服務每小時價
+            int etagPrice = 0;          //ETAG費用 20201202 ADD BY ADAM
+            int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH
+            int End_Mile = 0;           //還車里程
+            int PreAmount = 0;          // 預授權金額 20211108 ADD BY YEH
+            int DiffAmount = 0;         // 差額 20211108 ADD BY YEH
+            float MillageUnit = 0;      // 每公里里程費
+
+            string MonIds = "";//短期月租Id可多筆
+            var neverHasFine = new List<int>() { 3, 4 };//路邊,機車不會逾時
+
+            int nor_car_PayDisc = 0;//只有一般時段時總折扣
+            int UseOrderPrice = 0;//使用訂金(4捨5入)
+            int OrderPrice = 0;//原始訂金
+
+            int GiveMinute = 0;     // 優惠分鐘數
+            #endregion
+            #endregion
+            #region trace-in
+            trace.OrderNo = tmpOrder;
+            var funInput = new
+            {
+                tmpOrder = tmpOrder,
+                IDNO = IDNO,
+                LogID = LogID,
+                UserID = UserID,
+                returnDate = returnDate,
+                errCode = errCode
+            };
+            trace.traceAdd(nameof(funInput), funInput);
+            #endregion
+            try
+            {
+                #region 取出訂單資訊
+                if (flag)
+                {
+                    SPInput_BE_GetOrderStatusByOrderNo spInput = new SPInput_BE_GetOrderStatusByOrderNo()
+                    {
+                        IDNO = IDNO,
+                        OrderNo = tmpOrder,
+                        LogID = LogID,
+                        UserID = UserID
+                    };
+                    string SPName = "usp_BE_GetOrderStatusByOrderNo";
+                    SPOutput_Base spOutBase = new SPOutput_Base();
+                    SQLHelper<SPInput_BE_GetOrderStatusByOrderNo, SPOutput_Base> sqlHelpQuery = new SQLHelper<SPInput_BE_GetOrderStatusByOrderNo, SPOutput_Base>(connetStr);
+                    OrderDataLists = new List<OrderQueryFullData>();
+                    DataSet ds = new DataSet();
+                    flag = sqlHelpQuery.ExeuteSP(SPName, spInput, ref spOutBase, ref OrderDataLists, ref ds, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref spOutBase, ref lstError, ref errCode);
+
+                    trace.FlowList.Add("取出訂單資訊");
+                    //判斷訂單狀態
+                    if (flag)
+                    {
+                        if (OrderDataLists.Count == 0)
+                        {
+                            flag = false;
+                            errCode = "ERR203";
+                        }
+                    }
+                }
+
+                if (flag)
+                {
+                    trace.traceAdd(nameof(OrderDataLists), OrderDataLists);
+
+                    item = OrderDataLists[0];
+                    motoBaseMins = item.BaseMinutes;
+                    ProjType = item.ProjType;
+                    UseOrderPrice = item.UseOrderPrice;
+                    OrderPrice = item.OrderPrice;
+                    ProjID = item.ProjID;
+                    PreAmount = item.PreAmount;
+                    GiveMinute = item.GiveMinute;
+                }
+                #endregion
+
+                #region 日期判斷
+                if (flag)
+                {
+                    SD = Convert.ToDateTime(item.final_start_time);
+                    SD = SD.AddSeconds(SD.Second * -1); //去秒數
+
+                    //取消逾時
+                    if (cancelOvertime)
+                    {
+                        item.fine_Time = null;
+
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(item.fine_Time) && Convert.ToDateTime(item.fine_Time) > Convert.ToDateTime("1911-01-01 00:00:00"))
+                    {
+                        FineDate = Convert.ToDateTime(item.fine_Time);
+                        FineDate = FineDate.Value.AddSeconds(ED.Second * -1); //去秒數
+                    }
+
+                    if (item.ProjType == 3 || item.ProjType == 4)
+                    {
+                        ED = Convert.ToDateTime(returnDate);
+                        ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                        FineDate = null;
+                    }
+                    else
+                    {
+                        ED = Convert.ToDateTime(item.stop_time);
+                        ED = ED.AddSeconds(ED.Second * -1); //去秒數
+                    }
+                    FED = Convert.ToDateTime(returnDate);
+                    FED = FED.AddSeconds(FED.Second * -1);  //去秒數
+
+                    //如果有減免分鐘，則減免後再計算後續金額與時間
+                    if (costRelife_minute > 0)
+                    {
+                        FED = FED.AddMinutes(costRelife_minute * -1);
+                    }
+
+                    lstHoliday = new CommonRepository(connetStr).GetHolidays(SD.ToString("yyyyMMdd"), FED.ToString("yyyyMMdd"));
+
+                    if (FineDate != null)
+                    {
+                        if (FED > FineDate)
+                        {
+                            hasFine = true;
+                            ED = FineDate.Value;
+                        }
+                    }
+                    else if (FineDate == null && cancelOvertime)
+                    {
+                        hasFine = false;
+                        ED = FED;
+                    }
+                    else
+                    {
+                        if (FED.Subtract(ED).Ticks > 0)
+                            hasFine = true;
+                    }
+
+                    if (FED < SD)
+                    {
+                        flag = false;
+                        errCode = "ERR740";
+                    }
+
+                    #region trace
+                    var timeMark = new
+                    {
+                        SD = SD,
+                        ED = ED,
+                        FED = FED,
+                        FineDate = FineDate,
+                        hasFine = hasFine,
+                        lstHoliday = lstHoliday
+                    };
+                    trace.traceAdd(nameof(timeMark), timeMark);
+                    trace.FlowList.Add("SD,ED,FD判斷");
+                    #endregion
+                }
+                #endregion
+
+                #region 取還車里程
+                if (flag)
+                {
+                    //bool CarFlag = new CarCommonFunc().BE_GetReturnCarMilage(tmpOrder, IDNO, LogID, UserID, ref errCode, ref End_Mile);
+                    // 20210219;修改還車里程取得規則
+                    if (item.car_mgt_status >= 11)
+                    {
+                        //已還車
+                        //保險起見，再判斷一次是否有還車里程，以防程式崩潰
+                        if (item.end_mile > 0)
+                        {
+                            //用已記錄的還車里程
+                            End_Mile = Convert.ToInt32(item.end_mile);
+                        }
+                        else
+                        {
+                            SPInput_GetCarMillage SPInput = new SPInput_GetCarMillage
+                            {
+                                IDNO = IDNO,
+                                OrderNo = tmpOrder
+                            };
+                            string SPName = "usp_GetCarReturnMillage";
+                            SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
+                            SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
+                            flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
+                            baseVerify.checkSQLResult(ref flag, SPOut.Error, SPOut.ErrorCode, ref lstError, ref errCode);
+                            if (flag)
+                            {
+                                End_Mile = SPOut.Millage;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //未還車
+                        SPInput_GetCarMillage SPInput = new SPInput_GetCarMillage
+                        {
+                            IDNO = IDNO,
+                            OrderNo = tmpOrder
+                        };
+                        string SPName = "usp_GetCarReturnMillage";
+                        SPOutput_GetCarMillage SPOut = new SPOutput_GetCarMillage();
+                        SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage> sqlHelp = new SQLHelper<SPInput_GetCarMillage, SPOutput_GetCarMillage>(connetStr);
+                        flag = sqlHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOut, ref lstError);
+                        baseVerify.checkSQLResult(ref flag, SPOut.Error, SPOut.ErrorCode, ref lstError, ref errCode);
+                        if (flag)
+                        {
+                            End_Mile = SPOut.Millage;
+                        }
+                    }
+                    trace.FlowList.Add("取還車里程");
+                    var TraceObject = new
+                    {
+                        flag = flag,
+                        errCode = errCode,
+                        End_Mile = End_Mile
+                    };
+                    trace.traceAdd("End_Mile", TraceObject);
+                }
+                #endregion
+
+                #region 同站專案價格置換
+                if (ProjType == 0 && !isSpring) // 同站 AND 非春節期間
+                {   // 這段在做：預約是春節專案，但實際用車時間沒有落在春節期間，專案價格要取非春節專案的
+                    var ChineseNewYearList = new CommonRepository(connetStr).GetCodeData("ChineseNewYear"); // 春節專案列表
+                    if (ChineseNewYearList.Select(x => x.MapCode).Contains(ProjID)) // 訂單的專案為春節專案才進後續判斷
+                    {
+                        if ((sprSD >= FED) || (sprSD >= ED))    // 春節起日 >= 實際還車時間 OR 春節起日 >= 原始還車時間
+                        {
+                            var ProjectList = cr_sp.GetCarProject(ProjID, item.CarTypeGroupCode, tmpOrder, IDNO, SD, FED, ProjType, item.CarNo, LogID, ref errMsg);
+
+                            if (ProjectList != null && ProjectList.Count > 0)
+                            {
+                                var NormalPrice = ProjectList.Where(x => x.PROJID != ProjID).OrderBy(x => x.PRICE).ThenBy(x => x.PRICE_H).ToList().FirstOrDefault();
+                                if (NormalPrice != null)
+                                {
+                                    item.PRICE = Convert.ToInt32(NormalPrice.PRICE / 10);
+                                    item.PRICE_H = Convert.ToInt32(NormalPrice.PRICE_H / 10);
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                #region 計算非逾時及逾時時間
+                if (ProjType == 4)
+                {
+                    var xre = billCommon.GetMotoRangeMins(SD, ED, motoBaseMins, DayMaxMinute, lstHoliday);
+                    TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+
+                    //如果有減免分鐘
+                    //if (costRelife_minute > 0) TotalRentMinutes -= costRelife_minute;
+                    //if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                }
+                else
+                {
+                    if (hasFine)
+                    {
+                        var xre = billCommon.GetCarRangeMins(SD, ED, carBaseMins, DayMaxMinute, lstHoliday);
+                        if (xre != null)
+                            TotalRentMinutes += Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                        var ov_re = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
+                        if (ov_re != null)
+                        {
+                            TotalRentMinutes += Convert.ToInt32(Math.Floor(ov_re.Item1 + ov_re.Item2));
+                            //20210913 ADD BY ADAM REASON.補上全部逾時分鐘數加總
+                            TotalFineRentMinutes = Convert.ToInt32(Math.Floor(ov_re.Item1 + ov_re.Item2));
+                        }
+                    }
+                    else
+                    {
+                        var xre = billCommon.GetCarRangeMins(SD, FED, carBaseMins, DayMaxMinute, lstHoliday);
+                        if (xre != null)
+                            TotalRentMinutes = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));
+                    }
+
+                    //如果有減免分鐘
+                    //if (costRelife_minute > 0)
+                    //{
+                    //    if (TotalFineRentMinutes > 0)
+                    //    {
+                    //        if (TotalFineRentMinutes > costRelife_minute)
+                    //        {
+                    //            TotalFineRentMinutes -= costRelife_minute;
+                    //        }
+                    //        else
+                    //        {
+                    //            costRelife_minute -= TotalFineRentMinutes;
+                    //            TotalFineRentMinutes = 0;
+                    //            TotalRentMinutes -= costRelife_minute;
+                    //            if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        TotalRentMinutes -= costRelife_minute;
+                    //        if (TotalRentMinutes < 0) TotalRentMinutes = 0;
+                    //    }
+                    //}
+
+                }
+                TotalRentMinutes = TotalRentMinutes > 0 ? TotalRentMinutes : 0;
+                #endregion
+
+                #region 汽車計費資訊
+                int car_payAllMins = 0; //全部計費租用分鐘
+                int car_payInMins = 0;  //未超時計費分鐘
+                int car_payOutMins = 0; //超時分鐘-顯示用
+                int car_inPrice = 0;    //未超時費用
+                int car_outPrice = 0;   //超時費用
+                int UseGiveMinute = 0;  // 使用標籤優惠分鐘數
+
+                if (flag)
+                {
+                    if (ProjType != 4)
+                    {
+                        if (hasFine)    // 逾時
+                        {
+                            var xre = billCommon.GetCarOutComputeMins(ED, FED, 0, 360, lstHoliday);
+                            if (xre != null)
+                                car_payOutMins = Convert.ToInt32(Math.Floor(xre.Item1 + xre.Item2));    //逾時分鐘
+                            //逾時費用
+                            car_outPrice = billCommon.CarRentCompute(ED, FED, item.WeekdayPrice, item.HoildayPrice, 6, lstHoliday, true, 0);
+                            car_payAllMins += car_payOutMins;
+
+                            var car_re = billCommon.CarRentInCompute(SD, ED, item.PRICE, item.PRICE_H, carBaseMins, 10, lstHoliday, new List<MonthlyRentData>(), Discount, item.FirstFreeMins, item.GiveMinute);
+                            if (car_re != null)
+                            {
+                                trace.traceAdd(nameof(car_re), car_re);
+                                car_payAllMins += car_re.RentInMins;
+                                car_payInMins = car_re.RentInMins;
+                                car_inPrice = car_re.RentInPay;
+                                nor_car_PayDisc = car_re.useDisc;
+                                UseGiveMinute = car_re.UseGiveMinute;
+                            }
+                        }
+                        else
+                        {
+                            var car_re = billCommon.CarRentInCompute(SD, FED, item.PRICE, item.PRICE_H, carBaseMins, 10, lstHoliday, new List<MonthlyRentData>(), Discount, item.FirstFreeMins, item.GiveMinute);
+                            if (car_re != null)
+                            {
+                                trace.traceAdd(nameof(car_re), car_re);
+                                car_payAllMins += car_re.RentInMins;
+                                car_payInMins = car_re.RentInMins;
+                                car_inPrice = car_re.RentInPay;
+                                nor_car_PayDisc = car_re.useDisc;
+                                UseGiveMinute = car_re.UseGiveMinute;
+                            }
+                        }
+                        trace.FlowList.Add("汽車計費資訊(非月租)");
+                    }
+                }
+                #endregion                
+
+                #region 建空模及塞入要輸出的值
+                if (flag)
+                {
+                    outputApi.CanUseDiscount = 1;   //先暫時寫死，之後改專案設定，由專案設定引入
+                    outputApi.CanUseMonthRent = 1;  //先暫時寫死，之後改專案設定，由專案設定引入
+                    outputApi.CarRent = new CarRentBase();
+                    outputApi.DiscountAlertMsg = "";
+                    outputApi.IsMonthRent = 0;  //先暫時寫死，之後改專案設定，由專案設定引入，第二包才會引入月租專案
+                    outputApi.IsMotor = (ProjType == 4) ? 1 : 0;    //是否為機車
+                    outputApi.MonthRent = new MonthRentBase();  //月租資訊
+                    outputApi.MotorRent = new MotorRentBase();  //機車資訊
+                    outputApi.PayMode = (ProjType == 4) ? 1 : 0;    //目前只有機車才會有以分計費模式
+                    outputApi.ProType = ProjType;
+                    outputApi.Rent = new RentBase() //訂單基本資訊
+                    {
+                        BookingEndDate = ED.ToString("yyyy-MM-dd HH:mm:ss"),
+                        BookingStartDate = SD.ToString("yyyy-MM-dd HH:mm:ss"),
+                        CarNo = item.CarNo,
+                        RedeemingTimeCarInterval = "0",
+                        RedeemingTimeMotorInterval = "0",
+                        RedeemingTimeInterval = "0",
+                        RentalDate = FED.ToString("yyyy-MM-dd HH:mm:ss"),
+                        RentalTimeInterval = (TotalRentMinutes + TotalFineRentMinutes).ToString(),
+                    };
+
+                    if (ProjType == 4)
+                    {
+                        TotalPoint = (CarPoint + MotorPoint);
+                        outputApi.MotorRent = new MotorRentBase()
+                        {
+                            BaseMinutePrice = item.BaseMinutesPrice,
+                            BaseMinutes = item.BaseMinutes,
+                            MinuteOfPrice = item.MinuteOfPrice
+                        };
+                    }
+                    else
+                    {
+                        TotalPoint = CarPoint;
+                        outputApi.CarRent = new CarRentBase()
+                        {
+                            HoildayOfHourPrice = item.PRICE_H,
+                            HourOfOneDay = 10,
+                            WorkdayOfHourPrice = item.PRICE,
+                            WorkdayPrice = item.PRICE * 10,
+                            MilUnit = item.MilageUnit,
+                            HoildayPrice = item.PRICE_H * 10
+                        };
+                    }
+                    //20201201 ADD BY ADAM REASON.轉乘優惠
+                    TransferPrice = item.init_TransDiscount;
+                    trace.FlowList.Add("建空模");
+                }
+                #endregion
+
+                #region 開始計價
+                if (flag)
+                {
+                    trace.FlowList.Add("開始計價");
+                    if (ProjType == 4)
+                    {
+                        if (UseMonthMode)   //true:有月租;false:無月租
+                        {
+                            outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForMoto;
+                            outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForMoto;
+                        }
+                        else
+                        {
+                            // 20210709 UPD BY YEH REASON:每日上限從資料庫取得
+                            var xre = billCommon.MotoRentMonthComp(SD, ED, item.MinuteOfPrice, item.MinuteOfPriceH, motoBaseMins, DayMaxMinute, lstHoliday, new List<MonthlyRentData>(), Discount, DayMaxMinute, item.MaxPrice, item.BaseMinutesPrice, item.FirstFreeMins, item.GiveMinute);
+                            if (xre != null)
+                            {
+                                carInfo = xre;
+                                outputApi.Rent.CarRental = xre.RentInPay;
+                                carInfo.useDisc = xre.useDisc;
+                                UseGiveMinute = carInfo.UseGiveMinute;
+                            }
+                            trace.FlowList.Add("機車非月租租金計算");
+                        }
+
+                        outputApi.Rent.RentBasicPrice = item.BaseMinutesPrice;
+                    }
+                    else
+                    {
+                        if (UseMonthMode)   //true:有月租;false:無月租
+                        {
+                            outputApi.Rent.CarRental = CarRentPrice;
+                            outputApi.MonthRent.HoildayRate = monthlyRentDatas[0].HoildayRateForCar;
+                            outputApi.MonthRent.WorkdayRate = monthlyRentDatas[0].WorkDayRateForCar;
+                        }
+                        else
+                        {
+                            CarRentPrice = car_inPrice;//未逾時租用費用
+                            if (hasFine)
+                                outputApi.Rent.OvertimeRental = car_outPrice;//逾時費用
+                            trace.FlowList.Add("汽車非月租金額給值");
+                        }
+
+                        if (Discount > 0)
+                        {
+                            if (UseMonthMode)   //true:有月租;false:無月租
+                            {
+
+                            }
+                            else
+                            {
+                                //非月租折扣
+                                CarRentPrice = CarRentPrice > 0 ? CarRentPrice : 0;
+                                trace.FlowList.Add("汽車非月租折扣扣除");
+                            }
+                        }
+
+                        #region 安心服務
+                        // 20210908 UPD BY YEH REASON:使用安心服務，安心服務每小時金額 = 主承租人每小時價格 + 副承租人每小時費率總和
+                        InsurancePerHours = item.Insurance == 1 ? (Convert.ToInt32(item.InsurancePerHours) + item.JointInsurancePerHour) : 0;
+                        if (InsurancePerHours > 0)
+                        {
+                            outputApi.Rent.InsurancePurePrice = Convert.ToInt32(Math.Floor(((car_payInMins / 30.0) * InsurancePerHours / 2)));
+
+                            //逾時安心服務計算
+                            if (TotalFineRentMinutes > 0)
+                            {
+                                outputApi.Rent.InsuranceExtPrice = Convert.ToInt32(Math.Floor(((car_payOutMins / 30.0) * InsurancePerHours / 2)));
+                            }
+                        }
+                        trace.FlowList.Add("安心服務");
+                        #endregion
+
+                        outputApi.Rent.CarRental = CarRentPrice;
+                        outputApi.Rent.RentBasicPrice = item.BaseMinutesPrice;
+
+                        #region 里程費
+                        MillageUnit = (item.MilageUnit <= 0) ? Mildef : item.MilageUnit;
+                        outputApi.CarRent.MilUnit = MillageUnit;
+                        // 20201218 因應車機回應異常，因此判斷起始里程/結束里程有一個是0或里程數>1000公里，均先列為異常，不計算里程費，待系統穩定後再將這段判斷移除
+                        // 20210121;里程數>1000公里的判斷移除
+                        if (item.start_mile == 0 || End_Mile == 0 || ((End_Mile - item.start_mile) < 0))
+                        {
+                            outputApi.Rent.MileageRent = 0;
+                        }
+                        else
+                        {
+                            outputApi.Rent.MileageRent = Convert.ToInt32(MillageUnit * (End_Mile - item.start_mile));
+                        }
+                        trace.FlowList.Add("里程費計算");
+                        #endregion
+                    }
+
+                    outputApi.Rent.OvertimeRental = car_outPrice;
+                    outputApi.Rent.ActualRedeemableTimeInterval = ActualRedeemableTimePoint.ToString();
+                    outputApi.Rent.RemainRentalTimeInterval = (TotalRentMinutes > 0 ? TotalRentMinutes : 0).ToString();
+                    outputApi.Rent.TransferPrice = (item.init_TransDiscount > 0) ? item.init_TransDiscount : 0;
+                    //20201202 ADD BY ADAM REASON.ETAG費用
+                    outputApi.Rent.ETAGRental = etagPrice;
+
+                    #region 轉乘優惠只能抵租金
+                    int xCarRental = outputApi.Rent.CarRental;
+                    int xTransferPrice = outputApi.Rent.TransferPrice;
+                    int FinalTransferPrice = (xCarRental - xTransferPrice) > 0 ? xTransferPrice : xCarRental;
+                    outputApi.Rent.TransferPrice = FinalTransferPrice;
+                    xCarRental = (xCarRental - FinalTransferPrice);
+                    #endregion
+
+                    #region 總價計算
+                    // 總價 = 車輛租金 + 停車費 + 里程費 + 逾時費用 + 安心服務費用 + 安心服務費用(逾時) + ETAG費用
+                    var xTotalRental = xCarRental + outputApi.Rent.ParkingFee + outputApi.Rent.MileageRent + outputApi.Rent.OvertimeRental + outputApi.Rent.InsurancePurePrice + outputApi.Rent.InsuranceExtPrice + outputApi.Rent.ETAGRental;
+
+                    #region 春節訂金
+                    //20220126 ADD BY ADAM REASON.春節訂金改用預授權金額帶入
+                    outputApi.UseOrderPrice = PreAmount;
+                    outputApi.FineOrderPrice = UseOrderPrice;//改罰金
+
+                    //如果有春節訂金就要把罰金加上去
+                    xTotalRental += ((OrderPrice > 0) ? UseOrderPrice : 0);
+
+                    //if (xTotalRental < 0)
+                    if (UseOrderPrice > 0)
+                    {
+                        int orderNo = Convert.ToInt32(item.OrderNo);
+                        carRepo.UpdNYPayList(orderNo, UseOrderPrice);
+                    }
+                    #endregion
+
+                    //如果有減免則減免最終金額
+                    if (costRelife_cost > 0) xTotalRental -= costRelife_cost;
+                    if (xTotalRental < 0) xTotalRental = 0;
+
+                    FinalPrice = xTotalRental;
+
+                    DiffAmount = xTotalRental - PreAmount;  // 差額 = 訂單總價 - 預授權金額
+
+                    xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
+                    outputApi.Rent.TotalRental = xTotalRental;
+                    outputApi.Rent.PreAmount = PreAmount;
+                    outputApi.Rent.DiffAmount = DiffAmount;
+                    trace.FlowList.Add("總價計算");
+                    #endregion
+
+                    #region 修正輸出欄位
+                    if (ProjType == 4)
+                    {
+                        outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
+                        // 20211209 UPD BY YEH REASON:給前端顯示的租用時數改用可折抵時數
+                        outputApi.Rent.RentalTimeInterval = carInfo.RentInMins.ToString();//租用時數(未逾時)
+                        //outputApi.Rent.RentalTimeInterval = carInfo.DiscRentInMins.ToString();  // 可折抵時數
+                        outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
+                        outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
+                        outputApi.Rent.UseGiveMinute = carInfo.UseGiveMinute;
+                        outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
+
+                        var cDisc = 0;
+                        var mDisc = 0;
+                        if (carInfo.useDisc > 0)
+                        {
+                            int lastDisc = carInfo.useDisc;
+                            var useMdisc = mDisc > carInfo.useDisc ? carInfo.useDisc : mDisc;
+                            lastDisc -= useMdisc;
+                            gift_motor_point = useMdisc;
+                            if (lastDisc > 0)
+                            {
+                                var useCdisc = cDisc > lastDisc ? lastDisc : cDisc;
+                                lastDisc -= useCdisc;
+                                gift_point = useCdisc;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (UseMonthMode)
+                        {
+                            outputApi.Rent.ActualRedeemableTimeInterval = carInfo.AfterDiscRentInMins.ToString();
+                            outputApi.Rent.RentalTimeInterval = carInfo.RentInMins.ToString();//租用時數(未逾時)
+                            outputApi.Rent.UseMonthlyTimeInterval = carInfo.useMonthDisc.ToString();
+                            outputApi.Rent.UseNorTimeInterval = carInfo.useDisc.ToString();
+                            outputApi.Rent.UseGiveMinute = carInfo.UseGiveMinute;
+                            outputApi.Rent.RemainRentalTimeInterval = carInfo.AfterDiscRentInMins.ToString();//未逾時折扣後的租用時數
+                            gift_point = carInfo.useDisc;
+                        }
+                        else
+                        {
+                            outputApi.Rent.ActualRedeemableTimeInterval = (car_payInMins - UseGiveMinute).ToString(); //可折抵租用時數
+                            outputApi.Rent.RentalTimeInterval = car_payInMins.ToString(); //租用時數(未逾時)
+                            outputApi.Rent.UseNorTimeInterval = Discount.ToString();
+                            outputApi.Rent.UseGiveMinute = UseGiveMinute;
+                            outputApi.Rent.RemainRentalTimeInterval = (car_payInMins - Discount - UseGiveMinute).ToString();    //未逾時折抵後的租用時數
+                            gift_point = nor_car_PayDisc;
+                        }
+
+                        gift_motor_point = 0;
+                        outputApi.Rent.OvertimeRental = car_outPrice;//逾時費用
+                    }
+                    trace.FlowList.Add("修正輸出欄位");
+                    #endregion
+
+                    #region sp存檔
+                    string SPName = "usp_BE_CalFinalPrice_U02";
+                    SPInput_BE_CalFinalPrice SPInput = new SPInput_BE_CalFinalPrice()
+                    {
+                        IDNO = IDNO,
+                        OrderNo = tmpOrder,
+                        UserID = UserID,
+                        final_price = 0,
+                        pure_price = 0,
+                        mileage_price = 0,
+                        Insurance_price = 0,
+                        fine_price = 0,
+                        Etag = 0,
+                        parkingFee = 0,
+                        TransDiscount = 0,
+                        gift_point = 0,
+                        gift_motor_point = 0,
+                        monthly_workday = 0,
+                        monthly_holiday = 0,
+                        EndMile = End_Mile,
+                        DiffAmount = DiffAmount,
+                        APIName = funName,
+                        UseGiveMinute = 0,
+                        LogID = LogID
+                    };
+
+                    SPOutput_Base SPOutput = new SPOutput_Base();
+                    SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base> SQLBookingStartHelp = new SQLHelper<SPInput_BE_CalFinalPrice, SPOutput_Base>(connetStr);
+                    flag = SQLBookingStartHelp.ExecuteSPNonQuery(SPName, SPInput, ref SPOutput, ref lstError);
+                    baseVerify.checkSQLResult(ref flag, ref SPOutput, ref lstError, ref errCode);
+
+                    #region trace
+                    trace.traceAdd(nameof(TotalRentMinutes), TotalRentMinutes);
+                    trace.traceAdd(nameof(Discount), Discount);
+                    trace.traceAdd(nameof(SPInput), SPInput);
+                    trace.traceAdd(nameof(carInfo), carInfo);
+                    trace.traceAdd(nameof(outputApi), outputApi);
+                    #endregion
+
+                    trace.FlowList.Add("sp存檔");
+                    #endregion
+                }
+                #endregion
+
+                #region 寫入錯誤Log
+                if (!flag)
+                {
+                    trace.objs.Add(nameof(errCode), errCode);
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                trace.BaseMsg = ex.Message;
+                flag = false;
+                errCode = "ERR902";
+            }
+            finally
+            {
+                trace.objs = trace.getObjs();
+                var errItem = new TraceLogVM()
+                {
+                    ApiId = 127,
+                    ApiMsg = JsonConvert.SerializeObject(trace),
+                    ApiNm = funName,
+                    CodeVersion = trace.codeVersion,
+                    FlowStep = trace.FlowStep(),
+                    OrderNo = trace.OrderNo,
+                    TraceType = string.IsNullOrWhiteSpace(trace.BaseMsg) ? (flag ? eumTraceType.mark : eumTraceType.followErr) : eumTraceType.exception
+                };
+                carRepo.AddTraceLog(errItem);
+            }
 
             return flag;
         }
