@@ -1135,7 +1135,7 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;          //ETAG費用 20201202 ADD BY ADAM
             int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH
-            int End_Mile = 0;           //還車里程
+            float End_Mile = 0;           //還車里程
             int PreAmount = 0;          // 預授權金額 20211108 ADD BY YEH
             int DiffAmount = 0;         // 差額 20211108 ADD BY YEH
             float MillageUnit = 0;      // 每公里里程費
@@ -2222,7 +2222,7 @@ namespace WebAPI.Controllers
             int InsurancePerHours = 0;  //安心服務每小時價
             int etagPrice = 0;          //ETAG費用 20201202 ADD BY ADAM
             int CityParkingPrice = 0;   //城市車旅停車費 20210507 ADD BY YEH
-            int End_Mile = 0;           //還車里程
+            float End_Mile = 0;           //還車里程
             int PreAmount = 0;          // 預授權金額 20211108 ADD BY YEH
             int DiffAmount = 0;         // 差額 20211108 ADD BY YEH
             float MillageUnit = 0;      // 每公里里程費
