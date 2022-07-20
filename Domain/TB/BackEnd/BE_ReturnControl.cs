@@ -251,5 +251,25 @@ namespace Domain.TB.BackEnd
         /// 支付類型 1:信用卡 2:錢包
         /// </summary>
         public string PaymentType { get; set; }
+        /// <summary>
+        /// 企客-是否為企客訂單
+        /// </summary>
+        public int EC_flag { get; set; }
+        /// <summary>
+        /// 企客-自負額 安心+停車
+        /// </summary>
+        public int EC_Amount { get; set; }
+        /// <summary>
+        /// 企客-Etag是否自付
+        /// </summary>
+        public int EC_Etag { get; set; }
+        /// <summary>
+        /// 企客-安心服務是否自付
+        /// </summary>
+        public int EC_Insurance { get; set; }
+        /// <summary>
+        /// 企客-停車費是否自付
+        /// </summary>
+        public int EC_Parking { get; set; }
     }
 }
