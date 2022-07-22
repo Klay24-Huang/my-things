@@ -2024,35 +2024,36 @@
 
 * Output範例
   
-  ```Output範例
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "FavoriteObj": [
-            {
-                "StationID": "X0II",
-                "StationName": "iRent濱江旗艦站",
-                "Tel": "02-2516-3816",
-                "ADDR": "松江路557號",
-                "Latitude": 25.069014,
-                "Longitude": 121.533842,
-                "Content": "",
-                "ContentForAPP": null,
-                "IsRequiredForReturn": 0,
-                "StationPic": null
-            }
-        ]
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "FavoriteObj": [
+          {
+              "StationID": "X0II",
+              "StationName": "iRent濱江旗艦站",
+              "Tel": "02-2516-3816",
+              "ADDR": "松江路557號",
+              "Latitude": 25.069014,
+              "Longitude": 121.533842,
+              "Content": "",
+              "ContentForAPP": null,
+              "IsRequiredForReturn": 0,
+              "StationPic": null
+          }
+      ]
   }
-  ```
-  
-  ## SetFavoriteStation設定常用站點
-  
-  ### [/api/SetFavoriteStation/]
+}
+```
+
+## SetFavoriteStation設定常用站點
+
+### [/api/SetFavoriteStation/]
 
 * 20210315發佈
 
@@ -2079,20 +2080,21 @@
 
 * input範例
   
-  ```input
-  {
-    "FavoriteStations": [
-        {
-            "StationID": "X0II",
-            "Mode": 1
-        },
-        {
-            "StationID": "X0I9",
-            "Mode": 0
-        }
-    ]
-  }
-  ```
+
+```
+{
+  "FavoriteStations": [
+      {
+          "StationID": "X0II",
+          "Mode": 1
+      },
+      {
+          "StationID": "X0I9",
+          "Mode": 0
+      }
+  ]
+}
+```
 
 * output回傳參數說明
 
@@ -2106,17 +2108,17 @@
 | Data         | 資料物件      | object |           |
 
 * output範例
-  
-  ```output範例
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {}
-  }
-  ```
+
+```output範例
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {}
+}
+```
 
 * 錯誤代碼清單
 
@@ -2274,13 +2276,13 @@
 | ☆CarTypes | 車型代碼   | N   | Array string | [ "PRIUSC" ]        |
 
 * input範例
-  
-  ```input範例
-  {
-    "StationID": "X0II",
-    "CarTypes":[ "PRIUSC" ]
-  }
-  ```
+
+```input範例
+{
+  "StationID": "X0II",
+  "CarTypes":[ "PRIUSC" ]
+}
+```
 
 * output回傳參數說明
 
@@ -2315,54 +2317,54 @@
 | IsRent        | 是否可出租  | string | Y/N           |
 
 * output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "IsFavStation": 0,
-        "GetCarTypeObj": [
-            {
-                "CarBrend": "TOYOTA",
-                "CarType": "PRIUSC",
-                "CarTypeName": "TOYOTA PRIUSc",
-                "CarTypePic": "priusC",
-                "Operator": "supplierIrent",
-                "OperatorScore": 5.0,
-                "Price": 168,
-                "Seat": 5,
-                "IsRent": "Y"
-            },
-            {
-                "CarBrend": "TOYOTA",
-                "CarType": "SIENTA5",
-                "CarTypeName": "TOYOTA SIENTA5人",
-                "CarTypePic": "sienta",
-                "Operator": "supplierIrent",
-                "OperatorScore": 5.0,
-                "Price": 168,
-                "Seat": 5,
-                "IsRent": "N"
-            },
-            {
-                "CarBrend": "TOYOTA",
-                "CarType": "SIENTA7",
-                "CarTypeName": "TOYOTA SIENTA7人",
-                "CarTypePic": "sienta",
-                "Operator": "supplierIrent",
-                "OperatorScore": 5.0,
-                "Price": 168,
-                "Seat": 7,
-                "IsRent": "Y"
-            }
-        ]
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "IsFavStation": 0,
+      "GetCarTypeObj": [
+          {
+              "CarBrend": "TOYOTA",
+              "CarType": "PRIUSC",
+              "CarTypeName": "TOYOTA PRIUSc",
+              "CarTypePic": "priusC",
+              "Operator": "supplierIrent",
+              "OperatorScore": 5.0,
+              "Price": 168,
+              "Seat": 5,
+              "IsRent": "Y"
+          },
+          {
+              "CarBrend": "TOYOTA",
+              "CarType": "SIENTA5",
+              "CarTypeName": "TOYOTA SIENTA5人",
+              "CarTypePic": "sienta",
+              "Operator": "supplierIrent",
+              "OperatorScore": 5.0,
+              "Price": 168,
+              "Seat": 5,
+              "IsRent": "N"
+          },
+          {
+              "CarBrend": "TOYOTA",
+              "CarType": "SIENTA7",
+              "CarTypeName": "TOYOTA SIENTA7人",
+              "CarTypePic": "sienta",
+              "Operator": "supplierIrent",
+              "OperatorScore": 5.0,
+              "Price": 168,
+              "Seat": 7,
+              "IsRent": "Y"
+          }
+      ]
   }
-  ```
+}
+```
 
 * 錯誤代碼清單
 
@@ -2408,21 +2410,21 @@
 | CarTrip   | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int          | 1                   |
 
 * input範例
-  
-  ```
-  {
-    "CarTypes": [ "PRIUSC" ],
-    "StationID": "X0II",
-    "SDate": "2021-03-12 14:00:00",
-    "EDate": "2021-03-13 15:00:00",
-    "Latitude": "",
-    "Radius": "0",
-    "Mode": "0",
-    "Longitude": "",
-    "Insurance": 0,
-    "CarTrip": 1
-  }
-  ```
+
+```
+{
+  "CarTypes": [ "PRIUSC" ],
+  "StationID": "X0II",
+  "SDate": "2021-03-12 14:00:00",
+  "EDate": "2021-03-13 15:00:00",
+  "Latitude": "",
+  "Radius": "0",
+  "Mode": "0",
+  "Longitude": "",
+  "Insurance": 0,
+  "CarTrip": 1
+}
+```
 
 * output回傳參數說明
 
@@ -2761,13 +2763,13 @@
 | ☆IsMotor  | 機車汽車 | Y   | INT    | 0:機車,1:汽車 |
 
 * input範例
-  
-  ```input範例
-  {
-    "StationID": "X0G1",
-    "IsMotor": 0
-  }
-  ```
+
+```input範例
+{
+  "StationID": "X0G1",
+  "IsMotor": 0
+}
+```
 
 * output回傳參數說明
 
@@ -2788,22 +2790,22 @@
 | PolygonObj  | 電子柵欄經緯度清單 | List |                 |
 
 * output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PolygonType": 0,
-        "PolygonObj": [
-            "POLYGON((120.28898139979174 22.66497932782427,120.2914597609215 22.665098131237773,120.2914597609215 22.662979454923615,120.28889020468523 22.662979454923615,120.28898139979174 22.66497932782427))"
-        ]
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PolygonType": 0,
+      "PolygonObj": [
+          "POLYGON((120.28898139979174 22.66497932782427,120.2914597609215 22.665098131237773,120.2914597609215 22.662979454923615,120.28889020468523 22.662979454923615,120.28898139979174 22.66497932782427))"
+      ]
   }
-  ```
+}
+```
 
 ## AnyRent 取得路邊租還車輛
 
@@ -2829,16 +2831,16 @@
 | CarTrip   | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int    | 1           |
 
 * input範例
-  
-  ```
-  {
-    "ShowALL": "0",
-    "Latitude": 25.060368,
-    "Longitude": 121.520260,
-    "Radius": 2.5,
-    "CarTrip": 1
-  }
-  ```
+
+```
+{
+  "ShowALL": "0",
+  "Latitude": 25.060368,
+  "Longitude": 121.520260,
+  "Radius": 2.5,
+  "CarTrip": 1
+}
+```
 
 * output 回傳參數說明
 
@@ -3008,15 +3010,15 @@
 | CarTrip | 用車行程 (1 = 個人身分，2 = 企業身分) | N   | int    | 1        |
 
 * input範例
-  
-  ```
-  {
-    "CarNo":"RCG-0521",
-    "SDate":"",
-    "EDate":"",
-    "CarTrip":1
-  }
-  ```
+
+```
+{
+  "CarNo":"RCG-0521",
+  "SDate":"",
+  "EDate":"",
+  "CarTrip":1
+}
+```
 
 * output 回傳參數說明
 
@@ -3206,16 +3208,16 @@
 | CarTrip   | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int    | 1           |
 
 * input範例
-  
-  ```
-  {
-    "ShowALL": "0",
-    "Latitude": 25.060368,
-    "Longitude": 121.520260,
-    "Radius": 2.5,
-    "CarTrip": 2
-  }
-  ```
+
+```
+{
+  "ShowALL": "0",
+  "Latitude": 25.060368,
+  "Longitude": 121.520260,
+  "Radius": 2.5,
+  "CarTrip": 2
+}
+```
 
 * output 回傳參數說明
 
@@ -3408,15 +3410,15 @@
 | CarTrip | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int    | 1        |
 
 * input範例
-  
-  ```
-  {
-    "CarNo":"EWA-0127",
-    "SDate":"",
-    "EDate":"",
-    "CarTrip":1
-  }
-  ```
+
+```
+{
+  "CarNo":"EWA-0127",
+  "SDate":"",
+  "EDate":"",
+  "CarTrip":1
+}
+```
 
 * output 回傳參數說明
 
@@ -3654,13 +3656,13 @@
 | DiscountLabel    | 優惠標籤物件  | object |      |
 
 * DiscountLabel參數說明
-  
-  | 參數名稱       | 參數說明   | 型態     | 範例     |
-  | ---------- | ------ |:------:| ------ |
-  | Price      | 優惠金額   | int    | 55     |
-  | LabelType  | 優惠標籤類型 | string | CP0101 |
-  | GiveMinute | 優惠分鐘數  | int    | 30     |
-  | Describe   | 優惠說明   | string | 優惠標籤折抵 |
+
+| 參數名稱       | 參數說明   | 型態     | 範例     |
+| ---------- | ------ |:------:| ------ |
+| Price      | 優惠金額   | int    | 55     |
+| LabelType  | 優惠標籤類型 | string | CP0101 |
+| GiveMinute | 優惠分鐘數  | int    | 30     |
+| Describe   | 優惠說明   | string | 優惠標籤折抵 |
 
 * Output範例
 
@@ -6496,61 +6498,61 @@
 ```
 
 * Output範例,我的所有方案(ReMode=2)
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "MyCar": {
-            "NxtPay": 0,
-            "StartDate": "05/18 00:00",
-            "EndDate": "06/16 23:59",
-            "MonProjID": "MR66",
-            "MonProjNM": "測試_汽包機66-3",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "PeriodPrice": 7000,
-            "IsMoto": 0,
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "IsDiscount": 0,
-            "IsPay": 1,
-            "IsMix": 1
-        },
-        "MyMoto": {
-            "NxtPay": 0,
-            "StartDate": "05/18 00:00",
-            "EndDate": "06/16 23:59",
-            "MonProjID": "MR200",
-            "MonProjNM": "測試_機車2000",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "PeriodPrice": 2000,
-            "IsMoto": 1,
-            "CarWDHours": 0.0,
-            "CarHDHours": 0.0,
-            "MotoTotalMins": 600,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "IsDiscount": 0,
-            "IsPay": 1,
-            "IsMix": 0
-        },
-        "ReMode": 2
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "MyCar": {
+          "NxtPay": 0,
+          "StartDate": "05/18 00:00",
+          "EndDate": "06/16 23:59",
+          "MonProjID": "MR66",
+          "MonProjNM": "測試_汽包機66-3",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "PeriodPrice": 7000,
+          "IsMoto": 0,
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "IsDiscount": 0,
+          "IsPay": 1,
+          "IsMix": 1
+      },
+      "MyMoto": {
+          "NxtPay": 0,
+          "StartDate": "05/18 00:00",
+          "EndDate": "06/16 23:59",
+          "MonProjID": "MR200",
+          "MonProjNM": "測試_機車2000",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "PeriodPrice": 2000,
+          "IsMoto": 1,
+          "CarWDHours": 0.0,
+          "CarHDHours": 0.0,
+          "MotoTotalMins": 600,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "IsDiscount": 0,
+          "IsPay": 1,
+          "IsMix": 0
+      },
+      "ReMode": 2
   }
-  ```
+}
+```
 
 ## GetMonthGroup 月租專案群組
 
@@ -6622,41 +6624,41 @@
 | PayPrice      | 信用卡授權金額                       | int    | 7000             |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "MonProDisc": "汽包機66-6注意事項",
-        "MonCards": [
-            {
-                "UseUntil": "2022/02/28 00:00",
-                "MonProjID": "MR66",
-                "MonProjNM": "測試_汽包機66-6",
-                "MonProPeriod": 6,
-                "ShortDays": 0,
-                "PeriodPrice": 9000,
-                "IsMoto": 0,
-                "CarWDHours": 6.0,
-                "CarHDHours": 6.0,
-                "MotoTotalMins": 600,
-                "WDRateForCar": 99.0,
-                "HDRateForCar": 168.0,
-                "WDRateForMoto": 1.0,
-                "HDRateForMoto": 1.2,
-                "IsDiscount": 0,
-                "IsPay": 0,
-                "IsMix": 1,
-                "PayPrice":7000
-            }
-        ]
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "MonProDisc": "汽包機66-6注意事項",
+      "MonCards": [
+          {
+              "UseUntil": "2022/02/28 00:00",
+              "MonProjID": "MR66",
+              "MonProjNM": "測試_汽包機66-6",
+              "MonProPeriod": 6,
+              "ShortDays": 0,
+              "PeriodPrice": 9000,
+              "IsMoto": 0,
+              "CarWDHours": 6.0,
+              "CarHDHours": 6.0,
+              "MotoTotalMins": 600,
+              "WDRateForCar": 99.0,
+              "HDRateForCar": 168.0,
+              "WDRateForMoto": 1.0,
+              "HDRateForMoto": 1.2,
+              "IsDiscount": 0,
+              "IsPay": 0,
+              "IsMix": 1,
+              "PayPrice":7000
+          }
+      ]
   }
-  ```
+}
+```
 
 ## BuyNow/DoAddMonth 購買月租
 
@@ -6714,19 +6716,19 @@
 | PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
   }
-  ```
+}
+```
 
 * 錯誤代碼
 
@@ -6803,19 +6805,19 @@
 | PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
   }
-  ```
+}
+```
 
 * 錯誤代碼
 
@@ -6882,19 +6884,19 @@
 | PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
   }
-  ```
+}
+```
 
 * 錯誤代碼
 
@@ -6981,19 +6983,19 @@
 | PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
   }
-  ```
+}
+```
 
 * 錯誤代碼
 
@@ -7073,19 +7075,19 @@
 | PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
   }
-  ```
+}
+```
 
 * 錯誤代碼
 
@@ -7175,42 +7177,42 @@
 | IsMoto          | 是否為機車0否1是       | int    | 0                |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "Month": {
-            "MonProjID": "MR66",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機66-3",
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "StartDate": "2021/05/26 00:00",
-            "EndDate": "2021/06/24 23:59",
-            "MonthStartDate": "2021/05/26 00:00",
-            "MonthEndDate": "2021/08/24 23:59",
-            "NxtMonProPeriod": 3,
-            "IsMix": 1,
-            "IsUpd": 0,
-            "SubsNxt": 1,
-            "IsChange": 0,
-            "IsPay": 1,
-            "IsMoto": 0
-        }
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "Month": {
+          "MonProjID": "MR66",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "MonProjNM": "測試_汽包機66-3",
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "StartDate": "2021/05/26 00:00",
+          "EndDate": "2021/06/24 23:59",
+          "MonthStartDate": "2021/05/26 00:00",
+          "MonthEndDate": "2021/08/24 23:59",
+          "NxtMonProPeriod": 3,
+          "IsMix": 1,
+          "IsUpd": 0,
+          "SubsNxt": 1,
+          "IsChange": 0,
+          "IsPay": 1,
+          "IsMoto": 0
+      }
   }
-  ```
+}
+```
 
 ## GetSubsCNT 取得合約明細
 
@@ -7289,68 +7291,68 @@
 | IsMoto          | 是否為機車0否1是       | int    | 0                |
 
 * Output範例
-  
-  ```
-  {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "NowCard": {
-            "MonProjID": "MR66",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機66-3",
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300.0,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "StartDate": "2021/05/18 00:00",
-            "EndDate": "2021/08/16 23:59",
-            "MonProDisc": "汽包機66-3注意事項",
-            "IsMix": 1,
-            "MonthStartDate": "2021/05/26 00:00",
-            "MonthEndDate": "2021/08/24 23:59",
-            "NxtMonProPeriod": 3,
-            "IsUpd": 0,
-            "SubsNxt": 1,
-            "IsChange": 0,
-            "IsPay": 1,
-            "IsMoto": 0
-        },
-        "NxtCard": {
-            "IsChange": 0,
-            "MonProjID": "MR66",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機66-3",
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300.0,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "StartDate": "2021/08/16 00:00",
-            "EndDate": "2021/11/14 23:59",
-            "MonProDisc": "汽包機66-3注意事項",
-            "IsMix": 1,
-            "MonthStartDate": "2021/05/26 00:00",
-            "MonthEndDate": "2021/08/24 23:59",
-            "NxtMonProPeriod": 3,
-            "IsUpd": 0,
-            "SubsNxt": 1,
-            "IsPay": 1,
-            "IsMoto": 0
-        }
-    }
+
+```
+{
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "NowCard": {
+          "MonProjID": "MR66",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "MonProjNM": "測試_汽包機66-3",
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300.0,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "StartDate": "2021/05/18 00:00",
+          "EndDate": "2021/08/16 23:59",
+          "MonProDisc": "汽包機66-3注意事項",
+          "IsMix": 1,
+          "MonthStartDate": "2021/05/26 00:00",
+          "MonthEndDate": "2021/08/24 23:59",
+          "NxtMonProPeriod": 3,
+          "IsUpd": 0,
+          "SubsNxt": 1,
+          "IsChange": 0,
+          "IsPay": 1,
+          "IsMoto": 0
+      },
+      "NxtCard": {
+          "IsChange": 0,
+          "MonProjID": "MR66",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "MonProjNM": "測試_汽包機66-3",
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300.0,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "StartDate": "2021/08/16 00:00",
+          "EndDate": "2021/11/14 23:59",
+          "MonProDisc": "汽包機66-3注意事項",
+          "IsMix": 1,
+          "MonthStartDate": "2021/05/26 00:00",
+          "MonthEndDate": "2021/08/24 23:59",
+          "NxtMonProPeriod": 3,
+          "IsUpd": 0,
+          "SubsNxt": 1,
+          "IsPay": 1,
+          "IsMoto": 0
+      }
   }
-  ```
+}
+```
 
 ## GetChgSubsList 變更下期續約列表
 
@@ -7371,14 +7373,14 @@
 | ShortDays    | 短期總天數(key) | Y   | int    | 0    |
 
 * input範例
-  
-  ```
-  {
-    "MonProjID"::"MR66",
-    "MonProPeriod:3,
-    "ShortDays":"0"
-  }
-  ```
+
+```
+{
+  "MonProjID"::"MR66",
+  "MonProPeriod:3,
+  "ShortDays":"0"
+}
+```
 
 * Output回傳參數說明
 
@@ -7504,14 +7506,14 @@
 | ShortDays    | 短期總天數(key) | Y   | int    | 0    |
 
 * input範例
-  
-  ```
-  {
-    "MonProjID"::"MR66",
-    "MonProPeriod:3,
-    "ShortDays":"0",
-  }
-  ```
+
+```
+{
+  "MonProjID"::"MR66",
+  "MonProPeriod:3,
+  "ShortDays":"0",
+}
+```
 
 * Output回傳參數說明
 
@@ -7784,12 +7786,12 @@
 | MonthlyRentId |      | Y   | int | 912 |
 
 * input範例
-  
-  ```
-  {
-     "MonthlyRentId":912,
-  }
-  ```
+
+```
+{
+   "MonthlyRentId":912,
+}
+```
 
 * Output回傳參數說明
 
@@ -7949,15 +7951,15 @@
 | AutoSubs     | 設定自動續約(0否,1是) | N   | int    | 0    |
 
 * input範例
-  
-  ```
-  {
-     "MonProjID":"MR66",
-     "MonProPeriod":3,
-     "ShortDays":0,
-     "AutoSubs":1
-  }
-  ```
+
+```
+{
+   "MonProjID":"MR66",
+   "MonProPeriod":3,
+   "ShortDays":0,
+   "AutoSubs":1
+}
+```
 
 * Output回傳參數說明
 
@@ -10015,6 +10017,17 @@
 | INV_DATE | 發票開立日期  | Y   | String | 20211010                       |
 | RNDCODE  | 發票隨機碼   | Y   | String | 0594                           |
 
+* input範例
+
+```
+{
+    "NORDNO": "P00800HiMS20211001140619666113",
+    "INV_NO": "DE12345678",
+    "INV_DATE": "20211010",
+    "RNDCODE": "0594"
+}
+```
+
 * Output回傳參數說明
 
 | 參數名稱         | 參數說明      | 型態     | 範例        |
@@ -10192,10 +10205,17 @@
 
 * input 傳入參數說明
 
-| 參數名稱       | 參數說明  | 必要  | 型態     | 範例              |
-| ---------- | ----- |:---:|:------:| --------------- |
-| IDNO       | 身分證字號 | Y   | string | "A123456789"    |
-| ExchangeID | 禮包代碼  | Y   | string | "2022LoveiRent" |
+| 參數名稱   | 參數說明 | 必要 |  型態  | 範例          |
+| ---------- | -------- | :--: | :----: | ------------- |
+| ExchangeID | 禮包代碼 |  Y   | string | 2022LoveiRent |
+
+* input範例
+
+```
+{
+    "ExchangeID": "2022LoveiRent"
+}
+```
 
 * output 回傳參數說明
 
@@ -10245,9 +10265,17 @@
 
 * input 傳入參數說明
 
-| 參數名稱    | 參數說明 | 必要  | 型態     | 範例          |
-| ------- | ---- |:---:| ------ | ----------- |
-| OrderNo | 訂單編號 | Y   | string | "H11770599" |
+| 參數名稱 | 參數說明 | 必要 | 型態   | 範例      |
+| -------- | -------- | :--: | ------ | --------- |
+| OrderNo  | 訂單編號 |  Y   | string | H11770599 |
+
+* input範例
+
+```
+{
+    "OrderNo": "H11770599"
+}
+```
 
 * output 回傳參數說明
 
@@ -10370,9 +10398,17 @@
 
 * input 傳入參數說明
 
-| 參數名稱  | 參數說明 | 必要  | 型態     | 範例         |
-| ----- | ---- |:---:|:------:| ---------- |
-| TaxID | 統一編號 | Y   | string | "12354548" |
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| TaxID    | 統一編號 |  Y   | string | 12354548 |
+
+* input範例
+
+```
+{
+    "TaxID": "12354548"
+}
+```
 
 * output 回傳參數說明
 
@@ -10394,9 +10430,11 @@
 | list   |      | object |              |
 
 * list 參數說明
-  | DeptNo        | 部門代碼(-1為不存在)       |  int   | 1                   |
-  | DeptName      | 部門名稱                   | string | "營業部"            |
-  | IsExitT      | 部門名稱                   | string | "營業部"             |
+
+| 參數名稱 | 參數說明             | 型態   | 範例     |
+| -------- | -------------------- | ------ | -------- |
+| DeptNo   | 部門代碼(-1為不存在) | int    | 1        |
+| DeptName | 部門名稱             | string | "營業部" |
 
 * Output 範例
 
@@ -10493,6 +10531,18 @@
 | EmployeeID  | 員工編號 | N   | string | "74214"    |
 | MEMCNAME    | 員工姓名 | N   | string | "張三"       |
 
+* input範例
+
+```
+{
+    "TaxID": "12354548",
+    "CompanyName": "和運",
+    "Depart": 1,
+    "EmployeeID": "74214",
+    "MEMCNAME": "張三"
+}
+```
+
 * output 回傳參數說明
 
 | 參數名稱         | 參數說明      | 型態     | 範例        |
@@ -10542,6 +10592,14 @@
 | 參數名稱  | 參數說明 | 必要  | 型態     | 範例         |
 | ----- | ---- |:---:|:------:| ---------- |
 | TaxID | 統一編號 | Y   | string | "12354548" |
+
+* input範例
+
+```
+{
+    "TaxID": "12354548"
+}
+```
 
 * output 回傳參數說明
 
