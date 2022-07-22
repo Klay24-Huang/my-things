@@ -1859,11 +1859,12 @@
 
 * BannerObj 參數說明
 
-| 參數名稱        | 參數說明  | 型態     | 範例                                                      |
-| ----------- | ----- |:------:| ------------------------------------------------------- |
-| MarqueeText | 跑馬燈文字 | string | 測試Banner1                                               |
-| PIC         | 圖片    | string | https://irentv2data.blob.core.windows.net/banner/01.png |
-| URL         | 網頁網址  | string | https://www.easyrent.com.tw/upload/event/109event/2042/ |
+| 參數名稱    | 參數說明   |  型態  | 範例                                                    |
+| ----------- | ---------- | :----: | ------------------------------------------------------- |
+| SEQNO       | 流水號     |  int   | 8                                                       |
+| MarqueeText | 跑馬燈文字 | string | 測試Banner1                                             |
+| PIC         | 圖片       | string | https://irentv2data.blob.core.windows.net/banner/01.png |
+| URL         | 網頁網址   | string | https://www.easyrent.com.tw/upload/event/109event/2042/ |
 
 * Output範例
 
@@ -1877,19 +1878,22 @@
     "Data": {
         "BannerObj": [
             {
-                "MarqueeText": "測試Banner1",
-                "PIC": "https://irentv2data.blob.core.windows.net/banner/01.png",
-                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+                "SEQNO": 8,
+                "MarqueeText": "Corolla Cross新車上線!",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/0714.png_1_20210714000000.png",
+                "URL": "https://www.irentcar.com.tw/event/111event/2083/index.html"
             },
             {
-                "MarqueeText": "測試Banner2",
-                "PIC": "https://irentv2data.blob.core.windows.net/banner/02.png",
-                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+                "SEQNO": 14,
+                "MarqueeText": "iRent汽車平日租車110元起",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/0701.png_1_20210701000000.png",
+                "URL": "https://www.irentcar.com.tw/event/111event/3057/index.html"
             },
             {
-                "MarqueeText": "測試Banner3",
-                "PIC": "https://irentv2data.blob.core.windows.net/banner/03.png",
-                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+                "SEQNO": 10,
+                "MarqueeText": "北區共享汽車限定活動送免費時數",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/111.png_1_20210706000000.png",
+                "URL": "https://www.irentcar.com.tw/event/111event/3041/index.html"
             }
         ]
     }
