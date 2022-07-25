@@ -31,6 +31,10 @@ namespace Domain.SP.Output.Subscription
         public int IsMoto { get; set; }
         public int IsMix { get; set; }
         public string MonProDisc { get; set; }
+        /// <summary>
+        /// 最後一期結束日 20220726 ADD BY ADAM 
+        /// </summary>
+        public DateTime MonEndDate { get; set; }
     }
 
 }

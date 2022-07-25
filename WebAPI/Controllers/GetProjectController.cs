@@ -679,7 +679,8 @@ namespace WebAPI.Controllers
                                             newItem.WorkdayPerHour = Convert.ToInt32(z.WorkDayRateForCar);
                                             newItem.HolidayPerHour = Convert.ToInt32(z.HoildayRateForCar);
                                             newItem.MonthStartDate = z.StartDate.ToString("yyyy/MM/dd");
-                                            newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                            //newItem.MonthEndDate = z.StartDate.AddDays(30 * z.MonProPeriod).ToString("yyyy/MM/dd");
+                                            newItem.MonthEndDate = z.MonEndDate.ToString("yyyy/MM/dd");     //20220726 ADD BY ADAM REASON.修正最後一期結束日
                                             newItem.MonthlyRentId = z.MonthlyRentId;
                                             newItem.WDRateForCar = z.WorkDayRateForCar;
                                             //newItem.HDRateForCar = z.HoildayRateForCar;
