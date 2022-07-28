@@ -90,7 +90,8 @@ namespace WebAPI.Controllers
                     CancelOvertime = apiInput.cancelOvertime ? 1 : 0,
                     CarrierType = apiInput.bill_option,
                     Business_No = apiInput.unified_business_no,
-                    Parking = apiInput.parkingSpace
+                    Parking = apiInput.parkingSpace,
+                    GiftMinute = apiInput.giftPoint_minute_input
 
                 };
                 SPOutput_Base spOut = new SPOutput_Base();

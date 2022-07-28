@@ -26,5 +26,6 @@ namespace WebAPI.Models.Param.Input
         public string bill_option { get; set; }
         public string unified_business_no { get; set; }
         public string parkingSpace { get; set; }
+        public int giftPoint_minute_input { get; set; }
     }
 }
