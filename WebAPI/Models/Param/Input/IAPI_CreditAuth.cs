@@ -33,5 +33,10 @@ namespace WebAPI.Models.Param.Input
         /// <para>0:否</para>
         /// </summary>
         public int OnceStore { get; set; }
+
+        /// <summary>
+        /// 企業客戶用車原因
+        /// </summary>
+        public string UseReason { get; set; }
     }
 }

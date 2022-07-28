@@ -21,16 +21,14 @@
 
 - [GetMemberStatus 取得會員狀態](#GetMemberStatus)
 - [GetMemberScore 取得會員積分](#GetMemberScore)
+- [BonusQuery 會員時數及優惠券查詢](#BonusQuery)
 - [SetMemberScoreDetail 修改會員積分明細](#SetMemberScoreDetail)
 - [GetMemberMedal 取得會員徽章](#GetMemberMedal)
 - [SetMemberCMK 更新會員條款](#SetMemberCMK)
 - [TransWebMemCMK 拋轉官網會員同意資料](#TransWebMemCMK)
 - [GetMemberRedPoint 取得會員紅點通知](#GetMemberRedPoint)
 - [GiftTransferCheck 會員轉贈對象查詢](#GiftTransferCheck)
-- [GetEnterpriseList 取得企業部門清單](#GetEnterpriseList)
 - [MemberUnbind 會員解綁](#MemberUnbind)
-- [SetEnterpriseUser 儲存企業月結用戶](#SetEnterpriseUser)
-- [DeleteEnterpriseUser 企業月結用戶取消申請](#DeleteEnterpriseUser)
 
 首頁地圖相關
 
@@ -142,8 +140,19 @@
 
 - [GetGameItem 遊戲項目查詢](#GetGameItem)
 
+優惠券
+
+- [CouponExchange 禮包序號兌換優惠券](#CouponExchange)
+- [GetOrderCoupon 訂單可使用優惠券](#GetOrderCoupon)
+
+企業客戶
+
+- [GetEnterpriseList 取得企業部門清單](#GetEnterpriseList)
+- [SetEnterpriseUser 儲存企業月結用戶](#SetEnterpriseUser)
+- [DeleteEnterpriseUser 企業月結用戶取消申請](#DeleteEnterpriseUser)
 
 ----------
+
 # 修改歷程
 
 20210315 常用站點API修改
@@ -317,6 +326,8 @@
 
 20220222 預約(Booking)新增機車錢包餘額不足錯誤代碼
 
+20220223 新增查詢台新綁卡(BindQueryByEasyrent)
+
 20220301 機車取車(BookingStartMotor)補上output參數說明&錯誤代碼、預約(Booking)移除ERR294錯誤代碼
 
 20220315 付款與還款(CreditAuth)增加Input參數
@@ -346,6 +357,7 @@
 20220421 新增設定停車位置(SetParkingSpaceByReturn)
 
 20220523 調整RefrashToken：增加MEMRFNBR欄位輸出
+
 20220525 新增遊戲項目查詢(GetGameItem)
 
 20220527 條整取得專案與資費(機車)(GetMotorRentProject)輸出內容-添加機車安心服務
@@ -356,6 +368,12 @@
 
 20220613 調整BookingQuery欄位Insurance狀態
 
+20220627 補會員時數及優惠券資料查詢(BonusQuery)，並調整原本時數EDATE回傳樣式
+
+20220630 新增查詢-取得可折抵優惠券(GetOrderCoupon)
+
+20220629 新增目錄:優惠券相關，禮包序號兌換優惠券API
+
 20220704 新增GetEnterpriseList 取得企業部門清單
 
 20220705 新增SetEnterpriseUser 儲存企業月結用戶，新增DeleteEnterpriseUser 企業月結用戶取消申請，修改GetMemberStatus 取得會員狀態
@@ -364,33 +382,43 @@
 
 20220707 調整BookingFinishQuery輸出參數
 
+20220707 增加BookingQuery欄位NowOrderFlg
+
+20220711 調整GetOrderCoupon、BonusQuery內優惠券內容欄位,增加BookingFinishQuery歷史訂單查詢優惠券折抵分鐘數
+
+20220712 修正 GetOrderCoupon 文件input格式為string ，增加orderDetail輸出CouponMins優惠券使用時數，移除BookingFinishQuery參數CouponMins。
+
+20220713 新增BonusQuery  GetOrderCoupon  欄位輸出，調整OrderNO欄位為string
+
+20220714 新增GetOrderCoupon回傳參數CanDiscountTime:扣除優惠標籤的可折抵時數
+
 # API位置
 
-| 裝置    | 正式環境                            | 測試環境                                 |
-| ------- | ----------------------------------- | ---------------------------------------- |
-| iOS     | https://irentcar-app.azurefd.net/   | https://irentcar-app-test.azurefd.net/   |
+| 裝置      | 正式環境                                | 測試環境                                   |
+| ------- | ----------------------------------- | -------------------------------------- |
+| iOS     | https://irentcar-app.azurefd.net/   | https://irentcar-app-test.azurefd.net/ |
 | ANDROID | https://irent-app-jpw.ai-irent.net/ | https://irentcar-app-test.azurefd.net/ |
 
 # Header參數相關說明
 
-| KEY | VALUE |
-| -------- | -------- |
+| KEY           | VALUE              |
+| ------------- | ------------------ |
 | Authorization | Bearer AccessToken |
-| Content-Type | application/json |
+| Content-Type  | application/json   |
 
 # 共用錯誤代碼
-| 錯誤代碼 | 說明 |
-| ------- | ------- |
-| ERR100 | 帳號或密碼錯誤 |
-| ERR101 | 請重新登入 |
-| ERR103 | 身份證格式不符 |
-| ERR104 | APP版號錯誤 |
-| ERR105 | APP格式錯誤 |
-| ERR150 | 此功能需登入後才能使用 |
-| ERR900 | 參數遺漏(必填參數遺漏) |
-| ERR901 | 參數遺漏(未傳入參數) |
-| ERR902 | 參數遺漏(格式不符) |
 
+| 錯誤代碼   | 說明           |
+| ------ | ------------ |
+| ERR100 | 帳號或密碼錯誤      |
+| ERR101 | 請重新登入        |
+| ERR103 | 身份證格式不符      |
+| ERR104 | APP版號錯誤      |
+| ERR105 | APP格式錯誤      |
+| ERR150 | 此功能需登入後才能使用  |
+| ERR900 | 參數遺漏(必填參數遺漏) |
+| ERR901 | 參數遺漏(未傳入參數)  |
+| ERR902 | 參數遺漏(格式不符)   |
 
 ----------
 
@@ -410,12 +438,12 @@
 
 - Input 傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
-| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
-| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
-| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
-| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
-| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
+| 參數名稱       | 參數說明                   | 必要  | 型態     | 範例                                |
+| ---------- | ---------------------- |:---:|:------:| --------------------------------- |
+| IDNO       | 帳號                     | Y   | int    | A123456789                        |
+| DeviceID   | 機碼                     | Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) | Y   | int    | 0                                 |
+| appVersion | APP版號                  | Y   | string | 5.10.0                            |
 
 * Input範例
 
@@ -430,14 +458,14 @@
 
 * Output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output 範例
 
@@ -454,9 +482,9 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息              | 說明                               |
-| -------- | --------------------- | ---------------------------------- |
-| ERR130   | 此身份證/居留證已存在 | 註冊檢查帳號時，若帳號已存在時回傳 |
+| 錯誤代碼   | 錯誤訊息        | 說明                |
+| ------ | ----------- | ----------------- |
+| ERR130 | 此身份證/居留證已存在 | 註冊檢查帳號時，若帳號已存在時回傳 |
 
 ## Register_Step1 發送手機驗證
 
@@ -472,13 +500,13 @@
 
 - Input 傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
-| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
-| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
-| Mobile     | 手機                     |  Y   | string | 0912345678                        |
-| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
-| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
-| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
+| 參數名稱       | 參數說明                   | 必要  | 型態     | 範例                                |
+| ---------- | ---------------------- |:---:|:------:| --------------------------------- |
+| IDNO       | 帳號                     | Y   | int    | A123456789                        |
+| Mobile     | 手機                     | Y   | string | 0912345678                        |
+| DeviceID   | 機碼                     | Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) | Y   | int    | 0                                 |
+| appVersion | APP版號                  | Y   | string | 5.10.0                            |
 
 * Input範例
 
@@ -494,14 +522,14 @@
 
 * Output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output 範例
 
@@ -518,11 +546,11 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                     | 說明                               |
-| -------- | -------------------------------------------- | ---------------------------------- |
-| ERR106   | 手機號碼格式錯誤                             | 註冊時驗證手機格式是否錯誤         |
-| ERR114   | 這個手機號碼不開放驗證，請洽鄰近和運租車門市 | 拒往名單阻擋                       |
-| ERR130   | 此身份證/居留證已存在                        | 註冊檢查帳號時，若帳號已存在時回傳 |
+| 錯誤代碼   | 錯誤訊息                   | 說明                |
+| ------ | ---------------------- | ----------------- |
+| ERR106 | 手機號碼格式錯誤               | 註冊時驗證手機格式是否錯誤     |
+| ERR114 | 這個手機號碼不開放驗證，請洽鄰近和運租車門市 | 拒往名單阻擋            |
+| ERR130 | 此身份證/居留證已存在            | 註冊檢查帳號時，若帳號已存在時回傳 |
 
 ## Register_Step2 設定密碼
 
@@ -538,13 +566,13 @@
 
 - Input 傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                                                         |
-| ---------- | ------------------------ | :--: | :----: | ------------------------------------------------------------ |
-| IDNO       | 帳號                     |  Y   |  int   | A123456789                                                   |
-| PWD        | 密碼                     |  Y   | string | 0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 |
-| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99                            |
-| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                                            |
-| appVersion | APP版號                  |  Y   | string | 5.10.0                                                       |
+| 參數名稱       | 參數說明                   | 必要  | 型態     | 範例                                                                 |
+| ---------- | ---------------------- |:---:|:------:| ------------------------------------------------------------------ |
+| IDNO       | 帳號                     | Y   | int    | A123456789                                                         |
+| PWD        | 密碼                     | Y   | string | 0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 |
+| DeviceID   | 機碼                     | Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99                                  |
+| app        | APP類型(0:Android 1:iOS) | Y   | int    | 0                                                                  |
+| appVersion | APP版號                  | Y   | string | 5.10.0                                                             |
 
 * Input範例
 
@@ -560,14 +588,14 @@
 
 * Output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output 範例
 
@@ -596,18 +624,18 @@
 
 - Input 傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                              |
-| ---------- | ------------------------ | :--: | :----: | --------------------------------- |
-| IDNO       | 帳號                     |  Y   |  int   | A123456789                        |
-| DeviceID   | 機碼                     |  Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
-| app        | APP類型(0:Android 1:iOS) |  Y   |  int   | 0                                 |
-| appVersion | APP版號                  |  Y   | string | 5.10.0                            |
-| MEMCNAME   | 姓名                     |  Y   | string | 花蓮咘                            |
-| MEMBIRTH   | 生日                     |  Y   | string | 2020-05-03                        |
-| AreaID     | 行政區ID                 |  Y   |  int   | 347                               |
-| MEMADDR    | 會員住址                 |  Y   | string | 中山路276號                       |
-| MEMEMAIL   | 會員email                |  Y   | string | bubu@hotaimotor.com.tw            |
-| Signture   | 電子簽名（Base64)        |  Y   | string |                                   |
+| 參數名稱       | 參數說明                   | 必要  | 型態     | 範例                                |
+| ---------- | ---------------------- |:---:|:------:| --------------------------------- |
+| IDNO       | 帳號                     | Y   | int    | A123456789                        |
+| DeviceID   | 機碼                     | Y   | string | 170f2199f13bf36bcb6bf85a3e1c19c99 |
+| app        | APP類型(0:Android 1:iOS) | Y   | int    | 0                                 |
+| appVersion | APP版號                  | Y   | string | 5.10.0                            |
+| MEMCNAME   | 姓名                     | Y   | string | 花蓮咘                               |
+| MEMBIRTH   | 生日                     | Y   | string | 2020-05-03                        |
+| AreaID     | 行政區ID                  | Y   | int    | 347                               |
+| MEMADDR    | 會員住址                   | Y   | string | 中山路276號                           |
+| MEMEMAIL   | 會員email                | Y   | string | bubu@hotaimotor.com.tw            |
+| Signture   | 電子簽名（Base64)           | Y   | string |                                   |
 
 * Input範例
 
@@ -628,14 +656,14 @@
 
 * Output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output 範例
 
@@ -652,7 +680,7 @@
 
 # 登入相關
 
-##  Login 登入 
+## Login 登入
 
 ### [/api/Login/]
 
@@ -666,14 +694,14 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                       | 必要 |  型態  | 範例                                                         |
-| ---------- | ------------------------------ | :--: | :----: | ------------------------------------------------------------ |
-| IDNO       | 帳號                           |  Y   | string | A123456789                                                   |
-| PWD        | 密碼                           |  Y   | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
-| DeviceID   | DeviceID                       |  Y   | string | 171DD37E-E20A-4281-94C9-3DA48AAAAA                           |
-| APP        | APP類型<br />(0:Android 1:iOS) |  Y   |  int   | 1                                                            |
-| APPVersion | APP版號                        |  Y   | string | 5.6.0                                                        |
-| PushREGID  | 推播註冊流水號                 |  Y   | string | 123456                                                       |
+| 參數名稱       | 參數說明                         | 必要  | 型態     | 範例                                                               |
+| ---------- | ---------------------------- |:---:|:------:| ---------------------------------------------------------------- |
+| IDNO       | 帳號                           | Y   | string | A123456789                                                       |
+| PWD        | 密碼                           | Y   | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
+| DeviceID   | DeviceID                     | Y   | string | 171DD37E-E20A-4281-94C9-3DA48AAAAA                               |
+| APP        | APP類型<br />(0:Android 1:iOS) | Y   | int    | 1                                                                |
+| APPVersion | APP版號                        | Y   | string | 5.6.0                                                            |
+| PushREGID  | 推播註冊流水號                      | Y   | string | 123456                                                           |
 
 - input範例
 
@@ -690,69 +718,69 @@
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱 | 參數說明     | 型態 | 範例 |
-| -------- | ------------ | :--: | ---- |
-| Token    | Token列表    | List |      |
-| UserData | 會員資料列表 | List |      |
+| 參數名稱     | 參數說明    | 型態   | 範例  |
+| -------- | ------- |:----:| --- |
+| Token    | Token列表 | List |     |
+| UserData | 會員資料列表  | List |     |
 
 * Token 參數說明
 
-| 參數名稱           | 參數說明                 |  型態  | 範例                                                         |
-| ------------------ | ------------------------ | :----: | ------------------------------------------------------------ |
-| Access_token       | Token                    | string | B832168B2BCB024E05505095FAA562F91DBC75AFC70852185932582751158202 |
-| Refrash_token      | Refrash Token            | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
-| Rxpires_in         | 有效期限(單位秒)         |  int   | 86400                                                        |
-| Refrash_Rxpires_in | Refrash 有效期限(單位秒) |  int   | 604800                                                       |
+| 參數名稱               | 參數說明              | 型態     | 範例                                                               |
+| ------------------ | ----------------- |:------:| ---------------------------------------------------------------- |
+| Access_token       | Token             | string | B832168B2BCB024E05505095FAA562F91DBC75AFC70852185932582751158202 |
+| Refrash_token      | Refrash Token     | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
+| Rxpires_in         | 有效期限(單位秒)         | int    | 86400                                                            |
+| Refrash_Rxpires_in | Refrash 有效期限(單位秒) | int    | 604800                                                           |
 
 * UserData 參數說明
 
-| 參數名稱       | 參數說明                                                     |  型態  | 範例                                                         |
-| -------------- | ------------------------------------------------------------ | :----: | ------------------------------------------------------------ |
-| MEMIDNO        | 帳號                                                         | string | A123456789                                                   |
-| MEMCNAME       | 姓名                                                         | string | 王OX                                                         |
-| MEMTEL         | 電話                                                         | string | 0912345678                                                   |
-| MEMHTEL        | 連絡電話(住家)                                               | string | 25046290                                                     |
-| MEMBIRTH       | 生日                                                         | string | 1990-03-22                                                   |
-| MEMAREAID      | 城市                                                         |  int   | 53                                                           |
-| MEMADDR        | 地址                                                         | string | 中山北路                                                     |
-| MEMEMAIL       | 信箱                                                         | string | irent@gmail.com                                              |
-| MEMCOMTEL      | 公司電話                                                     | string | 25046290                                                     |
-| MEMCONTRACT    | 緊急連絡人                                                   | string | 王XO                                                         |
-| MEMCONTEL      | 緊急連絡人電話(手機)                                         | string | 0987654321                                                   |
-| MEMMSG         | 活動及優惠訊息通知 (Y:是 N:否)                               | string | N                                                            |
-| CARDNO         | 卡號                                                         | string | 459863745                                                    |
-| UNIMNO         | 統編                                                         | string | 03089008                                                     |
-| MEMSENDCD      | 發票寄送方式<br />1:捐贈;2:email;3:二聯;4:三聯;5:手機條碼;6:自然人憑證 |  int   | 5                                                            |
-| CARRIERID      | 發票載具                                                     | string | /N37H2JD                                                     |
-| NPOBAN         | 愛心碼                                                       | string | 885                                                          |
-| HasCheckMobile | 是否通過手機驗證(0:否;1:是)                                  |  int   | 1                                                            |
-| NeedChangePWD  | 是否需重新設定密碼(0:否;1:是)                                |  int   | 1                                                            |
-| HasBindSocial  | 是否綁定社群(0:否;1:是)                                      |  int   | 0                                                            |
-| HasVaildEMail  | 是否已驗證EMAIL(0:否;1:是)                                   |  int   | 1                                                            |
-| Audit          | 審核狀態 0:未審核 1:審核通過 2:審核不通過                    |  int   | 1                                                            |
-| IrFlag         | 目前註冊進行至哪個步驟<br />-1驗證完手機 、0：設置密碼、1：其他 |  int   | 1                                                            |
-| PayMode        | 付費方式 0:信用卡 1:錢包 4:Hotaipay                                 |  int   | 0                                                            |
-| RentType       | 可租車類別<br />0:無法;1:汽車;2:機車;3:全部                  |  int   | 3                                                            |
-| ID_pic         | 身份證                                                       |  int   | 0                                                            |
-| DD_pic         | 汽車駕照                                                     |  int   | 0                                                            |
-| MOTOR_pic      | 機車駕照                                                     |  int   | 0                                                            |
-| AA_pic         | 自拍照                                                       |  int   | 2                                                            |
-| F01_pic        | 法定代理人                                                   |  int   | 0                                                            |
-| Signture_pic   | 電子簽名                                                     |  int   | 2                                                            |
-| SigntureCode   | 電子簽名URL                                                  | string | https://irentv2data.blob.core.windows.net/credential/A123456789_Signture_20201221153957.png |
-| MEMRFNBR       | 短租會員IR+流水號                                            | string | ir609412                                                     |
-| SIGNATURE      | 短租網站電子簽名                                             | string | http://iRent.iRentCar.com.tw/iMoto_BackEnd/SigntureHelper/Index?IDNO=A123456789&signTime=2020-06-09 18:37:34 |
+| 參數名稱           | 參數說明                                              | 型態     | 範例                                                                                                           |
+| -------------- | ------------------------------------------------- |:------:| ------------------------------------------------------------------------------------------------------------ |
+| MEMIDNO        | 帳號                                                | string | A123456789                                                                                                   |
+| MEMCNAME       | 姓名                                                | string | 王OX                                                                                                          |
+| MEMTEL         | 電話                                                | string | 0912345678                                                                                                   |
+| MEMHTEL        | 連絡電話(住家)                                          | string | 25046290                                                                                                     |
+| MEMBIRTH       | 生日                                                | string | 1990-03-22                                                                                                   |
+| MEMAREAID      | 城市                                                | int    | 53                                                                                                           |
+| MEMADDR        | 地址                                                | string | 中山北路                                                                                                         |
+| MEMEMAIL       | 信箱                                                | string | irent@gmail.com                                                                                              |
+| MEMCOMTEL      | 公司電話                                              | string | 25046290                                                                                                     |
+| MEMCONTRACT    | 緊急連絡人                                             | string | 王XO                                                                                                          |
+| MEMCONTEL      | 緊急連絡人電話(手機)                                       | string | 0987654321                                                                                                   |
+| MEMMSG         | 活動及優惠訊息通知 (Y:是 N:否)                               | string | N                                                                                                            |
+| CARDNO         | 卡號                                                | string | 459863745                                                                                                    |
+| UNIMNO         | 統編                                                | string | 03089008                                                                                                     |
+| MEMSENDCD      | 發票寄送方式<br />1:捐贈;2:email;3:二聯;4:三聯;5:手機條碼;6:自然人憑證 | int    | 5                                                                                                            |
+| CARRIERID      | 發票載具                                              | string | /N37H2JD                                                                                                     |
+| NPOBAN         | 愛心碼                                               | string | 885                                                                                                          |
+| HasCheckMobile | 是否通過手機驗證(0:否;1:是)                                 | int    | 1                                                                                                            |
+| NeedChangePWD  | 是否需重新設定密碼(0:否;1:是)                                | int    | 1                                                                                                            |
+| HasBindSocial  | 是否綁定社群(0:否;1:是)                                   | int    | 0                                                                                                            |
+| HasVaildEMail  | 是否已驗證EMAIL(0:否;1:是)                               | int    | 1                                                                                                            |
+| Audit          | 審核狀態 0:未審核 1:審核通過 2:審核不通過                         | int    | 1                                                                                                            |
+| IrFlag         | 目前註冊進行至哪個步驟<br />-1驗證完手機 、0：設置密碼、1：其他             | int    | 1                                                                                                            |
+| PayMode        | 付費方式 0:信用卡 1:錢包 4:Hotaipay                        | int    | 0                                                                                                            |
+| RentType       | 可租車類別<br />0:無法;1:汽車;2:機車;3:全部                    | int    | 3                                                                                                            |
+| ID_pic         | 身份證                                               | int    | 0                                                                                                            |
+| DD_pic         | 汽車駕照                                              | int    | 0                                                                                                            |
+| MOTOR_pic      | 機車駕照                                              | int    | 0                                                                                                            |
+| AA_pic         | 自拍照                                               | int    | 2                                                                                                            |
+| F01_pic        | 法定代理人                                             | int    | 0                                                                                                            |
+| Signture_pic   | 電子簽名                                              | int    | 2                                                                                                            |
+| SigntureCode   | 電子簽名URL                                           | string | https://irentv2data.blob.core.windows.net/credential/A123456789_Signture_20201221153957.png                  |
+| MEMRFNBR       | 短租會員IR+流水號                                        | string | ir609412                                                                                                     |
+| SIGNATURE      | 短租網站電子簽名                                          | string | http://iRent.iRentCar.com.tw/iMoto_BackEnd/SigntureHelper/Index?IDNO=A123456789&signTime=2020-06-09 18:37:34 |
 
 * Output範例
 
@@ -811,6 +839,7 @@
 ```
 
 ## RefrashToken 更新Token
+
 ### [/api/RefrashToken/]
 
 * 20210322發佈
@@ -825,14 +854,14 @@
 
 * input傳入參數說明
 
-| 參數名稱     | 參數說明                       | 必要 |  型態  | 範例                                                         |
-| ------------ | ------------------------------ | :--: | :----: | ------------------------------------------------------------ |
-| IDNO         | 帳號                           |  Y   | string | A123456789                                                   |
-| RefrashToken | Refrash Token                  |  Y   | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
-| DeviceID     | DeviceID                       |  Y   | string | 171DD37E-E20A-4281-94C9-3DA48AAAAA                           |
-| APP          | APP類型<br />(0:Android 1:iOS) |  Y   |  int   | 1                                                            |
-| APPVersion   | APP版號                        |  Y   | string | 5.6.0                                                        |
-| PushREGID    | 推播註冊流水號                 |  Y   | string | 123456                                                       |
+| 參數名稱         | 參數說明                         | 必要  | 型態     | 範例                                                               |
+| ------------ | ---------------------------- |:---:|:------:| ---------------------------------------------------------------- |
+| IDNO         | 帳號                           | Y   | string | A123456789                                                       |
+| RefrashToken | Refrash Token                | Y   | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
+| DeviceID     | DeviceID                     | Y   | string | 171DD37E-E20A-4281-94C9-3DA48AAAAA                               |
+| APP          | APP類型<br />(0:Android 1:iOS) | Y   | int    | 1                                                                |
+| APPVersion   | APP版號                        | Y   | string | 5.6.0                                                            |
+| PushREGID    | 推播註冊流水號                      | Y   | string | 123456                                                           |
 
 * input範例
 
@@ -849,30 +878,30 @@
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱 | 參數說明   | 型態   | 範例 |
-| -------- | ---------  | :--:   | ---- |
-| Token    | Token列表  | List   |      |
-| MEMRFNBR | 會員流水號 | string |      |
+| 參數名稱     | 參數說明    | 型態     | 範例  |
+| -------- | ------- |:------:| --- |
+| Token    | Token列表 | List   |     |
+| MEMRFNBR | 會員流水號   | string |     |
 
 * Token 參數說明
 
-| 參數名稱           | 參數說明                 |  型態  | 範例                                                         |
-| ------------------ | ------------------------ | :----: | ------------------------------------------------------------ |
-| Access_token       | Token                    | string | B832168B2BCB024E05505095FAA562F91DBC75AFC70852185932582751158202 |
-| Refrash_token      | Refrash Token            | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
-| Rxpires_in         | 有效期限(單位秒)         |  int   | 86400                                                        |
-| Refrash_Rxpires_in | Refrash 有效期限(單位秒) |  int   | 604800                                                       |
+| 參數名稱               | 參數說明              | 型態     | 範例                                                               |
+| ------------------ | ----------------- |:------:| ---------------------------------------------------------------- |
+| Access_token       | Token             | string | B832168B2BCB024E05505095FAA562F91DBC75AFC70852185932582751158202 |
+| Refrash_token      | Refrash Token     | string | 51158202974E9174B6390D0DB832168B2BCB024E05505095FAA562F91DBC75AF |
+| Rxpires_in         | 有效期限(單位秒)         | int    | 86400                                                            |
+| Refrash_Rxpires_in | Refrash 有效期限(單位秒) | int    | 604800                                                           |
 
 * Output範例
 
@@ -898,6 +927,7 @@
 ------
 
 ## CheckAppVersion 檢查APP版本
+
 ### [/api/CheckAppVersion/]
 
 * 20210407發佈
@@ -906,15 +936,15 @@
 
 * 傳送跟接收採JSON格式
 
-*  動作 [POST]
+* 動作 [POST]
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                               |
-| ---------- | ------------------------ | :--: | :----: | ---------------------------------- |
-| DeviceID   | DeviceID                 |  Y   | string | 171DD37E-E20A-4281-94C9-3DA48AAAAA |
-| APP        | APP類型(0:Android 1:iOS) |  Y   |  int   | 1                                  |
-| APPVersion | APP版號                  |  Y   | string | 5.6.0                              |
+| 參數名稱       | 參數說明                   | 必要  | 型態     | 範例                                 |
+| ---------- | ---------------------- |:---:|:------:| ---------------------------------- |
+| DeviceID   | DeviceID               | Y   | string | 171DD37E-E20A-4281-94C9-3DA48AAAAA |
+| APP        | APP類型(0:Android 1:iOS) | Y   | int    | 1                                  |
+| APPVersion | APP版號                  | Y   | string | 5.6.0                              |
 
 * input範例
 
@@ -928,20 +958,20 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明                | 型態 | 範例 |
-| ------------ | ----------------------- | :--: | ---- |
-| MandatoryUPD | 強制更新 (1=強更，0=否) | int  | 1    |
+| 參數名稱         | 參數說明            | 型態  | 範例  |
+| ------------ | --------------- |:---:| --- |
+| MandatoryUPD | 強制更新 (1=強更，0=否) | int | 1   |
 
 * Output範例
 
@@ -976,60 +1006,62 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱   | 參數說明     | 型態 | 範例 |
-| ---------- | ------------ | :--: | ---- |
-| StatusData | 會員狀態列表 | List |      |
+| 參數名稱       | 參數說明   | 型態   | 範例  |
+| ---------- | ------ |:----:| --- |
+| StatusData | 會員狀態列表 | List |     |
 
 * StatusData 參數說明
 
-| 參數名稱        | 參數說明                                                     |  型態  | 範例       |
-| --------------- | ------------------------------------------------------------ | :----: | ---------- |
-| MEMIDNO         | 身分證號                                                     | string | A123456789 |
-| MEMNAME         | 姓名                                                         | string | 王曉明     |
-| Login           | 登入狀態 Y/N                                                 | string | Y          |
-| Register        | 註冊是否完成 0:未完成 1:已完成                               |  int   | 1          |
-| Audit           | 審核結果 是否通過審核(0:未審;1:已審;2:審核不通過)            |  int   | 1          |
-| Audit_ID        | 審核身分證 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)        |  int   | 2          |
-| Audit_Car       | 審核汽車駕照 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)      |  int   | 2          |
-| Audit_Motor     | 審核機車駕照 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)      |  int   | 2          |
-| Audit_Selfie    | 審核自拍照 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)        |  int   | 2          |
-| Audit_F01       | 審核法定代理人 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)    |  int   | 0          |
-| Audit_Signture  | 審核簽名檔 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)        |  int   | 2          |
-| BlackList       | 黑名單 Y/N                                                   | string | N          |
-| MenuCTRL        | 會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗) |  int   | 0          |
-| MenuStatusText  | 會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示) | string |            |
-| StatusTextCar   | 狀態文字說明                                                 | string |            |
-| StatusTextMotor | 機車狀態文字說明                                             | string |            |
-| NormalRentCount | 目前汽車出租數                                               |  int   | 0          |
-| AnyRentCount    | 目前路邊出租數                                               |  int   | 0          |
-| MotorRentCount  | 目前路邊出租數                                               |  int   | 0          |
-| TotalRentCount  | 目前全部出租數                                               |  int   | 0          |
-| Score           | 會員積分                                                     |  int   | 100        |
-| BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                        |  int   | 0          |
-| BLOCK_EDATE     | 停權截止日                                                   | string | 2021/06/01 |
-| CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                     | string | Y          |
-| IsShowBuy       | 是否顯示購買牌卡 (Y:是 N:否)                                 | string | Y          |
-| HasNoticeMsg    | 是否有推播訊息 (Y:是 N:否)                                   | string | Y          |
-| AuthStatus      | 預授權條款狀態 (Y:重新確認 N:不需重新確認)                   | string | Y          |
-| BindHotai       | 和泰OneID綁定狀態 (Y：綁定 N：未綁)                          | string | N          |
-| IsCompMemAudit  | 是否有企業月結身分      (0:否 1:是)                          | int    | 1          |
+| 參數名稱            | 參數說明                                                                        | 型態     | 範例         |
+| --------------- | --------------------------------------------------------------------------- |:------:| ---------- |
+| MEMIDNO         | 身分證號                                                                        | string | A123456789 |
+| MEMNAME         | 姓名                                                                          | string | 王曉明        |
+| Login           | 登入狀態 Y/N                                                                    | string | Y          |
+| Register        | 註冊是否完成 0:未完成 1:已完成                                                          | int    | 1          |
+| Audit           | 審核結果 是否通過審核(0:未審;1:已審;2:審核不通過)                                              | int    | 1          |
+| Audit_ID        | 審核身分證 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)                                          | int    | 2          |
+| Audit_Car       | 審核汽車駕照 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)                                         | int    | 2          |
+| Audit_Motor     | 審核機車駕照 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)                                         | int    | 2          |
+| Audit_Selfie    | 審核自拍照 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)                                          | int    | 2          |
+| Audit_F01       | 審核法定代理人 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)                                        | int    | 0          |
+| Audit_Signture  | 審核簽名檔 (0:未上傳 -1:審核失敗 1:審核中 2:審核完成)                                          | int    | 2          |
+| BlackList       | 黑名單 Y/N                                                                     | string | N          |
+| MenuCTRL        | 會員頁9.0卡狀態 (0:PASS 1:未完成註冊 2:完成註冊未上傳照片 3:身分審核中 4:審核不通過 5:身分變更審核中 6:身分變更審核失敗) | int    | 0          |
+| MenuStatusText  | 會員頁9.0狀態顯示 (這邊要通過審核才會有文字 MenuCTRL5 6才會有文字提示)                                | string |            |
+| StatusTextCar   | 狀態文字說明                                                                      | string |            |
+| StatusTextMotor | 機車狀態文字說明                                                                    | string |            |
+| NormalRentCount | 目前汽車出租數                                                                     | int    | 0          |
+| AnyRentCount    | 目前路邊出租數                                                                     | int    | 0          |
+| MotorRentCount  | 目前路邊出租數                                                                     | int    | 0          |
+| TotalRentCount  | 目前全部出租數                                                                     | int    | 0          |
+| Score           | 會員積分                                                                        | int    | 100        |
+| BlockFlag       | 停權等級 (0:無 1:暫時停權 2:永久停權)                                                    | int    | 0          |
+| BLOCK_EDATE     | 停權截止日                                                                       | string | 2021/06/01 |
+| CMKStatus       | 會員條款狀態 (Y:重新確認 N:不需重新確認)                                                    | string | Y          |
+| IsShowBuy       | 是否顯示購買牌卡 (Y:是 N:否)                                                          | string | Y          |
+| HasNoticeMsg    | 是否有推播訊息 (Y:是 N:否)                                                           | string | Y          |
+| AuthStatus      | 預授權條款狀態 (Y:重新確認 N:不需重新確認)                                                   | string | Y          |
+| BindHotai       | 和泰OneID綁定狀態 (Y：綁定 N：未綁)                                                     | string | N          |
+| GameMode        | 遊戲啟動狀態  (0不可顯示；1可顯示)                                                        | int    | 0          |
+| GameMsg         | 實境解謎TOAST訊息說明                                                               | string | ''         |
+| GameCover       | 遊戲開放區域內蓋板:0不跳蓋版；1跳蓋版                                                        | int    | 0          |
 
 * Output範例
 
@@ -1067,9 +1099,12 @@
             "BLOCK_EDATE": "",
             "CMKStatus": "Y",
             "IsShowBuy": "Y",
-			"HasNoticeMsg": "Y",
+            "HasNoticeMsg": "Y",
             "AuthStatus": "Y",
-            "BindHotai": "N"
+            "BindHotai": "N",
+            "GameMode": "1"
+            "GameMsg": "人氣實境解謎遊戲，就在Play iRent"
+            "GameCover": "1"
         }
     }
 }
@@ -1086,14 +1121,13 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例                |
-| -------- | -------- | :--: | :--: | ------------------- |
-| NowPage  | 目前頁數 |      | int  | 1 (可不輸入，預帶1) |
+| 參數名稱    | 參數說明 | 必要  | 型態  | 範例           |
+| ------- | ---- |:---:|:---:| ------------ |
+| NowPage | 目前頁數 |     | int | 1 (可不輸入，預帶1) |
 
 * input範例
 
@@ -1105,34 +1139,34 @@
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱   | 參數說明 | 型態 | 範例 |
-| ---------- | -------- | :--: | ---- |
-| Score      | 會員積分 | int  | 100  |
-| TotalPage  | 總頁數   | int  | 1    |
-| DetailList | 積分歷程 | List |      |
+| 參數名稱       | 參數說明 | 型態   | 範例  |
+| ---------- | ---- |:----:| --- |
+| Score      | 會員積分 | int  | 100 |
+| TotalPage  | 總頁數  | int  | 1   |
+| DetailList | 積分歷程 | List |     |
 
 * DetailList 參數說明
 
-| 參數名稱   | 參數說明     |   型態   | 範例                |
-| ---------- | ------------ | :------: | ------------------- |
-| TotalCount | 總筆數       |   int    | 61                  |
-| RowNo      | 編號         |   int    | 1                   |
-| GetDate    | 取得日期     | DateTime | 2021-05-19T13:37:03 |
-| SEQ        | 序號         |   int    | 103                 |
-| SCORE      | 分數         |   int    | -50                 |
-| UIDESC     | 用戶畫面敘述 |  string  | 天佑台灣            |
-| ORDERNO    | 訂單編號     |  string  | H10365010           |
+| 參數名稱       | 參數說明   | 型態       | 範例                  |
+| ---------- | ------ |:--------:| ------------------- |
+| TotalCount | 總筆數    | int      | 61                  |
+| RowNo      | 編號     | int      | 1                   |
+| GetDate    | 取得日期   | DateTime | 2021-05-19T13:37:03 |
+| SEQ        | 序號     | int      | 103                 |
+| SCORE      | 分數     | int      | -50                 |
+| UIDESC     | 用戶畫面敘述 | string   | 天佑台灣                |
+| ORDERNO    | 訂單編號   | string   | H10365010           |
 
 * Output 範例
 
@@ -1179,6 +1213,184 @@
 }
 ```
 
+## BonusQuery 會員時數及優惠券查詢
+
+### [/api/BonusQuery/]
+
+- 20220627發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+* 動作 [POST]
+
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明  | 必要  | 型態     | 範例           |
+| ---- | ----- |:---:|:------:| ------------ |
+| IDNO | 身分證字號 | Y   | string | "A123456789" |
+
+* input範例
+
+```
+{
+    "IDNO": "A123456789"
+}
+```
+
+* output 回傳參數說明
+
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      |        |           |
+
+* Data回傳參數說明
+
+| 參數名稱                     | 參數說明     | 型態     | 範例  |
+| ------------------------ | -------- |:------:| --- |
+| BonusObj                 | 會員時數明細資料 | object |     |
+| CouponObj                | 會員優惠券資料  | object |     |
+| TotalCarGIFTPOINT        | 汽車總分鐘數   | int    | 600 |
+| TotalMotorGIFTPOINT      | 機車總分鐘數   | int    | 30  |
+| TotalGIFTPOINT           | 合計分鐘數    | int    | 630 |
+| TotalCarLASTPOINT        | 汽車可用分鐘數  | int    | 360 |
+| TotalMotorLASTPOINT      | 機車可用分鐘數  | int    | 30  |
+| TotalCarTransLASTPOINT   |          | int    | 0   |
+| TotalMotorTransLASTPOINT |          | int    | 0   |
+| TotalLASTPOINT           | 合計總剩餘分鐘數 | int    | 390 |
+
+* BonusObj 參數說明
+
+| 參數名稱      | 參數說明             | 型態     | 範例                    |
+| --------- | ---------------- |:------:| --------------------- |
+| SEQNO     | 時數主檔流水號          | string | "4914736"             |
+| PointType | 時數類別 (0:汽車;1:機車) | int    | 1                     |
+| GIFTNAME  | 時數名稱             | string | "測試時數"                |
+| GIFTPOINT | 分鐘數              | string | "300"                 |
+| EDATE     | 時數截止日            | string | "2022-12-20 23:59:00" |
+| LASTPOINT | 用戶畫面敘述           | string | "240"                 |
+| AllowSend | 可否贈送(0:不可;1:可)   | int    | 0                     |
+
+* CouponObj 參數說明
+
+| 參數名稱             | 參數說明                            | 型態     | 範例                                     |
+| ---------------- | ------------------------------- |:------:| -------------------------------------- |
+| CouponID         | 優惠券流水號                          | string | "T0200000003"                          |
+| ParmName         | 優惠券名稱                           | string | "大稻埕煙火夜"                               |
+| SDate            | 可用起日                            | string | "2022/06/25 00:00:00"                  |
+| EDate            | 可用迄日                            | string | "2022/06/25 00:00:00"                  |
+| CPMins           | 可折抵分鐘數                          | int    | 30                                     |
+| CouponStatus     | 優惠券狀態(-1:預設值;0:可使用;1:圈存中;2:已使用) | int    | 2                                      |
+| OrderNo          | 已使用於訂單編號                        | string | "H11770599"                            |
+| UseMin           | 已折抵分鐘數                          | int    | 28                                     |
+| UseAt            | 已使用於(時間)                        | string | "2022/06/30 01:24:05"                  |
+| Usage            | 已使用於(用途)                        | string | "用車折抵 - 租汽車"                           |
+| RemkCycle        | 平假日說明                           | string | "平/假日皆可使用"                             |
+| RemkStation      | 站點說明                            | string | "限大同區據點使用"                             |
+| RemkCarType      | 車型說明                            | string | "限198車型使用"                             |
+| RemkDiscount     | 折抵說明                            | string | ""                                     |
+| RemkOthers       | 其他說明                            | string | "<p>每次用車限用一張...(省略)"                   |
+| ExpireSoon       | 即將到期FLG(0:否;1:是)                | int    | 1                                      |
+| Valid            | 是否有效(0:無;1:有)                   | int    | 1                                      |
+| ApplyCycle       | 平假日內容                           | string | "平日"                                   |
+| ApplyProjectType | 專案類型(0:同站;3:路邊;4:機車)            | string | "0,3"                                  |
+| ApplyStation     | 站點內容                            | string | "X0IK,X0SJ,X0SK,X0SW,X0SZ,X1DN...(省略)" |
+| ApplyCarType     | 車型內容                            | string | ""PRIUS PHV,PRIUSC"                    |
+| BlueTitle        | 藍色標題                            | string | "可折抵"                                  |
+| BlueTitleUnit    | 藍色標題後綴                          | string | "分"                                    |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "BonusObj": [
+            {
+                "SEQNO": "4914736",
+                "PointType": 0,
+                "GIFTNAME": "測試時數",
+                "GIFTPOINT": "600",
+                "EDATE": "2022/12/20 23:59:00",
+                "LASTPOINT": "514",
+                "AllowSend": 0
+            }
+        ],
+        "CouponObj": [
+            {
+                "CouponID": "P0000300000003",
+                "ParmName": "機車基消減免",
+                "SDate": "2022/06/27 00:00:00",
+                "EDate": "2022/07/31 00:00:00",
+                "CPMins": 0,
+                "CouponStatus": 0,
+                "OrderNo": "",
+                "UseMin": 0,
+                "UseAt": "",
+                "Usage": "",
+                "RemkCycle": "平／假日皆可使用",
+                "RemkStation": "",
+                "RemkCarType": "限機車使用",
+                "RemkDiscount": "",
+                "RemkOthers": "<p>每次用車限用一張優惠券</p><p>一張優惠券僅可使用一次，若用車金額未達折抵金額，則不保留餘額</p>",
+                "ExpireSoon": 1,
+                "Valid": 1,
+                "ApplyCycle": "假日,平日",
+                "ApplyProjectType": "4",
+                "ApplyStation": "X0WR,X1JT,X1KY,X1KZ,X1ZZ",
+                "ApplyCarType": "",
+                "BlueTitle": "可折抵基本消費",
+                "BlueTitleUnit": ""
+            },
+            {
+                "CouponID": "P0000100000006",
+                "ParmName": "北中機車一起GO",
+                "SDate": "2022/06/20 00:00:00",
+                "EDate": "2022/07/31 00:00:00",
+                "CPMins": 10,
+                "CouponStatus": 2,
+                "OrderNo": "H11770599",
+                "UseMin": 25,
+                "UseAt": "2022/06/30 13:24:05",
+                "Usage": "用車折抵 - 租汽車",
+                "RemkCycle": "限假日使用",
+                "RemkStation": "限北北桃台中使用",
+                "RemkCarType": "限機車使用",
+                "RemkDiscount": "",
+                "RemkOthers": "<p>僅可折抵非基本消費時數</p><p>每次用車限用一張優惠券</p><p>一張優惠券僅可使用一次，若用車金額未達折抵金額，則不保留餘額</p>",
+                "ExpireSoon": 0,
+                "Valid": 0,
+                "ApplyCycle": "假日",
+                "ApplyProjectType": "4",
+                "ApplyStation": "X0WR,X1KY",
+                "ApplyCarType": "",
+                "BlueTitle": "可折抵",
+                "BlueTitleUnit": "分"
+            }
+        ],
+        "TotalCarGIFTPOINT": 0,
+        "TotalMotorGIFTPOINT": 0,
+        "TotalGIFTPOINT": 0,
+        "TotalCarLASTPOINT": 0,
+        "TotalMotorLASTPOINT": 0,
+        "TotalCarTransLASTPOINT": 0,
+        "TotalMotorTransLASTPOINT": 0,
+        "TotalLASTPOINT": 0
+    }
+}
+```
+
 ## SetMemberScoreDetail 修改會員積分明細
 
 ### [/api/SetMemberScoreDetail/]
@@ -1190,14 +1402,13 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| SEQ      | 序號     |  Y   | int  | 1    |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| SEQ  | 序號   | Y   | int | 1   |
 
 * input範例
 
@@ -1209,14 +1420,14 @@
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           |        |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      |        |           |
 
 * Output 範例
 
@@ -1242,43 +1453,42 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱  | 參數說明 | 型態 | 範例 |
-| --------- | -------- | :--: | ---- |
-| MedalList | 徽章明細 | List |      |
+| 參數名稱      | 參數說明 | 型態   | 範例  |
+| --------- | ---- |:----:| --- |
+| MedalList | 徽章明細 | List |     |
 
 * MedalList 參數說明
 
-| 參數名稱      | 參數說明                   |  型態  | 範例                |
-| ------------- | -------------------------- | :----: | ------------------- |
-| MileStone     | 徽章代碼                   | string | newhand             |
-| MileStoneName | 徽章名稱                   | string | 新手上路            |
-| Norm          | 門檻指標                   |  int   | 1                   |
-| Progress      | 目前進度                   |  int   | 1                   |
-| Describe      | APP顯示的描述              | string | 通過會員審核        |
-| GetFlag       | 是否獲得 (1:獲得 0:未獲得) |  int   | 1                   |
-| GetMedalTime  | 徽章獲得時間               | string | 2021-05-20T14:27:45 |
+| 參數名稱          | 參數說明              | 型態     | 範例                  |
+| ------------- | ----------------- |:------:| ------------------- |
+| MileStone     | 徽章代碼              | string | newhand             |
+| MileStoneName | 徽章名稱              | string | 新手上路                |
+| Norm          | 門檻指標              | int    | 1                   |
+| Progress      | 目前進度              | int    | 1                   |
+| Describe      | APP顯示的描述          | string | 通過會員審核              |
+| GetFlag       | 是否獲得 (1:獲得 0:未獲得) | int    | 1                   |
+| GetMedalTime  | 徽章獲得時間            | string | 2021-05-20T14:27:45 |
 
 * Output 範例
 
@@ -1325,15 +1535,14 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * Input 傳入參數說明
 
-| 參數名稱  | 參數說明                                     | 必要 |  型態  | 範例 |
-| --------- | -------------------------------------------- | :--: | :----: | ---- |
-| CHKStatus | 是否同意 (Y：同意 / N：不同意)               |  Y   | string | Y    |
-| SeqNo     | 流水號<br>1:會員條款狀態<br>2:預授權條款狀態 |  Y   |  int   | 0    |
+| 參數名稱      | 參數說明                         | 必要  | 型態     | 範例  |
+| --------- | ---------------------------- |:---:|:------:| --- |
+| CHKStatus | 是否同意 (Y：同意 / N：不同意)          | Y   | string | Y   |
+| SeqNo     | 流水號<br>1:會員條款狀態<br>2:預授權條款狀態 | Y   | int    | 0   |
 
 * Input範例
 
@@ -1346,14 +1555,14 @@
 
 * Output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output 範例
 
@@ -1377,21 +1586,21 @@
 - ASP.NET Web API (REST API)
 
 - 傳送跟接收採JSON格式
-
 * 動作 [POST]
+
 * Input 傳入參數說明
 
-| 參數名稱  | 參數說明                       | 必要 |  型態  | 範例                                              |
-| --------- | ------------------------------ | :--: | :----: | ------------------------------------------------- |
-| IDNO      | 身分證字號                     |  Y   | string | A123456789                                        |
-| VerType   | 同意書版本類型                 |  Y   | string | Hims                                              |
-| Version   | 同意書版本號                   |  Y   | string | 100                                               |
-| Source    | 同意來源管道 (I:IRENT W:官網)  |  Y   | string | W                                                 |
-| AgreeDate | 同意時間                       |  Y   | string | 2021-08-17 14:45:21 <br>格式：yyyy-MM-dd HH:mm:ss |
-| TEL       | 電話通知狀態 (N:不通知 Y:通知) |  Y   | string | Y                                                 |
-| SMS       | 簡訊通知狀態 (N:不通知 Y:通知) |  Y   | string | Y                                                 |
-| EMAIL     | EMAIL通知 (N:不通知 Y:通知)    |  Y   | string | Y                                                 |
-| POST      | 郵寄通知 (N:不通知 Y:通知)     |  Y   | string | Y                                                 |
+| 參數名稱      | 參數說明                  | 必要  | 型態     | 範例                                             |
+| --------- | --------------------- |:---:|:------:| ---------------------------------------------- |
+| IDNO      | 身分證字號                 | Y   | string | A123456789                                     |
+| VerType   | 同意書版本類型               | Y   | string | Hims                                           |
+| Version   | 同意書版本號                | Y   | string | 100                                            |
+| Source    | 同意來源管道 (I:IRENT W:官網) | Y   | string | W                                              |
+| AgreeDate | 同意時間                  | Y   | string | 2021-08-17 14:45:21 <br>格式：yyyy-MM-dd HH:mm:ss |
+| TEL       | 電話通知狀態 (N:不通知 Y:通知)   | Y   | string | Y                                              |
+| SMS       | 簡訊通知狀態 (N:不通知 Y:通知)   | Y   | string | Y                                              |
+| EMAIL     | EMAIL通知 (N:不通知 Y:通知)  | Y   | string | Y                                              |
+| POST      | 郵寄通知 (N:不通知 Y:通知)     | Y   | string | Y                                              |
 
 * Input範例
 
@@ -1411,14 +1620,14 @@
 
 * Output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output 範例
 
@@ -1444,33 +1653,32 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明                       |  型態  | 範例    |
-| ------------ | ------------------------------ | :----: | ------- |
-| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
-| ErrorCode    | 錯誤碼                         | string | 000000  |
-| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
-| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
-| ErrorMessage | 錯誤訊息                       | string | Success |
-| Data         | 資料物件                       | object |         |
-| RedPointList | 紅點清單                       |  List  |         |
+| 參數名稱         | 參數說明                | 型態     | 範例      |
+| ------------ | ------------------- |:------:| ------- |
+| Result       | 是否成功 (0:失敗 1:成功)    | int    | 1       |
+| ErrorCode    | 錯誤碼                 | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)   | int    | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) | int    | 0       |
+| ErrorMessage | 錯誤訊息                | string | Success |
+| Data         | 資料物件                | object |         |
+| RedPointList | 紅點清單                | List   |         |
 
 * RedPointList參數說明
 
-| 參數名稱 | 參數說明                                                     | 型態 | 範例 |
-| -------- | ------------------------------------------------------------ | :--: | ---- |
-| RedNo    | 紅點序號<br>1:漢堡點<br/>2:我的成就<br/>3:徽章<br/>4:積分<br/>5:小鈴鐺 | int  | 1    |
-| FLAG     | 紅點FLAG (0:隱藏 1:顯示)                                     | int  | 1    |
+| 參數名稱  | 參數說明                                                 | 型態  | 範例  |
+| ----- | ---------------------------------------------------- |:---:| --- |
+| RedNo | 紅點序號<br>1:漢堡點<br/>2:我的成就<br/>3:徽章<br/>4:積分<br/>5:小鈴鐺 | int | 1   |
+| FLAG  | 紅點FLAG (0:隱藏 1:顯示)                                   | int | 1   |
 
 * Output 範例
 
@@ -1504,7 +1712,6 @@
 }
 ```
 
-
 ## GiftTransferCheck 會員轉贈對象查詢
 
 ### [/api/GiftTransferCheck/]
@@ -1516,34 +1723,42 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * input 傳入參數說明
 
-| 參數名稱 |    參數說明    | 必要 | 型態   | 範例       |
-| -------- | -------------- | :--: | :--:   | --------   |
-| IDNO     | 轉贈對象身分證 |  Y   | string | F123456789 |
-| Amount   | 金額  	        |  N   | int    |            |
+| 參數名稱   | 參數說明    | 必要  | 型態     | 範例         |
+| ------ | ------- |:---:|:------:| ---------- |
+| IDNO   | 轉贈對象身分證 | Y   | string | F123456789 |
+| Amount | 金額      | N   | int    |            |
+
+* Input範例
+
+```
+{
+    "IDNO": "F123456789",
+    "Amount": 100
+}
+```
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明                       |  型態  | 範例    |
-| ------------ | ------------------------------ | :----: | ------- |
-| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
-| ErrorCode    | 錯誤碼                         | string | 000000  |
-| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
-| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
-| ErrorMessage | 錯誤訊息                       | string | Success |
-| Data         | 資料物件                       | object |         |
+| 參數名稱         | 參數說明                | 型態     | 範例      |
+| ------------ | ------------------- |:------:| ------- |
+| Result       | 是否成功 (0:失敗 1:成功)    | int    | 1       |
+| ErrorCode    | 錯誤碼                 | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)   | int    | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) | int    | 0       |
+| ErrorMessage | 錯誤訊息                | string | Success |
+| Data         | 資料物件                | object |         |
 
 * Data參數說明
 
-| 參數名稱 | 參數說明                               |  型態   | 範例      |
-| -------- | -------------------------------------  | :-----: | ----------|
-| Name     | 轉贈對象名稱							| string  | 吳X耆 	  |
-| PhoneNo  | 電話號碼					            | string  | 0912345678|
-| Amount   | 金額(無用)				                | int  	  | 0         |
+| 參數名稱    | 參數說明   | 型態     | 範例         |
+| ------- | ------ |:------:| ---------- |
+| Name    | 轉贈對象名稱 | string | 吳X耆        |
+| PhoneNo | 電話號碼   | string | 0912345678 |
+| Amount  | 金額(無用) | int    | 0          |
 
 * Output 範例
 
@@ -1562,124 +1777,6 @@
 }
 ```
 
-
-## GetEnterpriseList 取得企業部門清單
-
-### [/api/GetEnterpriseList/]
-
-- 20210521發佈
-
-- ASP.NET Web API (REST API)
-
-- 傳送跟接收採JSON格式
-
-- HEADER帶入AccessToken**(必填)**
-
-
-* 動作 [POST]
-* input 傳入參數說明
-
-| 參數名稱 | 參數說明 | 必要 | 型態 	| 範例 			|
-| -------- | -------- | :--: | :--: 	| ---- 			|
-| TaxID	   | 統一編號 |   Y  | string  	| "12354548"   |
-
-* output 回傳參數說明
-
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
-* Data 參數說明
-
-| 參數名稱      | 參數說明                   |  型態  | 範例                |
-| ------------- | -------------------------- | :----: | ------------------- |
-| CUSTNM     	| 企業名稱                   | string | "運輪齒輪工業有限公司"  |
-| TaxID 	 	| 統一編號                   | string | "12354548"           |
-| list      	| 			                 | object |            			|
-
-* list 參數說明
-| DeptNo        | 部門代碼(-1為不存在)       |  int   | 1                   |
-| DeptName      | 部門名稱                   | string | "營業部"            |
-| IsExitT      | 部門名稱                   | string | "營業部"             |
-
-* Output 範例
-
-```
-{
-	"Result": "1",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": {
-		"CUSTNM": "運輪齒輪工業有限公司",
-		"TaxID": "12354548",
-		"list": [
-			{
-				"DeptNo": 1,
-				"DeptName": "企劃部"
-			},
-			{
-				"DeptNo": 2,
-				"DeptName": "資訊部"
-			},
-			{
-				"DeptNo": 4,
-				"DeptName": "營業部"
-			},
-			{
-				"DeptNo": 12,
-				"DeptName": "客服部"
-			}
-		]
-	}
-}
-{
-	"Result": "1",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": {
-		"CUSTNM": "葆丞工程有限公司",
-		"TaxID": "16701464",
-		"list": [
-			{
-				"DeptNo": -1,
-				"DeptName": ""
-			}
-		]
-	}
-}
-{
-	"Result": "0",
-	"ErrorCode": "ERR312",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "統一編號格式不符",
-	"Data": {
-		"CUSTNM": null,
-		"TaxID": null,
-		"list": null
-	}
-}
-```
-* 錯誤代碼
-
-| 錯誤代碼 | 錯誤訊息                                      | 說明 |
-| -------- | --------------------------------------------- | ---- |
-| ERR900   | 參數遺漏									   |      |
-| ERR101   | 請重新登入									   |      |
-| ERR311   | 查無企業會員資料							   |      |
-| ERR312   | 統一編號格式不符							   |      |
-
-
-
 ## MemberUnbind 會員解綁
 
 ### [/api/MemberUnbind/]
@@ -1691,25 +1788,24 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * Input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * Output 回傳參數說明
 
-| 參數名稱     | 參數說明                       |  型態  | 範例    |
-| ------------ | ------------------------------ | :----: | ------- |
-| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
-| ErrorCode    | 錯誤碼                         | string | 000000  |
-| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
-| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
-| ErrorMessage | 錯誤訊息                       | string | Success |
-| Data         | 資料物件                       | object |         |
+| 參數名稱         | 參數說明                | 型態     | 範例      |
+| ------------ | ------------------- |:------:| ------- |
+| Result       | 是否成功 (0:失敗 1:成功)    | int    | 1       |
+| ErrorCode    | 錯誤碼                 | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)   | int    | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) | int    | 0       |
+| ErrorMessage | 錯誤訊息                | string | Success |
+| Data         | 資料物件                | object |         |
 
 * Output 範例
 
@@ -1723,116 +1819,6 @@
     "Data": {}
 }
 ```
-
-## SetEnterpriseUser 儲存企業月結用戶
-
-### [/api/SetEnterpriseUser/]
-
-- 20220705發佈
-
-- ASP.NET Web API (REST API)
-
-- 傳送跟接收採JSON格式
-
-- HEADER帶入AccessToken**(必填)**
-
-
-* 動作 [POST]
-* input 傳入參數說明
-
-| 參數名稱     | 參數說明 | 必要 | 型態 	| 範例 		   |
-| --------     | -------- | :--: | :--: 	| ---- 		   |
-| TaxID        | 統一編號 |   Y  | string  	| "12354548"   |
-| CompanyName  | 公司名稱 |   Y  | string  	| "和運"       |
-| Depart	   | 單位部門 |   N  | int  	| 1            |
-| EmployeeID   | 員工編號 |   N  | string  	| "74214"      |
-| MEMCNAME	   | 員工姓名 |   N  | string  	| "張三"       |
-
-* output 回傳參數說明
-
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
-
-* Output 範例
-
-```
-{
-	"Result": "1",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": []
-}
-```
-* 錯誤代碼
-
-| 錯誤代碼 | 錯誤訊息                                                     | 說明 |
-| -------- | ------------------------------------------------------------ | ---- |
-| ERR190   | 統一編號未輸入                                               |      |
-| ERR406   | 公司名稱未輸入                                               |      |
-
-
-## DeleteEnterpriseUser 企業月結用戶取消申請
-
-### [/api/DeleteEnterpriseUser/]
-
-- 20220705發佈
-
-- ASP.NET Web API (REST API)
-
-- 傳送跟接收採JSON格式
-
-- HEADER帶入AccessToken**(必填)**
-
-
-* 動作 [POST]
-* input 傳入參數說明
-
-| 參數名稱     | 參數說明 | 必要 | 型態 	| 範例 		   |
-| --------     | -------- | :--: | :--: 	| ---- 		   |
-| TaxID        | 統一編號 |   Y  | string  	| "12354548"   |
-
-
-* output 回傳參數說明
-
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
-
-* Output 範例
-
-```
-{
-	"Result": "1",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": []
-}
-```
-
-* 錯誤代碼
-
-| 錯誤代碼 | 錯誤訊息                                                     | 說明 |
-| -------- | ------------------------------------------------------------ | ---- |
-| ERR190   | 統一編號未輸入                                               |      |
-| ERR191   | 統一編號不正確，請重新確認                                   |      |
-
 
 # 首頁地圖相關
 
@@ -1850,31 +1836,32 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱  | 參數說明     | 型態 | 範例 |
-| --------- | ------------ | :--: | ---- |
-| BannerObj | 廣告資訊列表 | List |      |
+| 參數名稱      | 參數說明   | 型態   | 範例  |
+| --------- | ------ |:----:| --- |
+| BannerObj | 廣告資訊列表 | List |     |
 
 * BannerObj 參數說明
 
 | 參數名稱    | 參數說明   |  型態  | 範例                                                    |
 | ----------- | ---------- | :----: | ------------------------------------------------------- |
+| SEQNO       | 流水號     |  int   | 8                                                       |
 | MarqueeText | 跑馬燈文字 | string | 測試Banner1                                             |
 | PIC         | 圖片       | string | https://irentv2data.blob.core.windows.net/banner/01.png |
 | URL         | 網頁網址   | string | https://www.easyrent.com.tw/upload/event/109event/2042/ |
@@ -1891,19 +1878,22 @@
     "Data": {
         "BannerObj": [
             {
-                "MarqueeText": "測試Banner1",
-                "PIC": "https://irentv2data.blob.core.windows.net/banner/01.png",
-                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+                "SEQNO": 8,
+                "MarqueeText": "Corolla Cross新車上線!",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/0714.png_1_20210714000000.png",
+                "URL": "https://www.irentcar.com.tw/event/111event/2083/index.html"
             },
             {
-                "MarqueeText": "測試Banner2",
-                "PIC": "https://irentv2data.blob.core.windows.net/banner/02.png",
-                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+                "SEQNO": 14,
+                "MarqueeText": "iRent汽車平日租車110元起",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/0701.png_1_20210701000000.png",
+                "URL": "https://www.irentcar.com.tw/event/111event/3057/index.html"
             },
             {
-                "MarqueeText": "測試Banner3",
-                "PIC": "https://irentv2data.blob.core.windows.net/banner/03.png",
-                "URL": "https://www.easyrent.com.tw/upload/event/109event/2042/"
+                "SEQNO": 10,
+                "MarqueeText": "北區共享汽車限定活動送免費時數",
+                "PIC": "https://irentv2data.blob.core.windows.net/banner/111.png_1_20210706000000.png",
+                "URL": "https://www.irentcar.com.tw/event/111event/3041/index.html"
             }
         ]
     }
@@ -1921,38 +1911,37 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
-
 * 動作 [POST]
+
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱  | 參數說明 | 型態 | 範例 |
-| --------- | -------- | :--: | ---- |
-| MedalList | 徽章明細 | List |      |
+| 參數名稱      | 參數說明 | 型態   | 範例  |
+| --------- | ---- |:----:| --- |
+| MedalList | 徽章明細 | List |     |
 
 * MedalList 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例     |
-| ------------- | -------- | :----: | -------- |
-| MileStone     | 徽章代碼 | string | newhand  |
-| MileStoneName | 徽章名稱 | string | 新手上路 |
+| 參數名稱          | 參數說明 | 型態     | 範例      |
+| ------------- | ---- |:------:| ------- |
+| MileStone     | 徽章代碼 | string | newhand |
+| MileStoneName | 徽章名稱 | string | 新手上路    |
 
 * Output 範例
 
@@ -1990,81 +1979,84 @@
 
 * HEADER帶入AccessToken**(必填)**
 
-
 * 動作 [POST]
-  
+
 * input傳入參數說明
 
-| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
-| --------- | -------- | :--: | :----: | ----------- |
-| 無參數 | | | |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output回傳參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| Result | 是否成功 | int | 0:失敗 1:成功  |
-| ErrorCode | 錯誤碼 | string | 000000 |
-| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
-| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
-| ErrorMessage | 錯誤訊息 | string | Success |
-| Data | 資料物件 | object | |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱    | 參數說明     | 型態 | 範例 |
-| ----------- | ------------ | :--: | ---- |
-| FavoriteObj | 常用站點列表 | List |      |
+| 參數名稱        | 參數說明   | 型態   | 範例  |
+| ----------- | ------ |:----:| --- |
+| FavoriteObj | 常用站點列表 | List |     |
 
 * FavoriteObj 參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| StationID | 據點代碼 | string | X0II |
-| StationName | 據點名稱 | string | iRent濱江旗艦站 |
-| Tel | 電話 | string | 0912345678 |
-| ADDR | 地址 | string | 松江路557號 |
-| Latitude | 緯度 | float | 25.069014 |
-| Longitude | 經度 | float | 121.533842 |
-| Content | 其他說明 | string | |
-| ContentForAPP | 據點描述 | string | |
-| IsRequiredForReturn | 還車位置資訊必填 | int | |
-| StationPic | 據點照片 | List | 若空值則為null |
+| 參數名稱                | 參數說明     | 型態     | 範例         |
+| ------------------- | -------- |:------:| ---------- |
+| StationID           | 據點代碼     | string | X0II       |
+| StationName         | 據點名稱     | string | iRent濱江旗艦站 |
+| Tel                 | 電話       | string | 0912345678 |
+| ADDR                | 地址       | string | 松江路557號    |
+| Latitude            | 緯度       | float  | 25.069014  |
+| Longitude           | 經度       | float  | 121.533842 |
+| Content             | 其他說明     | string |            |
+| ContentForAPP       | 據點描述     | string |            |
+| IsRequiredForReturn | 還車位置資訊必填 | int    |            |
+| StationPic          | 據點照片     | List   | 若空值則為null  |
 
 * StationPic 參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| StationPic | 據點照片URL位置 | string | |
-| PicDescription | 據點說明 | string |  |
+| 參數名稱           | 參數說明      | 型態     | 範例  |
+| -------------- | --------- |:------:| --- |
+| StationPic     | 據點照片URL位置 | string |     |
+| PicDescription | 據點說明      | string |     |
 
 * Output範例
-```Output範例
+  
+
+```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "FavoriteObj": [
-            {
-                "StationID": "X0II",
-                "StationName": "iRent濱江旗艦站",
-                "Tel": "02-2516-3816",
-                "ADDR": "松江路557號",
-                "Latitude": 25.069014,
-                "Longitude": 121.533842,
-                "Content": "",
-                "ContentForAPP": null,
-                "IsRequiredForReturn": 0,
-                "StationPic": null
-            }
-        ]
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "FavoriteObj": [
+          {
+              "StationID": "X0II",
+              "StationName": "iRent濱江旗艦站",
+              "Tel": "02-2516-3816",
+              "ADDR": "松江路557號",
+              "Latitude": 25.069014,
+              "Longitude": 121.533842,
+              "Content": "",
+              "ContentForAPP": null,
+              "IsRequiredForReturn": 0,
+              "StationPic": null
+          }
+      ]
+  }
 }
 ```
+
 ## SetFavoriteStation設定常用站點
+
 ### [/api/SetFavoriteStation/]
 
 * 20210315發佈
@@ -2076,64 +2068,66 @@
 * HEADER帶入AccessToken**(必填)**
 
 * 動作 [POST]
-  
+
 * input傳入參數說明
 
-| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
-| --------- | -------- | :--: | :----: | ----------- |
-| FavoriteStations | 常用據點清單 | Y | List | |
-
+| 參數名稱             | 參數說明   | 必要  | 型態   | 範例  |
+| ---------------- | ------ |:---:|:----:| --- |
+| FavoriteStations | 常用據點清單 | Y   | List |     |
 
 * FavoriteStations 參數說明
 
-| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
-| --------- | -------- | :--: | :----: | ----------- |
-| StationID | 據點代碼 | Y | string | X0II |
-| Mode | 模式 | Y | int | 0:移除 1:設定 |
+| 參數名稱      | 參數說明 | 必要  | 型態     | 範例        |
+| --------- | ---- |:---:|:------:| --------- |
+| StationID | 據點代碼 | Y   | string | X0II      |
+| Mode      | 模式   | Y   | int    | 0:移除 1:設定 |
 
 * input範例
-```input
+  
+
+```
 {
-    "FavoriteStations": [
-        {
-            "StationID": "X0II",
-            "Mode": 1
-        },
-        {
-            "StationID": "X0I9",
-            "Mode": 0
-        }
-    ]
+  "FavoriteStations": [
+      {
+          "StationID": "X0II",
+          "Mode": 1
+      },
+      {
+          "StationID": "X0I9",
+          "Mode": 0
+      }
+  ]
 }
 ```
 
 * output回傳參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| Result | 是否成功 | int | 0:失敗 1:成功  |
-| ErrorCode | 錯誤碼 | string | |
-| ErrorMessage | 錯誤訊息 | string | |
-| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
-| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
-| Data | 資料物件 | object |  |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string |           |
+| ErrorMessage | 錯誤訊息      | string |           |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| Data         | 資料物件      | object |           |
 
 * output範例
+
 ```output範例
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {}
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {}
 }
 ```
+
 * 錯誤代碼清單
 
-| 錯誤代碼 | 說明 |
-| ------- | ------- |
+| 錯誤代碼   | 說明         |
+| ------ | ---------- |
 | ERR147 | 您並未設定此常用站點 |
 | ERR148 | 您已有設定此常用站點 |
 | ERR149 | 此站點不存在或已停用 |
@@ -2154,14 +2148,13 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明     | 必要 |     型態     | 範例      |
-| ---------- | ------------ | :--: | :----------: | --------- |
-| ShowALL    | 是否顯示全部 |  Y   |     int      | 0:否 1:是 |
-| Latitude   | 緯度         |      |    float     |           |
-| Longitude  | 經度         |      |    float     |           |
-| Radius     | 半徑         |      |    float     |           |
-| * CarTypes | 車型清單     |  N   | array string |           |
-
+| 參數名稱       | 參數說明   | 必要  | 型態           | 範例      |
+| ---------- | ------ |:---:|:------------:| ------- |
+| ShowALL    | 是否顯示全部 | Y   | int          | 0:否 1:是 |
+| Latitude   | 緯度     |     | float        |         |
+| Longitude  | 經度     |     | float        |         |
+| Radius     | 半徑     |     | float        |         |
+| * CarTypes | 車型清單   | N   | array string |         |
 
 * input範例
 
@@ -2177,51 +2170,49 @@
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱      | 參數說明 | 型態 | 範例 |
-| ------------- | -------- | :--: | ---- |
-| NormalRentObj | 站點列表 | List |      |
+| 參數名稱          | 參數說明 | 型態   | 範例  |
+| ------------- | ---- |:----:| --- |
+| NormalRentObj | 站點列表 | List |     |
 
 * NormalRentObj 參數說明
 
-| 參數名稱            | 參數說明            |  型態  | 範例              |
-| ------------------- | ------------------- | :----: | ----------------- |
-| StationID           | 據點代碼            | string | X0II              |
-| StationName         | 據點名稱            | string | 濱江站            |
-| Tel                 | 電話                | string | 02-12345678       |
-| ADDR                | 地址                | string | 台北市松江路999號 |
-| Latitude            | 緯度                | float  |                   |
-| Longitude           | 經度                | float  |                   |
-| Content             | 其他說明            | string |                   |
-| ContentForAPP       | 據點描述(app顯示用) | string |                   |
-| IsRequiredForReturn | 還車位置資訊必填    |  int   | 0:否 1:是         |
-| StationPic          | 據點照片            |  List  |                   |
-| IsRent              | 是否可租            | string | Y/N/A(魔鬼剋星)   |
-
+| 參數名稱                | 參數說明         | 型態     | 範例          |
+| ------------------- | ------------ |:------:| ----------- |
+| StationID           | 據點代碼         | string | X0II        |
+| StationName         | 據點名稱         | string | 濱江站         |
+| Tel                 | 電話           | string | 02-12345678 |
+| ADDR                | 地址           | string | 台北市松江路999號  |
+| Latitude            | 緯度           | float  |             |
+| Longitude           | 經度           | float  |             |
+| Content             | 其他說明         | string |             |
+| ContentForAPP       | 據點描述(app顯示用) | string |             |
+| IsRequiredForReturn | 還車位置資訊必填     | int    | 0:否 1:是     |
+| StationPic          | 據點照片         | List   |             |
+| IsRent              | 是否可租         | string | Y/N/A(魔鬼剋星) |
 
 * StationPic參數說明
 
-| 參數名稱       | 參數說明 |  型態  | 範例 |
-| -------------- | -------- | :----: | ---- |
-| StationPic     | 據點照片 | string |      |
-| PicDescription | 據點說明 | string |      |
-
+| 參數名稱           | 參數說明 | 型態     | 範例  |
+| -------------- | ---- |:------:| --- |
+| StationPic     | 據點照片 | string |     |
+| PicDescription | 據點說明 | string |     |
 
 * output範例
 
 ```
 {
-	"Result": "1",
+    "Result": "1",
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
@@ -2278,119 +2269,123 @@
 * HEADER帶入AccessToken**(可不填)**
 
 * 動作 [POST]
-  
+
 * input傳入參數說明
 
-| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
-| --------- | -------- | :--: | :----: | ----------- |
-| StationID | 據點代碼 | Y | string | X0II |
-| SD | 預計取車時間 | N | string | 2021-03-01 00:00:00 |
-| ED | 預計還車時間 | N | string | 2021-03-01 23:59:59 |
-| ☆CarTypes | 車型代碼 | N | Array string | [ "PRIUSC" ]|
-
+| 參數名稱      | 參數說明   | 必要  | 型態           | 範例                  |
+| --------- | ------ |:---:|:------------:| ------------------- |
+| StationID | 據點代碼   | Y   | string       | X0II                |
+| SD        | 預計取車時間 | N   | string       | 2021-03-01 00:00:00 |
+| ED        | 預計還車時間 | N   | string       | 2021-03-01 23:59:59 |
+| ☆CarTypes | 車型代碼   | N   | Array string | [ "PRIUSC" ]        |
 
 * input範例
+
 ```input範例
 {
-    "StationID": "X0II",
-	"CarTypes":[ "PRIUSC" ]
+  "StationID": "X0II",
+  "CarTypes":[ "PRIUSC" ]
 }
 ```
 
 * output回傳參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| Result | 是否成功 | int | 0:失敗 1:成功  |
-| ErrorCode | 錯誤碼 | string | |
-| ErrorMessage | 錯誤訊息 | string | |
-| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
-| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
-| Data | 資料物件 | object | |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string |           |
+| ErrorMessage | 錯誤訊息      | string |           |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱      | 參數說明       | 型態 | 範例      |
-| ------------- | -------------- | :--: | --------- |
+| 參數名稱          | 參數說明    | 型態   | 範例      |
+| ------------- | ------- |:----:| ------- |
 | IsFavStation  | 是否為常用據點 | int  | 0:否 1:是 |
-| GetCarTypeObj | 車型牌卡清單   | List |           |
+| GetCarTypeObj | 車型牌卡清單  | List |         |
 
 * GetCarTypeObj回傳參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| CarBrend | 車子品牌 | string | TOYOTA |
-| CarType | 車型代碼 | string | PRIUSC |
-| CarTypeName | 車型名稱 | string | TOYOTA PRIUSc |
-| CarTypePic | 車型圖片 | string | priusC |
-| Operator | 業者icon | string | supplierIrent |
-| OperatorScore | 業者評分 | Float | 5.0 |
-| Price | 價格 | int | 168 |
-| Seat | 座位數 | int | 5 |
-| IsRent | 是否可出租 | string | Y/N|
+| 參數名稱          | 參數說明   | 型態     | 範例            |
+| ------------- | ------ |:------:| ------------- |
+| CarBrend      | 車子品牌   | string | TOYOTA        |
+| CarType       | 車型代碼   | string | PRIUSC        |
+| CarTypeName   | 車型名稱   | string | TOYOTA PRIUSc |
+| CarTypePic    | 車型圖片   | string | priusC        |
+| Operator      | 業者icon | string | supplierIrent |
+| OperatorScore | 業者評分   | Float  | 5.0           |
+| Price         | 價格     | int    | 168           |
+| Seat          | 座位數    | int    | 5             |
+| IsRent        | 是否可出租  | string | Y/N           |
 
 * output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "IsFavStation": 0,
-        "GetCarTypeObj": [
-            {
-                "CarBrend": "TOYOTA",
-                "CarType": "PRIUSC",
-                "CarTypeName": "TOYOTA PRIUSc",
-                "CarTypePic": "priusC",
-                "Operator": "supplierIrent",
-                "OperatorScore": 5.0,
-                "Price": 168,
-                "Seat": 5,
-                "IsRent": "Y"
-            },
-            {
-                "CarBrend": "TOYOTA",
-                "CarType": "SIENTA5",
-                "CarTypeName": "TOYOTA SIENTA5人",
-                "CarTypePic": "sienta",
-                "Operator": "supplierIrent",
-                "OperatorScore": 5.0,
-                "Price": 168,
-                "Seat": 5,
-                "IsRent": "N"
-            },
-            {
-                "CarBrend": "TOYOTA",
-                "CarType": "SIENTA7",
-                "CarTypeName": "TOYOTA SIENTA7人",
-                "CarTypePic": "sienta",
-                "Operator": "supplierIrent",
-                "OperatorScore": 5.0,
-                "Price": 168,
-                "Seat": 7,
-                "IsRent": "Y"
-            }
-        ]
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "IsFavStation": 0,
+      "GetCarTypeObj": [
+          {
+              "CarBrend": "TOYOTA",
+              "CarType": "PRIUSC",
+              "CarTypeName": "TOYOTA PRIUSc",
+              "CarTypePic": "priusC",
+              "Operator": "supplierIrent",
+              "OperatorScore": 5.0,
+              "Price": 168,
+              "Seat": 5,
+              "IsRent": "Y"
+          },
+          {
+              "CarBrend": "TOYOTA",
+              "CarType": "SIENTA5",
+              "CarTypeName": "TOYOTA SIENTA5人",
+              "CarTypePic": "sienta",
+              "Operator": "supplierIrent",
+              "OperatorScore": 5.0,
+              "Price": 168,
+              "Seat": 5,
+              "IsRent": "N"
+          },
+          {
+              "CarBrend": "TOYOTA",
+              "CarType": "SIENTA7",
+              "CarTypeName": "TOYOTA SIENTA7人",
+              "CarTypePic": "sienta",
+              "Operator": "supplierIrent",
+              "OperatorScore": 5.0,
+              "Price": 168,
+              "Seat": 7,
+              "IsRent": "Y"
+          }
+      ]
+  }
 }
 ```
+
 * 錯誤代碼清單
 
-| 錯誤代碼 | 說明 |
-| ------- | ------- |
-| ERR151 | 起始日期格式不符 |
-| ERR152 | 結束日期格式不符 |
+| 錯誤代碼   | 說明         |
+| ------ | ---------- |
+| ERR151 | 起始日期格式不符   |
+| ERR152 | 結束日期格式不符   |
 | ERR153 | 起始時間大於結束時間 |
 
-
 ## GetProject取得專案與資費(同站)
+
 ### [/api/GetProject/]
 
 * 20210315修改 - 增加是否為常用據點欄位
+
 * 20210324修改 - 增加搜尋欄位 
+
 * 20210407修改 - input移除掉Seats 
 
 * ASP.NET Web API (REST API)
@@ -2400,125 +2395,123 @@
 * HEADER帶入AccessToken**(必填)**
 
 * 動作 [POST]
-  
+
 * input傳入參數說明
 
-| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
-| --------- | -------- | :--: | :----: | ----------- |
-| StationID | 據點代碼 | Y | string | X0II |
-| CarType	| 車型代碼 | N | string | PRIUSC |
-| SDate		| 預計取車時間 | Y | string | 2021-06-10 00:00:00 |
-| EDate		| 預計還車時間 | Y | string | 2021-06-11 00:00:00 |
-| Mode		| 顯示方式(0:依據點 1:依經緯度)	| Y | int | 0 |
-| Latitude | 緯度(Mode=1必填) | | double | |
-| Longitude | 經度(Mode=1必填) | | double | |
-| Radius 	| 半徑(Mode=1必填) | | double | 0 |
-| Insurance | 是否使用安心服務 | Y | int | 0 |
-| CarTypes  | 車型代碼 | N | array string | [ "PRIUSC" ] |
-| Seats		| 座椅數   | N |  array int | [ 4 ] |
-| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| Y |   int      | 1     |
+| 參數名稱      | 參數說明                     | 必要  | 型態           | 範例                  |
+| --------- | ------------------------ |:---:|:------------:| ------------------- |
+| StationID | 據點代碼                     | Y   | string       | X0II                |
+| CarType   | 車型代碼                     | N   | string       | PRIUSC              |
+| SDate     | 預計取車時間                   | Y   | string       | 2021-06-10 00:00:00 |
+| EDate     | 預計還車時間                   | Y   | string       | 2021-06-11 00:00:00 |
+| Mode      | 顯示方式(0:依據點 1:依經緯度)       | Y   | int          | 0                   |
+| Latitude  | 緯度(Mode=1必填)             |     | double       |                     |
+| Longitude | 經度(Mode=1必填)             |     | double       |                     |
+| Radius    | 半徑(Mode=1必填)             |     | double       | 0                   |
+| Insurance | 是否使用安心服務                 | Y   | int          | 0                   |
+| CarTypes  | 車型代碼                     | N   | array string | [ "PRIUSC" ]        |
+| Seats     | 座椅數                      | N   | array int    | [ 4 ]               |
+| CarTrip   | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int          | 1                   |
 
 * input範例
+
 ```
 {
-    "CarTypes": [ "PRIUSC" ],
-    "StationID": "X0II",
-    "SDate": "2021-03-12 14:00:00",
-    "EDate": "2021-03-13 15:00:00",
-	"Latitude": "",
-    "Radius": "0",
-    "Mode": "0",
-    "Longitude": "",
-    "Insurance": 0,
-	"CarTrip": 1
+  "CarTypes": [ "PRIUSC" ],
+  "StationID": "X0II",
+  "SDate": "2021-03-12 14:00:00",
+  "EDate": "2021-03-13 15:00:00",
+  "Latitude": "",
+  "Radius": "0",
+  "Mode": "0",
+  "Longitude": "",
+  "Insurance": 0,
+  "CarTrip": 1
 }
 ```
 
 * output回傳參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| Result | 是否成功 | int | 0:失敗 1:成功  |
-| ErrorCode | 錯誤碼 | string | 000000 |
-| ErrorMessage | 錯誤訊息 | string | Success |
-| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
-| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
-| Data | 資料物件 | object | |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱      | 參數說明                      |  型態   | 範例  |
-| ------------- | ----------------------------- | :-----: | ----- |
+| 參數名稱          | 參數說明              | 型態      | 範例    |
+| ------------- | ----------------- |:-------:| ----- |
 | HasRentCard   | 是否有可租的卡片 **無用欄位** | boolean | false |
-| GetProjectObj | 回傳清單                      |  List   |       |
-
+| GetProjectObj | 回傳清單              | List    |       |
 
 * GetProjectObj參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| StationID | 據點代碼 | string | X0II |
-| StationName | 據點名稱 | string | iRent濱江旗艦站 |
-| CityName | 縣市 | string | 台北市 |
-| AreaName | 行政區 | string | 中山區 |
-| ADDR | 地址 | string | 台北市中山區松江路557號 |
-| Latitude | 緯度 | float | 25.069014 |
-| Longitude | 經度 | float | 121.533842 |
-| Content | 其他說明 | string | |
-| ContentForAPP | 據點描述(app顯示) | string | |
-| Mininum | 最低價 | int | 168 |
-| IsRent | 是否有車可租(BY據點) | string | Y/N/A(魔鬼剋星) |
-| IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
-| IsShowCard | 是否顯示牌卡 | int | 0:否 1:是 |
-| ProjectObj | 專案清單 | List | |
-| StationInfoObj | 站點照片 | List |  |
-
+| 參數名稱           | 參數說明         | 型態     | 範例            |
+| -------------- | ------------ |:------:| ------------- |
+| StationID      | 據點代碼         | string | X0II          |
+| StationName    | 據點名稱         | string | iRent濱江旗艦站    |
+| CityName       | 縣市           | string | 台北市           |
+| AreaName       | 行政區          | string | 中山區           |
+| ADDR           | 地址           | string | 台北市中山區松江路557號 |
+| Latitude       | 緯度           | float  | 25.069014     |
+| Longitude      | 經度           | float  | 121.533842    |
+| Content        | 其他說明         | string |               |
+| ContentForAPP  | 據點描述(app顯示)  | string |               |
+| Mininum        | 最低價          | int    | 168           |
+| IsRent         | 是否有車可租(BY據點) | string | Y/N/A(魔鬼剋星)   |
+| IsFavStation   | 是否為常用據點      | int    | 0:否 1:是       |
+| IsShowCard     | 是否顯示牌卡       | int    | 0:否 1:是       |
+| ProjectObj     | 專案清單         | List   |               |
+| StationInfoObj | 站點照片         | List   |               |
 
 * ProjectObj參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| StationID | 據點代碼 | string | X0II |
-| ProjID | 專案代碼 | string | P735 |
-| ProjName | 專案名稱 | string | 同站汽車99推廣專案 |
-| ProDesc | 優惠專案描述 | string | 1.本專案限iRent會員使用。... |
-| CarBrend | 車輛廠牌 | string | TOYOTA |
-| CarType | 車型代碼 | string | PRIUSC |
-| CarTypeName | 車型名稱 | string | TOYOTA PRIUSc |
-| CarTypePic | 車型圖片 | string | priusC |
-| Seat | 座位數 | int | 5 |
-| Operator | 業者ICON | string | supplierIrent |
-| OperatorScore | 業者評分 | float | 5.0 |
-| Insurance | 是否可加購安心服務 | int | 0:否 1:是 |
-| InsurancePerHour | 加購安心服務每小時費用 | int | 50 |
-| IsMinimum | 是否為最低價 | int | 0:否 1:是 |
-| Price | 預估費用 | int | 2000 |
-| WorkdayPerHour | 平日每小時金額 | int | 99 |
-| HolidayPerHour | 假日每小時金額 | int | 168 |
-| CarOfArea | 站別類型 | string | 同站 |
-| Content | 其他備註 | string | ... |
-| IsRent | 是否可租 | string | Y/N/A(魔鬼剋星) |
-| IsFavStation | 是否為常用據點 | int | 0:否 1:是 |
-| IsShowCard | 是否顯示牌卡 | int | 0:否 1:是 |
-| MonthlyRentId | 訂閱制月租ID			| int | 1234 |
-| CarWDHours	| 汽車平日時數         | double | 3.0    |
-| CarHDHours	| 汽車假日時數         | double | 3.0      |
-| MotoTotalMins	| 機車不分平假日分鐘數 | int | 300   |
-| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
-| HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
-| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
-| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
-| MonthStartDate| 月租全期(開始日) | string | 2021/05/21 |
-| MonthEndDate  |月租全期(結束日) | string | 2021/05/21 |
-| TaxID         | 統一編號  | string | 12345678 |
+| 參數名稱             | 參數說明        | 型態     | 範例                  |
+| ---------------- | ----------- |:------:| ------------------- |
+| StationID        | 據點代碼        | string | X0II                |
+| ProjID           | 專案代碼        | string | P735                |
+| ProjName         | 專案名稱        | string | 同站汽車99推廣專案          |
+| ProDesc          | 優惠專案描述      | string | 1.本專案限iRent會員使用。... |
+| CarBrend         | 車輛廠牌        | string | TOYOTA              |
+| CarType          | 車型代碼        | string | PRIUSC              |
+| CarTypeName      | 車型名稱        | string | TOYOTA PRIUSc       |
+| CarTypePic       | 車型圖片        | string | priusC              |
+| Seat             | 座位數         | int    | 5                   |
+| Operator         | 業者ICON      | string | supplierIrent       |
+| OperatorScore    | 業者評分        | float  | 5.0                 |
+| Insurance        | 是否可加購安心服務   | int    | 0:否 1:是             |
+| InsurancePerHour | 加購安心服務每小時費用 | int    | 50                  |
+| IsMinimum        | 是否為最低價      | int    | 0:否 1:是             |
+| Price            | 預估費用        | int    | 2000                |
+| WorkdayPerHour   | 平日每小時金額     | int    | 99                  |
+| HolidayPerHour   | 假日每小時金額     | int    | 168                 |
+| CarOfArea        | 站別類型        | string | 同站                  |
+| Content          | 其他備註        | string | ...                 |
+| IsRent           | 是否可租        | string | Y/N/A(魔鬼剋星)         |
+| IsFavStation     | 是否為常用據點     | int    | 0:否 1:是             |
+| IsShowCard       | 是否顯示牌卡      | int    | 0:否 1:是             |
+| MonthlyRentId    | 訂閱制月租ID     | int    | 1234                |
+| CarWDHours       | 汽車平日時數      | double | 3.0                 |
+| CarHDHours       | 汽車假日時數      | double | 3.0                 |
+| MotoTotalMins    | 機車不分平假日分鐘數  | int    | 300                 |
+| WDRateForCar     | 汽車平日優惠費率    | double | 99.0                |
+| HDRateForCar     | 汽車假日優惠費率    | double | 168.0               |
+| WDRateForMoto    | 機車平日優惠費率    | double | 1.0                 |
+| HDRateForMoto    | 機車假日優惠費率    | double | 1.2                 |
+| MonthStartDate   | 月租全期(開始日)   | string | 2021/05/21          |
+| MonthEndDate     | 月租全期(結束日)   | string | 2021/05/21          |
+| TaxID            | 統一編號        | string | 12345678            |
 
 * StationInfoObj參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| StationPic | 據點照片URL位置 | string | |
-| PicDescription | 據點說明 | string | |
-
+| 參數名稱           | 參數說明      | 型態     | 範例  |
+| -------------- | --------- |:------:| --- |
+| StationPic     | 據點照片URL位置 | string |     |
+| PicDescription | 據點說明      | string |     |
 
 * output變數
 
@@ -2612,10 +2605,10 @@
 
 * 錯誤代碼清單
 
-| 錯誤代碼 | 說明 |
-| ------- | ------- |
-| ERR151 | 起始日期格式不符 |
-| ERR152 | 結束日期格式不符 |
+| 錯誤代碼   | 說明         |
+| ------ | ---------- |
+| ERR151 | 起始日期格式不符   |
+| ERR152 | 結束日期格式不符   |
 | ERR153 | 起始時間大於結束時間 |
 
 ## GetCarTypeGroupList 取得車型清單
@@ -2632,128 +2625,125 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱   | 參數說明 | 型態 | 範例 |
-| ---------- | -------- | :--: | ---- |
-| SeatGroups |          | List |      |
-
+| 參數名稱       | 參數說明 | 型態   | 範例  |
+| ---------- | ---- |:----:| --- |
+| SeatGroups |      | List |     |
 
 * SeatGroups資料物件說明
 
-| 參數名稱 | 參數說明 | 型態 | 範例 |
-| -------- | -------- | :--: | ---- |
-| Seat     | 座椅數   | int  | 4    |
-| CarInfos | 資料物件 |      |      |
-
+| 參數名稱     | 參數說明 | 型態  | 範例  |
+| -------- | ---- |:---:| --- |
+| Seat     | 座椅數  | int | 4   |
+| CarInfos | 資料物件 |     |     |
 
 * CarInfos 參數說明
 
-| 參數名稱    | 參數說明 |  型態  | 範例         |
-| ----------- | -------- | :----: | ------------ |
-| Seat        | 座椅數   |  int   | 4            |
+| 參數名稱        | 參數說明 | 型態     | 範例           |
+| ----------- | ---- |:------:| ------------ |
+| Seat        | 座椅數  | int    | 4            |
 | CarType     | 車型名稱 | string | TOYOTA Altis |
 | CarTypePic  | 車型圖片 | string | altis        |
 | CarTypeName | 車型代碼 | string | ALTIS        |
-
 
 * Output範例
 
 ```
 {
-	"Result": "0",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": {
-		"SeatGroups": [
-			{
-				"Seat": 2,
-				"CarInfos": [
-					{
-						"Seat": 2,
-						"CarType": "KYMCO MANY-110",
-						"CarTypePic": "iretScooter",
-						"CarTypeName": "MANY-110"
-					}
-				]
-			},
-			{
-				"Seat": 5,
-				"CarInfos": [
-					{
-						"Seat": 5,
-						"CarType": "TOYOTA ALTIS",
-						"CarTypePic": "altis",
-						"CarTypeName": "ALTIS"
-					},
-					{
-						"Seat": 5,
-						"CarType": "TOYOTA CAMRY",
-						"CarTypePic": "camry",
-						"CarTypeName": "CAMRY"
-					},
-					{
-						"Seat": 5,
-						"CarType": "TOYOTA PRIUS PHV",
-						"CarTypePic": "priusPhv",
-						"CarTypeName": "PRIUS PHV"
-					},
-					{
-						"Seat": 5,
-						"CarType": "TOYOTA PRIUSc",
-						"CarTypePic": "priusC",
-						"CarTypeName": "PRIUSc"
-					},
-					{
-						"Seat": 5,
-						"CarType": "TOYOTA SIENTA5人",
-						"CarTypePic": "sienta",
-						"CarTypeName": "SIENTA5人"
-					},
-					{
-						"Seat": 5,
-						"CarType": "TOYOTA VIOS",
-						"CarTypePic": "vios",
-						"CarTypeName": "VIOS"
-					},
-					{
-						"Seat": 5,
-						"CarType": "TOYOTA YARIS",
-						"CarTypePic": "yaris",
-						"CarTypeName": "YARIS"
-					}
-				]
-			},
-			{
-				"Seat": 7,
-				"CarInfos": [
-					{
-						"Seat": 7,
-						"CarType": "TOYOTA SIENTA7人",
-						"CarTypePic": "sienta",
-						"CarTypeName": "SIENTA7人"
-					}
-				]
-			}
-		]
-	}
+    "Result": "0",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "SeatGroups": [
+            {
+                "Seat": 2,
+                "CarInfos": [
+                    {
+                        "Seat": 2,
+                        "CarType": "KYMCO MANY-110",
+                        "CarTypePic": "iretScooter",
+                        "CarTypeName": "MANY-110"
+                    }
+                ]
+            },
+            {
+                "Seat": 5,
+                "CarInfos": [
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA ALTIS",
+                        "CarTypePic": "altis",
+                        "CarTypeName": "ALTIS"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA CAMRY",
+                        "CarTypePic": "camry",
+                        "CarTypeName": "CAMRY"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA PRIUS PHV",
+                        "CarTypePic": "priusPhv",
+                        "CarTypeName": "PRIUS PHV"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA PRIUSc",
+                        "CarTypePic": "priusC",
+                        "CarTypeName": "PRIUSc"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA SIENTA5人",
+                        "CarTypePic": "sienta",
+                        "CarTypeName": "SIENTA5人"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA VIOS",
+                        "CarTypePic": "vios",
+                        "CarTypeName": "VIOS"
+                    },
+                    {
+                        "Seat": 5,
+                        "CarType": "TOYOTA YARIS",
+                        "CarTypePic": "yaris",
+                        "CarTypeName": "YARIS"
+                    }
+                ]
+            },
+            {
+                "Seat": 7,
+                "CarInfos": [
+                    {
+                        "Seat": 7,
+                        "CarType": "TOYOTA SIENTA7人",
+                        "CarTypePic": "sienta",
+                        "CarTypeName": "SIENTA7人"
+                    }
+                ]
+            }
+        ]
+    }
 }
 ```
 
@@ -2768,58 +2758,58 @@
 * HEADER帶入AccessToken**(必填)**
 
 * 動作 [POST]
-  
+
 * input傳入參數說明
 
-| 參數名稱  | 參數說明 | 必要 |  型態  | 範例        |
-| --------- | -------- | :--: | :----: | ----------- |
-| StationID | 據點代碼 | Y | string | X0II |
-| ☆IsMotor| 機車汽車| Y | INT | 0:機車,1:汽車 |
-
+| 參數名稱      | 參數說明 | 必要  | 型態     | 範例        |
+| --------- | ---- |:---:|:------:| --------- |
+| StationID | 據點代碼 | Y   | string | X0II      |
+| ☆IsMotor  | 機車汽車 | Y   | INT    | 0:機車,1:汽車 |
 
 * input範例
+
 ```input範例
 {
-    "StationID": "X0G1",
-    "IsMotor": 0
+  "StationID": "X0G1",
+  "IsMotor": 0
 }
 ```
 
 * output回傳參數說明
 
-| 參數名稱 | 參數說明     |  型態  | 範例 |
-| -------- | ------------ | :----: | ---- |
-| Result | 是否成功 | int | 0:失敗 1:成功  |
-| ErrorCode | 錯誤碼 | string | |
-| ErrorMessage | 錯誤訊息 | string | |
-| NeedRelogin | 是否需重新登入 | int | 0:否 1:是 |
-| NeedUpgrade | 是否需要至商店更新 | int | 0:否 1:是 |
-| Data | 資料物件 | object | |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string |           |
+| ErrorMessage | 錯誤訊息      | string |           |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱    | 參數說明           | 型態 | 範例                      |
-| ----------- | ------------------ | :--: | ------------------------- |
-| PolygonType | 電子柵欄模式       | int  | 0:優惠的取車;1:優惠的還車 |
-| PolygonObj  | 電子柵欄經緯度清單 | List |                           |
+| 參數名稱        | 參數說明      | 型態   | 範例              |
+| ----------- | --------- |:----:| --------------- |
+| PolygonType | 電子柵欄模式    | int  | 0:優惠的取車;1:優惠的還車 |
+| PolygonObj  | 電子柵欄經緯度清單 | List |                 |
 
 * output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PolygonType": 0,
-        "PolygonObj": [
-            "POLYGON((120.28898139979174 22.66497932782427,120.2914597609215 22.665098131237773,120.2914597609215 22.662979454923615,120.28889020468523 22.662979454923615,120.28898139979174 22.66497932782427))"
-        ]
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PolygonType": 0,
+      "PolygonObj": [
+          "POLYGON((120.28898139979174 22.66497932782427,120.2914597609215 22.665098131237773,120.2914597609215 22.662979454923615,120.28889020468523 22.662979454923615,120.28898139979174 22.66497932782427))"
+      ]
+  }
 }
 ```
-
 
 ## AnyRent 取得路邊租還車輛
 
@@ -2832,90 +2822,88 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
 * 動作 [POST]
 
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| ShowALL 	| 是否顯示全部  | Y | int | 0 |
-| Latitude	| 緯度	| Y | double | 25.0688361 |
-| Longitude | 經度	| Y | double | 121.5335611 |
-| Radius 	| 半徑	| Y | double | 2.5 |
-| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| Y |   int      | 1     |
+| 參數名稱      | 參數說明                     | 必要  | 型態     | 範例          |
+| --------- | ------------------------ |:---:|:------:| ----------- |
+| ShowALL   | 是否顯示全部                   | Y   | int    | 0           |
+| Latitude  | 緯度                       | Y   | double | 25.0688361  |
+| Longitude | 經度                       | Y   | double | 121.5335611 |
+| Radius    | 半徑                       | Y   | double | 2.5         |
+| CarTrip   | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int    | 1           |
 
 * input範例
+
 ```
 {
-    "ShowALL": "0",
-    "Latitude": 25.060368,
-    "Longitude": 121.520260,
-    "Radius": 2.5,
-	"CarTrip": 1
+  "ShowALL": "0",
+  "Latitude": 25.060368,
+  "Longitude": 121.520260,
+  "Radius": 2.5,
+  "CarTrip": 1
 }
 ```
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱   | 參數說明     | 型態 | 範例 |
-| ---------- | ------------ | :--: | ---- |
-| AnyRentObj | 路邊租還清單 | list |      |
-
+| 參數名稱       | 參數說明   | 型態   | 範例  |
+| ---------- | ------ |:----:| --- |
+| AnyRentObj | 路邊租還清單 | list |     |
 
 * AnyRentObj 參數說明
 
-| 參數名稱       | 參數說明                                 | 型態   | 範例                 |
-| -------------- | ---------------------------------------- | ------ | -------------------- |
-| MonthlyRentId  | 訂閱制月租ID                             | int    | 123456               |
-| MonProjNM      | 訂閱制月租名稱                           | string | 測試_汽包機66-3      |
-| CarWDHours     | 汽車平日時數                             | double | 3.0                  |
-| CarHDHours     | 汽車假日時數                             | double | 3.0                  |
-| MotoTotalMins  | 機車不分平假日分鐘數                     | int    | 300                  |
-| WDRateForCar   | 汽車平日優惠價                           | double | 99.0                 |
-| HDRateForCar   | 汽車假日優惠價                           | double | 168.0                |
-| WDRateForMoto  | 機車平日優惠價                           | double | 1.0                  |
-| HDRateForMoto  | 機車假日優惠價                           | double | 1.2                  |
-| DiscountLabel  | 優惠標籤                                 | object |                      |
-| CarNo          | 車號                                     | string | RCG-2305             |
-| CarType        | 車型代碼                                 | string | PRIUSC               |
-| CarTypeName    | 車型名稱                                 | string | TOYOTA PRIUSc        |
-| CarOfArea      | 車輛地區                                 | string | 北區                 |
-| ProjectName    | 專案名稱                                 | string | 北區路邊汽車推廣專案 |
-| Rental         | 每小時租金                               | float  | 168.0                |
-| Mileage        | 每公里里程費                             | float  | 3.0                  |
-| Insurance      | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0                    |
-| InsurancePrice | 安心服務每小時費用                       | int    | 50                   |
-| ShowSpecial    | 是否顯示活動文字                         | int    | 1                    |
-| SpecialInfo    | 活動文字                                 | string |                      |
-| Latitude       | 緯度                                     | float  | 25.0692639           |
-| Longitude      | 經度                                     | float  | 121.5308611          |
-| Operator       | 供應商圖片                               | string | supplierIrent        |
-| OperatorScore  | 供應商評價                               | float  | 5.0                  |
-| CarTypePic     | 車輛圖示名稱                             | string | priusC               |
-| Seat           | 座位數                                   | int    | 5                    |
-| ProjID         | 專案代碼                                 | string | P621                 |
-| TaxID          | 統一編號                                 | string | 12345678             |
-
+| 參數名稱           | 參數說明                      | 型態     | 範例            |
+| -------------- | ------------------------- | ------ | ------------- |
+| MonthlyRentId  | 訂閱制月租ID                   | int    | 123456        |
+| MonProjNM      | 訂閱制月租名稱                   | string | 測試_汽包機66-3    |
+| CarWDHours     | 汽車平日時數                    | double | 3.0           |
+| CarHDHours     | 汽車假日時數                    | double | 3.0           |
+| MotoTotalMins  | 機車不分平假日分鐘數                | int    | 300           |
+| WDRateForCar   | 汽車平日優惠價                   | double | 99.0          |
+| HDRateForCar   | 汽車假日優惠價                   | double | 168.0         |
+| WDRateForMoto  | 機車平日優惠價                   | double | 1.0           |
+| HDRateForMoto  | 機車假日優惠價                   | double | 1.2           |
+| DiscountLabel  | 優惠標籤                      | object |               |
+| CarNo          | 車號                        | string | RCG-2305      |
+| CarType        | 車型代碼                      | string | PRIUSC        |
+| CarTypeName    | 車型名稱                      | string | TOYOTA PRIUSc |
+| CarOfArea      | 車輛地區                      | string | 北區            |
+| ProjectName    | 專案名稱                      | string | 北區路邊汽車推廣專案    |
+| Rental         | 每小時租金                     | float  | 168.0         |
+| Mileage        | 每公里里程費                    | float  | 3.0           |
+| Insurance      | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0             |
+| InsurancePrice | 安心服務每小時費用                 | int    | 50            |
+| ShowSpecial    | 是否顯示活動文字                  | int    | 1             |
+| SpecialInfo    | 活動文字                      | string |               |
+| Latitude       | 緯度                        | float  | 25.0692639    |
+| Longitude      | 經度                        | float  | 121.5308611   |
+| Operator       | 供應商圖片                     | string | supplierIrent |
+| OperatorScore  | 供應商評價                     | float  | 5.0           |
+| CarTypePic     | 車輛圖示名稱                    | string | priusC        |
+| Seat           | 座位數                       | int    | 5             |
+| ProjID         | 專案代碼                      | string | P621          |
+| TaxID          | 統一編號                      | string | 12345678      |
 
 * DiscountLabel 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| LabelType		| 標籤類型		| string | CP0101 |
-| GiveMinute	| 贈送分鐘數  | int | 30 |
-| Describe		| 描述		| string | 30分鐘優惠折抵 |
+| 參數名稱       | 參數說明  | 型態     | 範例       |
+| ---------- | ----- |:------:| -------- |
+| LabelType  | 標籤類型  | string | CP0101   |
+| GiveMinute | 贈送分鐘數 | int    | 30       |
+| Describe   | 描述    | string | 30分鐘優惠折抵 |
 
 * Output 範例
 
@@ -3014,94 +3002,92 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
 * 動作 [POST]
 
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| CarNo 	| 車號  | Y | string | RCG-0521 |
-| SDate		| 預計取車時間	|  | string |  |
-| EDate 	| 預計還車時間	|  | string |  |
-| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| N |   int  | 1     |
+| 參數名稱    | 參數說明                     | 必要  | 型態     | 範例       |
+| ------- | ------------------------ |:---:|:------:| -------- |
+| CarNo   | 車號                       | Y   | string | RCG-0521 |
+| SDate   | 預計取車時間                   |     | string |          |
+| EDate   | 預計還車時間                   |     | string |          |
+| CarTrip | 用車行程 (1 = 個人身分，2 = 企業身分) | N   | int    | 1        |
 
 * input範例
+
 ```
 {
-    "CarNo":"RCG-0521",
-    "SDate":"",
-    "EDate":"",
-	"CarTrip":1
+  "CarNo":"RCG-0521",
+  "SDate":"",
+  "EDate":"",
+  "CarTrip":1
 }
 ```
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱             | 參數說明         | 型態 | 範例 |
-| -------------------- | ---------------- | :--: | ---- |
-| GetAnyRentProjectObj | 路邊租還專案清單 | list |      |
-
+| 參數名稱                 | 參數說明     | 型態   | 範例  |
+| -------------------- | -------- |:----:| --- |
+| GetAnyRentProjectObj | 路邊租還專案清單 | list |     |
 
 * GetAnyRentProjectObj 參數說明
 
-| 參數名稱       | 參數說明                                 | 型態   | 範例                 |
-| -------------- | ---------------------------------------- | ------ | -------------------- |
-| StationID      | 據點代碼                                 | string | X0SR                 |
-| ProjID         | 專案代碼                                 | string | P621                 |
-| ProjName       | 專案名稱                                 | string | 北區路邊汽車推廣專案 |
-| ProDesc        | 專案說明                                 | string |                      |
-| CarBrend       | 車輛廠牌                                 | string | TOYOTA               |
-| CarType        | 車輛型號                                 | string | PRIUSC               |
-| CarTypeName    | 車型名稱                                 | string | TOYOTA PRIUSc        |
-| CarTypePic     | 車型圖片                                 | string | priusC               |
-| Seat           | 座椅數                                   | int    | 5                    |
-| Operator       | 業者ICON圖片                             | string | supplierIrent        |
-| OperatorScore  | 供應商評價                               | float  | 5.0                  |
-| Insurance      | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0                    |
-| InsurancePrice | 安心服務每小時費用                       | int    | 50                   |
-| IsMinimum      | 是否是最低價                             | int    | 1                    |
-| Price          | 預估費用                                 | int    | 159                  |
-| WorkdayPerHour | 工作日每小時金額                         | int    | 99                   |
-| HolidayPerHour | 假日每小時金額                           | int    | 168                  |
-| CarOfArea      | 車輛地區                                 | string | 北區                 |
-| Content        | 其他備註                                 | string |                      |
-| IsRent         | 是否可租                                 | int    | 1                    |
-| IsFavStation   | 是否為喜好站點                           | int    | 1                    |
-| IsShowCard     | 是否顯示牌卡                             | int    | 1                    |
-| MonthlyRentId  | 訂閱制月租ID                             | int    | 123456               |
-| CarWDHours     | 汽車平日時數                             | double |                      |
-| CarHDHours     | 汽車假日時數                             | double |                      |
-| MotoTotalMins  | 機車不分平假日分鐘數                     | int    |                      |
-| WDRateForCar   | 汽車平日優惠價                           | double |                      |
-| HDRateForCar   | 汽車假日優惠價                           | double |                      |
-| WDRateForMoto  | 機車平日優惠價                           | double |                      |
-| HDRateForMoto  | 機車假日優惠價                           | double |                      |
-| MonthStartDate | 開始日                                   | string |                      |
-| MonthEndDate   | 結束日                                   | string |                      |
-| TaxID          | 統一編號                                 | string | 12345678             |
-| DiscountLabel  | 優惠標籤                                 | object |                      |
-
+| 參數名稱           | 參數說明                      | 型態     | 範例            |
+| -------------- | ------------------------- | ------ | ------------- |
+| StationID      | 據點代碼                      | string | X0SR          |
+| ProjID         | 專案代碼                      | string | P621          |
+| ProjName       | 專案名稱                      | string | 北區路邊汽車推廣專案    |
+| ProDesc        | 專案說明                      | string |               |
+| CarBrend       | 車輛廠牌                      | string | TOYOTA        |
+| CarType        | 車輛型號                      | string | PRIUSC        |
+| CarTypeName    | 車型名稱                      | string | TOYOTA PRIUSc |
+| CarTypePic     | 車型圖片                      | string | priusC        |
+| Seat           | 座椅數                       | int    | 5             |
+| Operator       | 業者ICON圖片                  | string | supplierIrent |
+| OperatorScore  | 供應商評價                     | float  | 5.0           |
+| Insurance      | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0             |
+| InsurancePrice | 安心服務每小時費用                 | int    | 50            |
+| IsMinimum      | 是否是最低價                    | int    | 1             |
+| Price          | 預估費用                      | int    | 159           |
+| WorkdayPerHour | 工作日每小時金額                  | int    | 99            |
+| HolidayPerHour | 假日每小時金額                   | int    | 168           |
+| CarOfArea      | 車輛地區                      | string | 北區            |
+| Content        | 其他備註                      | string |               |
+| IsRent         | 是否可租                      | int    | 1             |
+| IsFavStation   | 是否為喜好站點                   | int    | 1             |
+| IsShowCard     | 是否顯示牌卡                    | int    | 1             |
+| MonthlyRentId  | 訂閱制月租ID                   | int    | 123456        |
+| CarWDHours     | 汽車平日時數                    | double |               |
+| CarHDHours     | 汽車假日時數                    | double |               |
+| MotoTotalMins  | 機車不分平假日分鐘數                | int    |               |
+| WDRateForCar   | 汽車平日優惠價                   | double |               |
+| HDRateForCar   | 汽車假日優惠價                   | double |               |
+| WDRateForMoto  | 機車平日優惠價                   | double |               |
+| HDRateForMoto  | 機車假日優惠價                   | double |               |
+| MonthStartDate | 開始日                       | string |               |
+| MonthEndDate   | 結束日                       | string |               |
+| TaxID          | 統一編號                      | string | 12345678      |
+| DiscountLabel  | 優惠標籤                      | object |               |
 
 * DiscountLabel回傳參數說明
 
-| 參數名稱   | 參數說明 |  型態  | 範例                                                         |
-| ---------- | -------- | :----: | ------------------------------------------------------------ |
-| AppDescribe| 優惠說明 | string | \r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n |
-| LabelType  | 標籤類型 | string | CP0101                                                       |
-| GiveMinute | 分鐘數   |  int   | 30                                                           |
-| Describe   | 描述     | string | |
+| 參數名稱        | 參數說明 | 型態     | 範例                                                                                                                                                                                                                                 |
+| ----------- | ---- |:------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AppDescribe | 優惠說明 | string | \r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n |
+| LabelType   | 標籤類型 | string | CP0101                                                                                                                                                                                                                             |
+| GiveMinute  | 分鐘數  | int    | 30                                                                                                                                                                                                                                 |
+| Describe    | 描述   | string |                                                                                                                                                                                                                                    |
 
 * Output 範例
 
@@ -3114,6 +3100,48 @@
     "ErrorMessage": "Success",
     "Data": {
         "GetAnyRentProjectObj": [
+            {
+                "StationID": "X0SR",
+                "ProjID": "R221",
+                "ProjName": "汽車平日代步首選(兩期一付)",
+                "ProDesc": "1.申辦成功後立即生效，每期以連續30日計算。\n2.當期贈送時數用完後，將依優惠費率計價：\n    汽車平日$99/時\n3.若您的租車合約有跨到非訂閱制方案區間時，將依照一般費率計價：\n    汽車平日$110、$125、$135/時\n    汽車假日$168、$198、$218/時\n4.您可於「訂閱管理」查看訂閱制方案內容明細及剩餘時數。\n5.您可同時訂閱汽車(含城市車手)及機車方案。\r\n",
+                "CarBrend": "TOYOTA",
+                "CarType": "PRIUSC",
+                "CarTypeName": "TOYOTA PRIUSc",
+                "CarTypePic": "priusC",
+                "Seat": 5,
+                "Operator": "supplierIrent",
+                "OperatorScore": 5.0,
+                "Insurance": 1,
+                "InsurancePerHour": 50,
+                "IsMinimum": 1,
+                "Price": 0,
+                "WorkdayPerHour": 99,
+                "HolidayPerHour": 168,
+                "CarOfArea": "北區",
+                "Content": "取/還車範圍：\n限台北市、新北市、基隆市、桃園市、新竹市、新竹縣服務區域內，以及桃園國際機場旁大園停車場(桃園市大園區中正東路437-1號)取/還車，詳細範圍可由地圖查詢。\n\n還車規範：\na.還車限停放於服務區域內合法路邊公有停車格(不含白線區域、累進費率、限時停車、時段性禁停、汽機車共用、身心障礙專用、孕婦及育有 6 歲以下兒童者專用、貨車專卸專用等特殊停車格) 、指定北區(北北基桃竹地區)路外停車場(開放還車停車場可於APP內查詢)\nb.請勿將車輛停放於私人停車場/車庫、紅線路段等違法區域及非指定停車場，違者將依「會員條款暨小客車租賃契約」向會員酌收車輛調度相關費用。\n\n桃園國際機場服務說明(大園停車場)：\n因疫情關係，目前僅提供出國送機服務。\n於大園停車場還車後，停車業者將免費接駁至桃園國際機場。(大園停車場電話：03-385-2888)",
+                "IsRent": null,
+                "IsFavStation": 0,
+                "IsShowCard": 1,
+                "MonthlyRentId": 2434,
+                "CarWDHours": 1.0,
+                "CarHDHours": -999.0,
+                "MotoTotalMins": 0.0,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 2.5,
+                "HDRateForMoto": 2.5,
+                "MonthStartDate": "2022/03/25 00:00",
+                "MonthEndDate": "2022/05/23 23:59",
+                "TaxID": "12354548",
+                "DiscountLabel": {
+                    "AppDescribe":"\r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n",
+                    "LabelType": "CP0101",
+                    "GiveMinute": 30,
+                    "Describe": ""
+                },
+                "TaxID":""
+            },
             {
                 "StationID": "X0SR",
                 "ProjID": "R221",
@@ -3171,100 +3199,97 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
 * 動作 [POST]
 
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| ShowALL 	| 是否顯示全部  | Y | int | 0 |
-| Latitude	| 緯度	| Y | double | 25.0688361 |
-| Longitude | 經度	| Y | double | 121.5335611 |
-| Radius 	| 半徑	| Y | double | 2.5 |
-| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| Y |   int      | 1     |
-
+| 參數名稱      | 參數說明                     | 必要  | 型態     | 範例          |
+| --------- | ------------------------ |:---:|:------:| ----------- |
+| ShowALL   | 是否顯示全部                   | Y   | int    | 0           |
+| Latitude  | 緯度                       | Y   | double | 25.0688361  |
+| Longitude | 經度                       | Y   | double | 121.5335611 |
+| Radius    | 半徑                       | Y   | double | 2.5         |
+| CarTrip   | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int    | 1           |
 
 * input範例
+
 ```
 {
-    "ShowALL": "0",
-    "Latitude": 25.060368,
-    "Longitude": 121.520260,
-    "Radius": 2.5,
-	"CarTrip": 2
+  "ShowALL": "0",
+  "Latitude": 25.060368,
+  "Longitude": 121.520260,
+  "Radius": 2.5,
+  "CarTrip": 2
 }
 ```
 
-
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明     | 型態 | 範例 |
-| ------------ | ------------ | :--: | ---- |
-| MotorRentObj | 路邊機車清單 | list |      |
-
+| 參數名稱         | 參數說明   | 型態   | 範例  |
+| ------------ | ------ |:----:| --- |
+| MotorRentObj | 路邊機車清單 | list |     |
 
 * MotorRentObj 參數說明
 
-| 參數名稱      	| 參數說明 									|  型態   | 範例       |
-| ----------------	| ----------------------------------------- | :----:  | ---------- |
-| MonthlyRentId		| 訂閱制月租ID								| int 	  | 123456 		|
-| MonProjNM			| 訂閱制月租名稱							| string  | 			|
-| CarWDHours		| 汽車平日時數								| double  | 			|
-| CarHDHours		| 汽車假日時數								| double  | 			|
-| MotoTotalMins		| 機車不分平假日分鐘數 						| int 	  | 			|
-| WDRateForCar		| 汽車平日優惠價 							| double  | 			|
-| HDRateForCar		| 汽車假日優惠價 							| double  | 			|
-| WDRateForMoto		| 機車平日優惠價 							| dluble  | 			|
-| HDRateForMoto		| 機車假日優惠價 							| double  | 			|
-| DiscountLabel     | 優惠標籤      							| object  |   			|
-| CarNo				| 車號			 							| string  | EWG-1235 	|
-| CarType			| 車型代碼									| string  | MANY-110 	|
-| CarTypeName		| 車型名稱									| string  | KYMCO MANY-110 |
-| CarOfArea			| 車輛地區									| string  | 北北桃 		|
-| ProjectName		| 專案名稱									| string  | 10載便利北北桃 |
-| Rental			| 每小時租金								| float   | 168.0 		|
-| Mileage			| 每公里里程費								| float   | 3.0 		|
-| Insurance			| 是否有安心服務(0:禁用;1:預設關;2:預設開) 	| int 	  | 0 			|
-| InsurancePrice	| 安心服務每小時費用 						| int 	  | 50 			|
-| ShowSpecial		| 是否顯示活動文字 							| int 	  | 1 			|
-| SpecialInfo		| 活動文字									| string  | 			|
-| Power				| 機車電量									| float   | 90.5 		|
-| RemainingMileage	| 預估里程									| float   | 30.5 		|
-| Latitude			| 緯度										| float   | 25.0692639 |
-| Longitude			| 經度										| float   | 121.5308611 |
-| Operator			| 供應商圖片								| string  | supplierIrent |
-| OperatorScore		| 供應商評價								| float   | 5.0 		|
-| CarTypePic		| 車輛圖示名稱								| string  | priusC 		|
-| Seat				| 座位數									| int 	  | 5 			|
-| ProjID			| 專案代碼									| string  | P621 		|
-| BaseMinutes		| 基本分鐘數								| int 	  | 6 			|
-| BasePrice			| 基本費									| int 	  | 10 			|
-| PerMinutesPrice	| 每分鐘幾元								| float   | 1.5 		|
-| BaseInsuranceMinutes	| 安心服務基礎分鐘數					| int  	  |  |
-| BaseMotoRate      | 計次金額(基消)                			| int  	  |      		|
-| InsuranceMotoMin  | 計次分鐘單位(幾分鐘算一次錢)  			| int  	  |      		|
-| InsuranceMotoRate | 計次金額(每單位分鐘多少錢)    			| int  	  |      		|
-| TaxID | 統一編號 | string | 12354548 |
+| 參數名稱                 | 參數說明                      | 型態     | 範例             |
+| -------------------- | ------------------------- |:------:| -------------- |
+| MonthlyRentId        | 訂閱制月租ID                   | int    | 123456         |
+| MonProjNM            | 訂閱制月租名稱                   | string |                |
+| CarWDHours           | 汽車平日時數                    | double |                |
+| CarHDHours           | 汽車假日時數                    | double |                |
+| MotoTotalMins        | 機車不分平假日分鐘數                | int    |                |
+| WDRateForCar         | 汽車平日優惠價                   | double |                |
+| HDRateForCar         | 汽車假日優惠價                   | double |                |
+| WDRateForMoto        | 機車平日優惠價                   | dluble |                |
+| HDRateForMoto        | 機車假日優惠價                   | double |                |
+| DiscountLabel        | 優惠標籤                      | object |                |
+| CarNo                | 車號                        | string | EWG-1235       |
+| CarType              | 車型代碼                      | string | MANY-110       |
+| CarTypeName          | 車型名稱                      | string | KYMCO MANY-110 |
+| CarOfArea            | 車輛地區                      | string | 北北桃            |
+| ProjectName          | 專案名稱                      | string | 10載便利北北桃       |
+| Rental               | 每小時租金                     | float  | 168.0          |
+| Mileage              | 每公里里程費                    | float  | 3.0            |
+| Insurance            | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0              |
+| InsurancePrice       | 安心服務每小時費用                 | int    | 50             |
+| ShowSpecial          | 是否顯示活動文字                  | int    | 1              |
+| SpecialInfo          | 活動文字                      | string |                |
+| Power                | 機車電量                      | float  | 90.5           |
+| RemainingMileage     | 預估里程                      | float  | 30.5           |
+| Latitude             | 緯度                        | float  | 25.0692639     |
+| Longitude            | 經度                        | float  | 121.5308611    |
+| Operator             | 供應商圖片                     | string | supplierIrent  |
+| OperatorScore        | 供應商評價                     | float  | 5.0            |
+| CarTypePic           | 車輛圖示名稱                    | string | priusC         |
+| Seat                 | 座位數                       | int    | 5              |
+| ProjID               | 專案代碼                      | string | P621           |
+| BaseMinutes          | 基本分鐘數                     | int    | 6              |
+| BasePrice            | 基本費                       | int    | 10             |
+| PerMinutesPrice      | 每分鐘幾元                     | float  | 1.5            |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數                 | int    |                |
+| BaseMotoRate         | 計次金額(基消)                  | int    |                |
+| InsuranceMotoMin     | 計次分鐘單位(幾分鐘算一次錢)           | int    |                |
+| InsuranceMotoRate    | 計次金額(每單位分鐘多少錢)            | int    |                |
+| TaxID                | 統一編號                      | string | 12354548       |
 
 * DiscountLabel 參數說明
 
-| 參數名稱      | 參數說明 |  型態  | 範例       |
-| ------------- | -------- | :----: | ---------- |
-| LabelType		| 標籤類型		| string | CP0101 |
-| GiveMinute	| 贈送分鐘數  | int | 30 |
-| Describe		| 描述		| string | 30分鐘優惠折抵 |
+| 參數名稱       | 參數說明  | 型態     | 範例       |
+| ---------- | ----- |:------:| -------- |
+| LabelType  | 標籤類型  | string | CP0101   |
+| GiveMinute | 贈送分鐘數 | int    | 30       |
+| Describe   | 描述    | string | 30分鐘優惠折抵 |
 
 * Output 範例
 
@@ -3377,91 +3402,90 @@
 - 傳送跟接收採JSON格式
 
 - HEADER帶入AccessToken**(必填)**
-
 * 動作 [POST]
 
 * input 傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| CarNo 	| 車號  | Y | string | EWA-0127 |
-| SDate		| 預計取車時間	| N | string |  |
-| EDate 	| 預計還車時間	| N | string |  |
-| CarTrip 	| 用車行程 (1 = 個人身分，2 = 企業身分)| Y |   int      | 1     |
+| 參數名稱    | 參數說明                     | 必要  | 型態     | 範例       |
+| ------- | ------------------------ |:---:|:------:| -------- |
+| CarNo   | 車號                       | Y   | string | EWA-0127 |
+| SDate   | 預計取車時間                   | N   | string |          |
+| EDate   | 預計還車時間                   | N   | string |          |
+| CarTrip | 用車行程 (1 = 個人身分，2 = 企業身分) | Y   | int    | 1        |
 
 * input範例
+
 ```
 {
-    "CarNo":"EWA-0127",
-    "SDate":"",
-    "EDate":"",
-	"CarTrip":1
+  "CarNo":"EWA-0127",
+  "SDate":"",
+  "EDate":"",
+  "CarTrip":1
 }
 ```
 
 * output 回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱           | 參數說明         | 型態 | 範例 |
-| ------------------ | ---------------- | :--: | ---- |
-| GetMotorProjectObj | 路邊機車專案清單 | List |      |
+| 參數名稱               | 參數說明     | 型態   | 範例  |
+| ------------------ | -------- |:----:| --- |
+| GetMotorProjectObj | 路邊機車專案清單 | List |     |
 
 * GetMotorProjectObj 參數說明
 
-| 參數名稱             | 參數說明                                 | 型態   | 範例           |
-| -------------------- | ---------------------------------------- | ------ | -------------- |
-| ProjID               | 專案代碼                                 | string | P686           |
-| ProjName             | 專案名稱                                 | string | 10載便利北北桃 |
-| ProDesc              | 專案說明                                 | string |                |
-| CarBrend             | 車輛廠牌                                 | string | KYMCO          |
-| CarType              | 車輛型號                                 | string | IMOTO          |
-| CarTypeName          | 車型名稱                                 | string | KYMCO MANY-110 |
-| CarTypePic           | 車型圖片                                 | string | iretScooter    |
-| Operator             | 業者ICON圖片                             | string | supplierIrent  |
-| OperatorScore        | 供應商評價                               | float  | 5.0            |
+| 參數名稱                 | 參數說明                      | 型態     | 範例             |
+| -------------------- | ------------------------- | ------ | -------------- |
+| ProjID               | 專案代碼                      | string | P686           |
+| ProjName             | 專案名稱                      | string | 10載便利北北桃       |
+| ProDesc              | 專案說明                      | string |                |
+| CarBrend             | 車輛廠牌                      | string | KYMCO          |
+| CarType              | 車輛型號                      | string | IMOTO          |
+| CarTypeName          | 車型名稱                      | string | KYMCO MANY-110 |
+| CarTypePic           | 車型圖片                      | string | iretScooter    |
+| Operator             | 業者ICON圖片                  | string | supplierIrent  |
+| OperatorScore        | 供應商評價                     | float  | 5.0            |
 | Insurance            | 是否有安心服務(0:禁用;1:預設關;2:預設開) | int    | 0              |
-| InsurancePrice       | 安心服務每小時費用                       | int    | 50             |
-| IsMinimum            | 是否是最低價                             | int    | 1              |
-| BaseMinutes          | 基本分鐘數                               | int    | 6              |
-| BasePrice            | 基本費                                   | int    | 10             |
-| PerMinutesPrice      | 每分鐘幾元                               | float  | 1.5            |
-| MaxPrice             | 每日金額上限                             | int    | 901            |
-| CarOfArea            | 車輛地區                                 | string | 北北桃         |
-| Content              | 其他備註                                 | string |                |
-| Power                | 電量                                     | int    | 50.0           |
-| RemainingMileage     | 預估里程                                 | float  | 30.5           |
-| MonthlyRentId        | 訂閱制月租ID                             | int    | 123456         |
-| MotoTotalMins        | 機車不分平假日分鐘數                     | int    |                |
-| WDRateForMoto        | 機車平日優惠價                           | double |                |
-| HDRateForMoto        | 機車假日優惠價                           | double |                |
-| MonthStartDate       | 開始日                                   | string |                |
-| MonthEndDate         | 結束日                                   | string |                |
-| TaxID                | 統一編號                                 | string | 12354548       |
-| DiscountLabel        | 優惠標籤物件                             | object |                |
-| BaseInsuranceMinutes | 安心服務基礎分鐘數                       | int    |                |
-| BaseMotoRate         | 計次金額(基消)                           | int    |                |
-| InsuranceMotoMin     | 計次分鐘單位(幾分鐘算一次錢)             | int    |                |
-| InsuranceMotoRate    | 計次金額(每單位分鐘多少錢)               | int    |                |
-
+| InsurancePrice       | 安心服務每小時費用                 | int    | 50             |
+| IsMinimum            | 是否是最低價                    | int    | 1              |
+| BaseMinutes          | 基本分鐘數                     | int    | 6              |
+| BasePrice            | 基本費                       | int    | 10             |
+| PerMinutesPrice      | 每分鐘幾元                     | float  | 1.5            |
+| MaxPrice             | 每日金額上限                    | int    | 901            |
+| CarOfArea            | 車輛地區                      | string | 北北桃            |
+| Content              | 其他備註                      | string |                |
+| Power                | 電量                        | int    | 50.0           |
+| RemainingMileage     | 預估里程                      | float  | 30.5           |
+| MonthlyRentId        | 訂閱制月租ID                   | int    | 123456         |
+| MotoTotalMins        | 機車不分平假日分鐘數                | int    |                |
+| WDRateForMoto        | 機車平日優惠價                   | double |                |
+| HDRateForMoto        | 機車假日優惠價                   | double |                |
+| MonthStartDate       | 開始日                       | string |                |
+| MonthEndDate         | 結束日                       | string |                |
+| TaxID                | 統一編號                      | string | 12354548       |
+| DiscountLabel        | 優惠標籤物件                    | object |                |
+| BaseInsuranceMinutes | 安心服務基礎分鐘數                 | int    |                |
+| BaseMotoRate         | 計次金額(基消)                  | int    |                |
+| InsuranceMotoMin     | 計次分鐘單位(幾分鐘算一次錢)           | int    |                |
+| InsuranceMotoRate    | 計次金額(每單位分鐘多少錢)            | int    |                |
 
 * DiscountLabel回傳參數說明
 
-| 參數名稱   | 參數說明 |  型態  | 範例                                                         |
-| ---------- | -------- | :----: | ------------------------------------------------------------ |
-| AppDescribe| 優惠說明 | string | \r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n |
-| LabelType  | 標籤類型 | string | CP0101                                                       |
-| GiveMinute | 分鐘數   |  int   | 12                                                           |
-| Describe   | 描述     | string |  |
+| 參數名稱        | 參數說明 | 型態     | 範例                                                                                                                                                                                                                                 |
+| ----------- | ---- |:------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AppDescribe | 優惠說明 | string | \r\n1.優惠標籤車輛為隨機出現，租用優惠標籤車輛於結帳時立即享有標籤上之時數折抵(汽車須使用1小時(含)以上，機車須使用6分鐘(含)以上)。若使用時數未達時數折抵上限，則以實際使用分鐘數進行折抵\r\n\r\n2.優惠標籤具有時效性，請點擊優惠標籤車輛後請盡速預約，以維護您享有優惠的權益\r\n\r\n3.若有任何疑問，歡迎使用線上文字客服或來電詢問\r\n\r\n*部分優惠、方案不適用，依各方案說明為主\r\n*本公司保有優惠變動權利\r\n |
+| LabelType   | 標籤類型 | string | CP0101                                                                                                                                                                                                                             |
+| GiveMinute  | 分鐘數  | int    | 12                                                                                                                                                                                                                                 |
+| Describe    | 描述   | string |                                                                                                                                                                                                                                    |
 
 * Output 範例
 
@@ -3573,27 +3597,27 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明         | 必要 |  型態  | 範例        |
-| --------- | ---------------- | :--: | :----: | ----------- |
-| ProjID    | 專案代碼         |  Y   | string | P735        |
-| CarNo     | 車號             |  Y   | string | RCG-0521    |
-| CarType   | 車型代碼         |  Y   | string |             |
-| SDate     | 預計取車時間     |  N   | string |             |
-| EDate     | 預計還車時間     |  N   | string |             |
-| Insurance | 是否加購安心服務 |  Y   |  int   | 1           |
-| MonId     | 選擇的訂閱制月租 |  Y   |  int   | 123456      |
+| 參數名稱      | 參數說明     | 必要  | 型態     | 範例       |
+| --------- | -------- |:---:|:------:| -------- |
+| ProjID    | 專案代碼     | Y   | string | P735     |
+| CarNo     | 車號       | Y   | string | RCG-0521 |
+| CarType   | 車型代碼     | Y   | string |          |
+| SDate     | 預計取車時間   | N   | string |          |
+| EDate     | 預計還車時間   | N   | string |          |
+| Insurance | 是否加購安心服務 | Y   | int    | 1        |
+| MonId     | 選擇的訂閱制月租 | Y   | int    | 123456   |
 
 * input範例(同站)
 
 ```
 {
-	"ProjID": "R220",
-	"CarNo": "",
-	"CarType": "ALTIS",
-	"SDate": "2021-12-28 10:50:00",
-	"EDate": "2021-12-28 11:50:00",
-	"Insurance": 0,
-	"MonId": 0
+    "ProjID": "R220",
+    "CarNo": "",
+    "CarType": "ALTIS",
+    "SDate": "2021-12-28 10:50:00",
+    "EDate": "2021-12-28 11:50:00",
+    "Insurance": 0,
+    "MonId": 0
 }
 ```
 
@@ -3601,48 +3625,48 @@
 
 ```
 {
-	"ProjID": "R221",
-	"CarNo": "RCR-6795",
-	"CarType": "",
-	"SDate": "2021-12-28 10:50:00",
-	"EDate": "2021-12-29 10:50:00",
-	"Insurance": 0,
-	"MonId": 0
+    "ProjID": "R221",
+    "CarNo": "RCR-6795",
+    "CarType": "",
+    "SDate": "2021-12-28 10:50:00",
+    "EDate": "2021-12-29 10:50:00",
+    "Insurance": 0,
+    "MonId": 0
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱           | 參數說明         | 型態 | 範例 |
-| ------------------ | ---------------- | :--: | ---- |
-| CarRentBill		 | 租金				| int  | 3795 |
-| MileageBill		 | 里程費			| int  | 1280  |
-| MileagePerKM		 | 里程每公里費用	| double | 3.2 |
-| InsurancePerHour	 | 安心服務每小時   | int  | 50 |
-| InsuranceBill 	 | 安心服務費用		| int | 1000 |
-| TransDiscount		 | 轉乘優惠			| int | 0 |
-| Bill				 | 總計				| int | 6075 |
-| DiscountLabel      | 優惠標籤物件       | object | |
+| 參數名稱             | 參數說明    | 型態     | 範例   |
+| ---------------- | ------- |:------:| ---- |
+| CarRentBill      | 租金      | int    | 3795 |
+| MileageBill      | 里程費     | int    | 1280 |
+| MileagePerKM     | 里程每公里費用 | double | 3.2  |
+| InsurancePerHour | 安心服務每小時 | int    | 50   |
+| InsuranceBill    | 安心服務費用  | int    | 1000 |
+| TransDiscount    | 轉乘優惠    | int    | 0    |
+| Bill             | 總計      | int    | 6075 |
+| DiscountLabel    | 優惠標籤物件  | object |      |
 
 * DiscountLabel參數說明
-| 參數名稱           | 參數說明         | 型態 | 範例 |
-| ------------------ | ---------------- | :--: | ---- |
-| Price		         | 優惠金額				| int  | 55 |
-| LabelType		     | 優惠標籤類型| string  | CP0101  |
-| GiveMinute		 | 優惠分鐘數  | int | 30 |
-| Describe	 | 優惠說明   | string  | 優惠標籤折抵 |
+
+| 參數名稱       | 參數說明   | 型態     | 範例     |
+| ---------- | ------ |:------:| ------ |
+| Price      | 優惠金額   | int    | 55     |
+| LabelType  | 優惠標籤類型 | string | CP0101 |
+| GiveMinute | 優惠分鐘數  | int    | 30     |
+| Describe   | 優惠說明   | string | 優惠標籤折抵 |
 
 * Output範例
 
@@ -3687,20 +3711,20 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -3733,19 +3757,19 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明         | 必要 |  型態  | 範例        |
-| --------- | ---------------- | :--: | :----: | ----------- |
-| ProjID    | 專案代碼         |  Y   | string | P735        |
-| SDate     | 預計取車時間     |  N   | string |             |
-| EDate     | 預計還車時間     |  N   | string |             |
-| CarNo     | 車號             |  Y   | string | RCG-0521    |
-| CarType   | 車型代碼         |  Y   | string |             |
-| Insurance | 是否加購安心服務 |  Y   |  int   | 1           |
-| StationID | 據點代碼         |  Y   | string | X0II        |
-| MonId     | 選擇的訂閱制月租 |  Y   |  int   | 123456      |
-| PhoneLat  | 手機定位點(緯度) |  N   | double | 25.0212444  |
-| PhoneLon  | 手機定位點(經度) |  N   | double | 121.4780778 |
-| TaxID	 	| 統一編號         |  N   | string | "50885758"  |
+| 參數名稱      | 參數說明      | 必要  | 型態     | 範例          |
+| --------- | --------- |:---:|:------:| ----------- |
+| ProjID    | 專案代碼      | Y   | string | P735        |
+| SDate     | 預計取車時間    | N   | string |             |
+| EDate     | 預計還車時間    | N   | string |             |
+| CarNo     | 車號        | Y   | string | RCG-0521    |
+| CarType   | 車型代碼      | Y   | string |             |
+| Insurance | 是否加購安心服務  | Y   | int    | 1           |
+| StationID | 據點代碼      | Y   | string | X0II        |
+| MonId     | 選擇的訂閱制月租  | Y   | int    | 123456      |
+| PhoneLat  | 手機定位點(緯度) | N   | double | 25.0212444  |
+| PhoneLon  | 手機定位點(經度) | N   | double | 121.4780778 |
+| TaxID     | 統一編號      | N   | string | "50885758"  |
 
 * input範例 -同站預約
 
@@ -3755,11 +3779,12 @@
     "SDate": "2022-07-06 15:30:00",
     "EDate": "2022-07-06 16:30:00",
     "CarNo": "",
-    "CarType": "YARIS",
-    "Insurance": 1,
-    "StationID": "X0N8",
-	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778,
+    "CarType": "COROLLA CROSS",
+    "Insurance": 0,
+    "StationID": "XXXX"
+    "MonId": 0,
+    "PhoneLat": 25.0212444,
+    "PhoneLon": 121.4780778,
     "TaxID": "12354548"
 }
 ```
@@ -3768,15 +3793,16 @@
 
 ```
 {
-    "ProjID": "R222",
+    "ProjID": "R221",
     "SDate": "",
     "EDate": "",
-    "CarNo": "RBX-9631",
-    "CarType": "PRIUSc",
-    "Insurance": 1,
+    "CarNo": "RDD-6775",
+    "CarType": "PRIUSC",
+    "Insurance": 0,
     "StationID": "",
-	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778,
+    "MonId": 0,
+    "PhoneLat": 25.0212444,
+    "PhoneLon": 121.4780778,
     "TaxID": "12354548"
 }
 ```
@@ -3785,41 +3811,40 @@
 
 ```
 {
-    "ProjID": "R344",
+    "ProjID": "P686",
     "SDate": "",
     "EDate": "",
-    "CarNo": "EWA-3353",
+    "CarNo": "EWJ-8339",
     "CarType": "MANY-110",
-    "Insurance": 1,
-    "StationID": "",
-	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778,
+    "Insurance": 0,
+    "StationID": ""
+    "MonId": 0,
+    "PhoneLat": 25.0212444,
+    "PhoneLon": 121.4780778,
     "TaxID": "12354548"
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明                     |  型態  | 範例           |
-| ------------ | ---------------------------- | :----: | -------------- |
-| OrderNo      | 訂單編號                     | string | H10455246      |
-| LastPickTime | 最晚的取車時間               | string | 20210608020120 |
-| WalletNotice | 僅綁錢包通知0:不顯示  1:顯示 |  int   | 1              |
+| 參數名稱         | 參數說明              | 型態     | 範例             |
+| ------------ | ----------------- |:------:| -------------- |
+| OrderNo      | 訂單編號              | string | H10455246      |
+| LastPickTime | 最晚的取車時間           | string | 20210608020120 |
+| WalletNotice | 僅綁錢包通知0:不顯示  1:顯示 | int    | 1              |
 
 [^註]: WalletNotice參數 For電子錢包
-
 
 * Output範例
 
@@ -3849,30 +3874,30 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                                   | 說明                                                       |
-| -------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
-| ERR156   | 目前預約數合計5筆，無法再預約                              | 三種類型預約合計已經有5筆，又再預約                        |
-| ERR157   | 目前同站租還預約數合計3筆，無法再預約                      | 目前同站租還預約數合計3筆，又再預約                        |
-| ERR158   | 目前路邊租還預約數合計1筆，無法再預約                      | 目前路邊租還預約數合計1筆5筆，又再預約                     |
-| ERR159   | 目前機車預約數合計1筆，無法再預約                          | 目前機車預約數合計已經有1筆，又再預約                      |
-| ERR160   | 預約時間有重疊                                             | 目前同站租還有重疊的預約                                   |
-| ERR161   | 預約失敗                                                   | 同站租還預約不到車                                         |
-| ERR162   | 預約失敗                                                   | 路邊租還預約不到車                                         |
-| ERR163   | 預約失敗                                                   | 機車預約不到車                                             |
-| ERR164   | 找不到此專案                                               | 預約時找不到這個專案代碼                                   |
-| ERR165   | 找不到此專案                                               | 預約時找不到這個車號                                       |
-| ERR233   | 尚有費用未繳，請先至未繳費用完成付款                       | 欠費的狀態不可以預約，繳完後才可以預約                     |
-| ERR241   | 目前限3日以上的春節期間預約                                | 目前限3日以上的春節期間預約                                |
-| ERR242   | 目前限1日以上的春節期間預約                                | 目前限1日以上的春節期間預約                                |
-| ERR243   | 此據點因即將暫停營業恕無法接受您的預約，請重新選擇其他據點 | 此據點因即將暫停營業恕無法接受您的預約，請重新選擇其他據點 |
-| ERR248   | 尚未開通汽車服務，請至會員中心確認                         | 尚未開通汽車服務，請至會員中心確認                         |
-| ERR287   | 你的會員積分低於50分，故暫時無法租用車輛                   | 你的會員積分低於50分，故暫時無法租用車輛                   |
-| ERR730   | 查詢綁定卡號失敗                                           | 查詢綁定卡號失敗                                           |
-| ERR905   | 11/10 02:00~06:00系統維護暫停服務                          | 定維時使用                                                 |
-| ERR602   | 因取授權失敗未完成預約，請檢查卡片餘額或是重新綁卡         | 因取授權失敗未完成預約                                     |
-| ERR292   | 請先設定支付方式，才可以預約機車哦！                       | 請先設定支付方式，才可以預約機車哦！                       |
-| ERR294   | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約。 | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約   |
-| ERR934   | 錢包餘額不足                                               | 錢包餘額不足                                               |
+| 錯誤代碼   | 錯誤訊息                           | 說明                            |
+| ------ | ------------------------------ | ----------------------------- |
+| ERR156 | 目前預約數合計5筆，無法再預約                | 三種類型預約合計已經有5筆，又再預約            |
+| ERR157 | 目前同站租還預約數合計3筆，無法再預約            | 目前同站租還預約數合計3筆，又再預約            |
+| ERR158 | 目前路邊租還預約數合計1筆，無法再預約            | 目前路邊租還預約數合計1筆5筆，又再預約          |
+| ERR159 | 目前機車預約數合計1筆，無法再預約              | 目前機車預約數合計已經有1筆，又再預約           |
+| ERR160 | 預約時間有重疊                        | 目前同站租還有重疊的預約                  |
+| ERR161 | 預約失敗                           | 同站租還預約不到車                     |
+| ERR162 | 預約失敗                           | 路邊租還預約不到車                     |
+| ERR163 | 預約失敗                           | 機車預約不到車                       |
+| ERR164 | 找不到此專案                         | 預約時找不到這個專案代碼                  |
+| ERR165 | 找不到此專案                         | 預約時找不到這個車號                    |
+| ERR233 | 尚有費用未繳，請先至未繳費用完成付款             | 欠費的狀態不可以預約，繳完後才可以預約           |
+| ERR241 | 目前限3日以上的春節期間預約                 | 目前限3日以上的春節期間預約                |
+| ERR242 | 目前限1日以上的春節期間預約                 | 目前限1日以上的春節期間預約                |
+| ERR243 | 此據點因即將暫停營業恕無法接受您的預約，請重新選擇其他據點  | 此據點因即將暫停營業恕無法接受您的預約，請重新選擇其他據點 |
+| ERR248 | 尚未開通汽車服務，請至會員中心確認              | 尚未開通汽車服務，請至會員中心確認             |
+| ERR287 | 你的會員積分低於50分，故暫時無法租用車輛          | 你的會員積分低於50分，故暫時無法租用車輛         |
+| ERR730 | 查詢綁定卡號失敗                       | 查詢綁定卡號失敗                      |
+| ERR905 | 11/10 02:00~06:00系統維護暫停服務      | 定維時使用                         |
+| ERR602 | 因取授權失敗未完成預約，請檢查卡片餘額或是重新綁卡      | 因取授權失敗未完成預約                   |
+| ERR292 | 請先設定支付方式，才可以預約機車哦！             | 請先設定支付方式，才可以預約機車哦！            |
+| ERR294 | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約。 | 錢包餘額不足50元，請先完成儲值或綁定信用卡，方可進行預約 |
+| ERR934 | 錢包餘額不足                         | 錢包餘額不足                        |
 
 ------
 
@@ -3892,9 +3917,9 @@
 
 * input傳入參數說明(可不傳參數)
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
-| -------- | -------- | :--: | :----: | --------- |
-| OrderNo  | 訂單編號 |  N   | string | H12044254 |
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例        |
+| ------- | ---- |:---:|:------:| --------- |
+| OrderNo | 訂單編號 | N   | string | H12044254 |
 
 * input範例 -傳入參數
 
@@ -3904,120 +3929,119 @@
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱          | 參數說明           |  型態  | 範例          |
-| ------------      | ------------------ | :----: | ------------- |
-| Result            | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode         | 錯誤碼             | string | 000000        |
-| NeedRelogin       | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade       | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage      | 錯誤訊息           | string | Success       |
-| Data              | 資料物件           |        |               |
-
+| 參數名稱         | 參數說明             | 型態     | 範例        |
+| ------------ | ---------------- |:------:| --------- |
+| Result       | 是否成功             | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼              | string | 000000    |
+| NeedRelogin  | 是否需重新登入          | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新        | int    | 0:否 1:是   |
+| NowOrderFlg  | 目前是否有訂單(定義為有效訂單) | string | Y         |
+| ErrorMessage | 錯誤訊息             | string | Success   |
+| Data         | 資料物件             |        |           |
 
 * Data回傳參數說明
 
-| 參數名稱 | 參數說明     | 型態 | 範例 |
-| -------- | ------------ | :--: | ---- |
-| OrderObj | 訂單明細物件 | list |      |
+| 參數名稱     | 參數說明   | 型態   | 範例  |
+| -------- | ------ |:----:| --- |
+| OrderObj | 訂單明細物件 | list |     |
 
 * OrderObj回傳參數說明
 
-| 參數名稱          | 參數說明                                                     |  型態   | 範例                  |
-| ----------------- | ------------------------------------------------------------ | :-----: | --------------------- |
-| StationInfo       | 據點資訊物件                                                 | object  |                       |
-| Operator          | 營運商                                                       | string  | supplierIrent         |
-| OperatorScore     | 評分                                                         |  float  | 5.0                   |
-| CarTypePic        | 車輛圖片                                                     | string  | yaris                 |
-| CarNo             | 車號                                                         | string  | RDH-2905              |
-| CarBrend          | 廠牌                                                         | string  | TOYOTA                |
-| CarTypeName       | 車型名稱                                                     | string  | YARIS                 |
-| Seat              | 座椅數                                                       |   int   | 5                     |
-| ParkingSection    | 停車格位置                                                   | string  |                       |
-| IsMotor           | 是否為機車                                                   |   int   | 0:否 1:是             |
-| CarOfArea         | 車輛圖顯示地區                                               | string  | 台北市                |
-| CarLatitude       | 車緯度                                                       | decimal | 25.0726200            |
-| CarLongitude      | 車經度                                                       | decimal | 121.5423700           |
-| MotorPowerBaseObj | 機車電力資訊                                                 | object  | 當ProjType=4時才有值  |
-| ProjType          | 專案類型<br>0:同站 3:路邊 4:機車                             |   int   | 0                     |
-| ProjName          | 專案名稱                                                     | string  | 同站汽車110起推廣專案 |
-| WorkdayPerHour    | 平日每小時費用                                               |   int   | 110                   |
-| HolidayPerHour    | 假日每小時費用                                               |   int   | 168                   |
-| MaxPrice          | 每日上限                                                     |   int   | 0                     |
-| MaxPriceH         | 假日上限                                                     |   int   | 0                     |
-| MotorBasePriceObj | 機車費用                                                     | object  | 當ProjType=4時才有值  |
-| OrderStatus       | 訂單狀態<br>-1:前車未還（未到站） <br/>0:可取車<br/>1:用車中<br/>2:延長用車中<br/>3:準備還車<br/>4:逾時<br/>5:還車流程中（未完成還車） |   int   | 1                     |
-| OrderNo           | 訂單編號                                                     | string  | H12044254             |
-| StartTime         | 預計取車時間                                                 | string  | 2021-08-30 11:00:00   |
-| PickTime          | 實際取車時間                                                 | string  | 2021-08-30 10:51:16   |
-| ReturnTime        | 實際還車時間                                                 | string  | 2021-08-30 11:27:04   |
-| StopPickTime      | 取車截止時間                                                 | string  | 2021-08-30 11:15:00   |
-| StopTime          | 預計還車時間                                                 | string  | 2021-08-30 12:00:00   |
-| OpenDoorDeadLine  | 使用期限                                                     | string  | 2021-08-30 11:42:34   |
-| CarRentBill       | 預估租金                                                     |   int   | 110                   |
-| MileagePerKM      | 每一公里里程費                                               |  float  | 3.1                   |
-| MileageBill       | 預估里程費                                                   |   int   | 62                    |
-| Insurance         | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預設沒選<br>2:可使用，預設有選|   int   | 0                     |
-| InsurancePerHour  | 安心保險每小時                                               |   int   | 50                    |
-| InsuranceBill     | 預估安心保險費用                                             |   int   | 0                     |
-| TransDiscount     | 轉乘優惠                                                     |   int   | 0                     |
-| Bill              | 預估總金額                                                   |   int   | 172                   |
-| DailyMaxHour      | 單日計費上限時數                                             |   int   | 10                    |
-| CAR_MGT_STATUS    | 取還車狀態<br>0 = 尚未取車<br/>1 = 已經上傳出車照片<br/>2 = 已經簽名出車單<br/>3 = 已經信用卡認證<br/>4 = 已經取車(記錄起始時間)<br/>11 = 已經紀錄還車時間<br/>12 = 已經上傳還車角度照片<br/>13 = 已經上傳還車車損照片<br/>14 = 已經簽名還車單<br/>15 = 已經信用卡付款<br/>16 = 已經檢查車輛完成並已經解除卡號 |   int   | 4                     |
-| AppStatus         | 1:尚未到取車時間(取車時間半小時前)<br/>2:立即換車(取車前半小時，前車尚未完成還車)<br/>3:開始使用(取車時間半小時前)<br/>4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)<br/>5:操作車輛(取車後) 取車時間改實際取車時間<br/>6:操作車輛(準備還車)<br/>7:物品遺漏(再開一次車門)<br/>8:鎖門並還車(一次性開門申請後) |   int   | 6                     |
-| RenterType        | 承租人類型<br>1:主要承租人 2:共同承租人                      |   int   | 1                     |
-| PreviousCarPath   | 前車照片                                                     | string  |                       |
-| DiscountLabel     | 優惠標籤                                                     | object  |                       |
-| IsEnterpriseOrder | 是否為企業客戶訂單                                           |  int    | 1:是 0:否             |
+| 參數名稱              | 參數說明                                                                                                                                                                                                         | 型態      | 範例                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |:-------:| ------------------- |
+| StationInfo       | 據點資訊物件                                                                                                                                                                                                       | object  |                     |
+| Operator          | 營運商                                                                                                                                                                                                          | string  | supplierIrent       |
+| OperatorScore     | 評分                                                                                                                                                                                                           | float   | 5.0                 |
+| CarTypePic        | 車輛圖片                                                                                                                                                                                                         | string  | yaris               |
+| CarNo             | 車號                                                                                                                                                                                                           | string  | RDH-2905            |
+| CarBrend          | 廠牌                                                                                                                                                                                                           | string  | TOYOTA              |
+| CarTypeName       | 車型名稱                                                                                                                                                                                                         | string  | YARIS               |
+| Seat              | 座椅數                                                                                                                                                                                                          | int     | 5                   |
+| ParkingSection    | 停車格位置                                                                                                                                                                                                        | string  |                     |
+| IsMotor           | 是否為機車                                                                                                                                                                                                        | int     | 0:否 1:是             |
+| CarOfArea         | 車輛圖顯示地區                                                                                                                                                                                                      | string  | 台北市                 |
+| CarLatitude       | 車緯度                                                                                                                                                                                                          | decimal | 25.0726200          |
+| CarLongitude      | 車經度                                                                                                                                                                                                          | decimal | 121.5423700         |
+| MotorPowerBaseObj | 機車電力資訊                                                                                                                                                                                                       | object  | 當ProjType=4時才有值     |
+| ProjType          | 專案類型<br>0:同站 3:路邊 4:機車                                                                                                                                                                                       | int     | 0                   |
+| ProjName          | 專案名稱                                                                                                                                                                                                         | string  | 同站汽車110起推廣專案        |
+| WorkdayPerHour    | 平日每小時費用                                                                                                                                                                                                      | int     | 110                 |
+| HolidayPerHour    | 假日每小時費用                                                                                                                                                                                                      | int     | 168                 |
+| MaxPrice          | 每日上限                                                                                                                                                                                                         | int     | 0                   |
+| MaxPriceH         | 假日上限                                                                                                                                                                                                         | int     | 0                   |
+| MotorBasePriceObj | 機車費用                                                                                                                                                                                                         | object  | 當ProjType=4時才有值     |
+| OrderStatus       | 訂單狀態<br>-1:前車未還（未到站） <br/>0:可取車<br/>1:用車中<br/>2:延長用車中<br/>3:準備還車<br/>4:逾時<br/>5:還車流程中（未完成還車）                                                                                                                 | int     | 1                   |
+| OrderNo           | 訂單編號                                                                                                                                                                                                         | string  | H12044254           |
+| StartTime         | 預計取車時間                                                                                                                                                                                                       | string  | 2021-08-30 11:00:00 |
+| PickTime          | 實際取車時間                                                                                                                                                                                                       | string  | 2021-08-30 10:51:16 |
+| ReturnTime        | 實際還車時間                                                                                                                                                                                                       | string  | 2021-08-30 11:27:04 |
+| StopPickTime      | 取車截止時間                                                                                                                                                                                                       | string  | 2021-08-30 11:15:00 |
+| StopTime          | 預計還車時間                                                                                                                                                                                                       | string  | 2021-08-30 12:00:00 |
+| OpenDoorDeadLine  | 使用期限                                                                                                                                                                                                         | string  | 2021-08-30 11:42:34 |
+| CarRentBill       | 預估租金                                                                                                                                                                                                         | int     | 110                 |
+| MileagePerKM      | 每一公里里程費                                                                                                                                                                                                      | float   | 3.1                 |
+| MileageBill       | 預估里程費                                                                                                                                                                                                        | int     | 62                  |
+| Insurance         | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預設沒選<br>2:可使用，預設有選                                                                                                                                                               | int     | 0                   |
+| InsurancePerHour  | 安心保險每小時                                                                                                                                                                                                      | int     | 50                  |
+| InsuranceBill     | 預估安心保險費用                                                                                                                                                                                                     | int     | 0                   |
+| TransDiscount     | 轉乘優惠                                                                                                                                                                                                         | int     | 0                   |
+| Bill              | 預估總金額                                                                                                                                                                                                        | int     | 172                 |
+| DailyMaxHour      | 單日計費上限時數                                                                                                                                                                                                     | int     | 10                  |
+| CAR_MGT_STATUS    | 取還車狀態<br>0 = 尚未取車<br/>1 = 已經上傳出車照片<br/>2 = 已經簽名出車單<br/>3 = 已經信用卡認證<br/>4 = 已經取車(記錄起始時間)<br/>11 = 已經紀錄還車時間<br/>12 = 已經上傳還車角度照片<br/>13 = 已經上傳還車車損照片<br/>14 = 已經簽名還車單<br/>15 = 已經信用卡付款<br/>16 = 已經檢查車輛完成並已經解除卡號 | int     | 4                   |
+| AppStatus         | 1:尚未到取車時間(取車時間半小時前)<br/>2:立即換車(取車前半小時，前車尚未完成還車)<br/>3:開始使用(取車時間半小時前)<br/>4:開始使用-提示最晚取車時間(取車時間後~最晚取車時間)<br/>5:操作車輛(取車後) 取車時間改實際取車時間<br/>6:操作車輛(準備還車)<br/>7:物品遺漏(再開一次車門)<br/>8:鎖門並還車(一次性開門申請後)                 | int     | 6                   |
+| RenterType        | 承租人類型<br>1:主要承租人 2:共同承租人                                                                                                                                                                                     | int     | 1                   |
+| PreviousCarPath   | 前車照片                                                                                                                                                                                                         | string  |                     |
+| DiscountLabel     | 優惠標籤                                                                                                                                                                                                         | object  |                     |
+| IsEnterpriseOrder | 是否為企業客戶訂單                                                                                                                                                                                                    | int     | 1:是 0:否             |
 
 * StationInfo回傳參數說明
 
-| 參數名稱            | 參數說明            |  型態  | 範例                                                         |
-| ------------------- | ------------------- | :----: | ------------------------------------------------------------ |
-| StationID           | 據點代碼            | string | X0IN                                                         |
-| StationName         | 據點名稱            | string | iRent-Toyota濱江營業所站                                     |
-| Tel                 | 電話                | string | 02-2516-3816                                                 |
-| ADDR                | 地址                | string | 台北市中山區濱江街269號                                      |
-| Latitude            | 緯度                | string | 25.072589                                                    |
-| Longitude           | 經度                | string | 121.542617                                                   |
-| Content             | 其他說明            | string | YARIS                                                        |
-| IsRent              |                     | string | null                                                         |
+| 參數名稱                | 參數說明        | 型態     | 範例                                           |
+| ------------------- | ----------- |:------:| -------------------------------------------- |
+| StationID           | 據點代碼        | string | X0IN                                         |
+| StationName         | 據點名稱        | string | iRent-Toyota濱江營業所站                           |
+| Tel                 | 電話          | string | 02-2516-3816                                 |
+| ADDR                | 地址          | string | 台北市中山區濱江街269號                                |
+| Latitude            | 緯度          | string | 25.072589                                    |
+| Longitude           | 經度          | string | 121.542617                                   |
+| Content             | 其他說明        | string | YARIS                                        |
+| IsRent              |             | string | null                                         |
 | ContentForAPP       | 據點描述（app顯示） | string | 1.濱江營業所前方停車場\n2.固定招牌旁車位\n3.自由進出\n4.請勿停在專屬車位外 |
-| IsRequiredForReturn | 還車位置資訊必填    |  int   | 0                                                            |
-| StationPic          | 據點照片            |  list  |                                                              |
+| IsRequiredForReturn | 還車位置資訊必填    | int    | 0                                            |
+| StationPic          | 據點照片        | list   |                                              |
 
 * StationPic回傳參數說明
 
-| 參數名稱       | 參數說明 |  型態  | 範例                                                         |
-| -------------- | -------- | :----: | ------------------------------------------------------------ |
+| 參數名稱           | 參數說明 | 型態     | 範例                                                                          |
+| -------------- | ---- |:------:| --------------------------------------------------------------------------- |
 | StationPic     | 據點照片 | string | https://irentv2data.blob.core.windows.net/station/X0IN_1_20210209000000.png |
-| PicDescription | 據點說明 | string | 停車場位置\n                                                 |
+| PicDescription | 據點說明 | string | 停車場位置\n                                                                     |
 
 * MotorPowerBaseObj回傳參數說明
 
-| 參數名稱         | 參數說明 | 型態  | 範例 |
-| ---------------- | -------- | :---: | ---- |
-| Power            | 剩餘電量 | float |      |
-| RemainingMileage | 剩餘里程 | float |      |
+| 參數名稱             | 參數說明 | 型態    | 範例  |
+| ---------------- | ---- |:-----:| --- |
+| Power            | 剩餘電量 | float |     |
+| RemainingMileage | 剩餘里程 | float |     |
 
 * MotorBasePriceObj回傳參數說明
 
-| 參數名稱        | 參數說明 | 型態  | 範例 |
-| --------------- | -------- | :---: | ---- |
-| BaseMinutes     | 剩餘電量 |  int  |      |
-| BasePrice       | 剩餘里程 |  int  |      |
-| PerMinutesPrice | 剩餘電量 | float |      |
-| MaxPrice        | 剩餘里程 |  int  |      |
+| 參數名稱            | 參數說明 | 型態    | 範例  |
+| --------------- | ---- |:-----:| --- |
+| BaseMinutes     | 剩餘電量 | int   |     |
+| BasePrice       | 剩餘里程 | int   |     |
+| PerMinutesPrice | 剩餘電量 | float |     |
+| MaxPrice        | 剩餘里程 | int   |     |
 
 * DiscountLabel回傳參數說明
 
-| 參數名稱   | 參數說明 |    型態    | 範例           |
-| ---------- | -------- | :--------: | -------------- |
-| LabelType  | 標籤類型 |   string   | CP0101         |
-| GiveMinute | 分鐘數   | GiveMinute | 30             |
-| Describe   | 描述     | GiveMinute | 30分鐘優惠折抵 |
+| 參數名稱       | 參數說明 | 型態         | 範例       |
+| ---------- | ---- |:----------:| -------- |
+| LabelType  | 標籤類型 | string     | CP0101   |
+| GiveMinute | 分鐘數  | GiveMinute | 30       |
+| Describe   | 描述   | GiveMinute | 30分鐘優惠折抵 |
 
 * Output範例
 
@@ -4027,6 +4051,7 @@
     "ErrorCode": "000000",
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
+    "NowOrderFlg" : "Y",
     "ErrorMessage": "Success",
     "Data": {
         "OrderObj": [
@@ -4084,7 +4109,7 @@
                 "CAR_MGT_STATUS": 13,
                 "AppStatus": 0,
                 "RenterType": 1,
-				"IsEnterpriseOrder": 0,
+                "IsEnterpriseOrder": 0,
                 "DiscountLabel": {
                     "LabelType": "CP0101",
                     "GiveMinute": 30,
@@ -4147,7 +4172,7 @@
                 "Insurance": 0,
                 "InsurancePerHour": 0,
                 "InsuranceBill": 0,
-				"IsEnterpriseOrder": 0,
+                "IsEnterpriseOrder": 0,
                 "TransDiscount": 0,
                 "Bill": 2,
                 "DailyMaxHour": 10,
@@ -4217,14 +4242,14 @@
                 "Insurance": 1,
                 "InsurancePerHour": 70,
                 "InsuranceBill": 0,
-				"IsEnterpriseOrder": 0,
+                "IsEnterpriseOrder": 0,
                 "TransDiscount": 0,
                 "Bill": 195,
                 "DailyMaxHour": 10,
                 "CAR_MGT_STATUS": 0,
                 "AppStatus": 1,
                 "RenterType": 1,
-				"PreviousCarPath": "https://irentv2logdata.blob.core.windows.net/carpic/H11768471_1_20220413161530.png",
+                "PreviousCarPath": "https://irentv2logdata.blob.core.windows.net/carpic/H11768471_1_20220413161530.png",
                 "DiscountLabel": null
             }
         ]
@@ -4248,10 +4273,10 @@
 
 * input傳入參數說明
 
-| 參數名稱    | 參數說明                           | 必要 | 型態 | 範例                              |
-| ----------- | ---------------------------------- | :--: | :--: | --------------------------------- |
-| NowPage     | 現在頁碼                           |  N   | int  | 1                                 |
-| ShowOneYear | 顯示一整年 (202101 該參數已無作用) |  Y   | int  | 0:否 20XX代表取出該年度的所有訂單 |
+| 參數名稱        | 參數說明                   | 必要  | 型態  | 範例                   |
+| ----------- | ---------------------- |:---:|:---:| -------------------- |
+| NowPage     | 現在頁碼                   | N   | int | 1                    |
+| ShowOneYear | 顯示一整年 (202101 該參數已無作用) | Y   | int | 0:否 20XX代表取出該年度的所有訂單 |
 
 * input範例
 
@@ -4264,40 +4289,40 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱        | 參數說明       | 型態 | 範例 |
-| --------------- | -------------- | :--: | ---- |
-| TotalPage       | 總頁數         | int  | 6    |
-| OrderFinishObjs | 完成的訂單清單 | list |      |
+| 參數名稱            | 參數說明    | 型態   | 範例  |
+| --------------- | ------- |:----:| --- |
+| TotalPage       | 總頁數     | int  | 6   |
+| OrderFinishObjs | 完成的訂單清單 | list |     |
 
 * OrderFinishObjs回傳參數說明
 
-| 參數名稱      	| 參數說明           |  型態  | 範例                 |
-| ------------- 	| ------------------ | :----: | -------------------- |
-| RentYear      	| 年分               |  int   |                      |
-| OrderNo       	| 訂單編號           | string | supplierIrent        |
-| CarNo         	| 車號               | string | 5.0                  |
-| ProjType      	| 專案類型           |  int   | 0:同站 3:路邊 4:機車 |
-| RentDateTime  	| 取車時間 月日時分  | string |                      |
-| TotalRentTime 	| 總租用時數         | string |                      |
-| Bill          	| 總租金             | string | YARIS                |
-| UniCode       	| 統編               | string | 5                    |
-| StationName   	|                    | string |                      |
-| CarOfArea     	| 車輛圖顯示地區     | string | 0:否 1:是            |
-| CarTypePic    	| 車輛圖片           | string | 台北市               |
-| IsMotor       	| 是否為機車         |  int   | 1:是 0:否            |
-| IsJointOrder  	| 是否為共同承租訂單 |  int   | 1:是 0:否            |
-| IsEnterpriseOrder | 是否為企業客戶訂單 |  int   | 1:是 0:否            |
+| 參數名稱              | 參數說明      | 型態     | 範例             |
+| ----------------- | --------- |:------:| -------------- |
+| RentYear          | 年分        | int    |                |
+| OrderNo           | 訂單編號      | string | supplierIrent  |
+| CarNo             | 車號        | string | 5.0            |
+| ProjType          | 專案類型      | int    | 0:同站 3:路邊 4:機車 |
+| RentDateTime      | 取車時間 月日時分 | string |                |
+| TotalRentTime     | 總租用時數     | string |                |
+| Bill              | 總租金       | string | YARIS          |
+| UniCode           | 統編        | string | 5              |
+| StationName       |           | string |                |
+| CarOfArea         | 車輛圖顯示地區   | string | 0:否 1:是        |
+| CarTypePic        | 車輛圖片      | string | 台北市            |
+| IsMotor           | 是否為機車     | int    | 1:是 0:否        |
+| IsJointOrder      | 是否為共同承租訂單 | int    | 1:是 0:否        |
+| IsEnterpriseOrder | 是否為企業客戶訂單 | int    | 1:是 0:否        |
 
 * Output範例
 
@@ -4364,10 +4389,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H0000029 |
-
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例       |
+| ------- | ---- |:---:|:------:| -------- |
+| OrderNo | 訂單編號 | Y   | string | H0000029 |
 
 * input範例
 
@@ -4379,15 +4403,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -4418,9 +4441,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
-| -------- | -------- | :--: | :----: | --------- |
-| OrderNo  | 訂單編號 |  Y   | string | H10455246 |
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例          |
+| ------- | ---- |:---:|:------:| ----------- |
+| OrderNo | 訂單編號 | Y   | string | "H10455246" |
 
 * input範例
 
@@ -4432,74 +4455,74 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱            | 參數說明                                                     |  型態  | 範例                     |
-| ------------------- | ------------------------------------------------------------ | :----: | ------------------------ |
-| OrderNo             | 訂單編號                                                     | string | H11768088                |
-| ContactURL          | 合約網址                                                     | string |                          |
-| Operator            | 營運商                                                       | string | supplierIrent            |
-| CarTypePic          | 車輛圖片                                                     | string | iretScooter              |
-| CarNo               | 車號                                                         | string | EWB-8812                 |
-| Seat                | 座椅數                                                       |  int   | 2                        |
-| CarBrend            | 汽車廠牌                                                     | string | KYMCO                    |
-| CarTypeName         | 車型名稱                                                     | string | MANY-110                 |
-| StationName         | 據點名稱                                                     | string | iRent路邊租還[機車]_台北 |
-| OperatorScore       | 評分                                                         | float  | 5.0                      |
-| ProjName            | 專案名稱                                                     | string | 機車輕鬆精省             |
-| CarRentBill         | 車輛租金                                                     |  int   | 0                        |
-| TotalHours          | 使用時數                                                     | string | 0天0時29分               |
-| MonthlyHours        | 月租折抵                                                     | string | 0天0時17分               |
-| GiftPoint           | 折抵時數                                                     | string | 0天0時0分                |
-| PayHours            | 計費時數                                                     | string | 0天0時0分                |
-| UseGiveMinute       | 優惠標籤使用時數                                             | string | 0天0時12分               |
-| MileageBill         | 里程費                                                       |  int   | 0                        |
-| InsuranceBill       | 安心服務費                                                   |  int   | 0                        |
-| EtagBill            | eTag費用                                                     |  int   | 0                        |
-| OverTimeBill        | 逾時費                                                       |  int   | 0                        |
-| ParkingBill         | 代收停車費                                                   |  int   | 0                        |
-| TransDiscount       | 轉乘優惠折抵                                                 |  int   | 0                        |
-| TotalBill           | 總金額                                                       |  int   | 0                        |
-| InvoiceType         | 發票類型<br>1:愛心碼 2:email 3:二聯 4:三聯 5:手機條.0碼 6:自然人憑證 | string | 5                        |
-| CARRIERID           | 載具條碼                                                     | string | /N37H2JD                 |
-| NPOBAN              | 捐贈碼                                                       | string |                          |
-| NPOBAN_Name         | 捐贈協會名稱                                                 | string |                          |
-| Unified_business_no | 統編                                                         | string |                          |
-| InvoiceNo           | 發票號碼                                                     | string |                          |
-| InvoiceDate         | 發票日期                                                     | string |                          |
-| InvoiceBill         | 發票金額                                                     |  int   | 0                        |
-| InvoiceURL          | 發票網址                                                     | string |                          |
-| StartTime           | 開始時間                                                     | string | 2022-03-24 15:56         |
-| EndTime             | 結束時間                                                     | string | 2022-03-24 16:25         |
-| Millage             | 里程                                                         | float  | 0.0                      |
-| CarOfArea           | 據點區域                                                     | string | 北北桃                   |
-| DiscountAmount      | 優惠折抵金額                                                 |  int   | 0                        |
-| DiscountName        | 折抵專案名稱                                                 | string |                          |
-| CtrlBill            | 營損-車輛調度費                                              |  int   | 0                        |
-| ClearBill           | 營損-清潔費                                                  |  int   | 0                        |
-| EquipBill           | 營損-物品損壞                                                |  int   | 0                        |
-| ParkingBill2        | 營損-非約定停車費                                            |  int   | 0                        |
-| TowingBill          | 營損-拖吊費                                                  |  int   | 0                        |
-| OtherBill           | 營損-其他費用                                                |  int   | 0                        |
-| UseOrderPrice       | 使用訂金                                                     |  int   | 0                        |
-| ReturnOrderPrice    | 返還訂金                                                     |  int   | 0                        |
-| ChangePoint         | 換電時數                                                     |  int   | 0                        |
-| ChangeTimes         | 換電次數                                                     |  int   | 0                        |
-| RSOC_S              | 取車電量                                                     | float  | 0.0                      |
-| RSOC_E              | 還車電量                                                     | float  | 0.0                      |
-| RewardPoint         | 獎勵時數                                                     |  int   | 0                        |
-| TotalRewardPoint    | 總回饋時數                                                   |  int   | 0                        |
-| RenterType          | 共同承租人類型<br>1:主要承租人  2:共同承租人                 |  int   | 1                        |
-
+| 參數名稱                | 參數說明                                             | 型態     | 範例               |
+| ------------------- | ------------------------------------------------ |:------:| ---------------- |
+| OrderNo             | 訂單編號                                             | string | H11768088        |
+| ContactURL          | 合約網址                                             | string |                  |
+| Operator            | 營運商                                              | string | supplierIrent    |
+| CarTypePic          | 車輛圖片                                             | string | iretScooter      |
+| CarNo               | 車號                                               | string | EWB-8812         |
+| Seat                | 座椅數                                              | int    | 2                |
+| CarBrend            | 汽車廠牌                                             | string | KYMCO            |
+| CarTypeName         | 車型名稱                                             | string | MANY-110         |
+| StationName         | 據點名稱                                             | string | iRent路邊租還[機車]_台北 |
+| OperatorScore       | 評分                                               | float  | 5.0              |
+| ProjName            | 專案名稱                                             | string | 機車輕鬆精省           |
+| CarRentBill         | 車輛租金                                             | int    | 0                |
+| TotalHours          | 使用時數                                             | string | 0天0時29分          |
+| MonthlyHours        | 月租折抵                                             | string | 0天0時17分          |
+| GiftPoint           | 折抵時數                                             | string | 0天0時0分           |
+| PayHours            | 計費時數                                             | string | 0天0時0分           |
+| UseGiveMinute       | 優惠標籤使用時數                                         | string | 0天0時12分          |
+| CouponMins          | 使用優惠券折抵分鐘數                                       | string | 0天0時12分          |
+| MileageBill         | 里程費                                              | int    | 0                |
+| InsuranceBill       | 安心服務費                                            | int    | 0                |
+| EtagBill            | eTag費用                                           | int    | 0                |
+| OverTimeBill        | 逾時費                                              | int    | 0                |
+| ParkingBill         | 代收停車費                                            | int    | 0                |
+| TransDiscount       | 轉乘優惠折抵                                           | int    | 0                |
+| TotalBill           | 總金額                                              | int    | 0                |
+| InvoiceType         | 發票類型<br>1:愛心碼 2:email 3:二聯 4:三聯 5:手機條.0碼 6:自然人憑證 | string | 5                |
+| CARRIERID           | 載具條碼                                             | string | /N37H2JD         |
+| NPOBAN              | 捐贈碼                                              | string |                  |
+| NPOBAN_Name         | 捐贈協會名稱                                           | string |                  |
+| Unified_business_no | 統編                                               | string |                  |
+| InvoiceNo           | 發票號碼                                             | string |                  |
+| InvoiceDate         | 發票日期                                             | string |                  |
+| InvoiceBill         | 發票金額                                             | int    | 0                |
+| InvoiceURL          | 發票網址                                             | string |                  |
+| StartTime           | 開始時間                                             | string | 2022-03-24 15:56 |
+| EndTime             | 結束時間                                             | string | 2022-03-24 16:25 |
+| Millage             | 里程                                               | float  | 0.0              |
+| CarOfArea           | 據點區域                                             | string | 北北桃              |
+| DiscountAmount      | 優惠折抵金額                                           | int    | 0                |
+| DiscountName        | 折抵專案名稱                                           | string |                  |
+| CtrlBill            | 營損-車輛調度費                                         | int    | 0                |
+| ClearBill           | 營損-清潔費                                           | int    | 0                |
+| EquipBill           | 營損-物品損壞                                          | int    | 0                |
+| ParkingBill2        | 營損-非約定停車費                                        | int    | 0                |
+| TowingBill          | 營損-拖吊費                                           | int    | 0                |
+| OtherBill           | 營損-其他費用                                          | int    | 0                |
+| UseOrderPrice       | 使用訂金                                             | int    | 0                |
+| ReturnOrderPrice    | 返還訂金                                             | int    | 0                |
+| ChangePoint         | 換電時數                                             | int    | 0                |
+| ChangeTimes         | 換電次數                                             | int    | 0                |
+| RSOC_S              | 取車電量                                             | float  | 0.0              |
+| RSOC_E              | 還車電量                                             | float  | 0.0              |
+| RewardPoint         | 獎勵時數                                             | int    | 0                |
+| TotalRewardPoint    | 總回饋時數                                            | int    | 0                |
+| RenterType          | 共同承租人類型<br>1:主要承租人  2:共同承租人                      | int    | 1                |
 
 * Output範例
 
@@ -4528,6 +4551,7 @@
         "GiftPoint": "0天0時0分",
         "PayHours": "0天0時0分",
         "UseGiveMinute": "0天0時12分",
+        "CouponMins": "0天0時25分",
         "MileageBill": 0,
         "InsuranceBill": 0,
         "EtagBill": 0,
@@ -4585,10 +4609,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H0000029 |
-
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例       |
+| ------- | ---- |:---:|:------:| -------- |
+| OrderNo | 訂單編號 | Y   | string | H0000029 |
 
 * input範例
 
@@ -4600,29 +4623,28 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱              | 參數說明                                                     				|  型態  | 範例                                                   |
-| --------------------- | ------------------------------------------------------------ 				| :----: | ------------------------------------------------------ |
-| Insurance             | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預設沒選<br>2:可使用，預設有選 |  int   | 0                                           			|
-| MainInsurancePerHour  | 主承租人每小時安心服務價格                                   				|  int   | 50                                                     |
-| JointInsurancePerHour | 單一共同承租人每小時安心服務價格                             				|  int   | 若該訂單沒有共同承租邀請對象，該欄位為0                |
-| JointAlertMessage     | 共同承租提示訊息                                             				| string | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
-| BaseInsuranceMinutes  | 機車安心服務低消分鐘數                                       				| int 	| 														 |
-| BaseMotoRate     		| 機車安心服務低消金額                                         				| int 	| 														 |
-| InsuranceMotoMin     	| 機車安心服務分鐘(幾分鐘算一次錢)                             				| int 	| 														 |
-| InsuranceMotoRate     | 機車安心服務金額(一次算多少錢)                               				| int 	| 														 |
-| Partners     			| 共同承租人數                                             	   				| int 	| 														 |
-
+| 參數名稱                  | 參數說明                                           | 型態     | 範例                          |
+| --------------------- | ---------------------------------------------- |:------:| --------------------------- |
+| Insurance             | 可否使用安心服務<br>0:不可使用<BR>1:可使用，預設沒選<br>2:可使用，預設有選 | int    | 0                           |
+| MainInsurancePerHour  | 主承租人每小時安心服務價格                                  | int    | 50                          |
+| JointInsurancePerHour | 單一共同承租人每小時安心服務價格                               | int    | 若該訂單沒有共同承租邀請對象，該欄位為0        |
+| JointAlertMessage     | 共同承租提示訊息                                       | string | 若該訂單沒有未回應的共同承租邀被邀請人，該欄位為空字串 |
+| BaseInsuranceMinutes  | 機車安心服務低消分鐘數                                    | int    |                             |
+| BaseMotoRate          | 機車安心服務低消金額                                     | int    |                             |
+| InsuranceMotoMin      | 機車安心服務分鐘(幾分鐘算一次錢)                              | int    |                             |
+| InsuranceMotoRate     | 機車安心服務金額(一次算多少錢)                               | int    |                             |
+| Partners              | 共同承租人數                                         | int    |                             |
 
 * Output範例
 
@@ -4639,11 +4661,11 @@
         "MainInsurancePerHour": 50,
         "JointInsurancePerHour": 20,
         "JointAlertMessage": "還有人沒有回覆邀請喔!快通知對方開啟通知中心確認",
-		"BaseInsuranceMinutes": 6,
-		"BaseMotoRate": 3,
-		"InsuranceMotoMin": 5,
-		"InsuranceMotoRate": 1,
-		"Partners": 0
+        "BaseInsuranceMinutes": 6,
+        "BaseMotoRate": 3,
+        "InsuranceMotoMin": 5,
+        "InsuranceMotoRate": 1,
+        "Partners": 0
     }
 }
 ```
@@ -4664,10 +4686,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| NowPage  | 現在頁碼 |  Y   | string | H0000029 |
-
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例       |
+| ------- | ---- |:---:|:------:| -------- |
+| NowPage | 現在頁碼 | Y   | string | H0000029 |
 
 * input範例
 
@@ -4679,50 +4700,48 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱              | 參數說明                                                     |  型態  | 範例                                                   |
-| --------------------- | ------------------------------------------------------------ | :----: | ------------------------------------------------------ |
-| order_number          | 訂單編號                                                     |string  |H11538852|
-| CarNo  | 車號                                                  |  int   | RDE-6193                                                     |
-| Price | 預估租金                             |  int   | 200               |
-| ProjID     | 專案代碼                                             | string | R220 |
-| SD     | 預計取車時間                                             | datetime | 2021-07-27T12:10:00 |
-| ED     | 預計還車時間                                             | datetime | 2021-07-27T13:10:00 |
-| Seat     | 座椅數                                             | int | 4 |
-| CarBrend     | 車子品牌                                             | string | TOYOTA |
-| Score     | 分數                                             | float | 5.0 |
-| OperatorICon     | ?                                             | string | supplierIrent |
-| CarTypeImg     | 車型圖                                             | string | priusC |
-| CarTypeName     | 車型名稱                                           | string | PRIUSc |
-| PRONAME     | 專案名稱                                             | string | 同站汽車110起推廣專案 |
-| MilOfHours     | 預估每小時多少公里                                | int | 20 |
-| MilageUnit     | 每公里多少錢                                             | float | 3.1 |
-| Milage     | 預估里程費                                             | int | 62 |
-| CarOfArea     | 站別類型                                             | string | 同站 |
-| StationName     | 站別名稱                                             | string | iRent礁溪轉運站-內站 |
-| IsMotor     | 是否為機車(0:否、1:是)                                             | int | 0 |
-| WeekdayPrice     | 平日價                                             | float | 2300.0 |
-| HoildayPrice     | 假日售價                                             | float | 2300.0 |
-| WeekdayPriceByMinutes     | 假日售價                                             | float | 0.0 |
-| HoildayPriceByMinutes     | 假日售價                                             | float | 0.0 |
-| CarRentBill     | 預估租金                                             | int | 110 |
-| InsuranceBill     | 預估安心保險費用                                             | int | 0 |
-| TransDiscount     | 轉乘優惠                                             | int | 0 |
-| MileageBill     | 預估里程費                                             | int | 62 |
-| Bill     | 預估總金額                                             | int | 172 |
-| cancel_status     | 取消狀態文字(目前分為"已取消"、"授權失敗已取消")   | string | "授權失敗已取消" |
-
-
+| 參數名稱                  | 參數說明                        | 型態       | 範例                  |
+| --------------------- | --------------------------- |:--------:| ------------------- |
+| order_number          | 訂單編號                        | string   | H11538852           |
+| CarNo                 | 車號                          | int      | RDE-6193            |
+| Price                 | 預估租金                        | int      | 200                 |
+| ProjID                | 專案代碼                        | string   | R220                |
+| SD                    | 預計取車時間                      | datetime | 2021-07-27T12:10:00 |
+| ED                    | 預計還車時間                      | datetime | 2021-07-27T13:10:00 |
+| Seat                  | 座椅數                         | int      | 4                   |
+| CarBrend              | 車子品牌                        | string   | TOYOTA              |
+| Score                 | 分數                          | float    | 5.0                 |
+| OperatorICon          | ?                           | string   | supplierIrent       |
+| CarTypeImg            | 車型圖                         | string   | priusC              |
+| CarTypeName           | 車型名稱                        | string   | PRIUSc              |
+| PRONAME               | 專案名稱                        | string   | 同站汽車110起推廣專案        |
+| MilOfHours            | 預估每小時多少公里                   | int      | 20                  |
+| MilageUnit            | 每公里多少錢                      | float    | 3.1                 |
+| Milage                | 預估里程費                       | int      | 62                  |
+| CarOfArea             | 站別類型                        | string   | 同站                  |
+| StationName           | 站別名稱                        | string   | iRent礁溪轉運站-內站       |
+| IsMotor               | 是否為機車(0:否、1:是)              | int      | 0                   |
+| WeekdayPrice          | 平日價                         | float    | 2300.0              |
+| HoildayPrice          | 假日售價                        | float    | 2300.0              |
+| WeekdayPriceByMinutes | 假日售價                        | float    | 0.0                 |
+| HoildayPriceByMinutes | 假日售價                        | float    | 0.0                 |
+| CarRentBill           | 預估租金                        | int      | 110                 |
+| InsuranceBill         | 預估安心保險費用                    | int      | 0                   |
+| TransDiscount         | 轉乘優惠                        | int      | 0                   |
+| MileageBill           | 預估里程費                       | int      | 62                  |
+| Bill                  | 預估總金額                       | int      | 172                 |
+| cancel_status         | 取消狀態文字(目前分為"已取消"、"授權失敗已取消") | string   | "授權失敗已取消"           |
 
 * Output範例
 
@@ -4817,41 +4836,40 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| IRNETORDNO  | 訂單編號 |  Y   | string | H0002630 |
-| CNTRNO	| 短租合約編號 | Y | string | |
-| CarDispatch | 車輛調度費 | Y | int | 1000 |
-| DispatchRemark | 車輛調度費備註 |  | string | |
-| ParkingFee | 非配合停車場費 | Y | int | 0 |
-| ParkingFeeRemark | 非配合停車費備註 |  | string | |
-| UserID | 操作人員 | Y | string | 99998 |
+| 參數名稱             | 參數說明     | 必要  | 型態     | 範例       |
+| ---------------- | -------- |:---:|:------:| -------- |
+| IRENTORDNO       | 訂單編號     | Y   | string | H0002630 |
+| CNTRNO           | 短租合約編號   | Y   | string |          |
+| CarDispatch      | 車輛調度費    | Y   | int    | 1000     |
+| DispatchRemark   | 車輛調度費備註  |     | string |          |
+| ParkingFee       | 非配合停車場費  | Y   | int    | 0        |
+| ParkingFeeRemark | 非配合停車費備註 |     | string |          |
+| UserID           | 操作人員     | Y   | string | 99998    |
 
 * input範例
 
 ```
 {
-    "IRNETORDNO": "H0002630",
-	"CNTRNO":"X0II-00112345",
-	"CarDispatch":1000,
-	"DispatchRemark":"車輛調度費備註",
-	"ParkingFee":0,
-	"ParkingFeeRemark":"",
-	"UserID":"99998"
+    "IRENTORDNO": "H0002630",
+    "CNTRNO":"X0II-00112345",
+    "CarDispatch":1000,
+    "DispatchRemark":"車輛調度費備註",
+    "ParkingFee":0,
+    "ParkingFeeRemark":"",
+    "UserID":"99998"
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -4865,7 +4883,6 @@
     "Data": {}
 }
 ```
-
 
 # 取還車跟車機操控相關
 
@@ -4885,9 +4902,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例       |
+| ------- | ---- |:---:|:------:| -------- |
+| OrderNo | 訂單編號 | Y   | string | H0002630 |
 
 * input範例
 
@@ -4899,20 +4916,20 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱 | 參數說明 | 型態 | 範例      |
-| -------- | -------- | :--: | --------- |
-| HasBind  | 是否綁定 | int  | 0:否 1:是 |
+| 參數名稱    | 參數說明 | 型態  | 範例      |
+| ------- | ---- |:---:| ------- |
+| HasBind | 是否綁定 | int | 0:否 1:是 |
 
 * Output範例
 
@@ -4928,6 +4945,7 @@
     }
 }
 ```
+
 ## CheckCarStatus 取車前判斷車輛狀態
 
 ### [/api/CheckCarStatus/]
@@ -4944,10 +4962,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
-| -------- | -------- | :--: | :----: | --------- |
-| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
-
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例        |
+| ------- | ---- |:---:|:------:| --------- |
+| OrderNo | 訂單編號 | Y   | string | H10641049 |
 
 * input範例
 
@@ -4959,14 +4976,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -4997,15 +5014,14 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H0002630 |
-| ED | 路邊租還可以重設結束時間 | N | string | 0 |
-| SKBToken | SKB的token | Y | string | 0 |
-| Insurance | 加購安心服務 | Y | int | 0:否;1:有 |
-| PhoneLat | 手機定位點(緯度) | N | double | 25.0212444 |
-| PhoneLon | 手機定位點(經度) | N | double | 121.4780778 |
-
+| 參數名稱      | 參數說明         | 必要  | 型態     | 範例          |
+| --------- | ------------ |:---:|:------:| ----------- |
+| OrderNo   | 訂單編號         | Y   | string | H0002630    |
+| ED        | 路邊租還可以重設結束時間 | N   | string | 0           |
+| SKBToken  | SKB的token    | Y   | string | 0           |
+| Insurance | 加購安心服務       | Y   | int    | 0:否;1:有     |
+| PhoneLat  | 手機定位點(緯度)    | N   | double | 25.0212444  |
+| PhoneLon  | 手機定位點(經度)    | N   | double | 121.4780778 |
 
 * input範例
 
@@ -5015,21 +5031,21 @@
     "ED": "",
     "SKBToken": "",
     "Insurance": 0,
-	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778
+    "PhoneLat": 25.0212444,
+    "PhoneLon": 121.4780778
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -5046,19 +5062,19 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                           | 說明                                     |
-| -------- | -------------------------------------------------- | ---------------------------------------- |
-| ERR171   | 超過取車時間或此訂單已失效                         | 取車時超過取車時效或已被取消             |
-| ERR172   | 目前尚有合約使用中，請確認是否有未完成還車         | 取車時尚有訂單未完成                     |
-| ERR173   | 預計還車時間不正確                                 | 取車時修改的預計還車時間，格式不正確     |
-| ERR174   | 預計還車時間需大於現在                             | 取車時修改的預計還車時間小於現在時間     |
-| ERR234   | 尚有費用未繳，請先至未繳費用完成付款               | 欠費的狀態不可以取車，繳完後才可以取車   |
-| ERR239   | 會員狀態審核不通過不可取車                         | 會員狀態審核不通過不可取車               |
-| ERR240   | 前車未還，請聯絡客服                               | 前車未還，請聯絡客服                     |
-| ERR287   | 你的會員積分低於50分，故暫時無法租用車輛           | 你的會員積分低於50分，故暫時無法租用車輛 |
-| ERR468   | 車機回報資訊異常，請重新再試                       |                                          |
-| ERR603   | 因取授權失敗未完成取車，請檢查卡片餘額或是重新綁卡 | 因取授權失敗未完成取車                   |
-| ERR730   | 查詢綁定卡號失敗                                   | 查詢綁定卡號失敗                         |
+| 錯誤代碼   | 錯誤訊息                      | 說明                    |
+| ------ | ------------------------- | --------------------- |
+| ERR171 | 超過取車時間或此訂單已失效             | 取車時超過取車時效或已被取消        |
+| ERR172 | 目前尚有合約使用中，請確認是否有未完成還車     | 取車時尚有訂單未完成            |
+| ERR173 | 預計還車時間不正確                 | 取車時修改的預計還車時間，格式不正確    |
+| ERR174 | 預計還車時間需大於現在               | 取車時修改的預計還車時間小於現在時間    |
+| ERR234 | 尚有費用未繳，請先至未繳費用完成付款        | 欠費的狀態不可以取車，繳完後才可以取車   |
+| ERR239 | 會員狀態審核不通過不可取車             | 會員狀態審核不通過不可取車         |
+| ERR240 | 前車未還，請聯絡客服                | 前車未還，請聯絡客服            |
+| ERR287 | 你的會員積分低於50分，故暫時無法租用車輛     | 你的會員積分低於50分，故暫時無法租用車輛 |
+| ERR468 | 車機回報資訊異常，請重新再試            |                       |
+| ERR603 | 因取授權失敗未完成取車，請檢查卡片餘額或是重新綁卡 | 因取授權失敗未完成取車           |
+| ERR730 | 查詢綁定卡號失敗                  | 查詢綁定卡號失敗              |
 
 ------
 
@@ -5078,41 +5094,41 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
-| PhoneLat | 手機定位點(緯度) | N | double | 25.0212444 |
-| PhoneLon | 手機定位點(經度) | N | double | 121.4780778 |
-| Insurance | 加購安心服務 | N | int | 0:否 1:是 |
+| 參數名稱      | 參數說明      | 必要  | 型態     | 範例          |
+| --------- | --------- |:---:|:------:| ----------- |
+| OrderNo   | 訂單編號      | Y   | string | H10641049   |
+| PhoneLat  | 手機定位點(緯度) | N   | double | 25.0212444  |
+| PhoneLon  | 手機定位點(經度) | N   | double | 121.4780778 |
+| Insurance | 加購安心服務    | N   | int    | 0:否 1:是     |
 
 * input範例
 
 ```
 {
     "OrderNo": "H10641049",
-	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778,
+    "PhoneLat": 25.0212444,
+    "PhoneLon": 121.4780778,
     "Insurance": 1
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 - Data參數說明
 
-| 參數名稱     | 參數說明        |  型態  | 範例         |
-| ------------ | --------------- | :----: | ------------ |
+| 參數名稱         | 參數說明          | 型態     | 範例           |
+| ------------ | ------------- |:------:| ------------ |
 | BLEDEVICEID  | 藍芽device name | string | iMoto_bd21   |
-| BLEDEVICEPWD | 藍芽密碼        | string | QUEzMDE3ODUy |
+| BLEDEVICEPWD | 藍芽密碼          | string | QUEzMDE3ODUy |
 
 * Output範例
 
@@ -5132,13 +5148,13 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                 | 說明                                     |
-| -------- | ---------------------------------------- | ---------------------------------------- |
-| ERR171   | 超過取車時間或此訂單已失效               | 取車時超過取車時效或已被取消             |
-| ERR239   | 會員狀態審核不通過不可取車               | 會員狀態審核不通過不可取車               |
-| ERR240   | 前車未還，請聯絡客服                     | 前車未還，請聯絡客服                     |
-| ERR287   | 你的會員積分低於50分，故暫時無法租用車輛 | 你的會員積分低於50分，故暫時無法租用車輛 |
-| ERR292   | 請先設定支付方式，才可以預約機車哦！     | 請先設定支付方式，才可以預約機車哦！     |
+| 錯誤代碼   | 錯誤訊息                  | 說明                    |
+| ------ | --------------------- | --------------------- |
+| ERR171 | 超過取車時間或此訂單已失效         | 取車時超過取車時效或已被取消        |
+| ERR239 | 會員狀態審核不通過不可取車         | 會員狀態審核不通過不可取車         |
+| ERR240 | 前車未還，請聯絡客服            | 前車未還，請聯絡客服            |
+| ERR287 | 你的會員積分低於50分，故暫時無法租用車輛 | 你的會員積分低於50分，故暫時無法租用車輛 |
+| ERR292 | 請先設定支付方式，才可以預約機車哦！    | 請先設定支付方式，才可以預約機車哦！    |
 
 ## BookingExtend延長用車
 
@@ -5156,10 +5172,10 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例                |
-| -------- | -------- | :--: | :----: | ------------------- |
-| OrderNo  | 訂單編號 |  Y   | string | H11766161           |
-| ED       | 還車時間 |  Y   | string | 2021-10-28 15:00:00 |
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例                  |
+| ------- | ---- |:---:|:------:| ------------------- |
+| OrderNo | 訂單編號 | Y   | string | H11766161           |
+| ED      | 還車時間 | Y   | string | 2021-10-28 15:00:00 |
 
 * input範例
 
@@ -5172,14 +5188,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -5205,17 +5221,17 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                                     | 說明                                   |
-| :------- | ------------------------------------------------------------ | -------------------------------------- |
-| ERR176   | 延長用車時間不正確                                           | 延長用車時間參數不正確                 |
-| ERR177   | 延長用車時間需大於現在                                       | 延長用車時間比現在時間小               |
-| ERR178   | 延長用車時間需大於原預計還車時間                             | 延長用車時間比原預計還車時間小         |
-| ERR179   | 用車時間合計不能超過七天                                     | 延長用車後，合計此合約用車時間大於七天 |
-| ERR180   | 此訂單不符合延長用車或找不到此訂單。                         | 資料表查詢不到此筆訂單或不符合延長用車 |
-| ERR181   | 此車輛已經其他預約，無法延長用車。                           | 此車輛已經其他預約，無法延長用車。     |
-| ERR182   | 您延長用車時間重疊到您之後的預約用車時間，請先取消重疊的訂單再做延長。 | 延長用車時間重疊到之後的預約用車時間   |
-| ERR237   | 延長用車時間最少1小時                                        | 延長用車時間最少1小時                  |
-| ERR604   | 延長用車取授權未成功，請盡速檢查卡片餘額或是重新綁卡         | 延長用車取授權未成功                   |
+| 錯誤代碼   | 錯誤訊息                                | 說明                  |
+|:------ | ----------------------------------- | ------------------- |
+| ERR176 | 延長用車時間不正確                           | 延長用車時間參數不正確         |
+| ERR177 | 延長用車時間需大於現在                         | 延長用車時間比現在時間小        |
+| ERR178 | 延長用車時間需大於原預計還車時間                    | 延長用車時間比原預計還車時間小     |
+| ERR179 | 用車時間合計不能超過七天                        | 延長用車後，合計此合約用車時間大於七天 |
+| ERR180 | 此訂單不符合延長用車或找不到此訂單。                  | 資料表查詢不到此筆訂單或不符合延長用車 |
+| ERR181 | 此車輛已經其他預約，無法延長用車。                   | 此車輛已經其他預約，無法延長用車。   |
+| ERR182 | 您延長用車時間重疊到您之後的預約用車時間，請先取消重疊的訂單再做延長。 | 延長用車時間重疊到之後的預約用車時間  |
+| ERR237 | 延長用車時間最少1小時                         | 延長用車時間最少1小時         |
+| ERR604 | 延長用車取授權未成功，請盡速檢查卡片餘額或是重新綁卡          | 延長用車取授權未成功          |
 
 ## UploadCarImage 上傳出還車照片
 
@@ -5233,18 +5249,18 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明            | 必要 |  型態  | 範例      |
-| --------- | ------------------- | :--: | :----: | --------- |
-| OrderNo   | 訂單編號            |  Y   | string | H11768110 |
-| Mode      | 模式(0:取車 1:還車) |  Y   | string | 0         |
-| CarImages | 照片                |  N   | object |           |
+| 參數名稱      | 參數說明          | 必要  | 型態     | 範例        |
+| --------- | ------------- |:---:|:------:| --------- |
+| OrderNo   | 訂單編號          | Y   | string | H11768110 |
+| Mode      | 模式(0:取車 1:還車) | Y   | string | 0         |
+| CarImages | 照片            | N   | object |           |
 
 * CarImages參數說明
 
-| 參數名稱 | 參數說明   | 必要 |  型態  | 範例   |
-| -------- | ---------- | :--: | :----: | ------ |
-| CarType  | 圖片類型   |  Y   |  int   | 1      |
-| CarImage | 圖片base64 |  Y   | string | base64 |
+| 參數名稱     | 參數說明     | 必要  | 型態     | 範例     |
+| -------- | -------- |:---:|:------:| ------ |
+| CarType  | 圖片類型     | Y   | int    | 1      |
+| CarImage | 圖片base64 | Y   | string | base64 |
 
 * input範例
 
@@ -5267,27 +5283,27 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data參數說明
 
-| 參數名稱    | 參數說明 | 型態 | 範例 |
-| ----------- | -------- | :--: | ---- |
-| CarImageObj |          | List |      |
+| 參數名稱        | 參數說明 | 型態   | 範例  |
+| ----------- | ---- |:----:| --- |
+| CarImageObj |      | List |     |
 
 * CarImageData參數說明
 
-| 參數名稱     | 參數說明                      | 型態 | 範例 |
-| ------------ | ----------------------------- | :--: | ---- |
-| CarImageType | 圖片類型                      | int  | 1    |
-| HasUpload    | 是否上傳至storage (0:否;1:是) | int  | 0    |
+| 參數名稱         | 參數說明                   | 型態  | 範例  |
+| ------------ | ---------------------- |:---:| --- |
+| CarImageType | 圖片類型                   | int | 1   |
+| HasUpload    | 是否上傳至storage (0:否;1:是) | int | 0   |
 
 * Output範例
 
@@ -5353,33 +5369,32 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| OrderNo  | 訂單編號 |  Y   | string | H10641049 |
-| PhoneLat | 手機定位點(緯度) | N | double | 25.0212444 |
-| PhoneLon | 手機定位點(經度) | N | double | 121.4780778 |
-
+| 參數名稱     | 參數說明      | 必要  | 型態     | 範例          |
+| -------- | --------- |:---:|:------:| ----------- |
+| OrderNo  | 訂單編號      | Y   | string | H10641049   |
+| PhoneLat | 手機定位點(緯度) | N   | double | 25.0212444  |
+| PhoneLon | 手機定位點(經度) | N   | double | 121.4780778 |
 
 * input範例
 
 ```
 {
     "OrderNo": "H10641049",
-	"PhoneLat": 25.0212444,
-	"PhoneLon": 121.4780778
+    "PhoneLat": 25.0212444,
+    "PhoneLon": 121.4780778
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -5410,12 +5425,12 @@
 
 * input傳入參數說明
 
-| 參數名稱      | 參數說明       | 必要 |  型態  | 範例      |
-| ------------- | -------------- | :--: | :----: | --------- |
-| OrderNo       | 訂單編號       |  Y   | string | H11768088 |
-| Discount      | 折抵汽車時數   |  Y   |  int   | 0         |
-| MotorDiscount | 折抵機車分鐘數 |  Y   |  int   | 0         |
-
+| 參數名稱          | 參數說明    | 必要  | 型態     | 範例          |
+| ------------- | ------- |:---:|:------:| ----------- |
+| OrderNo       | 訂單編號    | Y   | string | H11768088   |
+| Discount      | 折抵汽車時數  | Y   | int    | 0           |
+| MotorDiscount | 折抵機車分鐘數 | Y   | int    | 0           |
+| CouponID      | 優惠券號    | Y   | string | T0300000003 |
 
 * input範例
 
@@ -5423,113 +5438,131 @@
 {
     "OrderNo": "H11768088",
     "Discount": 0,
-    "MotorDiscount": 0
+    "MotorDiscount": 0,
+    "CouponID": "T0300000003"
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           |        |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      |        |           |
 
 * Data參數說明
 
-| 參數名稱         | 參數說明                       |  型態  | 範例 |
-| ---------------- | ------------------------------ | :----: | ---- |
-| CanUseDiscount   | 是否可使用點數折扣 0:否 1:是   |  int   | 1    |
-| CanUseMonthRent  | 是否可使用月租時間 0:否 1:是   |  int   | 1    |
-| IsMonthRent      | 是否為月租 0:否 1:是           |  int   | 0    |
-| IsMotor          | 是否為機車 0:否 1:是           |  int   | 0    |
-| UseOrderPrice    | 使用訂金                       |  int   | 0    |
-| ReturnOrderPrice | 返還訂金                       |  int   | 0    |
-| FineOrderPrice   | 沒收訂金                       |  int   | 0    |
-| Rent             | 訂單基本資訊                   | Object |      |
-| CarRent          | 汽車相關資料                   | Object |      |
-| MotorRent        | 機車相關資訊                   | Object |      |
-| MonthRent        | 月租相關資訊                   | Object |      |
-| MonBase          | 月租下拉                       |  List  |      |
-| ProType          | 專案類型 0:同站 3:路邊 4:機車  |  int   | 0    |
-| PayMode          | 計費模式 0:以時計費 1:以分計費 |  int   | 0    |
-| DiscountAlertMsg | 不可使用折抵時的訊息提示       | string |      |
-| NowSubsCards     | 目前可使用訂閱制月租           |  List  |      |
+| 參數名稱             | 參數說明                | 型態     | 範例  |
+| ---------------- | ------------------- |:------:| --- |
+| CanUseDiscount   | 是否可使用點數折扣 0:否 1:是   | int    | 1   |
+| CanUseMonthRent  | 是否可使用月租時間 0:否 1:是   | int    | 1   |
+| IsMonthRent      | 是否為月租 0:否 1:是       | int    | 0   |
+| IsMotor          | 是否為機車 0:否 1:是       | int    | 0   |
+| UseOrderPrice    | 使用訂金                | int    | 0   |
+| ReturnOrderPrice | 返還訂金                | int    | 0   |
+| FineOrderPrice   | 沒收訂金                | int    | 0   |
+| Rent             | 訂單基本資訊              | Object |     |
+| CarRent          | 汽車相關資料              | Object |     |
+| MotorRent        | 機車相關資訊              | Object |     |
+| MonthRent        | 月租相關資訊              | Object |     |
+| MonBase          | 月租下拉                | List   |     |
+| ProType          | 專案類型 0:同站 3:路邊 4:機車 | int    | 0   |
+| PayMode          | 計費模式 0:以時計費 1:以分計費  | int    | 0   |
+| DiscountAlertMsg | 不可使用折抵時的訊息提示        | string |     |
+| NowSubsCards     | 目前可使用訂閱制月租          | List   |     |
 
 * Rent資料物件說明
 
-| 參數名稱                     | 參數說明                                    |  型態  | 範例                |
-| ---------------------------- | ------------------------------------------- | :----: | ------------------- |
-| CarNo                        | 車號                                        | string | RCG-2261            |
-| BookingStartDate             | 實際取車時間                                | string | 2022-03-24 13:41:00 |
-| BookingEndDate               | 預計還車時間                                | string | 2022-03-24 15:41:00 |
-| RentalDate                   | 實際還車時間                                | string | 2022-03-24 15:41:00 |
-| RentalTimeInterval           | 實際租用時數                                | string | 120                 |
-| CanDiscountTime              | 可折抵時數                                  |  int   | 90                  |
-| RedeemingTimeInterval        | 可使用的折抵總時數                          | string | 600                 |
-| RedeemingTimeCarInterval     | 可使用的折抵時數(汽車)                      | string | 600                 |
-| RedeemingTimeMotorInterval   | 可使用的折抵時數(機車)                      | string | 0                   |
-| ActualRedeemableTimeInterval | 實際可折抵的時數                            | string | 90                  |
-| RemainRentalTimeInterval     | 折抵後的租用時數                            | string | 90                  |
-| UseMonthlyTimeInterval       | 月租折抵時數                                | string | 0                   |
-| UseNorTimeInterval           | 一般時段時數折抵                            | string | 0                   |
-| UseGiveMinute                | 標籤優惠折抵時數                            |  int   | 30                  |
-| RentBasicPrice               | 每小時基本租金                              |  int   | 0                   |
-| CarRental                    | 車輛租金                                    |  int   | 165                 |
-| MileageRent                  | 里程費用                                    |  int   | 0                   |
-| ETAGRental                   | ETAG費用                                    |  int   | 0                   |
-| OvertimeRental               | 逾時費用                                    |  int   | 0                   |
-| ParkingFee                   | 停車費用                                    |  int   | 0                   |
-| TransferPrice                | 轉乘費用                                    |  int   | 0                   |
-| InsurancePurePrice           | 安心服務                                    |  int   | 0                   |
-| InsuranceExtPrice            | 安心服務延長費用                            |  int   | 0                   |
-| TotalRental                  | 總計                                        |  int   | 165                 |
-| PreAmount                    | 預授權金額                                  |  int   | 172                 |
-| DiffAmount                   | 差額                                        |  int   | -7                  |
-| EnterpriseTaxID              | 企業客戶統一編號                            | string | 12354548            |
-| EnterpriseEtag               | 企業客戶Etag請款項目<br>(0:個人 1:公司)     |  int   | 1                   |
-| EnterpriseInsurance          | 企業客戶安心服務請款項目<br>(0:個人 1:公司) |  int   | 0                   |
-| EnterpriseParking            | 企業客戶停車費請款項目<br>(0:個人 1:公司)   |  int   | 0                   |
-| EnterpriseFee                | 企業月結金額                                |  int   | 110                 |
-| PersonalFee                  | 自付款項金額                                |  int   | 50                  |
+| 參數名稱                         | 參數說明                        | 型態     | 範例                  |
+| ---------------------------- | --------------------------- |:------:| ------------------- |
+| CarNo                        | 車號                          | string | RCG-2261            |
+| BookingStartDate             | 實際取車時間                      | string | 2022-03-24 13:41:00 |
+| BookingEndDate               | 預計還車時間                      | string | 2022-03-24 15:41:00 |
+| RentalDate                   | 實際還車時間                      | string | 2022-03-24 15:41:00 |
+| RentalTimeInterval           | 實際租用時數                      | string | 120                 |
+| CanDiscountTime              | 可折抵時數                       | int    | 90                  |
+| RedeemingTimeInterval        | 可使用的折抵總時數                   | string | 600                 |
+| RedeemingTimeCarInterval     | 可使用的折抵時數(汽車)                | string | 600                 |
+| RedeemingTimeMotorInterval   | 可使用的折抵時數(機車)                | string | 0                   |
+| ActualRedeemableTimeInterval | 實際可折抵的時數                    | string | 90                  |
+| RemainRentalTimeInterval     | 折抵後的租用時數                    | string | 90                  |
+| UseMonthlyTimeInterval       | 月租折抵時數                      | string | 0                   |
+| UseNorTimeInterval           | 一般時段時數折抵                    | string | 0                   |
+| UseGiveMinute                | 標籤優惠折抵時數                    | int    | 30                  |
+| RentBasicPrice               | 每小時基本租金                     | int    | 0                   |
+| CarRental                    | 車輛租金                        | int    | 165                 |
+| MileageRent                  | 里程費用                        | int    | 0                   |
+| ETAGRental                   | ETAG費用                      | int    | 0                   |
+| OvertimeRental               | 逾時費用                        | int    | 0                   |
+| ParkingFee                   | 停車費用                        | int    | 0                   |
+| TransferPrice                | 轉乘費用                        | int    | 0                   |
+| InsurancePurePrice           | 安心服務                        | int    | 0                   |
+| InsuranceExtPrice            | 安心服務延長費用                    | int    | 0                   |
+| TotalRental                  | 總計                          | int    | 165                 |
+| PreAmount                    | 預授權金額                       | int    | 172                 |
+| DiffAmount                   | 差額                          | int    | -7                  |
+| EnterpriseTaxID              | 企業客戶統一編號                    | string | 12354548            |
+| EnterpriseEtag               | 企業客戶Etag請款項目<br>(0:個人 1:公司) | int    | 1                   |
+| EnterpriseInsurance          | 企業客戶安心服務請款項目<br>(0:個人 1:公司) | int    | 0                   |
+| EnterpriseParking            | 企業客戶停車費請款項目<br>(0:個人 1:公司)  | int    | 0                   |
+| EnterpriseFee                | 企業月結金額                      | int    | 110                 |
+| PersonalFee                  | 自付款項金額                      | int    | 50                  |
 
 * CarRent資料物件說明
 
-| 參數名稱           | 參數說明       | 型態  | 範例 |
-| ------------------ | -------------- | :---: | ---- |
-| HourOfOneDay       | 多少小時算一天 |  int  | 10   |
-| HoildayPrice       | 假日金額       |  int  | 1680 |
-| WorkdayPrice       | 平日金額       |  int  | 1100 |
-| HoildayOfHourPrice | 假日每小時金額 |  int  | 168  |
-| WorkdayOfHourPrice | 平日每小時金額 |  int  | 110  |
-| MilUnit            | 每公里金額     | float | 3.0  |
+| 參數名稱               | 參數說明    | 型態    | 範例   |
+| ------------------ | ------- |:-----:| ---- |
+| HourOfOneDay       | 多少小時算一天 | int   | 10   |
+| HoildayPrice       | 假日金額    | int   | 1680 |
+| WorkdayPrice       | 平日金額    | int   | 1100 |
+| HoildayOfHourPrice | 假日每小時金額 | int   | 168  |
+| WorkdayOfHourPrice | 平日每小時金額 | int   | 110  |
+| MilUnit            | 每公里金額   | float | 3.0  |
 
 * MotorRent資料物件說明
 
-| 參數名稱        | 參數說明   | 型態  | 範例 |
-| --------------- | ---------- | :---: | ---- |
-| BaseMinutes     | 基本時數   |  int  | 0    |
-| BaseMinutePrice | 基本費     |  int  | 0    |
-| MinuteOfPrice   | 每分鐘價格 | float | 0.0  |
-
+| 參數名稱            | 參數說明  | 型態    | 範例  |
+| --------------- | ----- |:-----:| --- |
+| BaseMinutes     | 基本時數  | int   | 0   |
+| BaseMinutePrice | 基本費   | int   | 0   |
+| MinuteOfPrice   | 每分鐘價格 | float | 0.0 |
 
 * MonthRent資料物件說明
 
-| 參數名稱    | 參數說明 | 型態  | 範例 |
-| ----------- | -------- | :---: | ---- |
-| WorkdayRate | 平日價格 | float | 0.0  |
-| HoildayRate | 假日價格 | float | 0.0  |
+| 參數名稱        | 參數說明 | 型態    | 範例  |
+| ----------- | ---- |:-----:| --- |
+| WorkdayRate | 平日價格 | float | 0.0 |
+| HoildayRate | 假日價格 | float | 0.0 |
 
 * MonBase集合物件說明
 
-| 參數名稱      | 參數說明     |  型態  | 範例  |
-| ------------- | ------------ | :----: | ----- |
-| MonthlyRentId | 月租訂單編號 |  int   | 12345 |
+| 參數名稱          | 參數說明   | 型態     | 範例    |
+| ------------- | ------ |:------:| ----- |
+| MonthlyRentId | 月租訂單編號 | int    | 12345 |
 | ProjNM        | 月租方案名稱 | string |       |
 
+* NowSubsCards集合物件說明
+
+| 參數名稱               | 參數說明     | 型態       | 範例     |
+| ------------------ | -------- |:--------:| ------ |
+| MonthlyRentId      | 月租編號     | int      | 12345  |
+| ProjID             | 月租方案代碼   | string   | MR66   |
+| MonProPeroid       | 總期數      | int      | 3      |
+| ShortDays          | 短期總天數    | int      | 0      |
+| MonProjNM          | 月租方案名稱   | string   | MR66測試 |
+| WorkDayHours       | 平日時數     | double   | 0      |
+| HolidayHours       | 假日時數     | double   | 0      |
+| MotoTotalMins      | 機車分鐘數    | double   | 0      |
+| WorkDayRateForCar  | 汽車平日優惠費率 | double   | 99.0   |
+| HoildayRateForCar  | 汽車假日優惠費率 | double   | 168.0  |
+| WorkDayRateForMoto | 機車平日優惠費率 | double   | 1.5    |
+| HoildayRateForMoto | 機車假日優惠費率 | double   | 2.0    |
+| StartDate          | 月租起日     | datetime |        |
+| EndDate            | 月租迄日     | datetime |        |
 
 * Output範例(汽車)
 
@@ -5550,37 +5583,37 @@
         "FineOrderPrice": 0,
         "Rent": {
             "CarNo": "RBX-9661",
-            "BookingStartDate": "2022-07-15 16:40:00",
-            "BookingEndDate": "2022-07-15 16:40:00",
-            "RentalDate": "2022-07-15 16:40:00",
-            "RentalTimeInterval": "60",
-            "CanDiscountTime": 60,
-            "RedeemingTimeInterval": "0",
-            "RedeemingTimeCarInterval": "0",
+            "BookingStartDate": "2022-07-20 14:43:00",
+            "BookingEndDate": "2022-07-20 17:08:00",
+            "RentalDate": "2022-07-20 17:08:00",
+            "RentalTimeInterval": "150",
+            "CanDiscountTime": 150,
+            "RedeemingTimeInterval": "600",
+            "RedeemingTimeCarInterval": "600",
             "RedeemingTimeMotorInterval": "0",
-            "ActualRedeemableTimeInterval": "60",
-            "RemainRentalTimeInterval": "60",
+            "ActualRedeemableTimeInterval": "150",
+            "RemainRentalTimeInterval": "150",
             "UseMonthlyTimeInterval": "0",
             "UseNorTimeInterval": "0",
             "UseGiveMinute": 0,
             "RentBasicPrice": 0,
-            "CarRental": 110,
+            "CarRental": 275,
             "MileageRent": 0,
             "ETAGRental": 0,
             "OvertimeRental": 0,
             "ParkingFee": 0,
             "TransferPrice": 0,
-            "InsurancePurePrice": 50,
+            "InsurancePurePrice": 125,
             "InsuranceExtPrice": 0,
-            "TotalRental": 160,
+            "TotalRental": 400,
             "PreAmount": 50,
-            "DiffAmount": 110,
-            "EnterpriseTaxID": "12354548",
-            "EnterpriseEtag": 1,
+            "DiffAmount": 350,
+            "EnterpriseTaxID": "12994382",
+            "EnterpriseEtag": 0,
             "EnterpriseInsurance": 0,
             "EnterpriseParking": 0,
-            "EnterpriseFee": 110,
-            "PersonalFee": 50
+            "EnterpriseFee": 275,
+            "PersonalFee": 125
         },
         "CarRent": {
             "HourOfOneDay": 10,
@@ -5625,14 +5658,14 @@
         "ReturnOrderPrice": 0,
         "FineOrderPrice": 0,
         "Rent": {
-            "CarNo": "EWA-5032",
-            "BookingStartDate": "2022-07-15 17:09:00",
-            "BookingEndDate": "2022-07-15 17:10:00",
-            "RentalDate": "2022-07-15 17:10:00",
+            "CarNo": "EWH-7525",
+            "BookingStartDate": "2022-07-21 09:48:00",
+            "BookingEndDate": "2022-07-21 09:53:00",
+            "RentalDate": "2022-07-21 09:53:00",
             "RentalTimeInterval": "6",
             "CanDiscountTime": 6,
-            "RedeemingTimeInterval": "0",
-            "RedeemingTimeCarInterval": "0",
+            "RedeemingTimeInterval": "600",
+            "RedeemingTimeCarInterval": "600",
             "RedeemingTimeMotorInterval": "0",
             "ActualRedeemableTimeInterval": "6",
             "RemainRentalTimeInterval": "6",
@@ -5651,12 +5684,12 @@
             "TotalRental": 3,
             "PreAmount": 0,
             "DiffAmount": 3,
-            "EnterpriseTaxID": "",
+            "EnterpriseTaxID": "12994382",
             "EnterpriseEtag": 0,
             "EnterpriseInsurance": 0,
             "EnterpriseParking": 0,
             "EnterpriseFee": 0,
-            "PersonalFee": 0
+            "PersonalFee": 3
         },
         "CarRent": {
             "HourOfOneDay": 0,
@@ -5685,15 +5718,15 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                           | 說明                         |
-| -------- | ---------------------------------- | ---------------------------- |
-| ERR203   | 找不到符合的訂單編號               | 租金計算時找不到此訂單編號   |
-| ERR204   | 訂單狀態不符                       | 租金計算時訂單狀態不符       |
-| ERR206   | 折抵時數須以30分鐘為單位           | 汽車使用的折抵時數非30的倍數 |
-| ERR207   | 折抵時數超過可使用的時數           | 折抵時數超過目前所擁有的時數 |
-| ERR208   | 還車已超過三十分鐘，請重新點擊還車 | 點下還車鍵已超過三十分鐘     |
-| ERR303   | 折抵時數總和超過使用時數           | 折抵時數總和超過使用時數     |
-| ERR914   | 資料邏輯錯誤                       | 資料邏輯錯誤                 |
+| 錯誤代碼   | 錯誤訊息              | 說明              |
+| ------ | ----------------- | --------------- |
+| ERR203 | 找不到符合的訂單編號        | 租金計算時找不到此訂單編號   |
+| ERR204 | 訂單狀態不符            | 租金計算時訂單狀態不符     |
+| ERR206 | 折抵時數須以30分鐘為單位     | 汽車使用的折抵時數非30的倍數 |
+| ERR207 | 折抵時數超過可使用的時數      | 折抵時數超過目前所擁有的時數  |
+| ERR208 | 還車已超過三十分鐘，請重新點擊還車 | 點下還車鍵已超過三十分鐘    |
+| ERR303 | 折抵時數總和超過使用時數      | 折抵時數總和超過使用時數    |
+| ERR914 | 資料邏輯錯誤            | 資料邏輯錯誤          |
 
 ## CreditAuth 付款與還款
 
@@ -5711,23 +5744,25 @@
 
 * input傳入參數說明
 
-| 參數名稱     | 參數說明                       | 必要 |  型態  | 範例     |
-| ------------ | ------------------------------ | :--: | :----: | -------- |
-| PayType      | 付款模式(0:租金、1:罰金/補繳)  |  Y   |  int   | 0        |
-| OrderNo      | 訂單編號                       |  Y   | string | H1254786 |
-| CNTRNO       | 罰金或補繳代碼                 |  Y   |  int   | 0        |
-| CheckoutMode | 付款方式(0:信用卡、1:和雲錢包) |  Y   |  int   | 0        |
-| OnceStore    | 單次儲值餘額 (1:是、0:否)      |  Y   |  int   | 0        |
+| 參數名稱         | 參數說明               | 必要  | 型態     | 範例       |
+| ------------ | ------------------ |:---:|:------:| -------- |
+| PayType      | 付款模式(0:租金、1:罰金/補繳) | Y   | int    | 0        |
+| OrderNo      | 訂單編號               | Y   | string | H1254786 |
+| CNTRNO       | 罰金或補繳代碼            | Y   | int    | 0        |
+| CheckoutMode | 付款方式(0:信用卡、1:和雲錢包) | Y   | int    | 0        |
+| OnceStore    | 單次儲值餘額 (1:是、0:否)   | Y   | int    | 0        |
+| UseReason    | 企業客戶用車原因           | Y   | string | 測試       |
 
 * input範例(租金)
 
 ```
 {
-    "PayType": "0",
-    "OrderNo": "H1254786",
-    "CNTRNO": 0,
-    "CheckoutMode":0,
-    "OnceStore": 0
+    "PayType": 0,
+    "OrderNo": "H11771114",
+    "CNTRNO": "",
+    "CheckoutMode": 0,
+    "OnceStore": 0,
+    "UseReason": "測試企業月結訂單"
 }
 ```
 
@@ -5739,27 +5774,27 @@
     "OrderNo": "",
     "CNTRNO": 1554880,
     "CheckoutMode":0,
-    "OnceStore": 0
+    "OnceStore": 0,
+    "UseReason": ""
 }
 ```
 
 * Output回傳參數說明 
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data參數說明
 
-| 參數名稱    | 參數說明 | 型態 | 範例 |
-| ----------- | -------- | :--: | ---- |
-| RewardPoint | 換電獎勵 | int  | 25   |
-
+| 參數名稱        | 參數說明 | 型態  | 範例  |
+| ----------- | ---- |:---:| --- |
+| RewardPoint | 換電獎勵 | int | 25  |
 
 * Output範例
 
@@ -5778,29 +5813,29 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                         | 說明                                             |
-| -------- | ------------------------------------------------ | ------------------------------------------------ |
-| ERR185   | 找不到符合的訂單編號                             | 還車檢查時，找不到符合的訂單編號                 |
-| ERR186   | 請先熄火                                         | 還車檢查時，未熄火                               |
-| ERR187   | 請先關閉電源                                     | 還車檢查時，末關閉電源                           |
-| ERR188   | 請將車輛移至還車範圍內                           | 還車檢查時，不在還車範圍內                       |
-| ERR195   | 找不到此卡號                                     | 信用卡解綁時找不到此信用卡號                     |
-| ERR197   | 刷卡授權失敗，請洽發卡銀行                       | 刷卡授權發生錯誤                                 |
-| ERR203   | 找不到符合的訂單編號                             | 租金計算時找不到此訂單編號                       |
-| ERR209   | 已完成還車付款，請勿重覆付款                     | 已完成還車付款，請勿重覆付款                     |
-| ERR210   | 尚未完成還車步驟，無法還車付款                   | 未符合還車付款狀態，又重覆點下付款               |
-| ERR223   | 找不到符合的訂單編號                             | 取/還車回饋時，找不到符合的訂單編號              |
-| ERR231   | 目前讀不到iButton狀態，請檢查iButton扣環是否脫落 | 目前讀不到iButton狀態，請檢查iButton扣環是否脫落 |
-| ERR244   | 系統偵測到異常，請重新進入                       | 系統偵測到異常，請重新進入                       |
-| ERR245   | 還車已超過十四分鐘，請重新計算費率               | 還車時間過久沒重新計價                           |
-| ERR400   | 車機回報資訊異常，請重新再試                     | 還車檢查時，回傳的車機編號與設定的不符合         |
-| ERR429   | 車門目前未關閉，無法再執行上鎖/解鎖指令。        | 車門目前未關閉，無法再執行上鎖/解鎖指令。        |
-| ERR434   | 無法取得車門狀態                                 | 無法取得車門狀態                                 |
-| ERR439   | 車子室內燈或大燈未關                             | 車子室內燈或大燈未關                             |
-| ERR730   | 查詢綁定卡號失敗                                 | 查詢綁定卡號失敗                                 |
-| ERR932   | 錢包未開通                                       | 錢包未開通                                       |
-| ERR933   | 錢包扣款失敗                                     | 錢包扣款失敗                                     |
-| ERR934   | 錢包餘額不足                                     | 錢包餘額不足                                     |
+| 錯誤代碼   | 錯誤訊息                            | 說明                              |
+| ------ | ------------------------------- | ------------------------------- |
+| ERR185 | 找不到符合的訂單編號                      | 還車檢查時，找不到符合的訂單編號                |
+| ERR186 | 請先熄火                            | 還車檢查時，未熄火                       |
+| ERR187 | 請先關閉電源                          | 還車檢查時，末關閉電源                     |
+| ERR188 | 請將車輛移至還車範圍內                     | 還車檢查時，不在還車範圍內                   |
+| ERR195 | 找不到此卡號                          | 信用卡解綁時找不到此信用卡號                  |
+| ERR197 | 刷卡授權失敗，請洽發卡銀行                   | 刷卡授權發生錯誤                        |
+| ERR203 | 找不到符合的訂單編號                      | 租金計算時找不到此訂單編號                   |
+| ERR209 | 已完成還車付款，請勿重覆付款                  | 已完成還車付款，請勿重覆付款                  |
+| ERR210 | 尚未完成還車步驟，無法還車付款                 | 未符合還車付款狀態，又重覆點下付款               |
+| ERR223 | 找不到符合的訂單編號                      | 取/還車回饋時，找不到符合的訂單編號              |
+| ERR231 | 目前讀不到iButton狀態，請檢查iButton扣環是否脫落 | 目前讀不到iButton狀態，請檢查iButton扣環是否脫落 |
+| ERR244 | 系統偵測到異常，請重新進入                   | 系統偵測到異常，請重新進入                   |
+| ERR245 | 還車已超過十四分鐘，請重新計算費率               | 還車時間過久沒重新計價                     |
+| ERR400 | 車機回報資訊異常，請重新再試                  | 還車檢查時，回傳的車機編號與設定的不符合            |
+| ERR429 | 車門目前未關閉，無法再執行上鎖/解鎖指令。           | 車門目前未關閉，無法再執行上鎖/解鎖指令。           |
+| ERR434 | 無法取得車門狀態                        | 無法取得車門狀態                        |
+| ERR439 | 車子室內燈或大燈未關                      | 車子室內燈或大燈未關                      |
+| ERR730 | 查詢綁定卡號失敗                        | 查詢綁定卡號失敗                        |
+| ERR932 | 錢包未開通                           | 錢包未開通                           |
+| ERR933 | 錢包扣款失敗                          | 錢包扣款失敗                          |
+| ERR934 | 錢包餘額不足                          | 錢包餘額不足                          |
 
 ## GetCarStatus 取得汽車狀態
 
@@ -5818,60 +5853,59 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
-| -------- | -------- | :--: | :----: | -------- |
-| CarNo    | 車牌     |  Y   | string | RBX-1722 |
-
+| 參數名稱  | 參數說明 | 必要  | 型態     | 範例       |
+| ----- | ---- |:---:|:------:| -------- |
+| CarNo | 車牌   | Y   | string | RBX-1722 |
 
 * input範例
 
 ```
 {
-	"CarNo": "RBX-1722"
+    "CarNo": "RBX-1722"
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data參數說明
 
-| 參數名稱          | 參數說明                                                     |  型態  | 範例     |
-| ----------------- | ------------------------------------------------------------ | :----: | -------- |
-| CarNo             | 車號                                                         | string | RBX-1722 |
-| PowerOnStatus     | 引擎狀態，發動為1，熄火為0                                   |  int   | 1        |
-| CentralLockStatus | 中控鎖狀態：1為上鎖，0為解鎖                                 |  int   | 1        |
-| DoorStatus        | 車門狀態：1111關門;0000開門                                  | string | 1111     |
+| 參數名稱              | 參數說明                                            | 型態     | 範例       |
+| ----------------- | ----------------------------------------------- |:------:| -------- |
+| CarNo             | 車號                                              | string | RBX-1722 |
+| PowerOnStatus     | 引擎狀態，發動為1，熄火為0                                  | int    | 1        |
+| CentralLockStatus | 中控鎖狀態：1為上鎖，0為解鎖                                 | int    | 1        |
+| DoorStatus        | 車門狀態：1111關門;0000開門                              | string | 1111     |
 | LockStatus        | 門鎖狀態：1為上鎖，0為解鎖<br>四個門鎖分別為：駕駛門鎖、副駕駛門、乘客門鎖、後行李箱門鎖 | string | 1111     |
-| IndoorLightStatus | 車內燈：1為開啟，0為關閉                                     |  int   | 0        |
-| SecurityStatus    | 防盜鎖狀態：1為開啟，0為關閉                                 |  int   | 1        |
+| IndoorLightStatus | 車內燈：1為開啟，0為關閉                                   | int    | 0        |
+| SecurityStatus    | 防盜鎖狀態：1為開啟，0為關閉                                 | int    | 1        |
 
 * Output範例
 
 ```
 {
-	"Result": "1",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": {
-		"CarNo": "RBX-1722 ",
-		"PowerOnStatus": 1,
-		"CentralLockStatus": 1,
-		"DoorStatus": "1111",
-		"LockStatus": "1111",
-		"IndoorLightStatus": 0,
-		"SecurityStatus": 1
-	}
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "CarNo": "RBX-1722 ",
+        "PowerOnStatus": 1,
+        "CentralLockStatus": 1,
+        "DoorStatus": "1111",
+        "LockStatus": "1111",
+        "IndoorLightStatus": 0,
+        "SecurityStatus": 1
+    }
 }
 ```
 
@@ -5891,10 +5925,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明              | 必要 | 型態 | 範例 |
-| -------- | --------------------- | :--: | :--: | ---- |
-| IsMotor  | 是否為機車(0:否 1:是) |  Y   | int  | 0    |
-
+| 參數名稱    | 參數說明           | 必要  | 型態  | 範例  |
+| ------- | -------------- |:---:|:---:| --- |
+| IsMotor | 是否為機車(0:否 1:是) | Y   | int | 0   |
 
 * input範例
 
@@ -5906,28 +5939,28 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱    | 參數說明 | 型態 | 範例 |
-| ----------- | -------- | :--: | ---- |
-| DescriptObj | 回饋項目 | list |      |
+| 參數名稱        | 參數說明 | 型態   | 範例  |
+| ----------- | ---- |:----:| --- |
+| DescriptObj | 回饋項目 | list |     |
 
 * 回饋項目參數說明
 
-| 參數名稱       | 參數說明 |  型態  | 範例           |
-| -------------- | -------- | :----: | -------------- |
-| Star           | 星星數   |  int   | 1              |
-| Descript       | 描述     | string | 取還車流程不佳 |
-| FeedBackKindId | ID       |  int   | 21             |
+| 參數名稱           | 參數說明 | 型態     | 範例      |
+| -------------- | ---- |:------:| ------- |
+| Star           | 星星數  | int    | 1       |
+| Descript       | 描述   | string | 取還車流程不佳 |
+| FeedBackKindId | ID   | int    | 21      |
 
 * Output範例
 
@@ -5986,14 +6019,13 @@
 
 * input傳入參數說明
 
-| 參數名稱     | 參數說明             | 必要 |   型態    | 範例      |
-| ------------ | -------------------- | :--: | :-------: | --------- |
-| OrderNo      | 訂單編號             |  Y   |  string   | H11768647 |
-| Mode         | 類型 (0:取車 1:還車) |  Y   |    int    | 1         |
-| Star         | 星星數               |  Y   |    int    | 5         |
-| FeedBackKind | 回饋類別             |  N   | List<int> | 1,3,5     |
-| Descript     | 描述                 |  N   |  string   | TEST      |
-
+| 參數名稱         | 參數說明           | 必要  | 型態        | 範例        |
+| ------------ | -------------- |:---:|:---------:| --------- |
+| OrderNo      | 訂單編號           | Y   | string    | H11768647 |
+| Mode         | 類型 (0:取車 1:還車) | Y   | int       | 1         |
+| Star         | 星星數            | Y   | int       | 5         |
+| FeedBackKind | 回饋類別           | N   | List<int> | 1,3,5     |
+| Descript     | 描述             | N   | string    | TEST      |
 
 * input範例
 
@@ -6009,14 +6041,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -6047,10 +6079,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
-| -------- | -------- | :--: | :----: | --------- |
-| OrderNo  | 訂單編號 |  Y   | string | H11768647 |
-
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例        |
+| ------- | ---- |:---:|:------:| --------- |
+| OrderNo | 訂單編號 | Y   | string | H11768647 |
 
 * input範例
 
@@ -6062,14 +6093,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -6100,10 +6131,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |  型態  | 範例      |
-| -------- | -------- | :--: | :----: | --------- |
-| OrderNo  | 訂單編號 |  Y   | string | H11768647 |
-
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例        |
+| ------- | ---- |:---:|:------:| --------- |
+| OrderNo | 訂單編號 | Y   | string | H11768647 |
 
 * input範例
 
@@ -6115,14 +6145,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -6153,19 +6183,18 @@
 
 * input傳入參數說明
 
-| 參數名稱        | 參數說明   | 必要 |  型態  | 範例      |
-| --------------- | ---------- | :--: | :----: | --------- |
-| OrderNo         | 訂單編號   |  Y   | string | H11768647 |
-| ParkingSpace    | 停車格文字 |  N   | string | 測試      |
-| ParkingSpacePic | 停車格圖片 |  N   |  List  |           |
+| 參數名稱            | 參數說明  | 必要  | 型態     | 範例        |
+| --------------- | ----- |:---:|:------:| --------- |
+| OrderNo         | 訂單編號  | Y   | string | H11768647 |
+| ParkingSpace    | 停車格文字 | N   | string | 測試        |
+| ParkingSpacePic | 停車格圖片 | N   | List   |           |
 
 * ParkingSpacePic傳入參數說明
 
-| 參數名稱         | 參數說明   | 必要 |  型態  | 範例         |
-| ---------------- | ---------- | :--: | :----: | ------------ |
-| SEQNO            | 序號       |  Y   |  int   | 1            |
-| ParkingSpaceFile | 圖片base64 |  Y   | string | Base64String |
-
+| 參數名稱             | 參數說明     | 必要  | 型態     | 範例           |
+| ---------------- | -------- |:---:|:------:| ------------ |
+| SEQNO            | 序號       | Y   | int    | 1            |
+| ParkingSpaceFile | 圖片base64 | Y   | string | Base64String |
 
 * input範例
 
@@ -6184,14 +6213,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -6208,10 +6237,9 @@
 
 # 月租訂閱制相關
 
-
 ## GetMonthList 取得訂閱制月租列表/我的所有方案
 
-###  [/api/GetMonthList/]
+### [/api/GetMonthList/]
 
 * 20210510發佈
 
@@ -6223,10 +6251,10 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態  | 範例                                                                                |
-| ---------- | ------------------------ | :--: | :----: | ----------------------------------                                                  |
-| IsMoto     | 是否為機車               |  N   |  int   | 0:否 1:是                                                                           |
-| ReMode     | 回傳模式                 |  N   |  int   | 0:自動判定(若已有購買月租為我的所有方案2,若無則為月租列表1) 1:月租列表 2:我的所有方案 |
+| 參數名稱   | 參數說明  | 必要  | 型態  | 範例                                                |
+| ------ | ----- |:---:|:---:| ------------------------------------------------- |
+| IsMoto | 是否為機車 | N   | int | 0:否 1:是                                           |
+| ReMode | 回傳模式  | N   | int | 0:自動判定(若已有購買月租為我的所有方案2,若無則為月租列表1) 1:月租列表 2:我的所有方案 |
 
 * input範例
 
@@ -6239,168 +6267,165 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明,汽車牌卡(ReMode=1, IsMoto=0)
 
-| 參數名稱    | 參數說明                    | 型態 | 範例 |
-| ----------- | --------------------------- | :--: | ---- |
-| IsMotor     | 是否為機車                  | int  | 0    |
-| NorMonCards | 汽車牌卡                    | List |      |
-| MixMonCards | 城市車手牌卡                | List |      |
-| ReMode      | 模式(1:月租，2我的所有方案) | int  | 1    |
-
+| 參數名稱        | 參數說明             | 型態   | 範例  |
+| ----------- | ---------------- |:----:| --- |
+| IsMotor     | 是否為機車            | int  | 0   |
+| NorMonCards | 汽車牌卡             | List |     |
+| MixMonCards | 城市車手牌卡           | List |     |
+| ReMode      | 模式(1:月租，2我的所有方案) | int  | 1   |
 
 * Data資料物件說明,機車牌卡(ReMode=1, IsMoto=1)
 
-| 參數名稱    | 參數說明                    | 型態 | 範例 |
-| ----------- | --------------------------- | :--: | ---- |
-| IsMotor     | 是否為機車                  | int  | 1    |
-| NorMonCards | 機車牌卡                    | List |      |
-| ReMode      | 模式(1:月租，2我的所有方案) | int  | 1    |
+| 參數名稱        | 參數說明             | 型態   | 範例  |
+| ----------- | ---------------- |:----:| --- |
+| IsMotor     | 是否為機車            | int  | 1   |
+| NorMonCards | 機車牌卡             | List |     |
+| ReMode      | 模式(1:月租，2我的所有方案) | int  | 1   |
 
 * Data資料物件說明,我的所有方案(ReMode=2)
 
-| 參數名稱 | 參數說明                    |  型態  | 範例 |
-| -------- | --------------------------- | :----: | ---- |
-| MyCar    | 汽車牌卡                    | object |      |
-| MyMoto   | 機車牌卡                    | object |      |
-| ReMode   | 模式(1:月租，2我的所有方案) |  int   | 2    |
-
+| 參數名稱   | 參數說明             | 型態     | 範例  |
+| ------ | ---------------- |:------:| --- |
+| MyCar  | 汽車牌卡             | object |     |
+| MyMoto | 機車牌卡             | object |     |
+| ReMode | 模式(1:月租，2我的所有方案) | int    | 2   |
 
 * NorMonCards, MixMonCards  參數說明
 
-| 參數名稱      | 參數說明             |  型態  | 範例     |
-| -----------   | ----------           | :----: | ---------|
-| MonProjID     | 方案代碼(key)        | string | MR66     |
-| MonProjNM     | 方案名稱      | string | MR66測試 |
-| MonProPeriod  | 總期數(key)          | int    | 3        |
-| ShortDays	    | 短期總天數(key)      | int    | 0        |
-| PeriodPrice	| 方案價格             | int    | 7000     |
-| IsMoto	    | 是否為機車0否1是     | int    | 0        |
-| CarWDHours	| 汽車平日時數         | double | 3.0    |
-| CarHDHours	| 汽車假日時數         | double | 3.0      |
-| MotoTotalMins	| 機車不分平假日分鐘數 | int | 300   |
-| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
-| HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
-| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
-| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
-| IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
-| IsPay	| 是否有繳費0否1是 | int | 1 |
-| IsMix | 是否為城市車手 | int | 0 |
+| 參數名稱          | 參數說明        | 型態     | 範例     |
+| ------------- | ----------- |:------:| ------ |
+| MonProjID     | 方案代碼(key)   | string | MR66   |
+| MonProjNM     | 方案名稱        | string | MR66測試 |
+| MonProPeriod  | 總期數(key)    | int    | 3      |
+| ShortDays     | 短期總天數(key)  | int    | 0      |
+| PeriodPrice   | 方案價格        | int    | 7000   |
+| IsMoto        | 是否為機車0否1是   | int    | 0      |
+| CarWDHours    | 汽車平日時數      | double | 3.0    |
+| CarHDHours    | 汽車假日時數      | double | 3.0    |
+| MotoTotalMins | 機車不分平假日分鐘數  | int    | 300    |
+| WDRateForCar  | 汽車平日優惠費率    | double | 99.0   |
+| HDRateForCar  | 汽車假日優惠費率    | double | 168.0  |
+| WDRateForMoto | 機車平日優惠費率    | double | 1.0    |
+| HDRateForMoto | 機車假日優惠費率    | double | 1.2    |
+| IsDiscount    | 是否為優惠方案0否1是 | int    | 1      |
+| IsPay         | 是否有繳費0否1是   | int    | 1      |
+| IsMix         | 是否為城市車手     | int    | 0      |
 
 * MyCar, MyMoto 參數說明
 
-| 參數名稱  | 參數說明       | 型態   | 範例                                   |
-| --------- | -------------- | ------ | -------------------------------------- |
-| 其餘參數  | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
-| NxtPay	| 下期是否有繳費(0否1是) | int | 0 |
-| StartDate | 訂閱制月租起日 | string | 05/18 00:00                            |
-| EndDate   | 訂閱制月租迄日 | string | 06/16 23:59                            |
+| 參數名稱      | 參數說明          | 型態     | 範例                               |
+| --------- | ------------- | ------ | -------------------------------- |
+| 其餘參數      | 同NorMonCards  |        | 參考NorMonCards, MixMonCards  參數說明 |
+| NxtPay    | 下期是否有繳費(0否1是) | int    | 0                                |
+| StartDate | 訂閱制月租起日       | string | 05/18 00:00                      |
+| EndDate   | 訂閱制月租迄日       | string | 06/16 23:59                      |
 
--  Output範例,汽車牌卡(ReMode=1, IsMoto=0)
-
+- Output範例,汽車牌卡(ReMode=1, IsMoto=0)
 
 ```
 {
-	"Result": "1",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": {{
-	"Result": "1",
-	"ErrorCode": "000000",
-	"NeedRelogin": 0,
-	"NeedUpgrade": 0,
-	"ErrorMessage": "Success",
-	"Data": {
-		"IsMotor": 0,
-		"NorMonCards": [
-			{
-				"MonProjID": "MR01",
-				"MonProjNM": "汽車平日入門2期",
-				"MonProPeriod": 2,
-				"ShortDays": 0,
-				"PeriodPrice": 149,
-				"IsMoto": 0,
-				"CarWDHours": 1.0,
-				"CarHDHours": 0.0,
-				"MotoTotalMins": 0,
-				"WDRateForCar": 99.0,
-				"HDRateForCar": 168.0,
-				"WDRateForMoto": 2.0,
-				"HDRateForMoto": 2.0,
-				"IsDiscount": 0,
-				"IsPay": 0,
-				"IsMix": 0
-			},
-			{
-				"MonProjID": "MR02",
-				"MonProjNM": "汽車平日低資費6期",
-				"MonProPeriod": 6,
-				"ShortDays": 0,
-				"PeriodPrice": 2999,
-				"IsMoto": 0,
-				"CarWDHours": 33.0,
-				"CarHDHours": 0.0,
-				"MotoTotalMins": 0,
-				"WDRateForCar": 90.0,
-				"HDRateForCar": 168.0,
-				"WDRateForMoto": 1.8,
-				"HDRateForMoto": 1.8,
-				"IsDiscount": 0,
-				"IsPay": 0,
-				"IsMix": 0
-			}
-		],
-		"MixMonCards": [
-			{
-				"MonProjID": "MR10",
-				"MonProjNM": "汽車平日299入門方案",
-				"MonProPeriod": 6,
-				"ShortDays": 0,
-				"PeriodPrice": 299,
-				"IsMoto": 0,
-				"CarWDHours": 2.0,
-				"CarHDHours": 0.0,
-				"MotoTotalMins": 30,
-				"WDRateForCar": 99.0,
-				"HDRateForCar": 168.0,
-				"WDRateForMoto": 2.0,
-				"HDRateForMoto": 2.0,
-				"IsDiscount": 0,
-				"IsPay": 0,
-				"IsMix": 1
-			},
-			{
-				"MonProjID": "MR66",
-				"MonProjNM": "測試_汽包機66-1",
-				"MonProPeriod": 1,
-				"ShortDays": 0,
-				"PeriodPrice": 6000,
-				"IsMoto": 0,
-				"CarWDHours": 1.0,
-				"CarHDHours": 1.0,
-				"MotoTotalMins": 100,
-				"WDRateForCar": 99.0,
-				"HDRateForCar": 168.0,
-				"WDRateForMoto": 1.0,
-				"HDRateForMoto": 1.2,
-				"IsDiscount": 0,
-				"IsPay": 0,
-				"IsMix": 1
-			}
-		],
-		"ReMode": 1
-	}
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "IsMotor": 0,
+        "NorMonCards": [
+            {
+                "MonProjID": "MR01",
+                "MonProjNM": "汽車平日入門2期",
+                "MonProPeriod": 2,
+                "ShortDays": 0,
+                "PeriodPrice": 149,
+                "IsMoto": 0,
+                "CarWDHours": 1.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 0,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 2.0,
+                "HDRateForMoto": 2.0,
+                "IsDiscount": 0,
+                "IsPay": 0,
+                "IsMix": 0
+            },
+            {
+                "MonProjID": "MR02",
+                "MonProjNM": "汽車平日低資費6期",
+                "MonProPeriod": 6,
+                "ShortDays": 0,
+                "PeriodPrice": 2999,
+                "IsMoto": 0,
+                "CarWDHours": 33.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 0,
+                "WDRateForCar": 90.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.8,
+                "HDRateForMoto": 1.8,
+                "IsDiscount": 0,
+                "IsPay": 0,
+                "IsMix": 0
+            }
+        ],
+        "MixMonCards": [
+            {
+                "MonProjID": "MR10",
+                "MonProjNM": "汽車平日299入門方案",
+                "MonProPeriod": 6,
+                "ShortDays": 0,
+                "PeriodPrice": 299,
+                "IsMoto": 0,
+                "CarWDHours": 2.0,
+                "CarHDHours": 0.0,
+                "MotoTotalMins": 30,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 2.0,
+                "HDRateForMoto": 2.0,
+                "IsDiscount": 0,
+                "IsPay": 0,
+                "IsMix": 1
+            },
+            {
+                "MonProjID": "MR66",
+                "MonProjNM": "測試_汽包機66-1",
+                "MonProPeriod": 1,
+                "ShortDays": 0,
+                "PeriodPrice": 6000,
+                "IsMoto": 0,
+                "CarWDHours": 1.0,
+                "CarHDHours": 1.0,
+                "MotoTotalMins": 100,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsPay": 0,
+                "IsMix": 1
+            }
+        ],
+        "ReMode": 1
+    }
 }
 ```
 
@@ -6432,7 +6457,7 @@
                 "HDRateForMoto": 1.5,
                 "IsDiscount": 0,
                 "IsPay": 0,
-				"IsMix": 0
+                "IsMix": 0
             },
             {
                 "MonProjID": "MR04",
@@ -6450,7 +6475,7 @@
                 "HDRateForMoto": 1.3,
                 "IsDiscount": 0,
                 "IsPay": 0,
-				"IsMix": 0
+                "IsMix": 0
             },
             {
                 "MonProjID": "MR05",
@@ -6468,7 +6493,7 @@
                 "HDRateForMoto": 1.0,
                 "IsDiscount": 0,
                 "IsPay": 0,
-				"IsMix": 0
+                "IsMix": 0
             }
         ],
         "ReMode": 1
@@ -6477,58 +6502,59 @@
 ```
 
 * Output範例,我的所有方案(ReMode=2)
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "MyCar": {
-			"NxtPay": 0,
-            "StartDate": "05/18 00:00",
-            "EndDate": "06/16 23:59",
-            "MonProjID": "MR66",
-            "MonProjNM": "測試_汽包機66-3",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "PeriodPrice": 7000,
-            "IsMoto": 0,
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "IsDiscount": 0,
-            "IsPay": 1,
-			"IsMix": 1
-        },
-        "MyMoto": {
-			"NxtPay": 0,
-            "StartDate": "05/18 00:00",
-            "EndDate": "06/16 23:59",
-            "MonProjID": "MR200",
-            "MonProjNM": "測試_機車2000",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "PeriodPrice": 2000,
-            "IsMoto": 1,
-            "CarWDHours": 0.0,
-            "CarHDHours": 0.0,
-            "MotoTotalMins": 600,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "IsDiscount": 0,
-            "IsPay": 1,
-			"IsMix": 0
-        },
-        "ReMode": 2
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "MyCar": {
+          "NxtPay": 0,
+          "StartDate": "05/18 00:00",
+          "EndDate": "06/16 23:59",
+          "MonProjID": "MR66",
+          "MonProjNM": "測試_汽包機66-3",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "PeriodPrice": 7000,
+          "IsMoto": 0,
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "IsDiscount": 0,
+          "IsPay": 1,
+          "IsMix": 1
+      },
+      "MyMoto": {
+          "NxtPay": 0,
+          "StartDate": "05/18 00:00",
+          "EndDate": "06/16 23:59",
+          "MonProjID": "MR200",
+          "MonProjNM": "測試_機車2000",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "PeriodPrice": 2000,
+          "IsMoto": 1,
+          "CarWDHours": 0.0,
+          "CarHDHours": 0.0,
+          "MotoTotalMins": 600,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "IsDiscount": 0,
+          "IsPay": 1,
+          "IsMix": 0
+      },
+      "ReMode": 2
+  }
 }
 ```
 
@@ -6546,94 +6572,95 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例                              |
-| ---------- | ------------------------ | :--: | :----:  | ----------------------------------|
-| MonProjID  | 專案代碼                 |  Y   |  string | MR66                              |
-| Mode		 | 使用模式(0:一般 1:變更合約 |  N   | string  | 0								 |
+| 參數名稱      | 參數說明             | 必要  | 型態     | 範例   |
+| --------- | ---------------- |:---:|:------:| ---- |
+| MonProjID | 專案代碼             | Y   | string | MR66 |
+| Mode      | 使用模式(0:一般 1:變更合約 | N   | string | 0    |
 
 * input範例
 
 ```
 {
     "MonProjID": "MR66",
-	"Mode":0
+    "Mode":0
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱    | 參數說明                    | 型態    | 範例                  |
-| --------    | --------                    | :--:    | ----------------------|
-| MonProDisc  | 注意事項                    | string  |  汽包機66-1注意事項   |
-| MonCards    | 汽機車牌卡    | list |      |
+| 參數名稱       | 參數說明  | 型態     | 範例          |
+| ---------- | ----- |:------:| ----------- |
+| MonProDisc | 注意事項  | string | 汽包機66-1注意事項 |
+| MonCards   | 汽機車牌卡 | list   |             |
 
 * MonCards 參數說明
 
-| 參數名稱      | 參數說明             |  型態  | 範例     |
-| -----------   | ----------           | :----: | ---------|
-| UseUntil		| 使用期限(Mode=1時，此欄位變為變更合約用的開始時間)  | string | 2022/02/28 00:00|
-| MonProjID     | 方案代碼(key)        | string | MR66     |
-| MonProjNM     | 方案名稱        | string | MR66測試 |
-| MonProPeriod  | 總期數(key)          | int    | 3        |
-| ShortDays	    | 短期總天數(key)      | int    | 0        |
-| PeriodPrice	| 方案價格             | int    | 7000     |
-| IsMoto	    | 是否為機車0否1是     | int    | 0        |
-| CarWDHours	| 汽車平日時數         | double | 10       |
-| CarHDHours	| 汽車假日時數         | double | 0        |
-| MotoTotalMins	| 機車不分平假日分鐘數 | int | 120      |
-| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
-| HDRateForCar	| 汽車假日優惠費率 | double | 168.0 |
-| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
-| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
-| IsDiscount	| 是否為優惠方案(0否1是) | int    | 1        |
-| IsPay	| 當期是否有繳費(0否1是) | int | 1 |
-| IsMix | 是否為城市車手(0否1是) | int | 0 |
-| PayPrice		| 信用卡授權金額	   | int	| 7000	   |
+| 參數名稱          | 參數說明                          | 型態     | 範例               |
+| ------------- | ----------------------------- |:------:| ---------------- |
+| UseUntil      | 使用期限(Mode=1時，此欄位變為變更合約用的開始時間) | string | 2022/02/28 00:00 |
+| MonProjID     | 方案代碼(key)                     | string | MR66             |
+| MonProjNM     | 方案名稱                          | string | MR66測試           |
+| MonProPeriod  | 總期數(key)                      | int    | 3                |
+| ShortDays     | 短期總天數(key)                    | int    | 0                |
+| PeriodPrice   | 方案價格                          | int    | 7000             |
+| IsMoto        | 是否為機車0否1是                     | int    | 0                |
+| CarWDHours    | 汽車平日時數                        | double | 10               |
+| CarHDHours    | 汽車假日時數                        | double | 0                |
+| MotoTotalMins | 機車不分平假日分鐘數                    | int    | 120              |
+| WDRateForCar  | 汽車平日優惠費率                      | double | 99.0             |
+| HDRateForCar  | 汽車假日優惠費率                      | double | 168.0            |
+| WDRateForMoto | 機車平日優惠費率                      | double | 1.0              |
+| HDRateForMoto | 機車假日優惠費率                      | double | 1.2              |
+| IsDiscount    | 是否為優惠方案(0否1是)                 | int    | 1                |
+| IsPay         | 當期是否有繳費(0否1是)                 | int    | 1                |
+| IsMix         | 是否為城市車手(0否1是)                 | int    | 0                |
+| PayPrice      | 信用卡授權金額                       | int    | 7000             |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "MonProDisc": "汽包機66-6注意事項",
-        "MonCards": [
-            {
-				"UseUntil": "2022/02/28 00:00",
-                "MonProjID": "MR66",
-                "MonProjNM": "測試_汽包機66-6",
-                "MonProPeriod": 6,
-                "ShortDays": 0,
-                "PeriodPrice": 9000,
-                "IsMoto": 0,
-                "CarWDHours": 6.0,
-                "CarHDHours": 6.0,
-                "MotoTotalMins": 600,
-                "WDRateForCar": 99.0,
-                "HDRateForCar": 168.0,
-                "WDRateForMoto": 1.0,
-                "HDRateForMoto": 1.2,
-                "IsDiscount": 0,
-                "IsPay": 0,
-				"IsMix": 1,
-				"PayPrice":7000
-            }
-        ]
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "MonProDisc": "汽包機66-6注意事項",
+      "MonCards": [
+          {
+              "UseUntil": "2022/02/28 00:00",
+              "MonProjID": "MR66",
+              "MonProjNM": "測試_汽包機66-6",
+              "MonProPeriod": 6,
+              "ShortDays": 0,
+              "PeriodPrice": 9000,
+              "IsMoto": 0,
+              "CarWDHours": 6.0,
+              "CarHDHours": 6.0,
+              "MotoTotalMins": 600,
+              "WDRateForCar": 99.0,
+              "HDRateForCar": 168.0,
+              "WDRateForMoto": 1.0,
+              "HDRateForMoto": 1.2,
+              "IsDiscount": 0,
+              "IsPay": 0,
+              "IsMix": 1,
+              "PayPrice":7000
+          }
+      ]
+  }
 }
 ```
 
@@ -6653,14 +6680,14 @@
 
 * input 購買月租 (api/BuyNow/DoAddMonth)) 參數說明
 
-| 參數名稱     | 參數說明              | 必要 |  型態  | 範例 |
-| ------------ | --------------------- | :--: | :----: | ---- |
-| MonProjID    | 專案編號(key          |  Y   | string | MR66 |
-| MonProPeriod | 期數(key)             |  Y   |  int   | 3    |
-| ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
-| SetSubsNxt   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
-| PayTypeId    | 付款方式              |  N   |  int   | 0    |
-| InvoTypeId   | 發票方式              |  N   |  int   | 2    |
+| 參數名稱         | 參數說明          | 必要  | 型態     | 範例   |
+| ------------ | ------------- |:---:|:------:| ---- |
+| MonProjID    | 專案編號(key      | Y   | string | MR66 |
+| MonProPeriod | 期數(key)       | Y   | int    | 3    |
+| ShortDays    | 短天期(key)      | Y   | int    | 0    |
+| SetSubsNxt   | 設定自動續約(0否,1是) | N   | int    | 0    |
+| PayTypeId    | 付款方式          | N   | int    | 0    |
+| InvoTypeId   | 發票方式          | N   | int    | 2    |
 
 * input範例 (購買月租)
 
@@ -6675,51 +6702,52 @@
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱  | 參數說明              | 型態 | 範例 |
-| --------- | --------------------- | :--: | ---- |
-| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
+| 參數名稱      | 參數說明          | 型態  | 範例  |
+| --------- | ------------- |:---:| --- |
+| PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
+  }
 }
 ```
+
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                         | 說明                             |
-| -------- | -------------------------------- | -------------------------------- |
-| ERR252   | SP執行失敗                       | SP執行失敗                       |
-| ERR254   | LogID必填                        | LogID必填                        |
-| ERR257   | 參數遺漏                         | 參數遺漏                         |
-| ERR261   | 專案不存在                       | 專案不存在                       |
-| ERR262   | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
-| ERR263   | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
-| ERR264   | 期數為0                          | 期數為0                          |
-| ERR270   | 信用卡交易失敗                   | 信用卡交易失敗                   |
-| ERR277   | 刷卡已存在                       | 刷卡已存在                       |
-| ERR283   | 積分過低無法購買訂閱制           | 積分過低無法購買訂閱制           |
+| 錯誤代碼   | 錯誤訊息             | 說明               |
+| ------ | ---------------- | ---------------- |
+| ERR252 | SP執行失敗           | SP執行失敗           |
+| ERR254 | LogID必填          | LogID必填          |
+| ERR257 | 參數遺漏             | 參數遺漏             |
+| ERR261 | 專案不存在            | 專案不存在            |
+| ERR262 | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
+| ERR263 | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
+| ERR264 | 期數為0             | 期數為0             |
+| ERR270 | 信用卡交易失敗          | 信用卡交易失敗          |
+| ERR277 | 刷卡已存在            | 刷卡已存在            |
+| ERR283 | 積分過低無法購買訂閱制      | 積分過低無法購買訂閱制      |
 
 ## BuyNow/DoUpMonth 月租升轉
 
@@ -6737,17 +6765,16 @@
 
 * input 月租升轉 (api/BuyNow/DoUpMonth) 參數說明
 
-| 參數名稱        | 參數說明          | 必要 | 型態   | 範例  |
-| --------------- | ----------------- | ---- | ------ | ----- |
-| MonProjID       | 專案編號(key)     | Y    | string | MR66  |
-| MonProPeriod    | 期數(key)         | Y    | int    | 3     |
-| ShortDays       | 短天期(key)       | Y    | int    | 0     |
-| UP_MonProjID    | 升轉專案編號(key) | Y    | string | MR102 |
-| UP_MonProPeriod | 升轉期數(key)     | Y    | int    | 3     |
-| UP_ShortDays    | 升轉短天期(key)   | Y    | int    | 0     |
-| PayTypeId       | 付款方式          | N    | int    | 0     |
-| InvoTypeId      | 發票方式          | N    | int    | 2     |
-
+| 參數名稱            | 參數說明        | 必要  | 型態     | 範例    |
+| --------------- | ----------- | --- | ------ | ----- |
+| MonProjID       | 專案編號(key)   | Y   | string | MR66  |
+| MonProPeriod    | 期數(key)     | Y   | int    | 3     |
+| ShortDays       | 短天期(key)    | Y   | int    | 0     |
+| UP_MonProjID    | 升轉專案編號(key) | Y   | string | MR102 |
+| UP_MonProPeriod | 升轉期數(key)   | Y   | int    | 3     |
+| UP_ShortDays    | 升轉短天期(key)  | Y   | int    | 0     |
+| PayTypeId       | 付款方式        | N   | int    | 0     |
+| InvoTypeId      | 發票方式        | N   | int    | 2     |
 
 * input範例 (月租升轉)
 
@@ -6764,53 +6791,54 @@
 }
 ```
 
--  Output回傳參數說明
+- Output回傳參數說明
 
-
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱  | 參數說明              | 型態 | 範例 |
-| --------- | --------------------- | :--: | ---- |
-| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
+| 參數名稱      | 參數說明          | 型態  | 範例  |
+| --------- | ------------- |:---:| --- |
+| PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
+  }
 }
 ```
+
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息             | 說明                 |
-| -------- | -------------------- | -------------------- |
-| ERR252   | SP執行失敗           | SP執行失敗           |
-| ERR254   | LogID必填            | LogID必填            |
-| ERR257   | 參數遺漏             | 參數遺漏             |
-| ERR258   | 月租不存在           | 月租不存在           |
-| ERR259   | 無對應目前期數月租檔 | 無對應目前期數月租檔 |
-| ERR260   | 無對應待升月租檔     | 無對應待升月租檔     |
-| ERR270   | 信用卡交易失敗       | 信用卡交易失敗       |
-| ERR275   | 期數需相同           | 期數需相同           |
-| ERR277   | 刷卡已存在           | 刷卡已存在           |
-| ERR909   | 專案不存在           | 專案不存在           |
-| ERR993   | 不能升轉比現在專案低的資費       | 不能升轉比現在專案低的資費       |
-| ERR994   | 只能升轉同種類專案               | 只能升轉同種類專案               |
+| 錯誤代碼   | 錯誤訊息          | 說明            |
+| ------ | ------------- | ------------- |
+| ERR252 | SP執行失敗        | SP執行失敗        |
+| ERR254 | LogID必填       | LogID必填       |
+| ERR257 | 參數遺漏          | 參數遺漏          |
+| ERR258 | 月租不存在         | 月租不存在         |
+| ERR259 | 無對應目前期數月租檔    | 無對應目前期數月租檔    |
+| ERR260 | 無對應待升月租檔      | 無對應待升月租檔      |
+| ERR270 | 信用卡交易失敗       | 信用卡交易失敗       |
+| ERR275 | 期數需相同         | 期數需相同         |
+| ERR277 | 刷卡已存在         | 刷卡已存在         |
+| ERR909 | 專案不存在         | 專案不存在         |
+| ERR993 | 不能升轉比現在專案低的資費 | 不能升轉比現在專案低的資費 |
+| ERR994 | 只能升轉同種類專案     | 只能升轉同種類專案     |
 
 ## BuyNow/DoPayArrs 月租欠費
 
@@ -6828,11 +6856,10 @@
 
 * input 月租欠費繳交(api/BuyNow/DoPayArrs))參數說明
 
-| 參數名稱   | 參數說明 | 必要 | 型態 | 範例 |
-| ---------- | -------- | ---- | ---- | ---- |
-| PayTypeId  | 付款方式 | N    | int  | 0    |
-| InvoTypeId | 發票方式 | N    | int  | 2    |
-
+| 參數名稱       | 參數說明 | 必要  | 型態  | 範例  |
+| ---------- | ---- | --- | --- | --- |
+| PayTypeId  | 付款方式 | N   | int | 0   |
+| InvoTypeId | 發票方式 | N   | int | 2   |
 
 * input範例 (月租欠費繳交)
 
@@ -6843,51 +6870,50 @@
 }
 ```
 
--  Output回傳參數說明
+- Output回傳參數說明
 
-
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱  | 參數說明              | 型態 | 範例 |
-| --------- | --------------------- | :--: | ---- |
-| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
+| 參數名稱      | 參數說明          | 型態  | 範例  |
+| --------- | ------------- |:---:| --- |
+| PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
+  }
 }
 ```
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息       | 說明           |
-| -------- | -------------- | -------------- |
-| ERR254   | LogID必填      | LogID必填      |
-| ERR257   | 參數遺漏       | 參數遺漏       |
-| ERR267   | ApiJson錯誤    | ApiJson錯誤    |
-| ERR270   | 信用卡交易失敗 | 信用卡交易失敗 |
-| ERR277   | 刷卡已存在     | 刷卡已存在     |
-| ERR909   | 專案不存在     | 專案不存在     |
-| ERR914   | 資料邏輯錯誤   | 資料邏輯錯誤   |
-| ERR916   | 參數格式錯誤   | 參數格式錯誤   |
-
+| 錯誤代碼   | 錯誤訊息      | 說明        |
+| ------ | --------- | --------- |
+| ERR254 | LogID必填   | LogID必填   |
+| ERR257 | 參數遺漏      | 參數遺漏      |
+| ERR267 | ApiJson錯誤 | ApiJson錯誤 |
+| ERR270 | 信用卡交易失敗   | 信用卡交易失敗   |
+| ERR277 | 刷卡已存在     | 刷卡已存在     |
+| ERR909 | 專案不存在     | 專案不存在     |
+| ERR914 | 資料邏輯錯誤    | 資料邏輯錯誤    |
+| ERR916 | 參數格式錯誤    | 參數格式錯誤    |
 
 ## BuyNowTool/DoAddMonth 月租購買工具
 
@@ -6907,22 +6933,21 @@
 
 * input 購買月租 (api/BuyNowTool/DoAddMonth) 參數說明
 
-| 參數名稱     | 參數說明              | 必要 |  型態  | 範例 |
-| ------------ | --------------------- | :--: | :----: | ---- |
-| MonProjID    | 專案編號(key          |  Y   | string | MR01 |
-| MonProPeriod | 期數(key)             |  Y   |  int   | 2    |
-| ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
-| SetSubsNxt   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
-| MerchantTradeNo | 商店訂單編號       |  N   | string | A225668592M_20220127131822863|
-| TransactionNo   | 台新訂單編號       |  N   | string | IR202201276YKVO00023 |
-| MonthlyRentId   | 訂閱制編號         |  N   |  int   | 2363 |
-| CreditCardFlg   | 是否付費(0:否 1是) |  N   |  int   | 0 |
-| SubsDataFlg     | 是否訂閱(0:否 1是) |  N   |  int   | 0 |
-| EscrowMonthFlg  | 是否履保(0:否 1是) |  N   |  int   | 0 |
-| InvoiceFlg      | 是否開發票(0:否 1是) |  N   |  int   | 0 |
-| IDNO            | 會員編號           |  Y   |  string  | A225668592 |
-| ProdPrice       | 合約金額           |  Y   |  int     | 299 |
-
+| 參數名稱            | 參數說明          | 必要  | 型態     | 範例                            |
+| --------------- | ------------- |:---:|:------:| ----------------------------- |
+| MonProjID       | 專案編號(key      | Y   | string | MR01                          |
+| MonProPeriod    | 期數(key)       | Y   | int    | 2                             |
+| ShortDays       | 短天期(key)      | Y   | int    | 0                             |
+| SetSubsNxt      | 設定自動續約(0否,1是) | N   | int    | 0                             |
+| MerchantTradeNo | 商店訂單編號        | N   | string | A225668592M_20220127131822863 |
+| TransactionNo   | 台新訂單編號        | N   | string | IR202201276YKVO00023          |
+| MonthlyRentId   | 訂閱制編號         | N   | int    | 2363                          |
+| CreditCardFlg   | 是否付費(0:否 1是)  | N   | int    | 0                             |
+| SubsDataFlg     | 是否訂閱(0:否 1是)  | N   | int    | 0                             |
+| EscrowMonthFlg  | 是否履保(0:否 1是)  | N   | int    | 0                             |
+| InvoiceFlg      | 是否開發票(0:否 1是) | N   | int    | 0                             |
+| IDNO            | 會員編號          | Y   | string | A225668592                    |
+| ProdPrice       | 合約金額          | Y   | int    | 299                           |
 
 * input範例 (購買月租)
 
@@ -6944,47 +6969,47 @@
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱  | 參數說明              | 型態 | 範例 |
-| --------- | --------------------- | :--: | ---- |
-| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
+| 參數名稱      | 參數說明          | 型態  | 範例  |
+| --------- | ------------- |:---:| --- |
+| PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
+  }
 }
 ```
+
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                         | 說明                             |
-| -------- | -------------------------------- | -------------------------------- |
-| ERR247   | 參數格式不符                     | 輸入參數格式不符                 |
-| ERR261   | 專案不存在                       | 專案不存在                       |
-| ERR262   | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
-| ERR263   | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
-| ERR283   | 積分過低無法購買訂閱制           | 積分過低無法購買訂閱制           |
-
+| 錯誤代碼   | 錯誤訊息             | 說明               |
+| ------ | ---------------- | ---------------- |
+| ERR247 | 參數格式不符           | 輸入參數格式不符         |
+| ERR261 | 專案不存在            | 專案不存在            |
+| ERR262 | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
+| ERR263 | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
+| ERR283 | 積分過低無法購買訂閱制      | 積分過低無法購買訂閱制      |
 
 ## BuyNowTool/DoUpMonth 月租升轉工具
 
@@ -7004,19 +7029,19 @@
 
 * input 月租升轉 (api/BuyNowTool/DoUpMonth) 參數說明
 
-| 參數名稱     | 參數說明              | 必要 |  型態  | 範例 |
-| ------------ | --------------------- | :--: | :----: | ---- |
-| IDNO            | 會員編號           |  Y   |  string  | A225668592 |
-| MonProjID       | 目前專案編號(key          |  Y   | string | MR04 |
-| MonProPeriod    | 目前專案期數(key)         |  Y   |  int   | 6    |
-| ShortDays       | 目前專案短天期(key)       |  Y   |  int   | 0    |
-| UP_MonProjID    | 升轉專案編號(key          |  Y   | string | MR05 |
-| UP_MonProPeriod | 升轉期數(key)             |  Y   |  int   | 6   |
-| UP_ShortDays    | 升轉短天期(key)           |  Y   |  int   | 0    |
-| SetSubsNxt      | 設定自動續約(0否,1是)     |  N   |  int   | 0    |
-| MerchantTradeNo | 商店訂單編號       |  N   | string | A225668592M_20220127131822863|
-| TransactionNo   | 台新訂單編號       |  N   | string | IR202201276YKVO00023 |
-| CreditCardFlg   | 是否付費(0:否 1是) |  N   |  int   | 0 |
+| 參數名稱            | 參數說明          | 必要  | 型態     | 範例                            |
+| --------------- | ------------- |:---:|:------:| ----------------------------- |
+| IDNO            | 會員編號          | Y   | string | A225668592                    |
+| MonProjID       | 目前專案編號(key    | Y   | string | MR04                          |
+| MonProPeriod    | 目前專案期數(key)   | Y   | int    | 6                             |
+| ShortDays       | 目前專案短天期(key)  | Y   | int    | 0                             |
+| UP_MonProjID    | 升轉專案編號(key    | Y   | string | MR05                          |
+| UP_MonProPeriod | 升轉期數(key)     | Y   | int    | 6                             |
+| UP_ShortDays    | 升轉短天期(key)    | Y   | int    | 0                             |
+| SetSubsNxt      | 設定自動續約(0否,1是) | N   | int    | 0                             |
+| MerchantTradeNo | 商店訂單編號        | N   | string | A225668592M_20220127131822863 |
+| TransactionNo   | 台新訂單編號        | N   | string | IR202201276YKVO00023          |
+| CreditCardFlg   | 是否付費(0:否 1是)  | N   | int    | 0                             |
 
 * input範例 (月租升轉)
 
@@ -7036,50 +7061,50 @@
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱  | 參數說明              | 型態 | 範例 |
-| --------- | --------------------- | :--: | ---- |
-| PayResult | 付費結果(0失敗 1成功) | int  | 0    |
+| 參數名稱      | 參數說明          | 型態  | 範例  |
+| --------- | ------------- |:---:| --- |
+| PayResult | 付費結果(0失敗 1成功) | int | 0   |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "PayResult": 1
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "PayResult": 1
+  }
 }
 ```
+
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                         | 說明                             |
-| -------- | -------------------------------- | -------------------------------- |
-| ERR247   | 參數格式不符                     | 輸入參數格式不符                 |
-| ERR261   | 專案不存在                       | 專案不存在                       |
-| ERR262   | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
-| ERR263   | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
-| ERR283   | 積分過低無法購買訂閱制           | 積分過低無法購買訂閱制           |
-| ERR909   | 專案不存在                       | 專案不存在                       |
-| ERR993   | 不能升轉比現在專案低的資費       | 不能升轉比現在專案低的資費       |
-| ERR994   | 只能升轉同種類專案               | 只能升轉同種類專案               |
-
+| 錯誤代碼   | 錯誤訊息             | 說明               |
+| ------ | ---------------- | ---------------- |
+| ERR247 | 參數格式不符           | 輸入參數格式不符         |
+| ERR261 | 專案不存在            | 專案不存在            |
+| ERR262 | 同時段只能訂閱一個汽車訂閱制月租 | 同時段只能訂閱一個汽車訂閱制月租 |
+| ERR263 | 同時段只能訂閱一個機車訂閱制月租 | 同時段只能訂閱一個機車訂閱制月租 |
+| ERR283 | 積分過低無法購買訂閱制      | 積分過低無法購買訂閱制      |
+| ERR909 | 專案不存在            | 專案不存在            |
+| ERR993 | 不能升轉比現在專案低的資費    | 不能升轉比現在專案低的資費    |
+| ERR994 | 只能升轉同種類專案        | 只能升轉同種類專案        |
 
 ## GetMySubs 我的方案牌卡明細
 
@@ -7095,103 +7120,103 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例     				|
-| ---------- | ------------------------ | :--: | :----:  | -------------------------|
-| MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
-| MonProPeriod | 總期數					|  Y   | int | 3 |
-| ShortDays | 短期總天數,非短期則為0  |  Y   | int | 0 |
+| 參數名稱         | 參數說明         | 必要  | 型態     | 範例   |
+| ------------ | ------------ |:---:|:------:| ---- |
+| MonProjID    | 月租專案代碼       | Y   | string | MR66 |
+| MonProPeriod | 總期數          | Y   | int    | 3    |
+| ShortDays    | 短期總天數,非短期則為0 | Y   | int    | 0    |
 
 * input範例
 
 ```
 {
     "MonProjID": "MR66",
-	"MonProPeriod": 3,
-	"ShortDays" : 0
+    "MonProPeriod": 3,
+    "ShortDays" : 0
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱    | 參數說明                    | 型態    | 範例                  |
-| --------    | --------                    | :--:    | ----------------------|
-| Month       | 資料物件 | list | |
+| 參數名稱  | 參數說明 | 型態   | 範例  |
+| ----- | ---- |:----:| --- |
+| Month | 資料物件 | list |     |
 
 * Month 參數說明
 
-| 參數名稱      | 參數說明              |  型態  | 範例               |
-| -----------   | ----------            | :----: | -------------------|
-| MonProjID     | 月租專案代碼  | string | MR66 |
-| MonProPeriod  | 總期數		| int | 3 |
-| ShortDays		| 短天期天數    | int | 0 |
-| MonProjNM		| 月租專案名稱  | string | 測試_汽包機66-3 |
-| CarWDHours	| 汽車平日時數	| double | 3.0             |
-| CarHDHours	| 汽車假日時數	| double | 3.0 |
-| MotoTotalMins | 機車不分平假日分鐘數 | int | 300.0 |
-| WDRateForCar | 汽車平日優惠價 | double | 99.0 |
-| HDRateForCar | 汽車假日優惠價 | double | 168.0 |
-| WDRateForMoto | 機車平日優惠價 | double | 1.0 |
-| HDRateForMoto | 機車假日優惠價 | double | 1.2 |
-| StartDate 	| 起日 			| string | 2021/05/18 00:00|
-| EndDate 		| 迄日 			| string | 2021/06/16 23:59 |
-| MonthStartDate | 全月租專案起日 | string | 2021/05/18 00:00|
-| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 23:59|
-| NxtMonProPeriod | 下期續訂總期數 | string | 3 |
-| IsMix | 是否為城市車手 (0否1是) | int | 1 |
-| IsUpd | 是否已升級 (0否1是) | int | 0 |
-| SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
-| IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
-| IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
-| IsMoto	    | 是否為機車0否1是     | int    | 0        |
+| 參數名稱            | 參數說明            | 型態     | 範例               |
+| --------------- | --------------- |:------:| ---------------- |
+| MonProjID       | 月租專案代碼          | string | MR66             |
+| MonProPeriod    | 總期數             | int    | 3                |
+| ShortDays       | 短天期天數           | int    | 0                |
+| MonProjNM       | 月租專案名稱          | string | 測試_汽包機66-3       |
+| CarWDHours      | 汽車平日時數          | double | 3.0              |
+| CarHDHours      | 汽車假日時數          | double | 3.0              |
+| MotoTotalMins   | 機車不分平假日分鐘數      | int    | 300.0            |
+| WDRateForCar    | 汽車平日優惠價         | double | 99.0             |
+| HDRateForCar    | 汽車假日優惠價         | double | 168.0            |
+| WDRateForMoto   | 機車平日優惠價         | double | 1.0              |
+| HDRateForMoto   | 機車假日優惠價         | double | 1.2              |
+| StartDate       | 起日              | string | 2021/05/18 00:00 |
+| EndDate         | 迄日              | string | 2021/06/16 23:59 |
+| MonthStartDate  | 全月租專案起日         | string | 2021/05/18 00:00 |
+| MonthEndDate    | 全月租專案迄日         | string | 2021/08/16 23:59 |
+| NxtMonProPeriod | 下期續訂總期數         | string | 3                |
+| IsMix           | 是否為城市車手 (0否1是)  | int    | 1                |
+| IsUpd           | 是否已升級 (0否1是)    | int    | 0                |
+| SubsNxt         | 是否自動續訂 (0否1是)   | int    | 1                |
+| IsChange        | 是否變更下期合約 (0否1是) | int    | 0                |
+| IsPay           | 是否當期有繳費 (0否1是)  | int    | 1                |
+| IsMoto          | 是否為機車0否1是       | int    | 0                |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "Month": {
-            "MonProjID": "MR66",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機66-3",
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "StartDate": "2021/05/26 00:00",
-            "EndDate": "2021/06/24 23:59",
-            "MonthStartDate": "2021/05/26 00:00",
-            "MonthEndDate": "2021/08/24 23:59",
-            "NxtMonProPeriod": 3,
-            "IsMix": 1,
-            "IsUpd": 0,
-            "SubsNxt": 1,
-            "IsChange": 0,
-            "IsPay": 1,
-			"IsMoto": 0
-        }
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "Month": {
+          "MonProjID": "MR66",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "MonProjNM": "測試_汽包機66-3",
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "StartDate": "2021/05/26 00:00",
+          "EndDate": "2021/06/24 23:59",
+          "MonthStartDate": "2021/05/26 00:00",
+          "MonthEndDate": "2021/08/24 23:59",
+          "NxtMonProPeriod": 3,
+          "IsMix": 1,
+          "IsUpd": 0,
+          "SubsNxt": 1,
+          "IsChange": 0,
+          "IsPay": 1,
+          "IsMoto": 0
+      }
+  }
 }
 ```
-
 
 ## GetSubsCNT 取得合約明細
 
@@ -7207,132 +7232,129 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                 | 必要 |  型態   | 範例     				|
-| ---------- | ------------------------ | :--: | :----:  | -------------------------|
-| MonProjID  | 月租專案代碼                 |  Y   |  string | MR66                     |
-| MonProPeriod | 總期數					|  Y   | int | 6  |
-| ShortDays | 短期總天數,非短期則為0    |  Y   | int | 0 |
-
+| 參數名稱         | 參數說明         | 必要  | 型態     | 範例   |
+| ------------ | ------------ |:---:|:------:| ---- |
+| MonProjID    | 月租專案代碼       | Y   | string | MR66 |
+| MonProPeriod | 總期數          | Y   | int    | 6    |
+| ShortDays    | 短期總天數,非短期則為0 | Y   | int    | 0    |
 
 * input範例
 
 ```
 {
     "MonProjID": "MR66",
-	"MonProPeriod": 3,
-	"ShortDays" : 0
+    "MonProPeriod": 3,
+    "ShortDays" : 0
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明                |  型態  | 範例          |
-| ------------ | ----------------------- | :----: | ------------- |
-| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼                  | string | 000000        |
-| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息                | string | Success       |
-| Data         | 資料物件                | obect |        　       |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | obect  |           |
 
 * Data資料物件說明
 
-| 參數名稱    | 參數說明   | 型態    | 範例               |
-| --------    | --------  | :--:    | ---------------------- |
-| NowCard		| 資料物件(目前方案) | obj |  　 |
-| NxtCard 		| 資料物件(下期合約) | obj |  　 |
-
+| 參數名稱    | 參數說明       | 型態  | 範例  |
+| ------- | ---------- |:---:| --- |
+| NowCard | 資料物件(目前方案) | obj |     |
+| NxtCard | 資料物件(下期合約) | obj |     |
 
 * NowCard, NxtCard參數說明
 
-| 參數名稱      | 參數說明              |  型態  | 範例               |
-| -----------   | ----------            | :----: | ------------------- |
-| MonProjID     | 月租專案代碼  | string | MR66 |
-| MonProPeriod  | 總期數		| int | 3 |
-| ShortDays		| 短天期天數    | int | 0 |
-| MonProjNM		| 月租專案名稱  | string | 測試_汽包機66-3 |
-| CarWDHours	| 汽車平日時數	| double | 3.0 |
-| CarHDHours	| 汽車假日時數	| double | 3.0 |
-| MotoTotalMins | 機車不分平假日分鐘數 	| int | 300.0 |
-| WDRateForCar | 汽車平日優惠價 | double | 99.0 |
-| HDRateForCar | 機車平日優惠價 | double | 168.0 |
-| WDRateForMoto | 機車平日優惠價 | double | 1.0 |
-| HDRateForMoto | 機車假日優惠價 | double | 1.2 |
-| StartDate | 起日 			| string | 2021/05/18 00:00 |
-| EndDate	| 迄日 			| string | 2021/08/16 23:59|
-| MonProDisc  	| 注意事項      | string  | 汽包機66-3注意事項 |
-| IsMix		| 是否為城市車手 | int | 1 |
-| MonthStartDate | 全月租專案起日 | string | 2021/05/18 00:00|
-| MonthEndDate | 全月租專案迄日 | string | 2021/08/16 23:59|
-| NxtMonProPeriod | 下期續訂總期數 | string | 3 |
-| IsUpd | 是否已升級 (0否1是) | int | 0 |
-| SubsNxt		| 是否自動續訂 (0否1是) | int | 1 |
-| IsChange		| 是否變更下期合約 (0否1是) | int | 0 |
-| IsPay 		| 是否當期有繳費 (0否1是) | int | 1 |
-| IsMoto	    | 是否為機車0否1是     | int    | 0        |
-
+| 參數名稱            | 參數說明            | 型態     | 範例               |
+| --------------- | --------------- |:------:| ---------------- |
+| MonProjID       | 月租專案代碼          | string | MR66             |
+| MonProPeriod    | 總期數             | int    | 3                |
+| ShortDays       | 短天期天數           | int    | 0                |
+| MonProjNM       | 月租專案名稱          | string | 測試_汽包機66-3       |
+| CarWDHours      | 汽車平日時數          | double | 3.0              |
+| CarHDHours      | 汽車假日時數          | double | 3.0              |
+| MotoTotalMins   | 機車不分平假日分鐘數      | int    | 300.0            |
+| WDRateForCar    | 汽車平日優惠價         | double | 99.0             |
+| HDRateForCar    | 機車平日優惠價         | double | 168.0            |
+| WDRateForMoto   | 機車平日優惠價         | double | 1.0              |
+| HDRateForMoto   | 機車假日優惠價         | double | 1.2              |
+| StartDate       | 起日              | string | 2021/05/18 00:00 |
+| EndDate         | 迄日              | string | 2021/08/16 23:59 |
+| MonProDisc      | 注意事項            | string | 汽包機66-3注意事項      |
+| IsMix           | 是否為城市車手         | int    | 1                |
+| MonthStartDate  | 全月租專案起日         | string | 2021/05/18 00:00 |
+| MonthEndDate    | 全月租專案迄日         | string | 2021/08/16 23:59 |
+| NxtMonProPeriod | 下期續訂總期數         | string | 3                |
+| IsUpd           | 是否已升級 (0否1是)    | int    | 0                |
+| SubsNxt         | 是否自動續訂 (0否1是)   | int    | 1                |
+| IsChange        | 是否變更下期合約 (0否1是) | int    | 0                |
+| IsPay           | 是否當期有繳費 (0否1是)  | int    | 1                |
+| IsMoto          | 是否為機車0否1是       | int    | 0                |
 
 * Output範例
+
 ```
 {
-    "Result": "1",
-    "ErrorCode": "000000",
-    "NeedRelogin": 0,
-    "NeedUpgrade": 0,
-    "ErrorMessage": "Success",
-    "Data": {
-        "NowCard": {
-            "MonProjID": "MR66",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機66-3",
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300.0,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "StartDate": "2021/05/18 00:00",
-            "EndDate": "2021/08/16 23:59",
-            "MonProDisc": "汽包機66-3注意事項",
-			"IsMix": 1,
-			"MonthStartDate": "2021/05/26 00:00",
-            "MonthEndDate": "2021/08/24 23:59",
-            "NxtMonProPeriod": 3,
-            "IsUpd": 0,
-            "SubsNxt": 1,
-            "IsChange": 0,
-            "IsPay": 1,
-			"IsMoto": 0
-        },
-        "NxtCard": {
-            "IsChange": 0,
-            "MonProjID": "MR66",
-            "MonProPeriod": 3,
-            "ShortDays": 0,
-            "MonProjNM": "測試_汽包機66-3",
-            "CarWDHours": 3.0,
-            "CarHDHours": 3.0,
-            "MotoTotalMins": 300.0,
-            "WDRateForCar": 99.0,
-            "HDRateForCar": 168.0,
-            "WDRateForMoto": 1.0,
-            "HDRateForMoto": 1.2,
-            "StartDate": "2021/08/16 00:00",
-            "EndDate": "2021/11/14 23:59",
-            "MonProDisc": "汽包機66-3注意事項",
-			"IsMix": 1,
-			"MonthStartDate": "2021/05/26 00:00",
-            "MonthEndDate": "2021/08/24 23:59",
-            "NxtMonProPeriod": 3,
-            "IsUpd": 0,
-            "SubsNxt": 1,
-            "IsPay": 1,
-			"IsMoto": 0
-        }
-    }
+  "Result": "1",
+  "ErrorCode": "000000",
+  "NeedRelogin": 0,
+  "NeedUpgrade": 0,
+  "ErrorMessage": "Success",
+  "Data": {
+      "NowCard": {
+          "MonProjID": "MR66",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "MonProjNM": "測試_汽包機66-3",
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300.0,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "StartDate": "2021/05/18 00:00",
+          "EndDate": "2021/08/16 23:59",
+          "MonProDisc": "汽包機66-3注意事項",
+          "IsMix": 1,
+          "MonthStartDate": "2021/05/26 00:00",
+          "MonthEndDate": "2021/08/24 23:59",
+          "NxtMonProPeriod": 3,
+          "IsUpd": 0,
+          "SubsNxt": 1,
+          "IsChange": 0,
+          "IsPay": 1,
+          "IsMoto": 0
+      },
+      "NxtCard": {
+          "IsChange": 0,
+          "MonProjID": "MR66",
+          "MonProPeriod": 3,
+          "ShortDays": 0,
+          "MonProjNM": "測試_汽包機66-3",
+          "CarWDHours": 3.0,
+          "CarHDHours": 3.0,
+          "MotoTotalMins": 300.0,
+          "WDRateForCar": 99.0,
+          "HDRateForCar": 168.0,
+          "WDRateForMoto": 1.0,
+          "HDRateForMoto": 1.2,
+          "StartDate": "2021/08/16 00:00",
+          "EndDate": "2021/11/14 23:59",
+          "MonProDisc": "汽包機66-3注意事項",
+          "IsMix": 1,
+          "MonthStartDate": "2021/05/26 00:00",
+          "MonthEndDate": "2021/08/24 23:59",
+          "NxtMonProPeriod": 3,
+          "IsUpd": 0,
+          "SubsNxt": 1,
+          "IsPay": 1,
+          "IsMoto": 0
+      }
+  }
 }
 ```
 
@@ -7348,61 +7370,59 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
-| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
-| MonProjID     | 方案代碼(key)              |  Y   | string | MR66                          |
-| MonProPeriod | 總期數(key)               |  Y  | int    | 3                     |
-| ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
-
+| 參數名稱         | 參數說明       | 必要  | 型態     | 範例   |
+| ------------ | ---------- |:---:|:------:| ---- |
+| MonProjID    | 方案代碼(key)  | Y   | string | MR66 |
+| MonProPeriod | 總期數(key)   | Y   | int    | 3    |
+| ShortDays    | 短期總天數(key) | Y   | int    | 0    |
 
 * input範例
+
 ```
 {
-    "MonProjID"::"MR66",
-    "MonProPeriod:3,
-    "ShortDays":"0"
+  "MonProjID"::"MR66",
+  "MonProPeriod:3,
+  "ShortDays":"0"
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱      | 參數說明                |  型態  | 範例          |
-| ------------ | ----------------------- | :----: | ------------- |
-| MyCard       | 目前訂閱        | object |                 |
-| OtrCards     | 其他方案            | list |  　  |
-
+| 參數名稱     | 參數說明 | 型態     | 範例  |
+| -------- | ---- |:------:| --- |
+| MyCard   | 目前訂閱 | object |     |
+| OtrCards | 其他方案 | list   |     |
 
 * MyCard (OtrCards) 資料物件說明
 
-| 參數名稱      | 參數說明             |  型態  | 範例     |
-| -----------   | ----------           | :----: | ---------|
-| MonProjID     | 方案代碼(key)        | string | MR66     |
-| MonProPeriod  | 總期數(key)          | int    | 3        |
-| ShortDays	    | 短期總天數(key)      | int    | 0        |
-| MonProjNM	| 方案名稱 | string | 測試_汽包機66-3 |
-| PeriodPrice	| 方案價格            | int    | 7000     |
-| CarWDHours	| 汽車平日時數         | double | 3.0    |
-| CarHDHours	| 汽車假日時數         | double | 3.0      |
-| MotoTotalMins	| 機車不分平假日分鐘數   | int | 120      |
-| WDRateForCar	| 汽車平日優惠費率 | double | 99.0 |
-| HDRateForCar	| 假日平日優惠費率 | double | 168.0 |
-| WDRateForMoto	| 機車平日優惠費率 | double | 1.0 |
-| HDRateForMoto	| 機車假日優惠費率 | double | 1.2 |
-| IsDiscount	| 是否為優惠方案0否1是  | int    | 0       |
-| IsMix			| 是否為城市車手  | int | 1 |
-| IsMoto		| 是否為機車		| int | 0 |
-
+| 參數名稱          | 參數說明        | 型態     | 範例         |
+| ------------- | ----------- |:------:| ---------- |
+| MonProjID     | 方案代碼(key)   | string | MR66       |
+| MonProPeriod  | 總期數(key)    | int    | 3          |
+| ShortDays     | 短期總天數(key)  | int    | 0          |
+| MonProjNM     | 方案名稱        | string | 測試_汽包機66-3 |
+| PeriodPrice   | 方案價格        | int    | 7000       |
+| CarWDHours    | 汽車平日時數      | double | 3.0        |
+| CarHDHours    | 汽車假日時數      | double | 3.0        |
+| MotoTotalMins | 機車不分平假日分鐘數  | int    | 120        |
+| WDRateForCar  | 汽車平日優惠費率    | double | 99.0       |
+| HDRateForCar  | 假日平日優惠費率    | double | 168.0      |
+| WDRateForMoto | 機車平日優惠費率    | double | 1.0        |
+| HDRateForMoto | 機車假日優惠費率    | double | 1.2        |
+| IsDiscount    | 是否為優惠方案0否1是 | int    | 0          |
+| IsMix         | 是否為城市車手     | int    | 1          |
+| IsMoto        | 是否為機車       | int    | 0          |
 
 * Output範例
 
@@ -7428,8 +7448,8 @@
             "WDRateForMoto": 1.0,
             "HDRateForMoto": 1.2,
             "IsDiscount": 0,
-			"IsMix": 1,
-			"IsMoto": 0
+            "IsMix": 1,
+            "IsMoto": 0
         },
         "OtrCards": [
             {
@@ -7446,8 +7466,8 @@
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
-				"IsMix":1,
-				"IsMoto": 0
+                "IsMix":1,
+                "IsMoto": 0
             },
             {
                 "MonProjID": "MR103",
@@ -7463,8 +7483,8 @@
                 "WDRateForMoto": 1.0,
                 "HDRateForMoto": 1.2,
                 "IsDiscount": 0,
-				"IsMix":1,
-				"IsMoto": 0
+                "IsMix":1,
+                "IsMoto": 0
             }
         ]
     }
@@ -7480,66 +7500,64 @@
 * 傳送跟接收採JSON格式
 
 * 動作 [POST]
-  
+
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                   | 必要 |  型態  | 範例                           |
-| ---------- | -------------------------- | :--: | :----: | ------------------------------ |
-| MonProjID     | 方案代碼(key)              |  Y   | string | MR66                          |
-| MonProPeriod | 總期數(key)               |  Y  | int    | 3                      |
-| ShortDays    | 短期總天數(key)            |  Y  | int    | 0                              |
-
+| 參數名稱         | 參數說明       | 必要  | 型態     | 範例   |
+| ------------ | ---------- |:---:|:------:| ---- |
+| MonProjID    | 方案代碼(key)  | Y   | string | MR66 |
+| MonProPeriod | 總期數(key)   | Y   | int    | 3    |
+| ShortDays    | 短期總天數(key) | Y   | int    | 0    |
 
 * input範例
+
 ```
 {
-    "MonProjID"::"MR66",
-    "MonProPeriod:3,
-    "ShortDays":"0",
+  "MonProjID"::"MR66",
+  "MonProPeriod:3,
+  "ShortDays":"0",
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱      | 參數說明                |  型態  | 範例          |
-| ------------ | ----------------------- | :----: | ------------- |
-| NorCards     | 資料物件(只有機車時數或只有機車時數) | list |                 |
-| MixCards     | 資料物件(同時有汽車及機車時數)     | list |  　       |
-
+| 參數名稱     | 參數說明                | 型態   | 範例  |
+| -------- | ------------------- |:----:| --- |
+| NorCards | 資料物件(只有機車時數或只有機車時數) | list |     |
+| MixCards | 資料物件(同時有汽車及機車時數)    | list |     |
 
 * 資料物件說明(NorCards/MixCards)
 
-| 參數名稱      | 參數說明             |  型態  | 範例     |
-| -----------   | ----------           | :----: | ---------|
-| MonProjID     | 方案代碼(key)        | string | MR66     |
-| MonProPeriod  | 總期數(key)          | int    | 3        |
-| ShortDays	    | 短期總天數(key)      | int    | 0        |
-| MonProjNM	| 專案名稱 | string | MR66測試 |
-| PeriodPrice	| 方案價格             | int    | 7000     |
-| CarWDHours	| 汽車平日時數         | double | 10       |
-| CarHDHours	| 汽車假日時數         | double | 0        |
-| MotoTotalMins	| 機車不分平假日分鐘數 | int | 120      |
-| WDRateForCar	| 汽車平日優惠價格 | double | 99.0 |
-| HDRateForCar	| 汽車假日優惠價格 | double | 168.0 |
-| WDRateForMoto	| 機車平日優惠價格 | double | 1.0 |
-| HDRateForMoto	| 機車假日優惠價格 | double | 1.2 |
-| IsDiscount	| 是否為優惠方案0否1是 | int    | 1        |
-| IsMix			| 是否為城市車手 | int | 1 |
-| AddPrice		| 加價購金額	| int | 1000 |
-| IsMoto		| 是否為機車	| int | 0 |
-| UseUntil		| 使用期限		| string | 2021/08/25 23:59 |
+| 參數名稱          | 參數說明        | 型態     | 範例               |
+| ------------- | ----------- |:------:| ---------------- |
+| MonProjID     | 方案代碼(key)   | string | MR66             |
+| MonProPeriod  | 總期數(key)    | int    | 3                |
+| ShortDays     | 短期總天數(key)  | int    | 0                |
+| MonProjNM     | 專案名稱        | string | MR66測試           |
+| PeriodPrice   | 方案價格        | int    | 7000             |
+| CarWDHours    | 汽車平日時數      | double | 10               |
+| CarHDHours    | 汽車假日時數      | double | 0                |
+| MotoTotalMins | 機車不分平假日分鐘數  | int    | 120              |
+| WDRateForCar  | 汽車平日優惠價格    | double | 99.0             |
+| HDRateForCar  | 汽車假日優惠價格    | double | 168.0            |
+| WDRateForMoto | 機車平日優惠價格    | double | 1.0              |
+| HDRateForMoto | 機車假日優惠價格    | double | 1.2              |
+| IsDiscount    | 是否為優惠方案0否1是 | int    | 1                |
+| IsMix         | 是否為城市車手     | int    | 1                |
+| AddPrice      | 加價購金額       | int    | 1000             |
+| IsMoto        | 是否為機車       | int    | 0                |
+| UseUntil      | 使用期限        | string | 2021/08/25 23:59 |
 
 * Output範例
 
@@ -7551,7 +7569,7 @@
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-		"NorCards": [
+        "NorCards": [
             {
                 "MonProjID": "MR101",
                 "MonProPeriod": 3,
@@ -7566,52 +7584,52 @@
                 "WDRateForMoto": 1.5,
                 "HDRateForMoto": 1.5,
                 "IsDiscount": 0,
-				"IsMix" : 0,
-				"AddPrice": 1000,
-				"IsMoto": 0,
-				"UseUntil": "2021/08/25 23:59"
-            }	
-		],
-		"MixCards": [{
-				"MonProjID": "MR102",
-				"MonProPeriod": 3,
-				"ShortDays": 0,
-				"MonProjNM": "測試_汽包機102-3",
-				"PeriodPrice": 7300,
-				"CarWDHours": 4.0,
-				"CarHDHours": 4.0,
-				"MotoTotalMins": 400,
-				"WDRateForCar": 99.0,
-				"HDRateForCar": 168.0,
-				"WDRateForMoto": 1.0,
-				"HDRateForMoto": 1.2,
-				"IsDiscount": 0,
-				"IsMix" : 1,
-				"AddPrice": 2000,
-				"IsMoto": 0,
-				"UseUntil": "2021/08/25 23:59"
-			}, 
-			{
-				"MonProjID": "MR103",
-				"MonProPeriod": 3,
-				"ShortDays": 0,
-				"MonProjNM": "測試_汽包機103-3",
-				"PeriodPrice": 7800,
-				"CarWDHours": 4.0,
-				"CarHDHours": 3.0,
-				"MotoTotalMins": 300,
-				"WDRateForCar": 99.0,
-				"HDRateForCar": 168.0,
-				"WDRateForMoto": 1.0,
-				"HDRateForMoto": 1.2,
-				"IsDiscount": 0,
-				"IsMix":1,
-				"AddPrice": 3000,
-				"IsMoto": 0,
-				"UseUntil": "2021/08/25 23:59"
-			}
-		]
-	}
+                "IsMix" : 0,
+                "AddPrice": 1000,
+                "IsMoto": 0,
+                "UseUntil": "2021/08/25 23:59"
+            }    
+        ],
+        "MixCards": [{
+                "MonProjID": "MR102",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "MonProjNM": "測試_汽包機102-3",
+                "PeriodPrice": 7300,
+                "CarWDHours": 4.0,
+                "CarHDHours": 4.0,
+                "MotoTotalMins": 400,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsMix" : 1,
+                "AddPrice": 2000,
+                "IsMoto": 0,
+                "UseUntil": "2021/08/25 23:59"
+            }, 
+            {
+                "MonProjID": "MR103",
+                "MonProPeriod": 3,
+                "ShortDays": 0,
+                "MonProjNM": "測試_汽包機103-3",
+                "PeriodPrice": 7800,
+                "CarWDHours": 4.0,
+                "CarHDHours": 3.0,
+                "MotoTotalMins": 300,
+                "WDRateForCar": 99.0,
+                "HDRateForCar": 168.0,
+                "WDRateForMoto": 1.0,
+                "HDRateForMoto": 1.2,
+                "IsDiscount": 0,
+                "IsMix":1,
+                "AddPrice": 3000,
+                "IsMoto": 0,
+                "UseUntil": "2021/08/25 23:59"
+            }
+        ]
+    }
 }
 ```
 
@@ -7626,58 +7644,58 @@
 * 動作 [POST]
 
 * input傳入參數說明
-
+  
   不需傳入參數
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data資料物件說明
 
-| 參數名稱      | 參數說明                |  型態  | 範例          |
-| ------------ | ----------------------- | :----: | ------------- |
-| Hists       | 資料物件                  | list |  　     |
+| 參數名稱  | 參數說明 | 型態   | 範例  |
+| ----- | ---- |:----:| --- |
+| Hists | 資料物件 | list |     |
 
 * Hists資料物件說明
 
-| 參數名稱    | 參數說明                 | 型態    | 範例                  |
-| --------     | --------             | :--:    |----------------------|
-| MonProjID    | 方案代碼(key)         | string  | MR66                 |
-| MonProPeriod | 總期數(key)           | int     | 3                    |
-| ShortDays    | 短期總天數(key)        | int     | 0                    |
-| MonProjNM    | 車型名稱               | string  | MR66測試              |
-| PeriodPrice  | 方案價格               | int     | 7000                 |
-| CarWDHours   | 汽車平日時數            | double  | 3.0                 |
-| CarHDHours   | 汽車假日時數            | double  | 3.0                |
-| MotoTotalMins| 機車不分平假日分鐘數     | int | 120                  |
-| WDRateForCar | 汽車平日優惠價格 | double | 99.0 |
-| HDRateForCar | 汽車假日優惠價格 | double | 168.0 |
-| WDRateForMoto | 機車平日優惠價格 | double | 1.0 |
-| HDRateForMoto | 機車假日優惠價格 | double | 1.2 |
-| PayDate | 付款日期 | string | 2021/05/21 11:09 |
-| IsMoto       | 是否為機車0否1是        | int     | 0                    |
-| StartDate  | 月租起日 | string | 2021/05/18 |
-| EndDate      | 月租迄日 | string | 2021/06/17 |
-| PerNo        | 付款期數 | int     | 1 |
-| MonthlyRentId| 月租Id | int64   | 911 |
-| InvType      | 發票方式 | string  | 捐贈碼 |
-| unified_business_no| 統一編號 | string  | 12345678 |
-| invoiceCode  | 發票號碼 | string  | AB12345678 |
-| invoice_date | 發票日期 | string  | 2021/05/18 |
-| invoice_price| 發票金額 | int     | 7000 |
-| IsMix | 是否為城市車手0否1是 | int | 0 |
-| CARRIERID 	| 載具號碼 | string | /SI2Q4FQ |
-| NPOBAN		| 捐贈碼  | string  | 1234 |
-| InvoiceType	| 發票方式(1:捐贈2:會員載具 3:二聯 4:三聯 5:手機條碼 6:自然人憑證 | int | 2 |
-| NPOBAN_Name	| 捐贈單位 | string | 財團法人中華民國兒童癌症基金會 |
+| 參數名稱                | 參數說明                                     | 型態     | 範例               |
+| ------------------- | ---------------------------------------- |:------:| ---------------- |
+| MonProjID           | 方案代碼(key)                                | string | MR66             |
+| MonProPeriod        | 總期數(key)                                 | int    | 3                |
+| ShortDays           | 短期總天數(key)                               | int    | 0                |
+| MonProjNM           | 車型名稱                                     | string | MR66測試           |
+| PeriodPrice         | 方案價格                                     | int    | 7000             |
+| CarWDHours          | 汽車平日時數                                   | double | 3.0              |
+| CarHDHours          | 汽車假日時數                                   | double | 3.0              |
+| MotoTotalMins       | 機車不分平假日分鐘數                               | int    | 120              |
+| WDRateForCar        | 汽車平日優惠價格                                 | double | 99.0             |
+| HDRateForCar        | 汽車假日優惠價格                                 | double | 168.0            |
+| WDRateForMoto       | 機車平日優惠價格                                 | double | 1.0              |
+| HDRateForMoto       | 機車假日優惠價格                                 | double | 1.2              |
+| PayDate             | 付款日期                                     | string | 2021/05/21 11:09 |
+| IsMoto              | 是否為機車0否1是                                | int    | 0                |
+| StartDate           | 月租起日                                     | string | 2021/05/18       |
+| EndDate             | 月租迄日                                     | string | 2021/06/17       |
+| PerNo               | 付款期數                                     | int    | 1                |
+| MonthlyRentId       | 月租Id                                     | int64  | 911              |
+| InvType             | 發票方式                                     | string | 捐贈碼              |
+| unified_business_no | 統一編號                                     | string | 12345678         |
+| invoiceCode         | 發票號碼                                     | string | AB12345678       |
+| invoice_date        | 發票日期                                     | string | 2021/05/18       |
+| invoice_price       | 發票金額                                     | int    | 7000             |
+| IsMix               | 是否為城市車手0否1是                              | int    | 0                |
+| CARRIERID           | 載具號碼                                     | string | /SI2Q4FQ         |
+| NPOBAN              | 捐贈碼                                      | string | 1234             |
+| InvoiceType         | 發票方式(1:捐贈2:會員載具 3:二聯 4:三聯 5:手機條碼 6:自然人憑證 | int    | 2                |
+| NPOBAN_Name         | 捐贈單位                                     | string | 財團法人中華民國兒童癌症基金會  |
 
 * Output範例
 
@@ -7715,10 +7733,10 @@
                 "invoice_date": "2021/05/19",
                 "invoice_price": 7000,
                 "IsMix":0,
-				"CARRIERID": "",
+                "CARRIERID": "",
                 "NPOBAN": "88888",
-				"InvoiceType": 1,
-				"NPOBAN_Name": "財團法人中華民國兒童癌症基金會"
+                "InvoiceType": 1,
+                "NPOBAN_Name": "財團法人中華民國兒童癌症基金會"
             },
             {
                 "MonProjID": "MR66",
@@ -7745,10 +7763,10 @@
                 "invoice_date": "2021/05/19",
                 "invoice_price": 7000,
                 "IsMix":0,
-				"CARRIERID": "",
+                "CARRIERID": "",
                 "NPOBAN": "",
-				"InvoiceType": 2,
-				"NPOBAN_Name": ""
+                "InvoiceType": 2,
+                "NPOBAN_Name": ""
             }
         ]
     }
@@ -7767,34 +7785,34 @@
 
 * input傳入參數說明
 
-| 參數名稱          | 參數說明                   | 必要 |  型態  | 範例                           |
-| ------------------| -------------------------- | :--: | :----: | ------------------------------ |
-| MonthlyRentId     |                            |  Y   | int    | 912 |
-
+| 參數名稱          | 參數說明 | 必要  | 型態  | 範例  |
+| ------------- | ---- |:---:|:---:| --- |
+| MonthlyRentId |      | Y   | int | 912 |
 
 * input範例
+
 ```
 {
-     "MonthlyRentId":912,
+   "MonthlyRentId":912,
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明                       |  型態  | 範例    |
-| ------------ | ------------------------------ | :----: | ------- |
-| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
-| ErrorCode    | 錯誤碼                         | string | 000000  |
-| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
-| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
-| ErrorMessage | 錯誤訊息                       | string | Success |
-| Data         | 資料物件                       | object |         |
+| 參數名稱         | 參數說明                | 型態     | 範例      |
+| ------------ | ------------------- |:------:| ------- |
+| Result       | 是否成功 (0:失敗 1:成功)    | int    | 1       |
+| ErrorCode    | 錯誤碼                 | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)   | int    | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) | int    | 0       |
+| ErrorMessage | 錯誤訊息                | string | Success |
+| Data         | 資料物件                | object |         |
 
 * Data回傳參數說明
 
-| 參數名稱  | 參數說明               | 型態 | 範例 |
-| --------- | ---------------------- | ---- | ---- |
-| DelResult | 刪除結果(0:失敗1:成功) | int  | 1    |
+| 參數名稱      | 參數說明           | 型態  | 範例  |
+| --------- | -------------- | --- | --- |
+| DelResult | 刪除結果(0:失敗1:成功) | int | 1   |
 
 * Output範例
 
@@ -7822,47 +7840,45 @@
 * 動作 [POST]
 
 * input傳入參數說明
-
+  
   不須傳入參數
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明                       |  型態  | 範例    |
-| ------------ | ------------------------------ | :----: | ------- |
-| Result       | 是否成功 (0:失敗 1:成功)       |  int   | 1       |
-| ErrorCode    | 錯誤碼                         | string | 000000  |
-| NeedRelogin  | 是否需重新登入 (0:否 1:是)     |  int   | 0       |
-| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) |  int   | 0       |
-| ErrorMessage | 錯誤訊息                       | string | Success |
-| Data         | 資料物件                       | object |         |
-
+| 參數名稱         | 參數說明                | 型態     | 範例      |
+| ------------ | ------------------- |:------:| ------- |
+| Result       | 是否成功 (0:失敗 1:成功)    | int    | 1       |
+| ErrorCode    | 錯誤碼                 | string | 000000  |
+| NeedRelogin  | 是否需重新登入 (0:否 1:是)   | int    | 0       |
+| NeedUpgrade  | 是否需要至商店更新 (0:否 1:是) | int    | 0       |
+| ErrorMessage | 錯誤訊息                | string | Success |
+| Data         | 資料物件                | object |         |
 
 * Data回傳參數說明
 
-| 參數名稱      | 參數說明                |  型態  | 範例          |
-| ------------ | ----------------------- | :----: | ------------- |
-| TotalArresPrice | 欠費總計 | int |                 |
-| Cards     | 欠費列表 | list |                 |
+| 參數名稱            | 參數說明 | 型態   | 範例  |
+| --------------- | ---- |:----:| --- |
+| TotalArresPrice | 欠費總計 | int  |     |
+| Cards           | 欠費列表 | list |     |
 
 * Cards資料物件說明
 
-| 參數名稱   | 參數說明         |  型態  | 範例   |
-| ---------- | ---------------- | :----: | ------ |
+| 參數名稱       | 參數說明     | 型態     | 範例     |
+| ---------- | -------- |:------:| ------ |
 | StartDate  | 月租起日訂單編號 | string |        |
-| EndDate    | 月租迄日         | string |        |
-| ProjNm     | 月租專案名稱     | string |        |
-| CarTypePic | 車型對照檔名     | string | priusC |
-| Arrs       | 欠費明細         |  list  |        |
+| EndDate    | 月租迄日     | string |        |
+| ProjNm     | 月租專案名稱   | string |        |
+| CarTypePic | 車型對照檔名   | string | priusC |
+| Arrs       | 欠費明細     | list   |        |
 
 * Arrs資料物件說明
 
-| 參數名稱    | 參數說明               | 型態   | 範例                  |
-| --------   | --------             | :--:   |----------------------|
-| Period     | 繳費期數     | int    |                      |
-| ArresPrice | 繳費金額       | int    |  　            |
+| 參數名稱       | 參數說明 | 型態  | 範例  |
+| ---------- | ---- |:---:| --- |
+| Period     | 繳費期數 | int |     |
+| ArresPrice | 繳費金額 | int |     |
 
 * Output範例
-
 
 ```
 {
@@ -7872,50 +7888,50 @@
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
     "Data": {
-		"TotalArresPrice": 27000,
-		"Cards": [
-			{
-				"StartDate": "2021/05/19",
-				"EndDate": "2021/08/17",
-				"ProjNm": "測試_機車2000",
-				"CarTypePic": "iretScooter",
-				"Arrs": [
-					{
-						"Period": 1,
-						"ArresPrice": 2000
-					},
-					{
-						"Period": 2,
-						"ArresPrice": 2000
-					},
-					{
-						"Period": 3,
-						"ArresPrice": 2000
-					}
-				]
-			},
-			{
-				"StartDate": "2021/05/18",
-				"EndDate": "2021/08/16",
-				"ProjNm": "測試_汽包機66-3",
-				"CarTypePic": "priusC",
-				"Arrs": [
-					{
-						"Period": 1,
-						"ArresPrice": 7000
-					},
-					{
-						"Period": 2,
-						"ArresPrice": 7000
-					},
-					{
-						"Period": 3,
-						"ArresPrice": 7000
-					}
-				]
-			}
-		]
-	}
+        "TotalArresPrice": 27000,
+        "Cards": [
+            {
+                "StartDate": "2021/05/19",
+                "EndDate": "2021/08/17",
+                "ProjNm": "測試_機車2000",
+                "CarTypePic": "iretScooter",
+                "Arrs": [
+                    {
+                        "Period": 1,
+                        "ArresPrice": 2000
+                    },
+                    {
+                        "Period": 2,
+                        "ArresPrice": 2000
+                    },
+                    {
+                        "Period": 3,
+                        "ArresPrice": 2000
+                    }
+                ]
+            },
+            {
+                "StartDate": "2021/05/18",
+                "EndDate": "2021/08/16",
+                "ProjNm": "測試_汽包機66-3",
+                "CarTypePic": "priusC",
+                "Arrs": [
+                    {
+                        "Period": 1,
+                        "ArresPrice": 7000
+                    },
+                    {
+                        "Period": 2,
+                        "ArresPrice": 7000
+                    },
+                    {
+                        "Period": 3,
+                        "ArresPrice": 7000
+                    }
+                ]
+            }
+        ]
+    }
 }
 ```
 
@@ -7931,35 +7947,34 @@
 
 * input傳入參數說明
 
-| 參數名稱          | 參數說明                   | 必要 |  型態  | 範例                           |
-| ------------------| -------------------------- | :--: | :----: | ------------------------------ |
-| MonProjID    | 專案編號(key)          |  Y   | string | MR66 |
-| MonProPeriod | 期數(key)             |  Y   |  int   | 3    |
-| ShortDays    | 短天期(key)           |  Y   |  int   | 0    |
-| AutoSubs	   | 設定自動續約(0否,1是) |  N   |  int   | 0    |
-
+| 參數名稱         | 參數說明          | 必要  | 型態     | 範例   |
+| ------------ | ------------- |:---:|:------:| ---- |
+| MonProjID    | 專案編號(key)     | Y   | string | MR66 |
+| MonProPeriod | 期數(key)       | Y   | int    | 3    |
+| ShortDays    | 短天期(key)      | Y   | int    | 0    |
+| AutoSubs     | 設定自動續約(0否,1是) | N   | int    | 0    |
 
 * input範例
+
 ```
 {
-     "MonProjID":"MR66",
-	 "MonProPeriod":3,
-	 "ShortDays":0,
-	 "AutoSubs":1
+   "MonProjID":"MR66",
+   "MonProPeriod":3,
+   "ShortDays":0,
+   "AutoSubs":1
 }
 ```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明                |  型態  | 範例          |
-| ------------ | ----------------------- | :----: | ------------- |
-| Result       | 是否成功                |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼                  | string | 000000        |
-| NeedRelogin  | 是否需重新登入          |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新      |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息                | string | Success       |
-| Data         | 資料物件                | object |        　       |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -7976,16 +7991,16 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                         | 說明                             |
-| -------- | -------------------------------- | -------------------------------- |
-| ERR247   | 參數格式不符                     | 參數格式不符                     |
-| ERR254   | LogID必填                        | LogID必填                        |
-| ERR257   | 參數遺漏                         | 參數遺漏                         |
-| ERR258   | 月租不存在                       | 月租不存在                       |
-| ERR276   | 迄日當天不可以做續訂變更         | 迄日當天不可以做續訂變更         |
-| ERR909   | 專案不存在                       | 專案不存在                       |
-| ERR910   | 只可為0或1                       | AutoSubs只可為0或1               |
-| ERR992   | 合約迄日兩天前不可以設定自動訂閱 | 合約迄日兩天前不可以設定自動訂閱 |
+| 錯誤代碼   | 錯誤訊息             | 說明               |
+| ------ | ---------------- | ---------------- |
+| ERR247 | 參數格式不符           | 參數格式不符           |
+| ERR254 | LogID必填          | LogID必填          |
+| ERR257 | 參數遺漏             | 參數遺漏             |
+| ERR258 | 月租不存在            | 月租不存在            |
+| ERR276 | 迄日當天不可以做續訂變更     | 迄日當天不可以做續訂變更     |
+| ERR909 | 專案不存在            | 專案不存在            |
+| ERR910 | 只可為0或1           | AutoSubs只可為0或1   |
+| ERR992 | 合約迄日兩天前不可以設定自動訂閱 | 合約迄日兩天前不可以設定自動訂閱 |
 
 # 車輛調度停車場相關
 
@@ -8005,13 +8020,13 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
-| --------- | ---------- | :--: | :----: | ----------- |
-| ShowALL   | 顯示全部   |  Y   | int    | 0:不要 1:要 |
-| Latitude  | 緯度       |  Y   | double | 25.068740   |
-| Longitude | 經度       |  Y   | double | 121.531652  |
-| Mode      | 停車場類型 |  Y   | int    | 0:一般(調度) 1:特約(車麻吉及其他) 2:全部顯示 |
-| Radius    | 半徑       |  Y   | double | 3.5  |
+| 參數名稱      | 參數說明  | 必要  | 型態     | 範例                           |
+| --------- | ----- |:---:|:------:| ---------------------------- |
+| ShowALL   | 顯示全部  | Y   | int    | 0:不要 1:要                     |
+| Latitude  | 緯度    | Y   | double | 25.068740                    |
+| Longitude | 經度    | Y   | double | 121.531652                   |
+| Mode      | 停車場類型 | Y   | int    | 0:一般(調度) 1:特約(車麻吉及其他) 2:全部顯示 |
+| Radius    | 半徑    | Y   | double | 3.5                          |
 
 * input範例
 
@@ -8027,26 +8042,26 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| ParkingType  | 停車場類型         | int    | 0:一般 1:特約(車麻吉及其他)     |
-| ParkingName  | 停車場名稱         | string | 信義國小地下停車場     |
-| ParkingAddress  | 停車場地址      | string | 台北市信義區松勤街60號地下     |
-| Latitude     | 緯度               |  decimal | 25.068740   |
-| Longitude    | 經度               |  decimal | 121.531652  |
-| OpenTime     | 開始時間           |  DateTime | 2020-12-16T00:00:00  |
-| Longitude    | 結束時間           |  DateTime | 2099-12-31T00:00:00  |
+| 參數名稱           | 參數說明  | 型態       | 範例                  |
+| -------------- | ----- |:--------:| ------------------- |
+| ParkingType    | 停車場類型 | int      | 0:一般 1:特約(車麻吉及其他)   |
+| ParkingName    | 停車場名稱 | string   | 信義國小地下停車場           |
+| ParkingAddress | 停車場地址 | string   | 台北市信義區松勤街60號地下      |
+| Latitude       | 緯度    | decimal  | 25.068740           |
+| Longitude      | 經度    | decimal  | 121.531652          |
+| OpenTime       | 開始時間  | DateTime | 2020-12-16T00:00:00 |
+| Longitude      | 結束時間  | DateTime | 2099-12-31T00:00:00 |
 
 * Output範例
 
@@ -8098,13 +8113,13 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
-| --------- | ---------- | :--: | :----: | ----------- |
-| ShowALL   | 顯示全部   |  Y   | int    | 0:不要 1:要 |
-| Latitude  | 緯度       |  Y   | double | 25.068740   |
-| Longitude | 經度       |  Y   | double | 121.531652  |
-| Mode      | 停車場類型 |  Y   | int    | 0:一般(調度) 1:特約(車麻吉及其他) 2:全部顯示 |
-| Radius    | 半徑       |  Y   | double | 3.5  |
+| 參數名稱      | 參數說明  | 必要  | 型態     | 範例                           |
+| --------- | ----- |:---:|:------:| ---------------------------- |
+| ShowALL   | 顯示全部  | Y   | int    | 0:不要 1:要                     |
+| Latitude  | 緯度    | Y   | double | 25.068740                    |
+| Longitude | 經度    | Y   | double | 121.531652                   |
+| Mode      | 停車場類型 | Y   | int    | 0:一般(調度) 1:特約(車麻吉及其他) 2:全部顯示 |
+| Radius    | 半徑    | Y   | double | 3.5                          |
 
 * input範例
 
@@ -8120,26 +8135,26 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| ParkingType  | 停車場類型         | int    | 0:一般 1:特約(車麻吉及其他)     |
-| ParkingName  | 停車場名稱         | string | 信義國小地下停車場     |
-| ParkingAddress  | 停車場地址      | string | 台北市信義區松勤街60號地下     |
-| Latitude     | 緯度               |  decimal | 25.068740   |
-| Longitude    | 經度               |  decimal | 121.531652  |
-| OpenTime     | 開始時間           |  DateTime | 2020-12-16T00:00:00  |
-| Longitude    | 結束時間           |  DateTime | 2099-12-31T00:00:00  |
+| 參數名稱           | 參數說明  | 型態       | 範例                  |
+| -------------- | ----- |:--------:| ------------------- |
+| ParkingType    | 停車場類型 | int      | 0:一般 1:特約(車麻吉及其他)   |
+| ParkingName    | 停車場名稱 | string   | 信義國小地下停車場           |
+| ParkingAddress | 停車場地址 | string   | 台北市信義區松勤街60號地下      |
+| Latitude       | 緯度    | decimal  | 25.068740           |
+| Longitude      | 經度    | decimal  | 121.531652          |
+| OpenTime       | 開始時間  | DateTime | 2020-12-16T00:00:00 |
+| Longitude      | 結束時間  | DateTime | 2099-12-31T00:00:00 |
 
 * Output範例
 
@@ -8174,6 +8189,7 @@
     }
 }
 ```
+
 # 推播相關
 
 ## News 活動通知
@@ -8191,38 +8207,37 @@
 * 動作 [POST]
 
 * input傳入參數說明
-
+  
   不須傳入參數
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱 | 參數說明 | 型態 | 範例 |
-| -------- | -------- | :--: | ---- |
-| NewsObj  | 活動通知 | List |      |
+| 參數名稱    | 參數說明 | 型態   | 範例  |
+| ------- | ---- |:----:| --- |
+| NewsObj | 活動通知 | List |     |
 
 * 活動通知參數說明
 
-| 參數名稱   | 參數說明       |   型態   | 範例                |
-| ---------- | -------------- | :------: | ------------------- |
-| NewsID     | 活動通知流水號 |   int    | 1000                |
-| ActionType | 類型           |   int    | 4                   |
-| PushTime   | 推播送出時間   | DateTime | 2021/09/12 12:43:52 |
-| Title      | 主旨           |  string  | 9/7凌晨進行定期維護 |
-| Message    | 內容           |  string  |                     |
-| URL        | 外連URL        |  string  |                     |
-| readFlg    | 1:已讀 0:未讀  |   int    | 1                   |
-
+| 參數名稱       | 參數說明      | 型態       | 範例                  |
+| ---------- | --------- |:--------:| ------------------- |
+| NewsID     | 活動通知流水號   | int      | 1000                |
+| ActionType | 類型        | int      | 4                   |
+| PushTime   | 推播送出時間    | DateTime | 2021/09/12 12:43:52 |
+| Title      | 主旨        | string   | 9/7凌晨進行定期維護         |
+| Message    | 內容        | string   |                     |
+| URL        | 外連URL     | string   |                     |
+| readFlg    | 1:已讀 0:未讀 | int      | 1                   |
 
 * Output範例
 
@@ -8235,7 +8250,7 @@
     "ErrorMessage": "Success",
     "Data": {
         "NewsObj": [
-			{
+            {
                 "NewsID": 4,
                 "ActionType": 0,
                 "PushTime": "2021/09/12 12:43:52",
@@ -8253,10 +8268,9 @@
                 "URL": "",
                 "readFlg": 1
             }
-		]
+        ]
     }
 }
-
 ```
 
 ## NewsRead 活動通知讀取
@@ -8275,9 +8289,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明       | 必要 | 型態 | 範例 |
-| -------- | -------------- | :--: | :--: | ---- |
-| NewsID   | 活動通知流水號 |  Y   | int  | 7    |
+| 參數名稱   | 參數說明    | 必要  | 型態  | 範例  |
+| ------ | ------- |:---:|:---:| --- |
+| NewsID | 活動通知流水號 | Y   | int | 7   |
 
 * input範例
 
@@ -8287,18 +8301,16 @@
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -8328,37 +8340,36 @@
 * 動作 [POST]
 
 * input傳入參數說明
-
+  
   不須傳入參數
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱        | 參數說明 | 型態 | 範例 |
-| --------------- | -------- | :--: | ---- |
-| PersonNoticeObj | 個人訊息 | list |      |
+| 參數名稱            | 參數說明 | 型態   | 範例  |
+| --------------- | ---- |:----:| --- |
+| PersonNoticeObj | 個人訊息 | list |     |
 
 * 個人訊息參數說明
 
-| 參數名稱       | 參數說明       |   型態   | 範例                |
-| -------------- | -------------- | :------: | ------------------- |
-| NotificationID | 個人訊息流水號 |   int    | 1000                |
-| PushTime       | 推播時間       | DateTime | 2021/09/01 01:33:34 |
-| Title          | 主旨           |  string  | 9/7凌晨進行定期維護 |
-| Message        | 內容           |  string  | 測試推播123         |
-| URL            | 連結URL        |  string  |                     |
-| readFlg        | 1:已讀 0:未讀  |   int    | 1                   |
-
+| 參數名稱           | 參數說明      | 型態       | 範例                  |
+| -------------- | --------- |:--------:| ------------------- |
+| NotificationID | 個人訊息流水號   | int      | 1000                |
+| PushTime       | 推播時間      | DateTime | 2021/09/01 01:33:34 |
+| Title          | 主旨        | string   | 9/7凌晨進行定期維護         |
+| Message        | 內容        | string   | 測試推播123             |
+| URL            | 連結URL     | string   |                     |
+| readFlg        | 1:已讀 0:未讀 | int      | 1                   |
 
 * Output範例
 
@@ -8371,7 +8382,7 @@
     "ErrorMessage": "Success",
     "Data": {
         "PersonNoticeObj": [
-			{
+            {
                 "NotificationID": 1320,
                 "PushTime": "2021/09/01 01:33:34",
                 "Title": "[PA]TEST20210831",
@@ -8379,7 +8390,7 @@
                 "URL": "",
                 "readFlg": 1
             },
-			{
+            {
                 "NotificationID": 1336,
                 "PushTime": "2021/09/12 23:18:18",
                 "Title": "【共同承租】XXX邀請您共同承租唷！",
@@ -8387,7 +8398,7 @@
                 "URL": "http://apyhfc07:8002/irent/Sharing/Togetherpassenger/invitingStatus?KtwBd%2fMrrFcEG2SMxUTqQz%2faYuMtvxDRc92igY7iR3kbhKkT20CdeHtTQY3oPJMm",
                 "readFlg": 0
             }
-		]
+        ]
     }
 }
 ```
@@ -8408,9 +8419,9 @@
 
 * input傳入參數說明
 
-| 參數名稱       | 參數說明       | 必要 | 型態 | 範例 |
-| -------------- | -------------- | :--: | :--: | ---- |
-| NotificationID | 個人訊息流水號 |  Y   | int  | 7    |
+| 參數名稱           | 參數說明    | 必要  | 型態  | 範例  |
+| -------------- | ------- |:---:|:---:| --- |
+| NotificationID | 個人訊息流水號 | Y   | int | 7   |
 
 * input範例
 
@@ -8420,18 +8431,16 @@
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -8456,7 +8465,7 @@
 * ASP.NET Web API (REST API)
 
 * api位置
-
+  
   這個不會放在正式環境
   測試環境：https://irentcar-app-test.azurefd.net
 
@@ -8468,14 +8477,13 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例                    |
-| --------- | ---------- | :--: | :----: | ----------------------- |
-| PushRegID | 推播註冊碼 |  Y   |  int   | 2772                    |
-| Title     | 訊息抬頭   |      | string | 推播測試                |
-| Message   | 訊息內容   |      | string | 推播測試                |
-| UserName  | 客戶名稱   |      | string | 測試人員                |
-| Url       | 連結的URL  |      | string | https://www.google.com/ |
-
+| 參數名稱      | 參數說明   | 必要  | 型態     | 範例                      |
+| --------- | ------ |:---:|:------:| ----------------------- |
+| PushRegID | 推播註冊碼  | Y   | int    | 2772                    |
+| Title     | 訊息抬頭   |     | string | 推播測試                    |
+| Message   | 訊息內容   |     | string | 推播測試                    |
+| UserName  | 客戶名稱   |     | string | 測試人員                    |
+| Url       | 連結的URL |     | string | https://www.google.com/ |
 
 * input範例
 
@@ -8489,18 +8497,16 @@
 }
 ```
 
-
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -8533,20 +8539,19 @@
 * 說明 此API主要提供寫入推播通知的紀錄，每寫入一次效力一個小時
 
 * input傳入參數說明
-
+  
   不須傳入參數
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -8564,7 +8569,8 @@
 
 # 共同承租人機制
 
-## JointRentInviteeListQuery 共同承租人邀請清單查詢 
+## JointRentInviteeListQuery 共同承租人邀請清單查詢
+
 ### [/api/JointRentInviteeListQuery/]
 
 * 20210819新增
@@ -8579,10 +8585,9 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
-| --------- | ---------- | :--: | :----: | ----------- |
-| OrderNo   | 訂單編號   |  Y   | string    | H10791575 |
-
+| 參數名稱    | 參數說明 | 必要  | 型態     | 範例        |
+| ------- | ---- |:---:|:------:| --------- |
+| OrderNo | 訂單編號 | Y   | string | H10791575 |
 
 * input範例
 
@@ -8594,30 +8599,30 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| OrderNo  | 訂單編號         | string    | H10791575     |
-| Invitees | 被邀請人明細 | list | |
+| 參數名稱     | 參數說明   | 型態     | 範例        |
+| -------- | ------ |:------:| --------- |
+| OrderNo  | 訂單編號   | string | H10791575 |
+| Invitees | 被邀請人明細 | list   |           |
 
 * Invitees 參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| QueryId | 邀請時輸入的ID或手機 |string | 0911001001 |
-| InviteeId  | 被邀請人ID         | string | A140584782     |
-| InviteeName  | 被邀請人姓名      | string | 王曉明    |
-| InvitationStatus     | 邀請狀態               |  string | Y:已接受 N:已拒絕 F:已取消 S:邀請中   |
+| 參數名稱             | 參數說明        | 型態     | 範例                      |
+| ---------------- | ----------- |:------:| ----------------------- |
+| QueryId          | 邀請時輸入的ID或手機 | string | 0911001001              |
+| InviteeId        | 被邀請人ID      | string | A140584782              |
+| InviteeName      | 被邀請人姓名      | string | 王曉明                     |
+| InvitationStatus | 邀請狀態        | string | Y:已接受 N:已拒絕 F:已取消 S:邀請中 |
 
 * Output範例
 
@@ -8659,7 +8664,9 @@
     }
 }
 ```
+
 ## JointRentInviteeVerify 共同承租人邀請檢核
+
 ### [/api/JointRentInviteeVerify/]
 
 * 20210819新增
@@ -8674,11 +8681,10 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
-| --------- | ---------- | :--: | :----: | ----------- |
-| QueryId | 要邀請的ID或手機   |  Y   | string    | 0911001001 |
-| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
-
+| 參數名稱    | 參數說明      | 必要  | 型態     | 範例         |
+| ------- | --------- |:---:|:------:| ---------- |
+| QueryId | 要邀請的ID或手機 | Y   | string | 0911001001 |
+| OrderNo | 訂單編號      | Y   | string | H10791575  |
 
 * input範例
 
@@ -8691,22 +8697,22 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| OrderNo  | 訂單編號         | string    | H10791575     |
-| InviteeId | 被邀請人ID | string | A140584785 |
-| QueryId | 要邀請的ID或手機(原input參數) | string | 0911001001 |
+| 參數名稱      | 參數說明                | 型態     | 範例         |
+| --------- | ------------------- |:------:| ---------- |
+| OrderNo   | 訂單編號                | string | H10791575  |
+| InviteeId | 被邀請人ID              | string | A140584785 |
+| QueryId   | 要邀請的ID或手機(原input參數) | string | 0911001001 |
 
 * Output範例
 
@@ -8727,12 +8733,12 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                                   | 說明                                       |
-| -------- | ------------------------------------------ | ------------------------------------------ |
-| ERR168   | 找不到符合的訂單                           | 取消訂單時找不到可取消的訂單               |
-| ERR919   | 對方不能租車，請對方確認會員狀態哦！       | 對方不能租車，請對方確認會員狀態哦！       |
-| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ | 已至邀請人數上限，請手動移除非邀請對象哦！ |
-| ERR936   | 格式不符，請重新輸入哦！                   | 輸入格式不符                               |
+| 錯誤代碼   | 錯誤訊息                  | 說明                    |
+| ------ | --------------------- | --------------------- |
+| ERR168 | 找不到符合的訂單              | 取消訂單時找不到可取消的訂單        |
+| ERR919 | 對方不能租車，請對方確認會員狀態哦！    | 對方不能租車，請對方確認會員狀態哦！    |
+| ERR921 | 已至邀請人數上限，請手動移除非邀請對象哦！ | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+| ERR936 | 格式不符，請重新輸入哦！          | 輸入格式不符                |
 
 ## JointRentInvitation 案件共同承租人邀請
 
@@ -8740,12 +8746,12 @@
 
 * 20210819新增
 
-| 錯誤代碼 | 錯誤訊息                                   | 說明                                       |
-| -------- | ------------------------------------------ | ------------------------------------------ |
-| ERR168   | 找不到符合的訂單                           | 取消訂單時找不到可取消的訂單               |
-| ERR919   | 對方不能租車，請對方確認會員狀態哦！       | 對方不能租車，請對方確認會員狀態哦！       |
-| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ | 已至邀請人數上限，請手動移除非邀請對象哦！ |
-| ERR936   | 格式不符，請重新輸入哦！                   | 輸入格式不符                               |
+| 錯誤代碼   | 錯誤訊息                  | 說明                    |
+| ------ | --------------------- | --------------------- |
+| ERR168 | 找不到符合的訂單              | 取消訂單時找不到可取消的訂單        |
+| ERR919 | 對方不能租車，請對方確認會員狀態哦！    | 對方不能租車，請對方確認會員狀態哦！    |
+| ERR921 | 已至邀請人數上限，請手動移除非邀請對象哦！ | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+| ERR936 | 格式不符，請重新輸入哦！          | 輸入格式不符                |
 
 ## JointRentInvitation 案件共同承租人邀請
 
@@ -8763,12 +8769,11 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
-| --------- | ---------- | :--: | :----: | ----------- |
-| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
-| InviteeId | 要邀請的ID   |  Y   | string    | A140584785 |
-| QueryId | 要邀請的ID或手機(原input參數) |  Y   | string | 0911001001 |
-
+| 參數名稱      | 參數說明                | 必要  | 型態     | 範例         |
+| --------- | ------------------- |:---:|:------:| ---------- |
+| OrderNo   | 訂單編號                | Y   | string | H10791575  |
+| InviteeId | 要邀請的ID              | Y   | string | A140584785 |
+| QueryId   | 要邀請的ID或手機(原input參數) | Y   | string | 0911001001 |
 
 * input範例
 
@@ -8782,15 +8787,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -8807,10 +8811,10 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 說明                               |
-| -------- | ---------------------------------- |
-| ERR928   | 已存在於共同承租邀請清單，新增失敗 |
-| ERR929   | 無法進行共同承租邀請               |
+| 錯誤代碼   | 說明                |
+| ------ | ----------------- |
+| ERR928 | 已存在於共同承租邀請清單，新增失敗 |
+| ERR929 | 無法進行共同承租邀請        |
 
 ## JointRentInviteeModify 案件共同承租人邀請狀態維護
 
@@ -8828,12 +8832,11 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
-| --------- | ---------- | :--: | :----: | ----------- |
-| OrderNo  | 訂單編號       |  Y   | string | H10791575   |
-| InviteeId   | 被邀請的ID   |  Y   | string    | A140584785 |
-| ActionType  |  行為  |  Y   | string    | F:取消  D:刪除 S:重邀|
-
+| 參數名稱       | 參數說明   | 必要  | 型態     | 範例              |
+| ---------- | ------ |:---:|:------:| --------------- |
+| OrderNo    | 訂單編號   | Y   | string | H10791575       |
+| InviteeId  | 被邀請的ID | Y   | string | A140584785      |
+| ActionType | 行為     | Y   | string | F:取消  D:刪除 S:重邀 |
 
 * input範例
 
@@ -8847,15 +8850,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -8872,18 +8874,19 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 說明 |
-| ------- | ------- |
-| ERR919 | 對方不能租車，請對方確認會員狀態哦！ |
-| ERR920 | 同時段有合約或預約，不能邀請哦！ |
+| 錯誤代碼   | 說明                    |
+| ------ | --------------------- |
+| ERR919 | 對方不能租車，請對方確認會員狀態哦！    |
+| ERR920 | 同時段有合約或預約，不能邀請哦！      |
 | ERR921 | 已至邀請人數上限，請手動移除非邀請對象哦！ |
-| ERR924 | 無法取消共同承租邀請 |
-| ERR925 | 無法進行共同承租重新邀請 |
-| ERR926 | 無法從共同承租清單移除 |
-
+| ERR924 | 無法取消共同承租邀請            |
+| ERR925 | 無法進行共同承租重新邀請          |
+| ERR926 | 無法從共同承租清單移除           |
 
 ## JointRentIviteeFeedBack 案件共同承租人回應邀請
+
 ### [/api/JointRentIviteeFeedBack/]
+
 * 20210819新增
 
 * ASP.NET Web API (REST API)
@@ -8896,10 +8899,9 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明   | 必要 |  型態  | 範例        |
-| --------- | ---------- | :--: | :----: | ----------- |
-| AESEncryptString | AES加密參數 | Y | string | 如下 |
-
+| 參數名稱             | 參數說明    | 必要  | 型態     | 範例  |
+| ---------------- | ------- |:---:|:------:| --- |
+| AESEncryptString | AES加密參數 | Y   | string | 如下  |
 
 * input範例
 
@@ -8911,15 +8913,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -8936,13 +8937,13 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 說明                                       |
-| -------- | ------------------------------------------ |
-| ERR919   | 對方不能租車，請對方確認會員狀態哦！       |
-| ERR920   | 同時段有合約或預約，不能邀請哦！           |
-| ERR921   | 已至邀請人數上限，請手動移除非邀請對象哦！ |
-| ERR927   | 非邀請中的合約無法進行操作                 |
-| ERR929   | 共同承租回應邀請更新失敗                   |
+| 錯誤代碼   | 說明                    |
+| ------ | --------------------- |
+| ERR919 | 對方不能租車，請對方確認會員狀態哦！    |
+| ERR920 | 同時段有合約或預約，不能邀請哦！      |
+| ERR921 | 已至邀請人數上限，請手動移除非邀請對象哦！ |
+| ERR927 | 非邀請中的合約無法進行操作         |
+| ERR929 | 共同承租回應邀請更新失敗          |
 
 # 電子錢包相關
 
@@ -8962,72 +8963,62 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱     		| 參數說明                                                     |  型態  | 範例     |
-| ------------ 		| ------------------------------------------------------------ | :----: | -------- |
-| PayMode      		| 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay)                    |  int   | 0        |
-| HasBind      		| 是否有綁定(0:無,1有)                                         |  int   | 1        |
-| HasWallet    		| 是否有錢包(0:無,1有)                                         |  int   | 0        |
-| TotalAmount  		| 錢包剩餘金額                                                 |  int   | 0        |
-| BindListObj  		| 信用卡列表                                                   |  list  |          |
-| MEMSENDCD    		| 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 |  int   | 5        |
-| UNIMNO       		| 統編                                                         | string |          |
-| CARRIERID    		| 手機條碼                                                     | string | /N37H2JD |
-| NPOBAN       		| 愛心碼                                                       | string |          |
-| AutoStored   		| 是否同意自動儲值 (0:不同意 1:同意)                           |  int   | 0        |
-| HasHotaiPay  		| 是否有和泰PAY(0:無,1有)                                      |  int   | 0        |
-| HotaiListObj 		| 和泰PAY卡清單                                                |  list  |          |
-| MotorPreAmt  		| 機車預扣款金額                                               |  int   | 50       |
-| EnterpriseStatus  | 企業會員會員狀態<br>(-1:未註冊;0:待審;1:通過;2:失敗;3:合約失效;) |  int   | 0        |
-| EnterpriseObj | 企業客戶資訊 | list |  |
-
-* BindListObj 回傳參數說明
-
-| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
-| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
-| BankNo          | 銀行帳號                         | string |                                                       |
-| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
-| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
-| AvailableAmount | 剩餘額度                         | string |                                                       |
-| CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
+| 參數名稱             | 參數說明                                                           | 型態     | 範例       |
+| ---------------- | -------------------------------------------------------------- |:------:| -------- |
+| PayMode          | 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay)                                 | int    | 0        |
+| HasBind          | 是否有綁定(0:無,1有)                                                  | int    | 1        |
+| HasWallet        | 是否有錢包(0:無,1有)                                                  | int    | 0        |
+| TotalAmount      | 錢包剩餘金額                                                         | int    | 0        |
+| BindListObj      | 信用卡列表                                                          | list   |          |
+| MEMSENDCD        | 發票寄送方式<br>1:捐贈<br>2:email<br>3:二聯<br>4:三聯<br>5:手機條碼<br>6:自然人憑證 | int    | 5        |
+| UNIMNO           | 統編                                                             | string |          |
+| CARRIERID        | 手機條碼                                                           | string | /N37H2JD |
+| NPOBAN           | 愛心碼                                                            | string |          |
+| AutoStored       | 是否同意自動儲值 (0:不同意 1:同意)                                          | int    | 0        |
+| HasHotaiPay      | 是否有和泰PAY(0:無,1有)                                               | int    | 0        |
+| HotaiListObj     | 和泰PAY卡清單                                                       | list   |          |
+| MotorPreAmt      | 機車預扣款金額                                                        | int    | 50       |
+| EnterpriseStatus | 企業會員會員狀態<br>(-1:未註冊;0:待審;1:通過;2:失敗;3:合約失效;)                    | int    | 0        |
+| EnterpriseObj    | 企業客戶資訊                                                         | list   |          |
 
 * HotaiListObj 回傳參數說明
 
-| 參數名稱    | 參數說明                  |  型態  | 範例                                 |
-| ----------- | ------------------------- | :----: | ------------------------------------ |
+| 參數名稱        | 參數說明                  | 型態     | 範例                                   |
+| ----------- | --------------------- |:------:| ------------------------------------ |
 | MemberOneID | 和泰會員OneID             | string | 0064fb4f-8250-4690-954b-2ba94862606b |
-| CardToken   | 信用卡Token               | string | 1385                                 |
-| CardName    | 信用卡自訂名稱            | string |                                      |
+| CardToken   | 信用卡Token              | string | 1385                                 |
+| CardName    | 信用卡自訂名稱               | string |                                      |
 | CardType    | 發卡機構(VISA/MASTER/JCB) | string | Visa                                 |
-| BankDesc    | 發卡銀行                  | string | 國外卡                               |
+| BankDesc    | 發卡銀行                  | string | 國外卡                                  |
 | CardNumber  | 卡號(隱碼)                | string | ****-****-****-5278                  |
-| IsDefault   | 是否為預設卡(0:否/1:是)   |  int   | 1                                    |
+| IsDefault   | 是否為預設卡(0:否/1:是)       | int    | 1                                    |
 
 * EnterpriseObj 回傳參數說明
 
-| 參數名稱         | 參數說明 | 型態   | 範例     |
-| ---------------- | -------- | ------ | -------- |
+| 參數名稱             | 參數說明 | 型態     | 範例       |
+| ---------------- | ---- | ------ | -------- |
 | TaxID            | 統一編號 | string | 12354548 |
-| EnterpriseCmpCN  | 公司名稱 | string | 和運     |
-| EnterpriseDeptCN | 部門名稱 | string | 企劃部   |
+| EnterpriseCmpCN  | 公司名稱 | string | 和運       |
+| EnterpriseDeptCN | 部門名稱 | string | 企劃部      |
 | EmployeeID       | 員工編號 | string | 80238    |
-| EmployeeName     | 員工姓名 | string | 曾O宇    |
+| EmployeeName     | 員工姓名 | string | 曾O宇      |
 
 * Output範例
 
@@ -9090,10 +9081,10 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 |   型態   | 範例             |
-| -------- | -------- | :--: | :------: | ---------------- |
-| SD       | 查詢起日 |  Y   | DateTime | 2021-08-01 00:00 |
-| ED       | 查詢迄日 |  Y   | DateTime | 2021-08-30 00:00 |
+| 參數名稱 | 參數說明 | 必要  | 型態       | 範例               |
+| ---- | ---- |:---:|:--------:| ---------------- |
+| SD   | 查詢起日 | Y   | DateTime | 2021-08-01 00:00 |
+| ED   | 查詢迄日 | Y   | DateTime | 2021-08-30 00:00 |
 
 * input範例
 
@@ -9106,33 +9097,33 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱 | 參數說明     | 型態 | 範例 |
-| -------- | ------------ | :--: | ---- |
-| TradeHis | 錢包歷史紀錄 | List |      |
+| 參數名稱     | 參數說明   | 型態   | 範例  |
+| -------- | ------ |:----:| --- |
+| TradeHis | 錢包歷史紀錄 | List |     |
 
 * TradeHis 回傳參數說明
 
-| 參數名稱    | 參數說明      |  型態  | 範例          |
-| ----------- | ------------- | :----: | ------------- |
-| SEQNO       | 帳款流水號    |  int   | 1             |
-| TradeYear   | 交易年分      |  int   | 2021          |
-| TradeDate   | 交易日期      | string | 08/17         |
-| TradeTime   | 交易時間      | string | 20:05         |
-| TradeTypeNm | 交易類別      | string | 錢包提領      |
-| TradeNote   | 交易類別註記  | string | 電子錢包提領  |
-| TradeAMT    | 交易金額      |  int   | 1000          |
-| ShowFLG     | APP上是否顯示 |  int   | 0:隱藏,1:顯示 |
+| 參數名稱        | 參數說明     | 型態     | 範例        |
+| ----------- | -------- |:------:| --------- |
+| SEQNO       | 帳款流水號    | int    | 1         |
+| TradeYear   | 交易年分     | int    | 2021      |
+| TradeDate   | 交易日期     | string | 08/17     |
+| TradeTime   | 交易時間     | string | 20:05     |
+| TradeTypeNm | 交易類別     | string | 錢包提領      |
+| TradeNote   | 交易類別註記   | string | 電子錢包提領    |
+| TradeAMT    | 交易金額     | int    | 1000      |
+| ShowFLG     | APP上是否顯示 | int    | 0:隱藏,1:顯示 |
 
 * Output範例
 
@@ -9265,10 +9256,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明           | 必要 | 型態 | 範例 |
-| -------- | ------------------ | ---- | :--: | ---- |
-| SEQNO    | 帳款流水號(by會員) |      | int  | 1    |
-
+| 參數名稱  | 參數說明        | 必要  | 型態  | 範例  |
+| ----- | ----------- | --- |:---:| --- |
+| SEQNO | 帳款流水號(by會員) |     | int | 1   |
 
 * input範例
 
@@ -9280,14 +9270,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -9298,7 +9288,7 @@
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {}
+    "Data": {}
 }
 ```
 
@@ -9318,9 +9308,9 @@
 
 * input傳入參數說明
 
-| 參數名稱  | 參數說明                                           | 必要 | 型態 | 範例 |
-| --------- | -------------------------------------------------- | ---- | :--: | ---- |
-| StoreType | 儲值方式(0:信用卡,2:虛擬帳號,3:超商繳費,4:和泰PAY) |      | int  | 3    |
+| 參數名稱      | 參數說明                              | 必要  | 型態  | 範例  |
+| --------- | --------------------------------- | --- |:---:| --- |
+| StoreType | 儲值方式(0:信用卡,2:虛擬帳號,3:超商繳費,4:和泰PAY) |     | int | 3   |
 
 * input範例
 
@@ -9332,33 +9322,33 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱       | 參數說明     | 型態 | 範例 |
-| -------------- | ------------ | :--: | ---- |
-| StoredMoneySet | 儲值設定資訊 | List |      |
+| 參數名稱           | 參數說明   | 型態   | 範例  |
+| -------------- | ------ |:----:| --- |
+| StoredMoneySet | 儲值設定資訊 | List |     |
 
 * StoredMoneySet 參數說明
 
-| 參數名稱        | 參數說明                                           |   型態    | 範例   |
-| --------------- | -------------------------------------------------- | :-------: | ------ |
-| StoreType       | 儲值方式(0:信用卡,2:虛擬帳號,3:超商繳費,4:和泰PAY) |    int    | 3      |
-| StoreTypeDetail | 明細方式(全家:family,7-11:seven)                   |  string   | family |
-| WalletBalance   | 錢包餘額                                           |    int    | 100    |
-| Rechargeable    | 尚可儲值                                           |    int    | 49900  |
-| StoreLimit      | 單次儲值最低                                       |    int    | 100    |
-| StoreMax        | 單次儲值最高                                       |    int    | 50000  |
-| QuickBtns       | 快速按鈕                                           | List<int> |        |
-| defSet          | 預設選取(1是0否)                                   |    int    |        |
+| 參數名稱            | 參數說明                              | 型態        | 範例     |
+| --------------- | --------------------------------- |:---------:| ------ |
+| StoreType       | 儲值方式(0:信用卡,2:虛擬帳號,3:超商繳費,4:和泰PAY) | int       | 3      |
+| StoreTypeDetail | 明細方式(全家:family,7-11:seven)        | string    | family |
+| WalletBalance   | 錢包餘額                              | int       | 100    |
+| Rechargeable    | 尚可儲值                              | int       | 49900  |
+| StoreLimit      | 單次儲值最低                            | int       | 100    |
+| StoreMax        | 單次儲值最高                            | int       | 50000  |
+| QuickBtns       | 快速按鈕                              | List<int> |        |
+| defSet          | 預設選取(1是0否)                        | int       |        |
 
 * Output範例
 
@@ -9369,29 +9359,29 @@
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
-	"StoredMoneySet":[
-	   {
-	     "StoreType":3,
-		 "StoreTypeDetail": "family",
-	     "WalletBalance": 100,
-		 "Rechargeable": 20000,
-		 "StoreLimit":300,
-		 "StoreMax": 20000,
-		 "QuickBtns": [300,1000,5000],
-		 "defSet": 1
-	   },
-	   {
-	     "StoreType":3,
-		 "StoreTypeDetail": "seven",
-	     "WalletBalance": 100,
-		 "Rechargeable": 20000,
-		 "StoreLimit":300,
-		 "StoreMax": 20000,
-		 "QuickBtns": [300,1000,5000],
-		 "defSet": 0
-	   }]	   
-	}
+    "Data": {
+    "StoredMoneySet":[
+       {
+         "StoreType":3,
+         "StoreTypeDetail": "family",
+         "WalletBalance": 100,
+         "Rechargeable": 20000,
+         "StoreLimit":300,
+         "StoreMax": 20000,
+         "QuickBtns": [300,1000,5000],
+         "defSet": 1
+       },
+       {
+         "StoreType":3,
+         "StoreTypeDetail": "seven",
+         "WalletBalance": 100,
+         "Rechargeable": 20000,
+         "StoreLimit":300,
+         "StoreMax": 20000,
+         "QuickBtns": [300,1000,5000],
+         "defSet": 0
+       }]       
+    }
 }
 {
     "Result": "1",
@@ -9399,19 +9389,19 @@
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
-	"StoredMoneySet":[
-	   {
-	     "StoreType":2,
-		 "StoreTypeDetail": "",
-	     "WalletBalance": 100,
-		 "Rechargeable": 49900,
-		 "StoreLimit": 100,
-		 "StoreMax": 50000,
-		 "QuickBtns": [100,1000,5000],
-		 "defSet": 1
-	   },  
-	}
+    "Data": {
+    "StoredMoneySet":[
+       {
+         "StoreType":2,
+         "StoreTypeDetail": "",
+         "WalletBalance": 100,
+         "Rechargeable": 49900,
+         "StoreLimit": 100,
+         "StoreMax": 50000,
+         "QuickBtns": [100,1000,5000],
+         "defSet": 1
+       },  
+    }
 }
 ```
 
@@ -9431,10 +9421,10 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                     | 必要 | 型態 | 範例 |
-| ---------- | ---------------------------- | ---- | :--: | ---- |
-| StoreMoney | 儲值金額                     | Y    | int  | 100  |
-| StoreType  | 儲值方式(0:信用卡,4:和泰PAY) | Y    | int  | 4    |
+| 參數名稱       | 參數說明                | 必要  | 型態  | 範例  |
+| ---------- | ------------------- | --- |:---:| --- |
+| StoreMoney | 儲值金額                | Y   | int | 100 |
+| StoreType  | 儲值方式(0:信用卡,4:和泰PAY) | Y   | int | 4   |
 
 * input範例
 
@@ -9447,20 +9437,20 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱   | 參數說明 | 型態 | 範例 |
-| ---------- | -------- | :--: | ---- |
-| StoreMoney | 儲值金額 | int  | 100  |
+| 參數名稱       | 參數說明 | 型態  | 範例  |
+| ---------- | ---- |:---:| --- |
+| StoreMoney | 儲值金額 | int | 100 |
 
 * Output範例
 
@@ -9479,16 +9469,16 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                   | 說明                                     |
-| -------- | -------------------------- | ---------------------------------------- |
-| ERR730   | 查詢綁定卡號失敗           | 查詢綁定卡號失敗                         |
-| ERR197   | 刷卡授權失敗，請洽發卡銀行 | 刷卡授權發生錯誤                         |
-| ERR284   | 儲值金額不得低於下限       | 儲值金額不得低於100元                    |
-| ERR285   | 儲值金額超過上限           | 儲值金額不得大於5萬元                    |
-| ERR282   | 錢包金額超過上限           | 錢包現存餘額上限為5萬元(包括受贈)        |
-| ERR280   | 金流超過上限               | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
-| ERR918   | Api呼叫失敗                | 呼叫台新錢包儲值發生失敗                 |
-| ERR286   | 寫入錢包紀錄發生失敗       | 寫入錢包紀錄發生失敗                     |
+| 錯誤代碼   | 錯誤訊息          | 說明                     |
+| ------ | ------------- | ---------------------- |
+| ERR730 | 查詢綁定卡號失敗      | 查詢綁定卡號失敗               |
+| ERR197 | 刷卡授權失敗，請洽發卡銀行 | 刷卡授權發生錯誤               |
+| ERR284 | 儲值金額不得低於下限    | 儲值金額不得低於100元           |
+| ERR285 | 儲值金額超過上限      | 儲值金額不得大於5萬元            |
+| ERR282 | 錢包金額超過上限      | 錢包現存餘額上限為5萬元(包括受贈)     |
+| ERR280 | 金流超過上限        | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
+| ERR918 | Api呼叫失敗       | 呼叫台新錢包儲值發生失敗           |
+| ERR286 | 寫入錢包紀錄發生失敗    | 寫入錢包紀錄發生失敗             |
 
 ## WalletStoreVisualAccount 錢包儲值-虛擬帳號
 
@@ -9506,9 +9496,9 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明 | 必要 | 型態 | 範例 |
-| ---------- | -------- | ---- | :--: | ---- |
-| StoreMoney | 儲值金額 | Y    | int  | 456  |
+| 參數名稱       | 參數說明 | 必要  | 型態  | 範例  |
+| ---------- | ---- | --- |:---:| --- |
+| StoreMoney | 儲值金額 | Y   | int | 456 |
 
 * input範例
 
@@ -9520,23 +9510,23 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱       | 參數說明              |  型態  | 範例                |
-| -------------- | --------------------- | :----: | ------------------- |
-| StoreMoney     | 儲值金額              |  int   | 456                 |
-| PayDeadline    | 繳費期限(距今+3日)    | string | 2021/10/18 23:59    |
-| BankCode       | 銀行代碼              | string | 812                 |
-| VirtualAccount | 轉入虛擬帳號          | string | 8552 0028 6660 2912 |
+| 參數名稱           | 參數說明        | 型態     | 範例                  |
+| -------------- | ----------- |:------:| ------------------- |
+| StoreMoney     | 儲值金額        | int    | 456                 |
+| PayDeadline    | 繳費期限(距今+3日) | string | 2021/10/18 23:59    |
+| BankCode       | 銀行代碼        | string | 812                 |
+| VirtualAccount | 轉入虛擬帳號      | string | 8552 0028 6660 2912 |
 
 * Output範例
 
@@ -9567,13 +9557,13 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                         | 說明                                     |
-| -------- | -------------------------------- | ---------------------------------------- |
-| ERR284   | 儲值金額不得低於下限             | 儲值金額不得低於100元                    |
-| ERR282   | 錢包金額超過上限                 | 錢包現存餘額上限為5萬元(包括受贈)        |
-| ERR280   | 金流超過上限                     | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
-| ERR937   | 虛擬帳號產生失敗，請洽系統管理員 | 虛擬帳號產生失敗                         |
-| ERR918   | Api呼叫失敗                      | 發生Exception，請洽系統管理員            |
+| 錯誤代碼   | 錯誤訊息             | 說明                     |
+| ------ | ---------------- | ---------------------- |
+| ERR284 | 儲值金額不得低於下限       | 儲值金額不得低於100元           |
+| ERR282 | 錢包金額超過上限         | 錢包現存餘額上限為5萬元(包括受贈)     |
+| ERR280 | 金流超過上限           | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
+| ERR937 | 虛擬帳號產生失敗，請洽系統管理員 | 虛擬帳號產生失敗               |
+| ERR918 | Api呼叫失敗          | 發生Exception，請洽系統管理員    |
 
 ## WalletStoreShop 錢包儲值-商店條碼
 
@@ -9591,10 +9581,10 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                | 必要 | 型態 | 範例 |
-| ---------- | ----------------------- | ---- | :--: | ---- |
-| StoreMoney | 儲值金額                | Y    | int  | 500  |
-| CvsType    | 超商類型(0:7-11 1:全家) | Y    | int  | 1    |
+| 參數名稱       | 參數說明              | 必要  | 型態  | 範例  |
+| ---------- | ----------------- | --- |:---:| --- |
+| StoreMoney | 儲值金額              | Y   | int | 500 |
+| CvsType    | 超商類型(0:7-11 1:全家) | Y   | int | 1   |
 
 * input範例
 
@@ -9607,24 +9597,24 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱     | 參數說明                                                     |  型態  | 範例             |
-| ------------ | ------------------------------------------------------------ | :----: | ---------------- |
-| StoreMoney   | 儲值金額                                                     |  int   | 500              |
-| PayDeadline  | 繳費期限(距今+3H)                                            | string | 2021/10/14 19:36 |
-| ShopBarCode1 | 超商條碼1                                                    | string | 101014K9A        |
-| ShopBarCode2 | 超商條碼2                                                    | string | IRF0000000000015 |
-| ShopBarCode3 | 超商條碼3                                                    | string | 235916000000500  |
+| 參數名稱         | 參數說明                                            | 型態     | 範例               |
+| ------------ | ----------------------------------------------- |:------:| ---------------- |
+| StoreMoney   | 儲值金額                                            | int    | 500              |
+| PayDeadline  | 繳費期限(距今+3H)                                     | string | 2021/10/14 19:36 |
+| ShopBarCode1 | 超商條碼1                                           | string | 101014K9A        |
+| ShopBarCode2 | 超商條碼2                                           | string | IRF0000000000015 |
+| ShopBarCode3 | 超商條碼3                                           | string | 235916000000500  |
 | Barcode64    | BASE64 ENCODE 字串 (尺寸：320 X 480，由前端轉為PNG 格式等比顯示) | string |                  |
 
 [^註]: 7-11只會回傳Barcode64 ENCODE 字串
@@ -9660,13 +9650,13 @@
 
 * 錯誤代碼
 
-| 錯誤代碼 | 錯誤訊息                         | 說明                                     |
-| -------- | -------------------------------- | ---------------------------------------- |
-| ERR284   | 儲值金額不得低於下限             | 儲值金額不得低於300元                    |
-| ERR282   | 錢包金額超過上限                 | 錢包現存餘額上限為5萬元(包括受贈)        |
-| ERR280   | 金流超過上限                     | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
-| ERR940   | 超商條碼產生失敗，請洽系統管理員 | 超商條碼產生失敗                         |
-| ERR918   | Api呼叫失敗                      | 發生Exception，請洽系統管理員            |
+| 錯誤代碼   | 錯誤訊息             | 說明                     |
+| ------ | ---------------- | ---------------------- |
+| ERR284 | 儲值金額不得低於下限       | 儲值金額不得低於300元           |
+| ERR282 | 錢包金額超過上限         | 錢包現存餘額上限為5萬元(包括受贈)     |
+| ERR280 | 金流超過上限           | 錢包單月交易及使用(包括轉贈)上限為30萬元 |
+| ERR940 | 超商條碼產生失敗，請洽系統管理員 | 超商條碼產生失敗               |
+| ERR918 | Api呼叫失敗          | 發生Exception，請洽系統管理員    |
 
 ## GetPayInfo 還車付款-取得付款方式
 
@@ -9684,41 +9674,40 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | ---- | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- | --- |:---:| --- |
+| 無參數  |      |     |     |     |
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱         | 參數說明                      | 型態 | 範例 |
-| ---------------- | ----------------------------- | :--: | ---- |
-| DefPayMode       | 預設付款方式(0:信用卡 1:錢包 4:Hotaipay) | int  | 0    |
-| PayModeBindCount | 已經綁定的付費方式數量        | int  | 1    |
-| PayModeList      | 付款方式清單                  | List |      |
+| 參數名稱             | 參數說明                          | 型態   | 範例  |
+| ---------------- | ----------------------------- |:----:| --- |
+| DefPayMode       | 預設付款方式(0:信用卡 1:錢包 4:Hotaipay) | int  | 0   |
+| PayModeBindCount | 已經綁定的付費方式數量                   | int  | 1   |
+| PayModeList      | 付款方式清單                        | List |     |
 
 * PayModeList 回傳參數說明
 
-| 參數名稱      | 參數說明                      |  型態  | 範例                                     |
-| ------------- | ----------------------------- | :----: | ---------------------------------------- |
-| PayMode       | 付款方式(0:信用卡 1:錢包 4:Hotaipay)     |  int   | 0                                        |
-| PayModeName   | 付款方式名稱                  | string | 信用卡                                   |
-| HasBind       | 是否有綁定過開通(0:否1:是)    |  int   | 1                                        |
-| PayInfo       | 付款顯示資訊                  | string | *1234                                    |
-| Balance       | 餘額                          |  int   | 0                                        |
-| AutoStoreFlag | 是否自動儲值 (0:否1:是)       |  int   | 0                                        |
-| NotBindMsg    | 未綁定時顯示的文字 (0:否1:是) | string | 若該支付方式有綁定或開通則該欄位為空字串 |
+| 參數名稱          | 參數說明                        | 型態     | 範例                   |
+| ------------- | --------------------------- |:------:| -------------------- |
+| PayMode       | 付款方式(0:信用卡 1:錢包 4:Hotaipay) | int    | 0                    |
+| PayModeName   | 付款方式名稱                      | string | 信用卡                  |
+| HasBind       | 是否有綁定過開通(0:否1:是)            | int    | 1                    |
+| PayInfo       | 付款顯示資訊                      | string | *1234                |
+| Balance       | 餘額                          | int    | 0                    |
+| AutoStoreFlag | 是否自動儲值 (0:否1:是)             | int    | 0                    |
+| NotBindMsg    | 未綁定時顯示的文字 (0:否1:是)          | string | 若該支付方式有綁定或開通則該欄位為空字串 |
 
 * Output範例
 
@@ -9729,7 +9718,7 @@
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
+    "Data": {
         "DefPayMode": 0,
         "PayModeBindCount":1,
         "PayModeList":
@@ -9751,9 +9740,9 @@
                 "Balance":0
                 "AutoStoreFlag":0
                 "NotBindMsg":"未開通"
-			}
+            }
         ]   
-	}
+    }
 }
 ```
 
@@ -9773,10 +9762,10 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                  | 必要 |  型態  | 範例       |
-| ---------- | ------------------------- | ---- | :----: | ---------- |
-| IDNO       | 身分證(從轉贈對象確認取得)| Y    | string | A123456789 |
-| Amount     | 轉贈金額                  | Y    |  int   | 1000       |
+| 參數名稱   | 參數說明           | 必要  | 型態     | 範例         |
+| ------ | -------------- | --- |:------:| ---------- |
+| IDNO   | 身分證(從轉贈對象確認取得) | Y   | string | A123456789 |
+| Amount | 轉贈金額           | Y   | int    | 1000       |
 
 * input範例
 
@@ -9789,20 +9778,19 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱   | 參數說明              |  型態  | 範例             |
-| ---------- | --------------------- | :----: | ---------------- |
-
+| 參數名稱 | 參數說明 | 型態  | 範例  |
+| ---- | ---- |:---:| --- |
 
 * Output範例
 
@@ -9813,8 +9801,8 @@
     "NeedRelogin": 0,
     "NeedUpgrade": 0,
     "ErrorMessage": "Success",
-	"Data": {
-	}
+    "Data": {
+    }
 }
 {
     "Result": "0",
@@ -9843,9 +9831,9 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明         | 必要 |  型態  | 範例       |
-| ---------- | ---------------- | ---- | :----: | ---------- |
-| IDNO_Phone | 身分證或手機號碼 | Y    | string | A123456789 |
+| 參數名稱       | 參數說明     | 必要  | 型態     | 範例         |
+| ---------- | -------- | --- |:------:| ---------- |
+| IDNO_Phone | 身分證或手機號碼 | Y   | string | A123456789 |
 
 * input範例
 
@@ -9857,22 +9845,22 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱  | 參數說明           |  型態  | 範例          |
-| --------- | ------------------ | :----: | ------------- |
-| TranCheck | 可否轉贈(1:可轉贈) |  int   | 1             |
+| 參數名稱      | 參數說明        | 型態     | 範例            |
+| --------- | ----------- |:------:| ------------- |
+| TranCheck | 可否轉贈(1:可轉贈) | int    | 1             |
 | IDNO      | 會員身分證字號     | string | A123456789    |
-| ShowName  | 遮罩後會員姓名     | string | 李Ｏ瑄        |
+| ShowName  | 遮罩後會員姓名     | string | 李Ｏ瑄           |
 | ShowValue | 遮罩後的查詢Key值  | string | 0987\*\*\*321 |
 
 * Output範例
@@ -9922,9 +9910,9 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明                           | 必要 | 型態 | 範例 |
-| -------- | ---------------------------------- | ---- | :--: | ---- |
-| PayMode  | 支付方式<br>0:信用卡<br>1:和雲錢包<br>4:Hotaipay | Y    | int  | 0    |
+| 參數名稱    | 參數說明                                  | 必要  | 型態  | 範例  |
+| ------- | ------------------------------------- | --- |:---:| --- |
+| PayMode | 支付方式<br>0:信用卡<br>1:和雲錢包<br>4:Hotaipay | Y   | int | 0   |
 
 * input範例
 
@@ -9936,15 +9924,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -9975,9 +9962,9 @@
 
 * input傳入參數說明
 
-| 參數名稱   | 參數說明                            | 必要 | 型態 | 範例 |
-| ---------- | ----------------------------------- | ---- | :--: | ---- |
-| AutoStored | 是否同意自動儲值<br>0:不同意 1:同意 | Y    | int  | 0    |
+| 參數名稱       | 參數說明                   | 必要  | 型態  | 範例  |
+| ---------- | ---------------------- | --- |:---:| --- |
+| AutoStored | 是否同意自動儲值<br>0:不同意 1:同意 | Y   | int | 0   |
 
 * input範例
 
@@ -9989,14 +9976,14 @@
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -10010,7 +9997,6 @@
     "Data": {}
 }
 ```
-
 
 ## WalletWithdrowInvoice 寫入手續費發票
 
@@ -10028,24 +10014,34 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明       | 必要 |  型態  | 範例                           |
-| -------- | -------------- | ---- | :----: | ------------------------------ |
-| NORDNO   | 對應主檔流水號 | Y    | String | P00800HiMS20211001140619666113 |
-| INV_NO   | 發票號碼       | Y    | String | DE12345678                     |
-| INV_DATE | 發票開立日期   | Y    | String | 20211010                       |
-| RNDCODE  | 發票隨機碼     | Y    | String | 0594                           |
+| 參數名稱     | 參數說明    | 必要  | 型態     | 範例                             |
+| -------- | ------- | --- |:------:| ------------------------------ |
+| NORDNO   | 對應主檔流水號 | Y   | String | P00800HiMS20211001140619666113 |
+| INV_NO   | 發票號碼    | Y   | String | DE12345678                     |
+| INV_DATE | 發票開立日期  | Y   | String | 20211010                       |
+| RNDCODE  | 發票隨機碼   | Y   | String | 0594                           |
+
+* input範例
+
+```
+{
+    "NORDNO": "P00800HiMS20211001140619666113",
+    "INV_NO": "DE12345678",
+    "INV_DATE": "20211010",
+    "RNDCODE": "0594"
+}
+```
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
-
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Output範例
 
@@ -10078,45 +10074,42 @@
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明                     | 必要 |  型態  | 範例 |
-| -------- | ---------------------------- | :--: | :----: | ---- |
-| P        | 參數帶入(帶入需要AES128加密) |  Y   | STRING |      |
-
+| 參數名稱 | 參數說明               | 必要  | 型態     | 範例  |
+| ---- | ------------------ |:---:|:------:| --- |
+| P    | 參數帶入(帶入需要AES128加密) | Y   | STRING |     |
 
 * Output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data 回傳參數說明
 
-| 參數名稱    | 參數說明                                  | 型態 | 範例 |
-| ----------- | ----------------------------------------- | :--: | ---- |
-| PayMode     | 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay) | int  | 0    |
-| HasBind     | 是否有綁定(0:無,1有)                      | int  | 1    |
-| BindListObj | 信用卡列表                                | list |      |
-
+| 參數名稱        | 參數說明                           | 型態   | 範例  |
+| ----------- | ------------------------------ |:----:| --- |
+| PayMode     | 付費方式 (0:信用卡 1:和雲錢包 4:Hotaipay) | int  | 0   |
+| HasBind     | 是否有綁定(0:無,1有)                  | int  | 1   |
+| BindListObj | 信用卡列表                          | list |     |
 
 * BindListObj 回傳參數說明
 
-| 參數名稱        | 參數說明                         |  型態  | 範例                                                  |
-| --------------- | -------------------------------- | :----: | ----------------------------------------------------- |
-| BankNo          | 銀行帳號                         | string |                                                       |
-| CardNumber      | 信用卡卡號                       | string | 432102******1234                                      |
-| CardName        | 信用卡自訂名稱                   | string | 商業銀行                                              |
-| AvailableAmount | 剩餘額度                         | string |                                                       |
+| 參數名稱            | 參數說明             | 型態     | 範例                                                    |
+| --------------- | ---------------- |:------:| ----------------------------------------------------- |
+| BankNo          | 銀行帳號             | string |                                                       |
+| CardNumber      | 信用卡卡號            | string | 432102******1234                                      |
+| CardName        | 信用卡自訂名稱          | string | 商業銀行                                                  |
+| AvailableAmount | 剩餘額度             | string |                                                       |
 | CardToken       | 替代性信用卡卡號或替代表銀行卡號 | string | db59abcd-1234-1qaz-2wsx-3edc4rfv5tgb_3214567890123456 |
-| CardHash        | 補欄位(空白資料)                 | string |                                                       |
-| ExpDate         | 補欄位(空白資料)                 | string |                                                       |
-| CardType        | 補欄位(空白資料)                 | string |                                                       |
-| IDX             | 順序                             |  int   |                                                       |
-
+| CardHash        | 補欄位(空白資料)        | string |                                                       |
+| ExpDate         | 補欄位(空白資料)        | string |                                                       |
+| CardType        | 補欄位(空白資料)        | string |                                                       |
+| IDX             | 順序               | int    |                                                       |
 
 * Output範例
 
@@ -10152,34 +10145,36 @@
 ### [/api/GetGameItem/]
 
 * ASP.NET Web API (REST API)
+
 * 傳送跟接收採JSON格式
+
 * HEADER帶入AccessToken(必填)
+
 * 動作 [POST]
 
 * input傳入參數說明
 
-| 參數名稱 | 參數說明 | 必要 | 型態 | 範例 |
-| -------- | -------- | :--: | :--: | ---- |
-| 無參數   |          |      |      |      |
+| 參數名稱 | 參數說明 | 必要  | 型態  | 範例  |
+| ---- | ---- |:---:|:---:| --- |
+| 無參數  |      |     |     |     |
 
 * output回傳參數說明
 
-| 參數名稱     | 參數說明           |  型態  | 範例          |
-| ------------ | ------------------ | :----: | ------------- |
-| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
-| ErrorCode    | 錯誤碼             | string | 000000        |
-| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
-| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
-| ErrorMessage | 錯誤訊息           | string | Success       |
-| Data         | 資料物件           | object |               |
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
 
 * Data回傳參數說明
 
-| 參數名稱 | 參數說明               |  型態  | 範例                                                         |
-| -------- | ---------------------- | :----: | ------------------------------------------------------------ |
-| GameSrc  | 遊戲外部連結           | string | https://www.clubon.space/pages/noah                          |
-| P        | 參數(經AES128加密處理) | string | ei4NDno1KKvObLw4O84ifPdOEz/3KlGDb3UW+tT8/Xp4EcjHZu4MMM3Ggcsa3BE0102WhAtPnVuEBJBhTZur5eBTH4rH5rzTl7/jtxtcO/s= |
-
+| 參數名稱    | 參數說明            | 型態     | 範例                                                                                                           |
+| ------- | --------------- |:------:| ------------------------------------------------------------------------------------------------------------ |
+| GameSrc | 遊戲外部連結          | string | https://www.clubon.space/pages/noah                                                                          |
+| P       | 參數(經AES128加密處理) | string | ei4NDno1KKvObLw4O84ifPdOEz/3KlGDb3UW+tT8/Xp4EcjHZu4MMM3Ggcsa3BE0102WhAtPnVuEBJBhTZur5eBTH4rH5rzTl7/jtxtcO/s= |
 
 * Output範例
 
@@ -10197,6 +10192,446 @@
 }
 ```
 
+# 優惠券
 
-----------
+## CouponExchange 禮包序號兌換優惠券
 
+### [/api/CouponExchange/]
+
+- 20220629發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+* 動作 [POST]
+
+* input 傳入參數說明
+
+| 參數名稱   | 參數說明 | 必要 |  型態  | 範例          |
+| ---------- | -------- | :--: | :----: | ------------- |
+| ExchangeID | 禮包代碼 |  Y   | string | 2022LoveiRent |
+
+* input範例
+
+```
+{
+    "ExchangeID": "2022LoveiRent"
+}
+```
+
+* output 回傳參數說明
+
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
+* 錯誤代碼清單
+
+| 錯誤代碼   | 說明               |
+| ------ | ---------------- |
+| ERR401 | 找不到此券號!          |
+| ERR192 | 已超過可兌換日期（起日+迄日）！ |
+| ERR403 | 此時數限新會員首次兌換!     |
+| ERR404 | 此券號數量已兌換完畢!      |
+| ERR402 | 已兌換過             |
+
+## GetOrderCoupon 訂單可使用優惠券
+
+### [/api/GetOrderCoupon/]
+
+- 20220630發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+* 動作 [POST]
+
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 | 型態   | 範例      |
+| -------- | -------- | :--: | ------ | --------- |
+| OrderNo  | 訂單編號 |  Y   | string | H11770599 |
+
+* input範例
+
+```
+{
+    "OrderNo": "H11770599"
+}
+```
+
+* output 回傳參數說明
+
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      |        |           |
+
+* Data回傳參數說明
+
+| 參數名稱          | 參數說明 | 型態     | 範例  |
+| ------------- | ---- |:------:| --- |
+| CouponObjList | 集合物件 | object |     |
+
+* CouponObjList回傳參數說明
+
+| 參數名稱            | 參數說明          | 型態     | 範例  |
+| --------------- | ------------- |:------:| --- |
+| CouponObj       | 會員時數明細資料      | object |     |
+| Applicable      | 該合約是否可用       | int    | 1   |
+| Recommend       | 推薦使用(0:否;1:是) | int    | 0   |
+| PriceMins_total | 訂單使用時數        | int    | 30  |
+| UseGiveMinute   | 優惠標籤已折抵時數     | int    | 30  |
+
+* CouponObj 參數說明
+
+| 參數名稱             | 參數說明                            | 型態     | 範例                                     |
+| ---------------- | ------------------------------- | ------ | -------------------------------------- |
+| CouponID         | 優惠券流水號                          | string | "T0200000003"                          |
+| ParmName         | 優惠券名稱                           | string | "大稻埕煙火夜"                               |
+| SDate            | 可用起日                            | string | "2022/06/25 00:00:00"                  |
+| EDate            | 可用迄日                            | string | "2022/06/25 00:00:00"                  |
+| CPMins           | 優惠券可折抵分鐘數                       | int    | 30                                     |
+| CouponStatus     | 優惠券狀態(-1:預設值;0:可使用;1:圈存中;2:已使用) | int    | 2                                      |
+| OrderNo          | 已使用於訂單編號                        | string | "11770599"                             |
+| UseMin           | 已折抵分鐘數                          | int    | 28                                     |
+| UseAt            | 已使用於(時間)                        | string | "2022/06/30 01:24:05"                  |
+| Usage            | 已使用於(用途)                        | string | "用車折抵 - 租汽車"                           |
+| RemkCycle        | 平假日說明                           | string | "平/假日皆可使用"                             |
+| RemkStation      | 站點說明                            | string | "限大同區據點使用"                             |
+| RemkCarType      | 車型說明                            | string | "限198車型使用"                             |
+| RemkDiscount     | 折抵說明                            | string | ""                                     |
+| RemkOthers       | 其他說明                            | string | "<p>每次用車限用一張...(省略)"                   |
+| ExpireSoon       | 即將到期FLG(0:否;1:是)                | int    | 1                                      |
+| Valid            | 是否有效(0:無;1:有)                   | int    | 1                                      |
+| ApplyCycle       | 平假日內容                           | string | "假日,平日"                                |
+| ApplyProjectType | 專案類型(0:同站;3:路邊;4:機車)            | string | "0,3"                                  |
+| ApplyStation     | 站點內容                            | string | "X0IK,X0SJ,X0SK,X0SW,X0SZ,X1DN...(省略)" |
+| ApplyCarType     | 車型內容                            | string | "PRIUS PHV,PRIUSC"                     |
+| BlueTitle        | 藍色標題                            | string | "可折抵"                                  |
+| BlueTitleUnit    | 藍色標題後綴                          | string | "分"                                    |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "",
+    "Data": {
+        "CouponObjList": [
+        {
+            "CouponObj": {
+                "CouponID": "P0000100000005",
+                "ParmName": "大稻埕煙火夜",
+                "SDate": "2022/06/20 00:00:00",
+                "EDate": "2022/07/31 00:00:00",
+                "CPType": "CP0201",
+                "CPMins": 90,
+                "CouponStatus": 0,
+                "OrderNo": "",
+                "UseMin": 0,
+                "UseAt": "",
+                "Usage": "",
+                "RemkCycle": "平/假日皆可使用",
+                "RemkStation": "限大同區據點使用",
+                "RemkCarType": "限部份車型使用",
+                "RemkDiscount": "",
+                "RemkOthers": "<p>每次用車限用一張優惠券</p><p>一張優惠券僅可使用一次，若用車金額未達折抵金額，則不保留餘額</p>",
+                "ExpireSoon": 1,
+                "Valid": 1,
+                "ApplyCycle": "假日,平日",
+                "ApplyProjectType": "0",
+                "ApplyStation": "X0IK,X0SJ,X0SK,X0SW,X0SZ,X1DN,X1EW,X1N1,X1O9,X1PX,X1WV,X2CM,X2IN",
+                "ApplyCarType": "PRIUSC,PRIUSPHV,SIENTA5,VIOS,YARIS",
+                "BlueTitle": "限[同站]使用",
+                "BlueTitleUnit": ""
+            },
+            "Applicable": 1,
+            "Recommend": 1,
+            "PriceMins_total": 60,
+            "UseGiveMinute": 0,
+            "CanDiscountTime": 60
+        }
+        ]
+    }
+}
+```
+
+# 企業客戶
+
+## GetEnterpriseList 取得企業部門清單
+
+### [/api/GetEnterpriseList/]
+
+- 20210521發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+* 動作 [POST]
+
+* input 傳入參數說明
+
+| 參數名稱 | 參數說明 | 必要 |  型態  | 範例     |
+| -------- | -------- | :--: | :----: | -------- |
+| TaxID    | 統一編號 |  Y   | string | 12354548 |
+
+* input範例
+
+```
+{
+    "TaxID": "12354548"
+}
+```
+
+* output 回傳參數說明
+
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
+
+* Data 參數說明
+
+| 參數名稱   | 參數說明 | 型態     | 範例           |
+| ------ | ---- |:------:| ------------ |
+| CUSTNM | 企業名稱 | string | "運輪齒輪工業有限公司" |
+| TaxID  | 統一編號 | string | "12354548"   |
+| list   |      | object |              |
+
+* list 參數說明
+
+| 參數名稱 | 參數說明             | 型態   | 範例     |
+| -------- | -------------------- | ------ | -------- |
+| DeptNo   | 部門代碼(-1為不存在) | int    | 1        |
+| DeptName | 部門名稱             | string | "營業部" |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "CUSTNM": "運輪齒輪工業有限公司",
+        "TaxID": "12354548",
+        "list": [
+            {
+                "DeptNo": 1,
+                "DeptName": "企劃部"
+            },
+            {
+                "DeptNo": 2,
+                "DeptName": "資訊部"
+            },
+            {
+                "DeptNo": 4,
+                "DeptName": "營業部"
+            },
+            {
+                "DeptNo": 12,
+                "DeptName": "客服部"
+            }
+        ]
+    }
+}
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {
+        "CUSTNM": "葆丞工程有限公司",
+        "TaxID": "16701464",
+        "list": [
+            {
+                "DeptNo": -1,
+                "DeptName": ""
+            }
+        ]
+    }
+}
+{
+    "Result": "0",
+    "ErrorCode": "ERR312",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "統一編號格式不符",
+    "Data": {
+        "CUSTNM": null,
+        "TaxID": null,
+        "list": null
+    }
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼   | 錯誤訊息     | 說明  |
+| ------ | -------- | --- |
+| ERR900 | 參數遺漏     |     |
+| ERR101 | 請重新登入    |     |
+| ERR311 | 查無企業會員資料 |     |
+| ERR312 | 統一編號格式不符 |     |
+
+## SetEnterpriseUser 儲存企業月結用戶
+
+### [/api/SetEnterpriseUser/]
+
+- 20220705發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+* 動作 [POST]
+
+* input 傳入參數說明
+
+| 參數名稱        | 參數說明 | 必要  | 型態     | 範例         |
+| ----------- | ---- |:---:|:------:| ---------- |
+| TaxID       | 統一編號 | Y   | string | "12354548" |
+| CompanyName | 公司名稱 | Y   | string | "和運"       |
+| Depart      | 單位部門 | N   | int    | 1          |
+| EmployeeID  | 員工編號 | N   | string | "74214"    |
+| MEMCNAME    | 員工姓名 | N   | string | "張三"       |
+
+* input範例
+
+```
+{
+    "TaxID": "12354548",
+    "CompanyName": "和運",
+    "Depart": 1,
+    "EmployeeID": "74214",
+    "MEMCNAME": "張三"
+}
+```
+
+* output 回傳參數說明
+
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": []
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼   | 錯誤訊息    | 說明  |
+| ------ | ------- | --- |
+| ERR190 | 統一編號未輸入 |     |
+| ERR406 | 公司名稱未輸入 |     |
+
+## DeleteEnterpriseUser 企業月結用戶取消申請
+
+### [/api/DeleteEnterpriseUser/]
+
+- 20220705發佈
+
+- ASP.NET Web API (REST API)
+
+- 傳送跟接收採JSON格式
+
+- HEADER帶入AccessToken**(必填)**
+* 動作 [POST]
+
+* input 傳入參數說明
+
+| 參數名稱  | 參數說明 | 必要  | 型態     | 範例         |
+| ----- | ---- |:---:|:------:| ---------- |
+| TaxID | 統一編號 | Y   | string | "12354548" |
+
+* input範例
+
+```
+{
+    "TaxID": "12354548"
+}
+```
+
+* output 回傳參數說明
+
+| 參數名稱         | 參數說明      | 型態     | 範例        |
+| ------------ | --------- |:------:| --------- |
+| Result       | 是否成功      | int    | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼       | string | 000000    |
+| NeedRelogin  | 是否需重新登入   | int    | 0:否 1:是   |
+| NeedUpgrade  | 是否需要至商店更新 | int    | 0:否 1:是   |
+| ErrorMessage | 錯誤訊息      | string | Success   |
+| Data         | 資料物件      | object |           |
+
+* Output 範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": []
+}
+```
+
+* 錯誤代碼
+
+| 錯誤代碼   | 錯誤訊息          | 說明  |
+| ------ | ------------- | --- |
+| ERR190 | 統一編號未輸入       |     |
+| ERR191 | 統一編號不正確，請重新確認 |     |
