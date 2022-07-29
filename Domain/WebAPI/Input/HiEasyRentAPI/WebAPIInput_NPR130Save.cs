@@ -203,6 +203,35 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// 停車費 20210818補上
         /// </summary>
         public string PARKINGAMT2 { set; get; }
+        /// <summary>
+        /// 企客帳號
+        /// </summary>
+        public string TAXID { set; get; }
+        /// <summary>
+        /// 是否ETAG自付額
+        /// </summary>
+        public string EC_ETAG { set; get; }
+        /// <summary>
+        /// 是否安心服務自負額
+        /// </summary>
+        public string EC_INSURANCE { set; get; }
+        /// <summary>
+        /// 是否停車費自付額
+        /// </summary>
+        public string EC_PARKING { set; get; }
+        /// <summary>
+        /// ETAG
+        /// </summary>
+        public string ETAG { set; get; }
+        /// <summary>
+        /// 非一般時數折抵(優惠券,久停)
+        /// </summary>
+        public string DISCOUNTMINS { set; get; }
+        /// <summary>
+        /// 訂閱制折抵
+        /// </summary>
+        public string MONTHRENTMINS { set; get; }
+
         public PaymentDetail[] tbPaymentDetail { set; get; }
         /// <summary>
         /// 副承租人清單

@@ -252,9 +252,9 @@ namespace Domain.TB.BackEnd
         /// </summary>
         public string PaymentType { get; set; }
         /// <summary>
-        /// 企客-是否為企客訂單
+        /// 企客編號
         /// </summary>
-        public int EC_flag { get; set; }
+        public string TAXID { get; set; }
         /// <summary>
         /// 企客-自負額 安心+停車
         /// </summary>
@@ -271,5 +271,13 @@ namespace Domain.TB.BackEnd
         /// 企客-停車費是否自付
         /// </summary>
         public int EC_Parking { get; set; }
+        /// <summary>
+        /// 使用總折扣分鐘-非一般時數
+        /// </summary>
+        public int DiscountUseMin { get; set; }
+        /// <summary>
+        /// 訂閱制使用折扣分鐘
+        /// </summary>
+        public int MonthRentUseMin { get; set; }
     }
 }

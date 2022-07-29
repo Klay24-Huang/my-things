@@ -292,7 +292,7 @@ namespace WebAPI.Controllers
                         //BE_ReturnControl obj = rentRepository.GetReturnControl(tmpOrder);
 
                         //string spName2 = new ObjType().GetSPName(ObjType.SPType.BE_GetReturnCarControl);
-                        string spName2 = "usp_BE_GetReturnCarControl_V20220616";
+                        string spName2 = "usp_BE_GetReturnCarControl";
 
                         SPInput_BE_GetReturnCarControl spInput2 = new SPInput_BE_GetReturnCarControl()
                         {
@@ -355,7 +355,14 @@ namespace WebAPI.Controllers
                                 GIFT_MOTO = obj.GIFT_MOTO,
                                 PAYAMT = obj.PAYAMT.ToString(),
                                 INBRNHCD = obj.OUTBRNHCD,
-                                PARKINGAMT2 = obj.PARKINGAMT2.ToString()   //20210818 ADD BY ADAM REASON.補上停車費
+                                PARKINGAMT2 = obj.PARKINGAMT2.ToString(),   //20210818 ADD BY ADAM REASON.補上停車費
+                                TAXID = obj.TAXID,
+                                EC_ETAG = obj.EC_Etag.ToString(),
+                                EC_INSURANCE = obj.EC_Insurance.ToString(),
+                                EC_PARKING = obj.EC_Parking.ToString(),
+                                ETAG = obj.eTag.ToString(),
+                                DISCOUNTMINS = obj.DiscountUseMin.ToString(),
+                                MONTHRENTMINS = obj.MonthRentUseMin.ToString()
                             };
 
                             var PaymentDetail = new List<PaymentDetail>();
@@ -407,6 +414,7 @@ namespace WebAPI.Controllers
                                         PaymentDetail.Add(new PaymentDetail()
                                         {
                                             PAYAMT = ReturnControlList[z].PaymentAmount.ToString(),
+                                            PAYTYPE = "1",
                                             PAYMENTTYPE = ReturnControlList[z].PaymentType,
                                             PAYMEMO = "租金",
                                             PORDNO = ReturnControlList[z].PaymentNORDNO,
