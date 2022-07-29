@@ -27,5 +27,6 @@ namespace Domain.SP.Input.Contract
         public string CarrierType { get; set; }
         public string Business_No { get; set; }
         public string Parking { get; set; }
+        public int GiftMinute { get; set; }
     }
 }

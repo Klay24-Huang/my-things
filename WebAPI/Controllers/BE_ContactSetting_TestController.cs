@@ -1962,6 +1962,7 @@ namespace WebAPI.Controllers
                     //如果有減免則減免最終金額
                     if (costRelife_cost > 0) xTotalRental -= costRelife_cost;
                     if (xTotalRental < 0) xTotalRental = 0;
+                    if (costRelife_cost > 0) outputApi.Rent.CarRental = xTotalRental; //減免可免除租金外金額，以當下小計總額進行扣除避免欠費產生
 
                     FinalPrice = xTotalRental;
 
@@ -2762,7 +2763,7 @@ namespace WebAPI.Controllers
 
                     FinalPrice = xTotalRental;
 
-                    DiffAmount = xTotalRental - PreAmount;  // 差額 = 訂單總價 - 預授權金額
+                    DiffAmount = PreAmount * -1;  // 未用車取消則預授權金額全退
 
                     xTotalRental = xTotalRental < 0 ? 0 : xTotalRental;
                     outputApi.Rent.TotalRental = xTotalRental;
