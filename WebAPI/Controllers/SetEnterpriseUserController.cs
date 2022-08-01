@@ -27,12 +27,10 @@ namespace WebAPI.Controllers
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
-            bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "SetEnterpriseUserController";
             Int64 LogID = 0;
-            Int16 ErrType = 0;
 
             IAPI_SetEnterpriseUserMode apiInput = null;
             NullOutput outputApi = null;
@@ -43,10 +41,8 @@ namespace WebAPI.Controllers
             bool isGuest = true;
             string IDNO = "";
             #endregion
-
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
-
             if (flag)
             {
                 apiInput = JsonConvert.DeserializeObject<IAPI_SetEnterpriseUserMode>(Contentjson);
@@ -54,7 +50,6 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
             }
-
             //不開放訪客
             if (flag)
             {
@@ -64,7 +59,6 @@ namespace WebAPI.Controllers
                     errCode = "ERR101";
                 }
             }
-
             //統一編號未輸入
             if (flag)
             {
@@ -91,7 +85,14 @@ namespace WebAPI.Controllers
                     }
                 }
             }
-
+            if (flag)
+            {
+                if (string.IsNullOrEmpty(apiInput.MEMCNAME))
+                {
+                    flag = false;
+                    errCode = "ERR900";
+                }
+            }
             //公司名稱未輸入
             if (flag)
             {
@@ -134,12 +135,11 @@ namespace WebAPI.Controllers
             #endregion
 
             #region 寫入錯誤Log
-            if (flag == false && isWriteError == false)
+            if (!flag)
             {
-                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                baseVerify.InsErrorLog(funName, errCode, 0, LogID, 0, 0, "");
             }
             #endregion
-
             #region 輸出
             baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
             return objOutput;
