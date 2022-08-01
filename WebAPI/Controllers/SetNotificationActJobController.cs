@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
-        public Dictionary<string, object> doEnterprisePushTech(Dictionary<string, object> value)
+        public Dictionary<string, object> doSetNotificationActJob(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
