@@ -31,12 +31,5 @@ namespace WebAPI.Models.Param.Input
         /// 員工姓名
         /// </summary>
         public string MEMCNAME { get; set; }
-
-
-        /// <summary>
-        /// 帳號
-        /// </summary>
-        public string IDNO { get; set; }
-
     }
 }
