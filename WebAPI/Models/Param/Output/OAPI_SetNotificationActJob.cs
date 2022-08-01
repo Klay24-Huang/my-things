@@ -5,7 +5,7 @@ using System.Web;
 
 namespace WebAPI.Models.Param.Output
 {
-    public class OAPI_EnterprisePushTech
+    public class OAPI_SetNotificationActJob
     {
     }
 }

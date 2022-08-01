@@ -16,7 +16,7 @@ using WebCommon;
 
 namespace WebAPI.Controllers
 {
-    public class EnterprisePushTechController : ApiController
+    public class SetNotificationActJobController : ApiController
     {
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
@@ -32,11 +32,11 @@ namespace WebAPI.Controllers
             bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
-            string funName = "EnterprisePushTechController";
+            string funName = "SetNotificationActJobController";
             Int64 LogID = 0;
             Int16 ErrType = 0;
-            IAPI_EnterprisePushTechlist apiInput = null;
-            OAPI_EnterprisePushTech outputApi = null;
+            IAPI_SetNotificationActJoblist apiInput = null;
+            OAPI_SetNotificationActJob outputApi = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
             if (flag)
             {
-                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_EnterprisePushTechlist>(Contentjson);
+                apiInput = Newtonsoft.Json.JsonConvert.DeserializeObject<IAPI_SetNotificationActJoblist>(Contentjson);
                 //寫入API Log
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
             #endregion
 
             #region TB
-            string spName = "usp_EnterprisePushTech_I01";
+            string spName = "usp_SetNotificationActJob_I01";
 
             object[] objparms = apiInput.InputData.Select(x => x as object).ToArray();
             object[][] parms1 = { new object[] { }, objparms };

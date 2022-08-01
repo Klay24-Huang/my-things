@@ -5,11 +5,11 @@ using System.Web;
 
 namespace WebAPI.Models.Param.Input
 {
-    public class IAPI_EnterprisePushTechlist
+    public class IAPI_SetNotificationActJoblist
     {
-        public List<IAPI_EnterprisePushTech> InputData { get; set; }
+        public List<IAPI_SetNotificationActJob> InputData { get; set; }
     }
-    public class IAPI_EnterprisePushTech
+    public class IAPI_SetNotificationActJob
     {
         /// <summary>
         /// 身分證字號
