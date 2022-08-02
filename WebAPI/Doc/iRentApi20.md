@@ -8567,6 +8567,78 @@
 }
 ```
 
+## SetNotificationActJob 推播設定
+
+### [/api/SetNotificationActJob/]
+
+* 20220802新增文件
+* ASP.NET Web API (REST API)
+* 傳送跟接收採JSON格式
+* HEADER帶入AccessToken**(必填)**
+* 動作 [POST]
+* input傳入參數說明
+
+| 參數名稱  | 參數說明 | 必要 | 型態 | 範例 |
+| --------- | -------- | :--: | :--: | ---- |
+| InputData | 推播資料 |  Y   | list |      |
+
+* InputData傳入參數說明
+
+| 參數名稱 | 參數說明   | 必要 |  型態  | 範例         |
+| -------- | ---------- | :--: | :----: | ------------ |
+| IDNO     | 推播註冊碼 |  Y   | string | A123456789   |
+| TITLE    | 訊息標題   |      | string | 推播測試     |
+| NType    | 推播類型   |      |  int   | 0            |
+| MType    | 推播種類   |      |  int   | 1:一般 2:URL |
+| Message  | 訊息內容   |      | string | 推播測試     |
+
+* input範例
+
+```
+{
+	"InputData":[
+                    {
+                        "IDNO": "A123456789",
+                        "NType": 0,
+                        "MType": 1,
+                        "TITLE": "推播測試",
+                        "Message": "推播測試"
+                    },
+                    {
+                        "IDNO": "C123456789",
+                        "NType": 1,
+                        "MType": 0,
+                        "TITLE": "測",
+                        "Message": "test"
+                    }
+                ]
+}
+```
+
+* Output回傳參數說明
+
+| 參數名稱     | 參數說明           |  型態  | 範例          |
+| ------------ | ------------------ | :----: | ------------- |
+| Result       | 是否成功           |  int   | 0:失敗 1:成功 |
+| ErrorCode    | 錯誤碼             | string | 000000        |
+| NeedRelogin  | 是否需重新登入     |  int   | 0:否 1:是     |
+| NeedUpgrade  | 是否需要至商店更新 |  int   | 0:否 1:是     |
+| ErrorMessage | 錯誤訊息           | string | Success       |
+| Data         | 資料物件           | object |               |
+
+* Output範例
+
+```
+{
+    "Result": "1",
+    "ErrorCode": "000000",
+    "NeedRelogin": 0,
+    "NeedUpgrade": 0,
+    "ErrorMessage": "Success",
+    "Data": {}
+}
+```
+
 # 共同承租人機制
 
 ## JointRentInviteeListQuery 共同承租人邀請清單查詢
