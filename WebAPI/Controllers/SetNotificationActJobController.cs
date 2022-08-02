@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using OtherService.Enum;
-using SSAPI.Client.Local;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -64,7 +63,7 @@ namespace WebAPI.Controllers
             string messageLevel = "";
             string messageType = "";
 
-            ds1 = SSAPI.Client.Local.WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
+            ds1 = WebApiClient.SPExeBatchMultiArr2(ServerInfo.GetServerInfo(), spName, parms1, true, ref returnMessage, ref messageLevel, ref messageType);
             if(!string.IsNullOrEmpty(returnMessage))
             {
                 flag = false;
