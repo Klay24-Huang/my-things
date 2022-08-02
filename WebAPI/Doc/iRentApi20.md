@@ -8586,10 +8586,10 @@
 
 | 參數名稱 | 參數說明   | 必要 |  型態  | 範例         |
 | -------- | ---------- | :--: | :----: | ------------ |
-| IDNO     | 推播註冊碼 |  Y   | string | A123456789   |
-| TITLE    | 訊息標題   |      | string | 推播測試     |
-| NType    | 推播類型   |      |  int   | 0            |
-| MType    | 推播種類   |      |  int   | 1:一般 2:URL |
+| IDNO     | 身分證字號 |  Y   | string | A123456789   |
+| TITLE    | 訊息標題   |  Y   | string | 推播測試     |
+| NType    | 推播類型   |  Y   |  int   | 0            |
+| MType    | 推播種類   |  Y   |  int   | 1:一般 2:URL |
 | Message  | 訊息內容   |      | string | 推播測試     |
 
 * input範例
