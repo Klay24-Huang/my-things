@@ -56,6 +56,7 @@ namespace OtherService
 
         protected string EnterpriseListURL; //取得企業名單 20220704 ADD BY YANKEY 
         protected string CheckoutOptionURL; //取得企業月結項目 20220706 ADD BY YANKEY 
+        protected string EnterpriseDeleteURL; //企業月結用戶取消申請
 
         /// <summary>
         /// 建構式
@@ -104,8 +105,9 @@ namespace OtherService
             //20220309 ADD BY ADAM REASON.營損匯入使用
             NPR136V2SaveURL = (ConfigurationManager.AppSettings.Get("NPR136V2SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR136V2SaveURL").ToString();
             NPR420SaveURL = (ConfigurationManager.AppSettings.Get("NPR420SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR420SaveURL").ToString();
-            CheckoutOptionURL = ConfigurationManager.AppSettings.Get("CheckoutOptionURL").ToString();
-            EnterpriseListURL = ConfigurationManager.AppSettings.Get("EnterpriseListURL").ToString();
+            CheckoutOptionURL = (ConfigurationManager.AppSettings.Get("CheckoutOptionURL") == null) ? "" : ConfigurationManager.AppSettings.Get("CheckoutOptionURL").ToString();
+            EnterpriseListURL = (ConfigurationManager.AppSettings.Get("EnterpriseListURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EnterpriseListURL").ToString();
+            EnterpriseDeleteURL = (ConfigurationManager.AppSettings.Get("EnterpriseDeleteURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EnterpriseDeleteURL").ToString();
         }
 
         #region 產生簽章
@@ -2708,7 +2710,7 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_EnterpriseList()
                 {
-                    Message = "發生異常錯誤:"+ex.Message,
+                    Message = "發生異常錯誤:" + ex.Message,
                     Result = false
                 };
             }
@@ -2797,7 +2799,7 @@ namespace OtherService
                 RTime = DateTime.Now;
                 output = new WebAPIOutput_CheckoutOption()
                 {
-                    Message = ex.Message ,//"發生異常錯誤",
+                    Message = ex.Message,//"發生異常錯誤",
                     Result = false
                 };
             }
@@ -2915,6 +2917,82 @@ namespace OtherService
             return output;
         }
         #endregion
+        #region 企業月結用戶取消申請
+        public bool EnterpriseDelete(WebAPIInput_EnterpriseDelete input, ref WebAPIOutput_EnterpriseDelete output)
+        {
+            bool flag = false;
 
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
+            output = DoEnterpriseDelete(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_EnterpriseDelete> DoEnterpriseDelete(WebAPIInput_EnterpriseDelete input)
+        {
+            WebAPIOutput_EnterpriseDelete output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            string URL = BaseURL + EnterpriseDeleteURL;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_EnterpriseDelete>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_EnterpriseDelete()
+                {
+                    Result = false,
+                    RtnCode = "-2",
+                    Message = $"發生異常錯誤 : {ex.Message}",
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    WebAPIURL = URL,
+                    WebAPIName = "EnterpriseDelete",
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    MKTime = MKTime,
+                    UPDTime = RTime
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+            return output;
+        }
+        #endregion
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Domain.WebAPI.output.HiEasyRentAPI
 {
@@ -81,5 +77,25 @@ namespace Domain.WebAPI.output.HiEasyRentAPI
         /// 啟用日期
         /// </summary>
         public string EnableDate { set; get; } = "N";
+    }
+
+    public class WebAPIOutput_EnterpriseDelete
+    {
+        /// <summary>
+        /// 處理結果
+        /// <para>True:成功</para>
+        /// <para>False:失敗</para>
+        /// </summary>
+        public bool Result { get; set; }
+
+        /// <summary>
+        /// 回傳代碼
+        /// </summary>
+        public string RtnCode { get; set; }
+
+        /// <summary>
+        /// 回覆訊息
+        /// </summary>
+        public string Message { get; set; }
     }
 }

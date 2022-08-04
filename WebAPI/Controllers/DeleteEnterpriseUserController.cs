@@ -1,13 +1,13 @@
 ﻿using Domain.Common;
 using Domain.SP.Input.Enterprise;
 using Domain.SP.Output;
+using Domain.WebAPI.Input.HiEasyRentAPI;
+using Domain.WebAPI.output.HiEasyRentAPI;
 using Newtonsoft.Json;
+using OtherService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WebAPI.Models.BaseFunc;
@@ -22,7 +22,7 @@ namespace WebAPI.Controllers
         private string connetStr = ConfigurationManager.ConnectionStrings["IRent"].ConnectionString;
 
         [HttpPost]
-        public Dictionary<string, object> DoGetMemberStatus(Dictionary<string, object> value)
+        public Dictionary<string, object> DoDeleteEnterpriseUser(Dictionary<string, object> value)
         {
             #region 初始宣告
             HttpContext httpContext = HttpContext.Current;
@@ -30,15 +30,13 @@ namespace WebAPI.Controllers
             string Access_Token_string = (httpContext.Request.Headers["Authorization"] == null) ? "" : httpContext.Request.Headers["Authorization"]; //Bearer 
             var objOutput = new Dictionary<string, object>();    //輸出
             bool flag = true;
-            bool isWriteError = false;
             string errMsg = "Success"; //預設成功
             string errCode = "000000"; //預設成功
             string funName = "DeleteEnterpriseUserController";
             Int64 LogID = 0;
-            Int16 ErrType = 0;
 
             IAPI_DeleteEnterpriseUserMode apiInput = null;
-            NullOutput outputApi = null;
+            NullOutput apiOutput = null;
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
@@ -49,7 +47,6 @@ namespace WebAPI.Controllers
 
             #region 防呆
             flag = baseVerify.baseCheck(value, ref Contentjson, ref errCode, funName, Access_Token_string, ref Access_Token, ref isGuest);
-
             if (flag)
             {
                 apiInput = JsonConvert.DeserializeObject<IAPI_DeleteEnterpriseUserMode>(Contentjson);
@@ -57,7 +54,6 @@ namespace WebAPI.Controllers
                 string ClientIP = baseVerify.GetClientIp(Request);
                 flag = baseVerify.InsAPLog(Contentjson, ClientIP, funName, ref errCode, ref LogID);
             }
-
             //不開放訪客
             if (flag)
             {
@@ -67,7 +63,6 @@ namespace WebAPI.Controllers
                     errCode = "ERR101";
                 }
             }
-
             //統一編號未輸入
             if (flag)
             {
@@ -77,7 +72,6 @@ namespace WebAPI.Controllers
                     errCode = "ERR190";
                 }
             }
-
             #endregion
 
             #region TB
@@ -87,7 +81,22 @@ namespace WebAPI.Controllers
                 flag = baseVerify.GetIDNOFromToken(Access_Token, LogID, ref IDNO, ref lstError, ref errCode);
             }
             #endregion
+            if (flag)
+            {
+                HiEasyRentAPI hiEasyRentAPI = new HiEasyRentAPI();
+                WebAPIInput_EnterpriseDelete WebAPIInput = new WebAPIInput_EnterpriseDelete()
+                {
+                    TaxID = apiInput.TaxID,
+                    IDNO = IDNO
+                };
+                WebAPIOutput_EnterpriseDelete WSOutput = new WebAPIOutput_EnterpriseDelete();
 
+                flag = hiEasyRentAPI.EnterpriseDelete(WebAPIInput, ref WSOutput);
+                if (!flag)
+                {
+                    errCode = "ERR311";
+                }
+            }
             if (flag)
             {
                 string SpName = "usp_DeleteEnterpriseUser";
@@ -105,16 +114,14 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
             }
             #endregion
-
             #region 寫入錯誤Log
-            if (flag == false && isWriteError == false)
+            if (!flag)
             {
-                baseVerify.InsErrorLog(funName, errCode, ErrType, LogID, 0, 0, "");
+                baseVerify.InsErrorLog(funName, errCode, 0, LogID, 0, 0, "");
             }
             #endregion
-
             #region 輸出
-            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, outputApi, token);
+            baseVerify.GenerateOutput(ref objOutput, flag, errCode, errMsg, apiOutput, token);
             return objOutput;
             #endregion
         }

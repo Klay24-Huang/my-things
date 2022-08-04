@@ -40,4 +40,24 @@ namespace Domain.WebAPI.Input.HiEasyRentAPI
         /// </summary>
         public string QryDate { set; get; }
     }
+
+    public class WebAPIInput_EnterpriseDelete
+    {
+        /// <summary>
+        /// 使用者代碼
+        /// </summary>
+        public string user_id { get; set; }
+        /// <summary>
+        /// 認證簽章
+        /// </summary>
+        public string sig { get; set; }
+        /// <summary>
+        /// 統一編號
+        /// </summary>
+        public string TaxID { get; set; }
+        /// <summary>
+        /// 身分證字號
+        /// </summary>
+        public string IDNO { get; set; }
+    }
 }
