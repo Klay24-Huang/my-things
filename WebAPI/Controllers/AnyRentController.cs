@@ -104,11 +104,10 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region 取得汽車使用中訂閱制月租
-            //取得汽車使用中訂閱制月租
+            #region 取得使用中訂閱制月租
             if (flag)
             {
-                if (!string.IsNullOrWhiteSpace(IDNO))
+                if (!string.IsNullOrWhiteSpace(IDNO) && apiInput.CarTrip != 2)
                 {
                     var sp_in = new SPInput_GetNowSubs()
                     {
@@ -202,7 +201,6 @@ namespace WebAPI.Controllers
 
                 if (flag)
                 {
-
                     #region 春節專案使用
                     //春節限定，將R139專案移除，並將R139的價格給原專案
                     //List<AnyRentObj> ListOutCorrect = new List<AnyRentObj>();
@@ -229,13 +227,16 @@ namespace WebAPI.Controllers
                         {
                             LogID = LogID,
                             CarNos = string.Join(",", ListOut.Select(o => o.CarNo.Trim()))
-
                         });
                         _AnyRentObj = objUti.TTMap<List<AnyRentObj>, List<OAPI_AnyRent_Param>>(ListOut);
                     }
 
                     if (_AnyRentObj != null && _AnyRentObj.Count() > 0)
                     {
+                        #region 企業客戶判斷
+                        _AnyRentObj.ForEach(x => { x.TaxID = apiInput.CarTrip == 2 ? x.TaxID : ""; });
+                        #endregion
+
                         #region 加入月租資訊
                         bool isSpring = new CarRentCommon().isSpring(SDate, EDate); //是否為春節時段
 
@@ -259,6 +260,7 @@ namespace WebAPI.Controllers
                             }
                         }
                         #endregion
+
                         #region 加入優惠標籤
                         if (discountLabels != null && discountLabels.Count > 0)
                         {
@@ -270,7 +272,7 @@ namespace WebAPI.Controllers
                                        LabelType = t.LabelType,
                                        GiveMinute = t.GiveMinute,
                                        Describe = $"{t.GiveMinute}分鐘優惠折抵",
-                                   }).FirstOrDefault()??new DiscountLabel();
+                                   }).FirstOrDefault() ?? new DiscountLabel();
                             });
 
                         }
@@ -278,8 +280,6 @@ namespace WebAPI.Controllers
 
                         OAnyRentAPI.AnyRentObj = _AnyRentObj;
                     }
-
-
                 }
             }
             #endregion

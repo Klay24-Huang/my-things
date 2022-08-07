@@ -313,6 +313,10 @@
     <Compile Include="Controllers\BE_GiveGiftMinsController.cs" />
     <Compile Include="Controllers\BE_SendEMailController.cs" />
     <Compile Include="Controllers\BindQueryByEasyrentController.cs" />
+    <Compile Include="Controllers\SetNotificationActJobController.cs" />
+    <Compile Include="Controllers\GetEnterpriseListController.cs" />
+    <Compile Include="Controllers\DeleteEnterpriseUserController.cs" />
+    <Compile Include="Controllers\SetEnterpriseUserController.cs" />
     <Compile Include="Controllers\GetGameItemController.cs" />
     <Compile Include="Controllers\CTBCInquiryController.cs" />
     <Compile Include="Controllers\CTBCCapJobController.cs" />
@@ -592,10 +596,14 @@
     <Compile Include="Models\Param\Input\IAPI_BE_GiveGiftMins.cs" />
     <Compile Include="Models\Param\Input\IAPI_BE_SaveContractSettingHis.cs" />
     <Compile Include="Models\Param\Input\IAPI_BindListQueryByEasyrent.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetNotificationActJob.cs" />
+    <Compile Include="Models\Param\Input\IAPI_GetEnterpriseList.cs" />
     <Compile Include="Models\Param\Input\IAPI_CTBCInquiry.cs" />
+    <Compile Include="Models\Param\Input\IAPI_DeleteEnterpriseUserMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_FtpCityPark.cs" />
     <Compile Include="Models\Param\Input\IAPI_GetEstimateMotor.cs" />
     <Compile Include="Models\Param\Input\IAPI_GiftTransferCheck.cs" />
+    <Compile Include="Models\Param\Input\IAPI_SetEnterpriseUserMode.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletStoredByCredit.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletTools.cs" />
     <Compile Include="Models\Param\Input\IAPI_WalletWithdrowInvoice.cs" />
@@ -646,6 +654,8 @@
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetOrderModifyInfoNew.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetStationList.cs" />
     <Compile Include="Models\Param\BackEnd\Output\OAPI_BE_GetUserGroupByOperator.cs" />
+    <Compile Include="Models\Param\Output\OAPI_SetNotificationActJob.cs" />
+    <Compile Include="Models\Param\Output\OAPI_GetEnterpriseList.cs" />
     <Compile Include="Models\Param\Output\OAPI_GetGameItem.cs" />
     <Compile Include="Models\Param\Output\OAPI_FtpCityParkDataCheck.cs" />
     <Compile Include="Models\Param\Output\OAPI_FtpCityParkData.cs" />

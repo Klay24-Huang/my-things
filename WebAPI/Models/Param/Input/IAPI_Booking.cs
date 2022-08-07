@@ -52,5 +52,9 @@ namespace WebAPI.Models.Param.Input
         /// 手機的定位(經度) 20211012 ADD BY ADAM
         /// </summary>
         public double PhoneLon { get; set; } = 0;
+        /// <summary>
+        /// 企業客戶統一編號
+        /// </summary>
+        public string TaxID { get; set; } 
     }
 }

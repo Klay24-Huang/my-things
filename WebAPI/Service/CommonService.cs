@@ -101,10 +101,16 @@ namespace WebAPI.Service
             //計算安心服務金額
             var InsurancePurePrice = (input.Insurance == 1) ? Convert.ToInt32(billCommon.CalSpread(input.SD, input.ED, input.InsurancePerHours * dayMaxHour, input.InsurancePerHours * dayMaxHour, lstHoliday)) : 0;
             //計算預估租金
-            var Rent = billCommon.CarRentCompute(input.SD, input.ED, input.WeekdayPrice, input.HoildayPrice, dayMaxHour, lstHoliday);
+            var Rent =  billCommon.CarRentCompute(input.SD, input.ED, input.WeekdayPrice, input.HoildayPrice, dayMaxHour, lstHoliday);
             //計算里程費
             float MilUnit = billCommon.GetMilageBase(input.ProjID, input.CarTypeGroupCode, input.CarNo, input.SD, input.ED, 0);
             int MilagePrice = billCommon.CarMilageCompute(input.SD, input.ED, MilUnit, Mildef, 20, lstHoliday);
+
+            if (!string.IsNullOrEmpty(input.TaxID))
+            {
+                Rent = 0;   // 企業月結不收租金預授權
+                InsurancePurePrice = input.EnterpriseInsurance ? 0 : InsurancePurePrice;    //判斷企業是否將安心服務列為月結
+            }
 
             outData = new EstimateDetail();
             outData.InsurancePurePrice = InsurancePurePrice;

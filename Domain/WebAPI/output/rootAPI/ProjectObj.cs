@@ -112,7 +112,6 @@ namespace Domain.WebAPI.output.rootAPI
         public int IsShowCard { get; set; } = 1;
 
         #region 訂閱制月租
-
         /// <summary>
         /// 訂閱制月租Id
         /// </summary>
@@ -159,5 +158,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// 優惠標籤
         /// </summary>
         public ProjectDiscountLabel DiscountLabel { get; set; } = new ProjectDiscountLabel();
+
+        /// <summary>
+        /// 統編
+        /// </summary>
+        public string TaxID { get; set; } = "";
     }
 }

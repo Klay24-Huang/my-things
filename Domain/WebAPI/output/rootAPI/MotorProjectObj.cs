@@ -124,6 +124,7 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public string MonthEndDate { get; set; } = "";
         #endregion
+
         /// <summary>
         /// 優惠標籤
         /// </summary>
@@ -147,5 +148,10 @@ namespace Domain.WebAPI.output.rootAPI
         /// </summary>
         public int InsuranceMotoRate { set; get; }
         #endregion
+
+        /// <summary>
+        /// 企業身分統一編號
+        /// </summary>
+        public string TaxID { get; set; }
     }
 }

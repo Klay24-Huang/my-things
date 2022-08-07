@@ -84,11 +84,14 @@
     <Compile Include="SP\BE\Input\SPInput_BE_InsHotaipayEdmLog_I01.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_HandleAudit.cs" />
     <Compile Include="SP\BE\Output\SPOutput_BE_GetCarHornFlgByCID.cs" />
+    <Compile Include="SP\Input\Booking\SPInput_EnterpriseCheckoutOption.cs" />
     <Compile Include="SP\Input\Common\SPInput_IDReturnToken.cs" />
     <Compile Include="SP\Input\Contract\SPInput_InsContractSettingHis.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelByCarNo.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentCars.cs" />
     <Compile Include="SP\Input\Discount\SPInput_GetDiscountLabelForAnyRentProject.cs" />
+    <Compile Include="SP\Input\Enterprise\SPInput_DeleteEnterpriseUser.cs" />
+    <Compile Include="SP\Input\Enterprise\SPInput_EnterpriseUser.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_GetCTBCInquiryList.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCInquiry.cs" />
     <Compile Include="SP\Input\Hotai\SP_Input_CTBCCap.cs" />
@@ -736,6 +739,7 @@
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR138Save.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR172Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR260Send.cs" />
+    <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_EnterpriseList.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR270Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR271Query.cs" />
     <Compile Include="WebAPI\Input\HiEasyRentAPI\WebAPIInput_NPR320Query.cs" />
@@ -883,6 +887,7 @@
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR390QueryData4.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_NPR420Save.cs" />
     <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_TransIRentMemCMK.cs" />
+    <Compile Include="WebAPI\output\HiEasyRentAPI\WebAPIOutput_Enterprise.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\ResponseErrorInfo.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_BenefitsAndPrivacyVersion.cs" />
     <Compile Include="WebAPI\output\Hotai\Member\WebAPIOutput_CheckSignup.cs" />

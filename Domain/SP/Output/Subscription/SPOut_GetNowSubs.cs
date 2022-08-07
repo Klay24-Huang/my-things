@@ -36,5 +36,4 @@ namespace Domain.SP.Output.Subscription
         /// </summary>
         public DateTime MonEndDate { get; set; }
     }
-
 }

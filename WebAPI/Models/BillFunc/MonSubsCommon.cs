@@ -1503,8 +1503,6 @@ namespace WebAPI.Models.BillFunc
                             if (re_db != null && re_db.Error != 0 && !string.IsNullOrWhiteSpace(re_db.ErrorMsg))
                                 errCode = re_db.ErrorCode;
                         }
-                        else
-                            errCode = "ERR908";
                     }
                 }
 

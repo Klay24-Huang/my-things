@@ -127,11 +127,10 @@ namespace WebAPI.Controllers
             }
             #endregion
 
-            #region 取得汽車使用中訂閱制月租
-            //取得汽車使用中訂閱制月租
+            #region 取得使用中訂閱制月租
             if (flag)
             {
-                if (flag && !string.IsNullOrWhiteSpace(IDNO))
+                if (flag && !string.IsNullOrWhiteSpace(IDNO) && apiInput.CarTrip != 2)
                 {
                     var sp_in = new SPInput_GetNowSubs()
                     {
@@ -220,7 +219,7 @@ namespace WebAPI.Controllers
                 baseVerify.checkSQLResult(ref flag, spOut.Error, spOut.ErrorCode, ref lstError, ref errCode);
 
                 ProjectDiscountLabel reDiscountLabel = new ProjectDiscountLabel();
-                
+
                 if (flag)
                 {
                     if (lstData != null)
@@ -264,6 +263,7 @@ namespace WebAPI.Controllers
                                 CarOfArea = lstData[0].CarOfArea,
                                 Content = lstData[0].Content,
                                 DiscountLabel = reDiscountLabel,
+                                TaxID = apiInput.CarTrip == 2 ? lstData[0].TaxID : ""
                             });
 
                             if (DataLen > 1)
@@ -307,12 +307,11 @@ namespace WebAPI.Controllers
                                         WorkdayPerHour = lstData[i].PayMode == 0 ? lstData[i].Price / 10 : lstData[i].Price,
                                         HolidayPerHour = lstData[i].PayMode == 0 ? lstData[i].PRICE_H / 10 : lstData[i].PRICE_H,
                                         CarOfArea = lstData[i].CarOfArea,
-                                        Content = lstData[i].Content
+                                        Content = lstData[i].Content,
+                                        TaxID = apiInput.CarTrip == 2 ? lstData[i].TaxID : "",
                                     });
                                 }
                             }
-
-                            
                         }
                     }
                 }

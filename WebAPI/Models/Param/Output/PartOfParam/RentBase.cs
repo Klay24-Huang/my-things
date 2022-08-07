@@ -135,5 +135,35 @@
         /// 差額
         /// </summary>
         public int DiffAmount { get; set; } = 0;
+
+        /// <summary>
+        /// 企業客戶統一編號
+        /// </summary>
+        public string EnterpriseTaxID { get; set; } = "";
+
+        /// <summary>
+        /// 企業客戶Etag請款項目 (0:個人 1:公司)
+        /// </summary>
+        public int EnterpriseEtag { get; set; } = 0;
+
+        /// <summary>
+        /// 企業客戶安心服務請款項目 (0:個人 1:公司)
+        /// </summary>
+        public int EnterpriseInsurance { get; set; } = 0;
+
+        /// <summary>
+        /// 企業客戶停車費請款項目 (0:個人 1:公司)
+        /// </summary>
+        public int EnterpriseParking { get; set; } = 0;
+
+        /// <summary>
+        /// 企業月結金額
+        /// </summary>
+        public int EnterpriseFee { get; set; } = 0;
+
+        /// <summary>
+        /// 自付款項金額
+        /// </summary>
+        public int PersonalFee { get; set; } = 0;
     }
 }

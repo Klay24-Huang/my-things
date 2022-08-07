@@ -49,7 +49,7 @@ namespace WebAPI.Controllers
             Token token = null;
             CommonFunc baseVerify = new CommonFunc();
             List<ErrorInfo> lstError = new List<ErrorInfo>();
-            
+
             string Contentjson = "";
             bool isGuest = true;
             string IDNO = "";
@@ -203,10 +203,11 @@ namespace WebAPI.Controllers
                                 CarLongitude = OrderDataLists[i].CarLongitude,
                                 OpenDoorDeadLine = (string.IsNullOrWhiteSpace(OrderDataLists[i].OpenDoorDeadLine)) ? "" : Convert.ToDateTime(OrderDataLists[i].OpenDoorDeadLine).ToString("yyyy-MM-dd HH:mm:ss"),
                                 RenterType = OrderDataLists[i].RenterType,   // 20210830 UPD BY YEH REASON:增加承租人類型
-                                BaseInsuranceMinutes= OrderDataLists[i].BaseInsuranceMinutes,
-                                BaseMotoRate= OrderDataLists[i].BaseMotoRate,
-                                InsuranceMotoMin= OrderDataLists[i].InsuranceMotoMin,
-                                InsuranceMotoRate= OrderDataLists[i].InsuranceMotoRate //20220531 UPD BY YANKEY REASON : 增加機車安心服務費用
+                                BaseInsuranceMinutes = OrderDataLists[i].BaseInsuranceMinutes,
+                                BaseMotoRate = OrderDataLists[i].BaseMotoRate,
+                                InsuranceMotoMin = OrderDataLists[i].InsuranceMotoMin,
+                                InsuranceMotoRate = OrderDataLists[i].InsuranceMotoRate, //20220531 UPD BY YANKEY REASON : 增加機車安心服務費用
+                                IsEnterpriseOrder = OrderDataLists[i].IsEnterpriseOrder
                             };
                             obj.MileageBill = billCommon.CarMilageCompute(Convert.ToDateTime(obj.StartTime), Convert.ToDateTime(obj.StopTime), OrderDataLists[i].MilageUnit, Mildef, 20, new List<Holiday>());
 

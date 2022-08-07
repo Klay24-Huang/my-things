@@ -23,5 +23,11 @@ namespace Domain.SP.Input.Project
         /// 預約迄日
         /// </summary>
         public DateTime ED { get; set; }
+
+        /// <summary>
+        /// 用車行程
+        /// 1 = 個人身分，2 = 企業身分
+        /// </summary>
+        public Int16 CarTrip { get; set; }
     }
 }

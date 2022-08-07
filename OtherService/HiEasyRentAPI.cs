@@ -55,6 +55,10 @@ namespace OtherService
         protected string NPR420SaveURL;  //錢包介面轉檔
         protected string NPR388SaveURL;  //匯入贈與時數
 
+        protected string EnterpriseListURL; //取得企業名單 20220704 ADD BY YANKEY 
+        protected string CheckoutOptionURL; //取得企業月結項目 20220706 ADD BY YANKEY 
+        protected string EnterpriseDeleteURL; //企業月結用戶取消申請
+
         /// <summary>
         /// 建構式
         /// </summary>
@@ -105,6 +109,9 @@ namespace OtherService
 
             //20220629 ADD BY FRANK REASON.匯入贈與時數
             NPR388SaveURL = (ConfigurationManager.AppSettings.Get("NPR388SaveURL") == null) ? "" : ConfigurationManager.AppSettings.Get("NPR388SaveURL").ToString();
+            CheckoutOptionURL = (ConfigurationManager.AppSettings.Get("CheckoutOptionURL") == null) ? "" : ConfigurationManager.AppSettings.Get("CheckoutOptionURL").ToString();
+            EnterpriseListURL = (ConfigurationManager.AppSettings.Get("EnterpriseListURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EnterpriseListURL").ToString();
+            EnterpriseDeleteURL = (ConfigurationManager.AppSettings.Get("EnterpriseDeleteURL") == null) ? "" : ConfigurationManager.AppSettings.Get("EnterpriseDeleteURL").ToString();
         }
 
         #region 產生簽章
@@ -2641,6 +2648,185 @@ namespace OtherService
         }
         #endregion
 
+        #region 企業客戶-查詢企業清單 20220704 ADD BY YANKEY
+        /// <summary>
+        /// 企業客戶-查詢公司資料
+        /// </summary>
+        /// <param name="TaxID"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool EnterpriseList(string TaxID, ref WebAPIOutput_EnterpriseList output)
+        {
+            bool flag = false;
+            WebAPIInput_EnterpriseList input = new WebAPIInput_EnterpriseList()
+            {
+                sig = GenerateSig(),
+                user_id = userid,
+                TaxID = TaxID
+            };
+
+            output = DoEnterpriseList(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 企業客戶部門清單查詢
+        /// </summary>
+        /// 輸入：WebAPIInput_EnterpriseList
+        /// 輸出：WebAPIOutput_EnterpriseList
+        /// <returns></returns>
+        private async Task<WebAPIOutput_EnterpriseList> DoEnterpriseList(WebAPIInput_EnterpriseList input)
+        {
+            WebAPIOutput_EnterpriseList output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + EnterpriseListURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_EnterpriseList>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_EnterpriseList()
+                {
+                    Message = "發生異常錯誤:" + ex.Message,
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "EnterpriseList",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + EnterpriseListURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+        #endregion
+        #region 企業客戶-查詢企業月結設定 20220705 ADD BY YANKEY
+        /// <summary>
+        /// 企業客戶-查詢公司資料
+        /// </summary>
+        /// <param name="TaxID"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public bool EnterpriseCheckoutOption(string TaxID, string QryDate, ref WebAPIOutput_CheckoutOption output)
+        {
+            bool flag = false;
+            WebAPIInput_CheckoutOption input = new WebAPIInput_CheckoutOption()
+            {
+                sig = GenerateSig(),
+                user_id = userid,
+                TaxID = TaxID,
+                QryDate = QryDate
+            };
+
+            output = DoCheckoutOption(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        /// <summary>
+        /// 企業客戶月結設定
+        /// </summary>
+        /// <returns></returns>
+        private async Task<WebAPIOutput_CheckoutOption> DoCheckoutOption(WebAPIInput_CheckoutOption input)
+        {
+            WebAPIOutput_CheckoutOption output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(BaseURL + CheckoutOptionURL);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            try
+            {
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_CheckoutOption>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_CheckoutOption()
+                {
+                    Message = ex.Message,//"發生異常錯誤",
+                    Result = false
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    MKTime = MKTime,
+                    UPDTime = RTime,
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIName = "EnterpriseList",
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    WebAPIURL = BaseURL + EnterpriseListURL
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+
+            return output;
+        }
+        #endregion
 
         #region 營損匯入 20220309 ADD BY ADAM
         public bool NPR136V2Save(WebAPIInput_NPR136V2Save input, ref WebAPIOutput_NPR136Save output)
@@ -2810,6 +2996,82 @@ namespace OtherService
             return output;
         }
         #endregion
+        #region 企業月結用戶取消申請
+        public bool EnterpriseDelete(WebAPIInput_EnterpriseDelete input, ref WebAPIOutput_EnterpriseDelete output)
+        {
+            bool flag = false;
 
+            input.sig = GenerateSig();
+            input.user_id = userid;
+
+            output = DoEnterpriseDelete(input).Result;
+            if (output.Result)
+            {
+                flag = true;
+            }
+            return flag;
+        }
+
+        public async Task<WebAPIOutput_EnterpriseDelete> DoEnterpriseDelete(WebAPIInput_EnterpriseDelete input)
+        {
+            WebAPIOutput_EnterpriseDelete output = null;
+            DateTime MKTime = DateTime.Now;
+            DateTime RTime = MKTime;
+            string URL = BaseURL + EnterpriseDeleteURL;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                string postBody = JsonConvert.SerializeObject(input);//將匿名物件序列化為json字串
+                byte[] byteArray = Encoding.UTF8.GetBytes(postBody);//要發送的字串轉為byte[]
+
+                using (Stream reqStream = request.GetRequestStream())
+                {
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                //發出Request
+                string responseStr = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        responseStr = reader.ReadToEnd();
+                        RTime = DateTime.Now;
+                        output = JsonConvert.DeserializeObject<WebAPIOutput_EnterpriseDelete>(responseStr);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                RTime = DateTime.Now;
+                output = new WebAPIOutput_EnterpriseDelete()
+                {
+                    Result = false,
+                    RtnCode = "-2",
+                    Message = $"發生異常錯誤 : {ex.Message}",
+                };
+            }
+            finally
+            {
+                SPInut_WebAPILog SPInput = new SPInut_WebAPILog()
+                {
+                    WebAPIURL = URL,
+                    WebAPIName = "EnterpriseDelete",
+                    WebAPIInput = JsonConvert.SerializeObject(input),
+                    WebAPIOutput = JsonConvert.SerializeObject(output),
+                    MKTime = MKTime,
+                    UPDTime = RTime
+                };
+                bool flag = true;
+                string errCode = "";
+                List<ErrorInfo> lstError = new List<ErrorInfo>();
+                new WebAPILogCommon().InsWebAPILog(SPInput, ref flag, ref errCode, ref lstError);
+            }
+            return output;
+        }
+        #endregion
     }
 }

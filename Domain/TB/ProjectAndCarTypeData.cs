@@ -85,5 +85,10 @@ namespace Domain.TB
         /// </summary>
         public int InsurancePerHours { set; get; }
         public float MilageBase { get; set; }
+
+        /// <summary>
+        /// 企業身分統一編號
+        /// </summary>
+        public string TaxID { get; set; } = "";
     }
 }

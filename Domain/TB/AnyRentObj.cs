@@ -85,5 +85,11 @@ namespace Domain.TB
         /// 專案代碼
         /// </summary>
         public string ProjID { get; set; }
+
+        /// <summary>
+        /// 企業身分統一編號
+        /// </summary>
+
+        public string TaxID { get; set; }
     }
 }
