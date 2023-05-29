@@ -1,0 +1,37 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.20 AS build
+
+# Set destination for COPY
+WORKDIR /app
+
+# Download Go modules
+# I don't have go.sum in this exmaple
+# COPY go.mod go.sum ./
+COPY go.mod ./
+RUN go mod download
+
+
+# Copy the source code. Note the slash at the end, as explained in
+# https://docs.docker.com/engine/reference/builder/#copy
+COPY main.go ./
+# copy folder時, 後方目標需指定相同的路徑，不然會被攤平
+COPY foo ./foo
+
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -o /main
+
+# Optional:
+# To bind to a TCP port, runtime parameters must be supplied to the docker command.
+# But we can document in the Dockerfile what ports
+# the application is going to listen on by default.
+# https://docs.docker.com/engine/reference/builder/#expose
+
+# Run
+FROM scratch
+COPY --from=build /main /main
+CMD ["/main"]
+
+
+# docker build command
+# docker build --tag docker-go-exmaple:v1.x .
