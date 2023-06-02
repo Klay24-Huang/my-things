@@ -12,6 +12,7 @@ import (
 type Employee struct {
 	ID        int64     // primary key, column name is `id`
 	Name      string    // column name is `name`
+	NewName   string    // colFumn name is `new_name`
 	Age       int       // column name is `age`
 	CreatedAt time.Time // column name is `created_at`
 }
@@ -48,6 +49,8 @@ func main() {
 	db := getGormDB()
 
 	emp := Employee{}
+
+	db.Migrator().AddColumn(emp, "NewName")
 	db.First(&emp) // SELECT * FROM employee ORDER BY id LIMIT 1;
 
 	fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
