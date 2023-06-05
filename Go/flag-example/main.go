@@ -25,4 +25,9 @@ func main() {
 	fmt.Println("string flag:", stringflag)
 }
 
+// bool flag needs =
 // go run main.go -intflag=12 -boolflag=1 -stringflag=test
+// https://gobyexample.com/command-line-flags
+
+// sometimes debug mod will be strange
+// remove all breakpoints and run again
