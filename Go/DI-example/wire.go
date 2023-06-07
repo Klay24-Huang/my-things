@@ -9,8 +9,7 @@ import (
 
 func InitializeApplication() (*application, error) {
 	wire.Build(
-		buzzSet,
-		fuzzSet,
+		injectSet,
 		newAppliction,
 	)
 	return &application{}, nil

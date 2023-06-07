@@ -7,7 +7,7 @@
 package main
 
 import (
-	"example/di/buzz"
+	"example/di/buzz.go"
 	"example/di/fuzz"
 )
 
