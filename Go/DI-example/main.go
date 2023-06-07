@@ -2,7 +2,7 @@ package main
 
 import (
 	"example/di/bar"
-	"example/di/buzz.go"
+	"example/di/buzz"
 	"example/di/foo"
 	"example/di/fuzz"
 	"fmt"
