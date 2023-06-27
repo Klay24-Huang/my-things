@@ -17,9 +17,45 @@ type Employee struct {
 	CreatedAt time.Time // column name is `created_at`
 }
 
+type ModelTime struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type ModelUintId struct {
+	ID uint `gorm:"primaryKey"`
+}
+
+type ModelUUID struct {
+	ID string `gorm:"type:uuid;default:UUID();not null"`
+}
+
+type User1 struct {
+	ModelUintId
+	ModelTime
+
+	Name      string `gorm:"not null;type:varchar(30)"`
+	CompanyID int
+	Company   Company
+}
+
+type User2 struct {
+	ModelUUID
+	ModelTime
+
+	Name      string `gorm:"not null;type:varchar(30)"`
+	CompanyID int
+	Company   Company
+}
+
+type Company struct {
+	ID   int
+	Name string
+}
+
 const (
 	HOST     = "localhost"
-	PORT     = "3306"
+	PORT     = "3307"
 	DATABASE = "test"
 	USER     = "user"
 	PASSWORD = "user"
@@ -48,10 +84,13 @@ func getGormDB() *gorm.DB {
 func main() {
 	db := getGormDB()
 
-	emp := Employee{}
+	// emp := Employee{}
 
-	db.Migrator().AddColumn(emp, "NewName")
-	db.First(&emp) // SELECT * FROM employee ORDER BY id LIMIT 1;
+	// db.Migrator().AddColumn(emp, "NewName")
+	// db.First(&emp) // SELECT * FROM employee ORDER BY id LIMIT 1;
 
-	fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
+	// fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
+
+	db.AutoMigrate(&User1{}, &User2{}, &Company{})
+
 }
