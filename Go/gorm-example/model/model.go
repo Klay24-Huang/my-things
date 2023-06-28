@@ -45,6 +45,12 @@ type NameBasic struct {
 	CreateAtAndUpdateAt
 }
 
+type Key struct {
+	Key string `gorm:"not null;varchar(256)"`
+}
+
+/////// User /////////
+
 type User struct {
 	ID
 	Account  string `gorm:"unique;not null;type:varchar(30)"`
@@ -52,15 +58,27 @@ type User struct {
 	Note     string `gorm:"default:null;type:varchar(30)"`
 	GroupId  uint
 	Group    Group
+	// 商戶管端 / 商戶控端 / 錢包管端 / 錢包user / 造市商管端 / 造市商user
+	Type uint `gorm:"not null;"`
 	//  密鑰?
 	OtpEnable   bool   `gorm:"default:false;not null"`
 	OtpVerified bool   `gorm:"default:false;not null"`
 	OtpSecret   string `gorm:"default:null"`
 	OtpAuth_url string `gorm:"default:null"`
 	CreateAtAndUpdateAt
+
+	PublicKeys []PublicKey
 }
 
-// 群組
+type PublicKey struct {
+	Key    string `gorm:"primaryKey,not null;type:varchar(256);"`
+	UserId uint
+	CreateAt
+}
+
+//////// 商戶控端 ////////////
+
+// 商控 群組
 type Group struct {
 	ID
 	Name  string `gorm:"unique;not null;type:varchar(30)"`
@@ -322,4 +340,43 @@ type MerchantSystemSetting struct {
 	EndAt       time.Time
 	Operator
 	CreateAtAndUpdateAt
+}
+
+// ////// trade //////////
+type Bank struct {
+	ID
+	// 造幣 create / 回收 delete
+	Type string `gorm:"not null;varchar(5)"`
+	Key
+	PublicKey `gorm:"foreignKey:Key"`
+	CreateAt
+}
+
+type Order struct {
+	ID
+	// 買單 call / 賣單 put
+	Type string `gorm:"not null;varchar(5)"`
+	// 拆單
+	// todo 要記成percent?
+	Splittable  bool `gorm:"not null;default:false"`
+	ParentId    *uint
+	ParentOrder *Order
+
+	Key
+	PublicKey `gorm:"foreignKey:Key"`
+	// 下單數量
+	Amount uint
+	CreateAt
+
+	// todo 拆單 parent id
+}
+
+// 搓合成功訂單
+type MatchedOrders struct {
+	CallID    uint
+	CallOrder Order `gorm:"foreignKey:CallID;"`
+	PutID     uint
+	PutOrder  Order `gorm:"foreignKey:PutID;"`
+	CreateAt
+	// todo 取消訂單
 }
