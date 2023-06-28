@@ -373,9 +373,9 @@ type Order struct {
 
 // 搓合成功訂單
 type MatchedOrders struct {
-	CallID    uint
+	CallID    uint  `gorm:"index:idx_call_put;"`
 	CallOrder Order `gorm:"foreignKey:CallID;"`
-	PutID     uint
+	PutID     uint  `gorm:"index:idx_call_put;"`
 	PutOrder  Order `gorm:"foreignKey:PutID;"`
 	CreateAt
 	// todo 取消訂單
