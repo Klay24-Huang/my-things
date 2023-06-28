@@ -134,6 +134,9 @@ type Merchant struct {
 	TestUrl  string `gorm:"not null;type:varchar(50)"`
 	Verified bool   `gorm:"defaut:false;not null"`
 	Enable   bool   `gorm:"default:false;not null"`
+
+	MerchantSetting
+
 	CreateAtAndUpdateAt
 }
 
@@ -143,6 +146,8 @@ type Domain struct {
 	CreateAtAndUpdateAt
 }
 
+// 登入紀錄
+// 商戶控端 管端都有
 type LoginLog struct {
 	ID
 	UserId int `gorm:"not null;"`
@@ -342,8 +347,50 @@ type MerchantSystemSetting struct {
 	CreateAtAndUpdateAt
 }
 
-// ////// trade //////////
-type Bank struct {
+// ////////////////// 商戶控端 ///////////////////////
+type MerchantSetting struct {
+	// 商戶配置葉面
+	MerchantID  uint
+	Page        bool `gorm:"not null;default:false;"`
+	ApiKey      bool `gorm:"not null;default:false;"`
+	IPWhitelist bool `gorm:"not null;default:false;"`
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 商控腳色
+type Role struct {
+	// 集團管理員 商戶管理員 站長 開發人員 行銷人員
+	NameBasic
+	CreateAtAndUpdateAt
+}
+
+type MerchantUserRole struct {
+	UserId uint `gorm:"idx_user_role"`
+	RoleId uint `gorm:"idx_user_role"`
+	Role
+	Operator
+	CreateAtAndUpdateAt
+}
+
+type BankCard struct {
+	ID
+	MerchantID uint   `gorm:"not null;"`
+	UserName   string `gorm:"not null;type:varchar(20);"`
+	BankName   string `gorm:"not null;type:varchar(30);"`
+	// 分行名稱
+	Branch string `gorm:"not null;type:varchar(30);"`
+	// 卡號
+	Code string `gorm:"not null;type:varchar(30);"`
+	CreateAtAndUpdateAt
+}
+
+// todo 關於商戶 補幣 上交 計算手續費 凍結 等等跟貨幣有關table 未全
+// todo 綁定遊戲api相關
+
+// ////////////////// trade ///////////////////////
+// 產生/銷毀 代幣
+type CentralBank struct {
 	ID
 	// 造幣 create / 回收 delete
 	Type string `gorm:"not null;varchar(5)"`
