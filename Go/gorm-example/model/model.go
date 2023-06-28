@@ -388,6 +388,104 @@ type BankCard struct {
 // todo 關於商戶 補幣 上交 計算手續費 凍結 等等跟貨幣有關table 未全
 // todo 綁定遊戲api相關
 
+// ////////////////// 造市商控端 ///////////////////////
+
+// 造市商 設定相關
+
+// 額度上限設定
+type QuotaSetting struct {
+	ID
+	// 代收
+	CollectionDayLimit  uint `gorm:"not null;"`
+	CollectionOnceLimit uint `gorm:"not null;"`
+	// 代付
+	PayingDayLimit  uint `gorm:"not null;"`
+	PayingOnceLimit uint `gorm:"not null;"`
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 獎金比例設定
+type BonusSetting struct {
+	ID
+	// 代收獎金比例
+	CollectionRatio float32 `gorm:"not null;"`
+	// 代付獎金比例
+	PayingRatio float32 `gorm:"not null;"`
+
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 銀行卡交易次數上限
+type TradeSetting struct {
+	ID
+	Count uint `gorm:"not null;"`
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 帳號代收代付上限
+type AccountQuotaSetting struct {
+	ID
+	// 代收
+	CollectionDayLimit uint `gorm:"not null;"`
+	// 代付
+	PayingDayLimit uint `gorm:"not null;"`
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 媒合設定
+type MatchSetting struct {
+	ID
+	// 每日同銀行卡片匹配次數
+	DayLimitOfSameBank uint `gorm:"not null;"`
+	// 同步錢包訂單數量
+	SyncWalletOrder uint `gorm:"not null;"`
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 使用者服務設定
+type UserAgreementSetting struct {
+	ID
+	Content string
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 溫馨提醒設定
+type RemindSetting struct {
+	ID
+	Content string
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 注意事項設定
+type PleaseNoteSetting struct {
+	ID
+	Content string
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// IOS 簽證 設定
+type IOSSignatureSetting struct {
+	ID
+	// 企業簽 超級簽
+	Type uint   `gorm:"not null;"`
+	Name string `gorm:"not null;type:varchar(30);"`
+	// 載點
+	Url    string `gorm:"not null;type:varchar(50);"`
+	Note   string `gorm:"typevarchar(50);"`
+	Enable bool   `gorm:"default:true"`
+	// todo 優先權
+	Operator
+	CreateAtAndUpdateAt
+}
+
 // ////////////////// trade ///////////////////////
 // 產生/銷毀 代幣
 type CentralBank struct {
@@ -426,4 +524,5 @@ type MatchedOrders struct {
 	PutOrder  Order `gorm:"foreignKey:PutID;"`
 	CreateAt
 	// todo 取消訂單
+	// todo 銀行卡匹配次數上限
 }
