@@ -26,11 +26,21 @@ type Operator struct {
 	User       User `gorm:"foreignKey:OperatorId"`
 }
 
+type Approver struct {
+	ApproverId uint
+	User       User `gorm:"foreignKey:ApproverId"`
+}
+
+type Applicant struct {
+	ApplicantId uint
+	User        User `gorm:"foreignKey:ApplicantId"`
+}
+
 type IP struct {
 	IP string `gorm:"not null;type:varchar(15)"`
 }
 
-type OperationBasic struct {
+type NameBasic struct {
 	Nmae string `gorm:"primaryKey;type:varchar(30); not null;"`
 	CreateAtAndUpdateAt
 }
@@ -182,11 +192,11 @@ type Boardcast struct {
 }
 
 type OperatorItem struct {
-	OperationBasic
+	NameBasic
 }
 
 type OperationDetail struct {
-	OperationBasic
+	NameBasic
 }
 
 type OperationLog struct {
@@ -224,5 +234,45 @@ type MerchantBindWalletUser struct {
 	Bingding bool `gorm:"not null;default:true;"`
 	// todo 出入款紀錄
 	// todo 解除再綁定的話 出入款金額的計算方法
+	CreateAtAndUpdateAt
+}
+
+// todo 商戶控端 先到會員綁定
+
+// 審核類型
+type VerifyType struct {
+	NameBasic
+}
+
+// 審核標題
+type VerifyTitle struct {
+	NameBasic
+	VerifyTypeId uint
+	VerifyType
+	Level int
+}
+
+// 審核列表
+type Verify struct {
+	ID
+	// 標題
+	VerifyTitleId uint
+	VerifyTitle
+	Title string `gorm:"not null;type:varchar(30);"`
+	// 事項
+	Item string `gorm:"not null;type:varchar(30);"`
+	// 事由
+	Reason string `gorm:"not null;type:varchar(30);"`
+	// 1 待審核 / 2 已同意 / 3 已拒絕 / 4 已取消
+	Status uint
+	// 回調
+	CallBackCount uint
+	// todo 尚未知作用
+	CallbackStatuse bool
+	CallbackLog     string `gorm:"varchar(256);default:null;"`
+	// 申請者
+	Applicant
+	// 審核人
+	Approver
 	CreateAtAndUpdateAt
 }
