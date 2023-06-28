@@ -276,3 +276,50 @@ type Verify struct {
 	Approver
 	CreateAtAndUpdateAt
 }
+
+// todo 商戶類別先跳過
+
+// 跑馬燈
+type Marquee struct {
+	ID
+	// 發給所有集團
+	AllCorporations bool `gorm:"not null;default:false"`
+	// 單一集團
+	CorporationID uint
+	Corporation
+	// 所有商戶
+	AllMerchants bool `gorm:"not null;default:false"`
+	// 單一商戶
+	MerchantID uint
+	Merchant
+	Content  string `gorm:"not null;type:varchar(50);"`
+	StartAt  time.Time
+	EndAt    time.Time
+	VerifyId uint
+	Verify
+	Operator
+	CreateAtAndUpdateAt
+}
+
+// 公告
+type Bulletin struct {
+	ID
+	// 發給所有集團
+	AllCorporations bool `gorm:"not null;default:false"`
+	// 單一集團
+	CorporationID uint
+	Corporation
+	Content string `gorm:"not null;type:varchar(100);"`
+	CreateAtAndUpdateAt
+}
+
+type MerchantSystemSetting struct {
+	// 例行性維護
+	Routine bool `gorm:"not null;default:false"`
+	// 金流系統維護
+	PaymentFlow bool `gorm:"not null;default:false"`
+	StartAt     time.Time
+	EndAt       time.Time
+	Operator
+	CreateAtAndUpdateAt
+}
