@@ -48,7 +48,7 @@ type Group struct {
 // 集團
 type Corporation struct {
 	gorm.Model
-	CorpId   string `gorm:"type:uuid;default:uuid_gernerate_v4();not null"`
+	CorpId   string `gorm:"type:uuid;default:UUID();not null"`
 	Name     string `gorm:"unique;not null;type:varchar(20)"`
 	LoginUre string `gorm:"unique;not null;type:varchar(30)"`
 	Verified bool   `gorm:"defaut:false;not null"`
@@ -62,9 +62,9 @@ type Corporation struct {
 // 集團管端登入ip白名單
 type CorporationWhitelistring struct {
 	gorm.Model
-	CorpId      string `gorm:"type:uuid;not null;uniqueIndex:corp_id_ip"`
-	Corporation Corporation
-	IP          string `gorm:"type:varchar(15);not null;uniqueIndex:corp_id_ip"`
+	CorporationId string `gorm:"type:uuid;not null;uniqueIndex:corp_id_ip"`
+	Corporation   Corporation
+	IP            string `gorm:"type:varchar(15);not null;uniqueIndex:corp_id_ip"`
 	//狀態 1新增 / 0刪除
 	Statue bool `gorm:"default:true"`
 	// 操作者ID

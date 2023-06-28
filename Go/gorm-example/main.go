@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"gorm-example/model"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -57,8 +59,8 @@ const (
 	HOST     = "localhost"
 	PORT     = "3307"
 	DATABASE = "test"
-	USER     = "user"
-	PASSWORD = "user"
+	USER     = "admin"
+	PASSWORD = "password"
 	// SSL      = "disable"
 )
 
@@ -91,6 +93,14 @@ func main() {
 
 	// fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
 
-	db.AutoMigrate(&User1{}, &User2{}, &Company{})
+	db.AutoMigrate(
+		&model.User{},
+		&model.Group{},
+		&model.Corporation{},
+		&model.CorporationWhitelistring{},
+		&model.Merchant{},
+		&model.Domain{},
+		&model.LoginLog{},
+	)
 
 }
