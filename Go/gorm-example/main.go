@@ -103,4 +103,13 @@ func main() {
 		&model.LoginLog{},
 	)
 
+	// domain := model.Domain{
+	// 	Name: "123",
+	// }
+	// db.Create(&domain)
+
+	domain := &model.Domain{}
+	db.First(&domain)
+	domain.Name = "foofoo"
+	db.Save(&domain)
 }
