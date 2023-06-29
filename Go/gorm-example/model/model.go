@@ -155,6 +155,23 @@ type MarketMakerUser struct {
 	CreateAtAndUpdateAt
 }
 
+type MarketMakerBankCardSetting struct {
+	ID
+	// 代收 1 / 代付 2
+	Type   uint   `gorm:"not null;"`
+	Enable bool   `gorm:"not null;default:true;"`
+	Bank   string `gorm:"not null;default:not null;type:varchar(20);"`
+	Branch string `gorm:"not null;default:not null;type:varchar(20);"`
+	Name   string `gorm:"not null;default:not null;type:varchar(20);"`
+	// 單筆上限
+	Limit uint `gorm:"not null;"`
+	// 每日上限
+	DayLimit uint `gorm:"not null;"`
+
+	CreateAtAndUpdateAt
+	Deleted
+}
+
 //////// 商戶控端 ////////////
 
 // 商控 群組
