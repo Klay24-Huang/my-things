@@ -95,7 +95,7 @@ func main() {
 
 	db.AutoMigrate(
 		&model.User{},
-		&model.Group{},
+		&model.MerchantGroup{},
 		&model.Corporation{},
 		&model.CorporationWhitelistring{},
 		&model.Merchant{},

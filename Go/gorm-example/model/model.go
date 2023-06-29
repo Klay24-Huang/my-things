@@ -55,9 +55,10 @@ type User struct {
 	ID
 	Account  string `gorm:"unique;not null;type:varchar(30)"`
 	Password string `gorm:"not null;type:varchar(30)"`
+	Name     string `gorm:"not null;type:varchar(30);"`
 	Note     string `gorm:"default:null;type:varchar(30)"`
 	GroupId  uint
-	Group    Group
+	Group    MerchantGroup
 	// 商戶管端 / 商戶控端 / 錢包管端 / 錢包user / 造市商管端 / 造市商user
 	Type uint `gorm:"not null;"`
 	//  密鑰?
@@ -79,7 +80,7 @@ type PublicKey struct {
 //////// 商戶控端 ////////////
 
 // 商控 群組
-type Group struct {
+type MerchantGroup struct {
 	ID
 	Name  string `gorm:"unique;not null;type:varchar(30)"`
 	Level uint
@@ -389,6 +390,16 @@ type BankCard struct {
 // todo 綁定遊戲api相關
 
 // ////////////////// 造市商控端 ///////////////////////
+// 造市商 群組
+type MarketMakerGroup struct {
+	ID
+	Name  string `gorm:"unique;not null;type:varchar(30)"`
+	Level uint
+	Note  string `gorm:"type:varchar(30);default:null"`
+	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
+	FunctionSetting string `gorm:"not null;type:json;"`
+	CreateAtAndUpdateAt
+}
 
 // 造市商 設定相關
 
@@ -499,16 +510,19 @@ type CentralBank struct {
 
 type Order struct {
 	ID
+	Key
+	PublicKey `gorm:"foreignKey:Key"`
 	// 買單 call / 賣單 put
 	Type string `gorm:"not null;varchar(5)"`
 	// 拆單
 	// todo 要記成percent?
+	// todo 拆單細節邏輯考慮
 	Splittable  bool `gorm:"not null;default:false"`
 	ParentId    *uint
 	ParentOrder *Order
-
-	Key
-	PublicKey `gorm:"foreignKey:Key"`
+	CoinType    string `gorm:"not null;varchar(3);"`
+	// 鎖定中 部分切單交易中
+	Locked bool `gorm:"not null;default:false;"`
 	// 下單數量
 	Amount uint
 	CreateAt
@@ -517,12 +531,24 @@ type Order struct {
 }
 
 // 搓合成功訂單
-type MatchedOrders struct {
+type Trade struct {
+	UUID
 	CallID    uint  `gorm:"index:idx_call_put;"`
 	CallOrder Order `gorm:"foreignKey:CallID;"`
 	PutID     uint  `gorm:"index:idx_call_put;"`
 	PutOrder  Order `gorm:"foreignKey:PutID;"`
+	// 代付款(進行中) / 已取消 / 已完成 / 爭議
+	Status string `gorm:"not null;varchar(10);"`
+	// 沖正
+	Reversal
 	CreateAt
-	// todo 取消訂單
 	// todo 銀行卡匹配次數上限
+}
+
+// 沖正
+type Reversal struct {
+	// todo 會有部分金額?
+	ID
+	TradeId string `gorm:"type:uuid;"`
+	CreateAt
 }
