@@ -121,6 +121,8 @@ type MarketMakerUser struct {
 	ID
 	UserID uint `gorm:"not null;"`
 	User
+	SpecialAgent bool `gorm:"not null;default:false;"`
+	Level        uint `gorm:"not null;"`
 	// 通訊軟體平台
 	Messager        string `gorm:"not null;type:varchar(30);"`
 	MessagerAccount string `gorm:"not null;type:varchar(30);"`
@@ -129,8 +131,28 @@ type MarketMakerUser struct {
 	Recommender         *MarketMakerUser
 	RecommenderVerified bool `gorm:"not null;default:false;"`
 	// 帳號開通
-	Active bool   `gorm:"not null;default:false;"`
-	Phone  string `gorm:"not null;type:varchar(15);"`
+	Active    bool `gorm:"not null;default:false;"`
+	Suspended bool `gorm:"not null;default:fasle;"`
+	// 允許編輯銀行卡
+	EditBankCard bool   `gorm:"not null;default:true;"`
+	Phone        string `gorm:"not null;type:varchar(15);"`
+	RegisterIP   IP
+
+	/////// 代收代付
+	// 可代收
+	Collectable bool `gorm:"not null;default:false;"`
+	// 代收獎金比例
+	CollectionRatio float32 `gorm:"not null;"`
+	// 代收上限
+	CollectionDayLimit uint `gorm:"not null;"`
+	// 可代付
+	Payable bool `gorm:"not null;default:false;"`
+	// 代付獎金比例
+	PayingRatio float32 `gorm:"not null;"`
+	// 代付上限
+	PayingDayLimit uint `gorm:"not null;"`
+
+	CreateAtAndUpdateAt
 }
 
 //////// 商戶控端 ////////////
