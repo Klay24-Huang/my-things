@@ -63,6 +63,14 @@ type Key struct {
 	Key string `gorm:"not null;varchar(256)"`
 }
 
+type Group struct {
+	Name  string `gorm:"unique;not null;type:varchar(30)"`
+	Level uint
+	Note  string `gorm:"type:varchar(30);default:null"`
+	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
+	FunctionSetting string `gorm:"not null;type:json;"`
+}
+
 /////// User /////////
 
 type User struct {
@@ -474,11 +482,7 @@ type BankCard struct {
 // 造市商 群組
 type MarketMakerGroup struct {
 	ID
-	Name  string `gorm:"unique;not null;type:varchar(30)"`
-	Level uint
-	Note  string `gorm:"type:varchar(30);default:null"`
-	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
-	FunctionSetting string `gorm:"not null;type:json;"`
+	Group
 	CreateAtAndUpdateAt
 }
 
@@ -605,6 +609,21 @@ type IOSSignatureSetting struct {
 	Enable bool   `gorm:"default:true"`
 	// todo 優先權
 	Operator
+	CreateAtAndUpdateAt
+}
+
+// /////////////////// yapay ///////////////////////
+type WalletGroup struct {
+	ID
+	Group
+	CreateAtAndUpdateAt
+}
+
+type WalletBank struct {
+	ID
+	BankID   string `gorm:"unique;not null;type:varchar(30);"`
+	BankName string `gorm:"unique;not null;type:varchar(30);"`
+	Applicant
 	CreateAtAndUpdateAt
 }
 
