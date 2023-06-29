@@ -93,6 +93,46 @@ type PublicKey struct {
 	CreatedAt
 }
 
+// 登入錯誤次數過多被鎖定
+type LockedUser struct {
+	ID
+	UserID uint
+	User
+	CreatedAt
+	Deleted
+}
+
+// 登入紀錄
+// 商戶控端 管端都有
+type LoginLog struct {
+	ID
+	UserID uint `gorm:"not null;"`
+	User
+	// 登入平台
+	Application string `gorm:"not null;type:varchar(10)"`
+	IP
+	// login statuse 成功 / 失敗
+	Statue bool `gorm:"not null;"`
+	CreatedAt
+}
+
+// app user
+type MarketMakerUser struct {
+	ID
+	UserID uint `gorm:"not null;"`
+	User
+	// 通訊軟體平台
+	Messager        string `gorm:"not null;type:varchar(30);"`
+	MessagerAccount string `gorm:"not null;type:varchar(30);"`
+	// 推薦人
+	RecommenderID       *uint
+	Recommender         *MarketMakerUser
+	RecommenderVerified bool `gorm:"not null;default:false;"`
+	// 帳號開通
+	Active bool   `gorm:"not null;default:false;"`
+	Phone  string `gorm:"not null;type:varchar(15);"`
+}
+
 //////// 商戶控端 ////////////
 
 // 商控 群組
@@ -160,20 +200,6 @@ type Merchant struct {
 type Domain struct {
 	ID
 	Name string `gorm:"not null;type:varchar(50)"`
-	CreateAtAndUpdateAt
-}
-
-// 登入紀錄
-// 商戶控端 管端都有
-type LoginLog struct {
-	ID
-	UserID int `gorm:"not null;"`
-	User
-	// 登入平台
-	Application string `gorm:"not null;type:varchar(10)"`
-	IP
-	// login statuse 成功 / 失敗
-	Statue bool `gorm:"not null;"`
 	CreateAtAndUpdateAt
 }
 
@@ -414,6 +440,14 @@ type MarketMakerGroup struct {
 	Note  string `gorm:"type:varchar(30);default:null"`
 	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
 	FunctionSetting string `gorm:"not null;type:json;"`
+	CreateAtAndUpdateAt
+}
+
+type MarketMakerGroupUser struct {
+	ID
+	UserID             int
+	MarketMakerGroupID uint
+	MarketMakerGroup
 	CreateAtAndUpdateAt
 }
 
