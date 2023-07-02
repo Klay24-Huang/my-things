@@ -86,3 +86,9 @@ type MarketMakerSupplementOrRetract struct {
 	Reason  string `gorm:"varchar(30);"`
 	common.CreateAtAndUpdateAt
 }
+
+type Wallet struct {
+	common.UUID
+	Balance int
+	common.CreateAtAndUpdateAt
+}

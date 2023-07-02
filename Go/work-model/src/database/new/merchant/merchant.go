@@ -2,20 +2,10 @@ package merchant
 
 import (
 	"appserver/src/database/new/common"
-	"appserver/src/database/new/user"
 	"time"
 )
 
 //////// 商戶控端 ////////////
-
-// 商控 群組
-type MerchantGroup struct {
-	common.ID
-	Name  string `gorm:"unique;not null;type:varchar(30)"`
-	Level uint
-	Note  string `gorm:"type:varchar(30);default:null"`
-	common.CreateAtAndUpdateAt
-}
 
 // 集團
 type Corporation struct {
@@ -52,10 +42,9 @@ type Merchant struct {
 	CorperationID uint `gorm:"not null;"`
 	Corporation
 	// todo wallet id 是否可用user id取代/可能會有多個錢包 最多五個錢包
-	WalletID uint `gorm:"not null;"`
-	Wallet
-	Name  string `gorm:"type:varchar(20);not null;"`
-	Phone string `gorm:"type:varchar(15);default:null;"`
+	WalletID string `gorm:"not null;"`
+	Name     string `gorm:"type:varchar(20);not null;"`
+	Phone    string `gorm:"type:varchar(15);default:null;"`
 	// 掛單出售Y幣
 	Sell     bool `gorm:"default:true;not null"`
 	Transfer bool `gorm:"default:true;not null"`
@@ -78,49 +67,49 @@ type Domain struct {
 	common.CreateAtAndUpdateAt
 }
 
-type MerchantPasswordResetLog struct {
-	common.ID
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	common.Operator
-	common.CreatedAt
-}
+// type MerchantPasswordResetLog struct {
+// 	common.ID
+// 	MerchantID uint `gorm:"not null;"`
+// 	Merchant
+// 	common.Operator
+// 	common.CreatedAt
+// }
 
-type UnbindMerchantPhoneLog struct {
-	common.ID
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	Phone string `gorm:"type:varchar(15);default:null;"`
-	common.Operator
-	common.CreatedAt
-}
+// type UnbindMerchantPhoneLog struct {
+// 	common.ID
+// 	MerchantID uint `gorm:"not null;"`
+// 	Merchant
+// 	Phone string `gorm:"type:varchar(15);default:null;"`
+// 	common.Operator
+// 	common.CreatedAt
+// }
 
-type AccountLockLog struct {
-	LockTime time.Time
-	UserID   uint `gorm:"not null;"`
-	User     user.User
-	Locked   bool   `gorm:"default:false;not null;"`
-	Reason   string `gorm:"type:varchar(30);not null;"`
-	// todo operator?
-	common.CreateAtAndUpdateAt
-}
+// type AccountLockLog struct {
+// 	LockTime time.Time
+// 	UserID   uint `gorm:"not null;"`
+// 	User     user.User
+// 	Locked   bool   `gorm:"default:false;not null;"`
+// 	Reason   string `gorm:"type:varchar(30);not null;"`
+// 	// todo operator?
+// 	common.CreateAtAndUpdateAt
+// }
 
-type MerchantLockLog struct {
-	LockTime   time.Time
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	// todo operator?
-	common.CreateAtAndUpdateAt
-}
+// type MerchantLockLog struct {
+// 	LockTime   time.Time
+// 	MerchantID uint `gorm:"not null;"`
+// 	Merchant
+// 	// todo operator?
+// 	common.CreateAtAndUpdateAt
+// }
 
-// google 驗證操作紀錄
-type MerchantOTPLog struct {
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	// 操作內容 啟用/停用 2fa
-	Operation string `gorm:"not null;type:varchar(30);"`
-	common.Operator
-}
+// // google 驗證操作紀錄
+// type MerchantOTPLog struct {
+// 	MerchantID uint `gorm:"not null;"`
+// 	Merchant
+// 	// 操作內容 啟用/停用 2fa
+// 	Operation string `gorm:"not null;type:varchar(30);"`
+// 	common.Operator
+// }
 
 // type Boardcast struct {
 // 	MerchantID uint `gorm:"not null;"`
@@ -131,29 +120,6 @@ type MerchantOTPLog struct {
 // 	// operator?
 // 	common.CreateAtAndUpdateAt
 // }
-
-type OperatorItem struct {
-	common.NameBasic
-}
-
-type OperationDetail struct {
-	common.NameBasic
-}
-
-type OperationLog struct {
-	common.Operator
-	OperatorItem
-	OperationDetail
-	Content string `gorm:"type:varchar(30);not null;"`
-	common.IP
-	common.CreatedAt
-}
-
-type Wallet struct {
-	common.UUID
-	Balance int
-	common.CreateAtAndUpdateAt
-}
 
 type MerchantWalletSetting struct {
 	// 商戶錢包管理
@@ -172,7 +138,7 @@ type MerchantBindWalletUser struct {
 	Merchant
 	WalletUserID uint
 	WalletUser
-	Bingding bool `gorm:"not null;default:true;"`
+	Binding bool `gorm:"not null;default:true;"`
 	// todo 出入款紀錄
 	// todo 解除再綁定的話 出入款金額的計算方法
 	common.CreateAtAndUpdateAt
@@ -221,13 +187,13 @@ type MerchantSystemSetting struct {
 	Routine bool `gorm:"not null;default:false"`
 	// 金流系統維護
 	PaymentFlow bool `gorm:"not null;default:false"`
-	StartAt     time.Time
-	EndAt       time.Time
+	StartedAt   time.Time
+	EndedAt     time.Time
 	common.Operator
 	common.CreateAtAndUpdateAt
 }
 
-// ////////////////// 商戶控端 ///////////////////////
+// ////////////////// 商戶管端 ///////////////////////
 type MerchantSetting struct {
 	// 商戶配置葉面
 	MerchantID  uint

@@ -28,6 +28,7 @@ type User struct {
 	PublicKeys []PublicKey
 
 	WalletConsoleUser
+	MerchantUserRole
 }
 
 type PublicKey struct {
@@ -168,5 +169,21 @@ type Group struct {
 	Note  string `gorm:"type:varchar(30);default:null"`
 	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
 	FunctionSetting string `gorm:"not null;type:json;"`
+	common.CreateAtAndUpdateAt
+}
+
+// 商管腳色
+type Role struct {
+	common.ID
+	// 集團管理員 商戶管理員 站長 開發人員 行銷人員
+	Name string `gorm:"not null;type:char(20)"`
+	common.CreateAtAndUpdateAt
+}
+
+// 商管帳號 腳色
+type MerchantUserRole struct {
+	UserID uint `gorm:"idx_user_role"`
+	RoleID uint `gorm:"idx_user_role"`
+	Role
 	common.CreateAtAndUpdateAt
 }
