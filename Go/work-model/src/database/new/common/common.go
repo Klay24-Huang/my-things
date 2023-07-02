@@ -68,3 +68,13 @@ type Group struct {
 	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
 	FunctionSetting string `gorm:"not null;type:json;"`
 }
+
+// 分辨使用的系統
+type Type struct {
+	// 商控 / 商管 / 錢包管 / 造市商管
+	Type uint `gorm:"not null;"`
+}
+
+type Attachment struct {
+	Attachment string `gorm:"not null;type:varchar(50);"`
+}

@@ -23,9 +23,11 @@ type User struct {
 	common.Enable
 	common.CreateAtAndUpdateAt
 	common.Deleted
-	LockedAt time.Time
-	// todo role id
+	// 連續登入失敗被封鎖
+	LockedAt   time.Time
 	PublicKeys []PublicKey
+
+	WalletConsoleUser
 }
 
 type PublicKey struct {
@@ -40,8 +42,11 @@ type UserLockLog struct {
 	common.ID
 	UserID uint
 	User
-	common.CreatedAt
-	common.Deleted
+	// todo 錢包控端 app user看到有紀錄ip，確認其他系統或app是否也有
+	common.IP
+	LockedAt   time.Time
+	UnLockedAt time.Time
+	common.CreateAtAndUpdateAt
 }
 
 // 登入紀錄
@@ -51,10 +56,12 @@ type LoginLog struct {
 	UserID uint `gorm:"not null;"`
 	User
 	// 登入平台
-	Application string `gorm:"not null;type:varchar(10)"`
+	Application string `gorm:"not null;type:char(10)"`
 	common.IP
 	// login statuse 成功 / 失敗
 	Statue bool `gorm:"not null;"`
+	// 失敗原因
+	Note string `gorm:"default:null;type:char(30)"`
 	common.CreatedAt
 }
 
@@ -114,4 +121,52 @@ type MarketMakerBankCardSetting struct {
 
 	common.CreateAtAndUpdateAt
 	common.Deleted
+}
+
+// 錢包控端使用者
+type WalletConsoleUser struct {
+	common.ID
+	UserID  uint
+	GroupID uint
+	Group
+	common.CreateAtAndUpdateAt
+}
+
+// 錢包app使用者
+type WalletUser struct {
+	common.ID
+	RegisteredIP common.IP
+	Verified     bool `gorm:"not null;default:false;"`
+	// 停權
+	Suspend bool `gorm:"not null;default:false;"`
+	WalletUserVerify
+	common.CreateAtAndUpdateAt
+}
+
+type WalletUserVerify struct {
+	common.ID
+	WalletUserID uint
+	RealName     string `gorm:"not null;type:char(20);"`
+	IDCardNumber string `gorm:"not null;type:char(20);"`
+	BirthDay     time.Time
+	IDCardFront  common.Attachment
+	IDCardBack   common.Attachment
+	// 手持ID card照片
+	UserIDCardPhoto common.Attachment
+	// 待審核 已同意 已拒絕
+	Status uint `gorm:"not null;"`
+	common.CreateAtAndUpdateAt
+}
+
+// 群組 (共用)
+type Group struct {
+	common.ID
+	// 商控 / 商管 / 錢包管 / 造市商管
+	Type  uint   `gorm:"not null;"`
+	Name  string `gorm:"not null;type:char(20);"`
+	Level uint
+	Note  string `gorm:"type:varchar(30);default:null"`
+	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
+	FunctionSetting string `gorm:"not null;type:json;"`
+	common.CreateAtAndUpdateAt
 }

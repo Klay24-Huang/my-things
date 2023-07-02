@@ -180,44 +180,6 @@ type MerchantBindWalletUser struct {
 
 // todo 商戶控端 先到會員綁定
 
-// 審核類型
-type VerifyType struct {
-	common.NameBasic
-}
-
-// 審核標題
-type VerifyTitle struct {
-	common.NameBasic
-	VerifyTypeID uint
-	VerifyType
-	Level int
-}
-
-// 審核列表
-type Verify struct {
-	common.ID
-	// 標題
-	VerifyTitleID uint
-	VerifyTitle
-	Title string `gorm:"not null;type:varchar(30);"`
-	// 事項
-	Item string `gorm:"not null;type:varchar(30);"`
-	// 事由
-	Reason string `gorm:"not null;type:varchar(30);"`
-	// 1 待審核 / 2 已同意 / 3 已拒絕 / 4 已取消
-	Status uint
-	// 回調
-	CallBackCount uint
-	// todo 尚未知作用
-	CallbackStatuse bool
-	CallbackLog     string `gorm:"varchar(256);default:null;"`
-	// 申請者
-	common.Applicant
-	// 審核人
-	common.Approver
-	common.CreateAtAndUpdateAt
-}
-
 // todo 商戶類別先跳過
 
 // 跑馬燈
@@ -233,11 +195,11 @@ type Marquee struct {
 	// 單一商戶
 	MerchantID uint
 	Merchant
-	Content  string `gorm:"not null;type:varchar(50);"`
-	StartAt  time.Time
-	EndAt    time.Time
-	VerifyID uint
-	Verify
+	Content string `gorm:"not null;type:varchar(50);"`
+	StartAt time.Time
+	EndAt   time.Time
+	// VerifyID uint
+	// Verify
 	common.Operator
 	common.CreateAtAndUpdateAt
 }

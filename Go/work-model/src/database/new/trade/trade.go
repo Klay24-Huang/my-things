@@ -52,7 +52,7 @@ type Trade struct {
 	CallOrder   Order `gorm:"foreignKey:CallID;"`
 	PutID       uint  `gorm:"index:idx_call_put;"`
 	PutOrder    Order `gorm:"foreignKey:PutID;"`
-	// 代付款(進行中) / 已取消 / 已完成 / 爭議 / 自動取消
+	// 代付款(進行中) / 已取消 / 已完成 / 爭議 / 自動取消 / 暫停交易 / 標記
 	Status string `gorm:"not null;varchar(10);"`
 	// 付款照片url
 	PaymentUrl string `gorm:"varchar(30);"`
