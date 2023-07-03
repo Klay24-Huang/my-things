@@ -13,26 +13,28 @@ type Corporation struct {
 	Name string `gorm:"unique;not null;type:varchar(20)"`
 	// todo 確認用途
 	LoginUrl string `gorm:"unique;not null;type:varchar(30)"`
-	Verified bool   `gorm:"defaut:false;not null"`
-	Enable   bool   `gorm:"default:false;not null"`
+	// 待審核 / 已通過 / 已拒絕
+	Status uint `gorm:"not null;"`
+	// Verified bool   `gorm:"defaut:false;not null"`
+	Enable bool   `gorm:"default:false;not null"`
+	Note   string `gorm:"type:varchar(30);default:null"`
 	// 管端登入ip限制
-	LimitLoginIP bool   `gorm:"default:true;not null"`
-	Note         string `gorm:"type:varchar(30);default:null"`
-	// todo domain name
+	LimitLoginIP bool `gorm:"default:true;not null"`
+	// 登入白名單
+	Whitelistings string `gorm:"type:json"`
 	common.CreateAtAndUpdateAt
 }
 
-// 集團管端登入ip白名單
-type CorporationWhitelistring struct {
+// 集團管端登入ip白名單紀錄
+type CorporationWhitelistingLog struct {
+	common.ID
 	CorporationID string `gorm:"type:uuid;not null;uniqueIndex:corp_id_ip"`
 	Corporation   Corporation
 	IP            string `gorm:"type:varchar(15);not null;uniqueIndex:corp_id_ip"`
 	//狀態 1新增 / 0刪除
 	Statue bool `gorm:"default:true"`
 	// 操作者ID
-
-	// TODO: 出處有必要? 編輯or新增
-	// TODO: 需要記錄成新增者和刪除者?
+	common.Operator
 	common.CreateAtAndUpdateAt
 }
 
@@ -44,7 +46,7 @@ type Merchant struct {
 	// todo wallet id 是否可用user id取代/可能會有多個錢包 最多五個錢包
 	WalletID string `gorm:"not null;"`
 	Name     string `gorm:"type:varchar(20);not null;"`
-	Phone    string `gorm:"type:varchar(15);default:null;"`
+	Phone    string `gorm:"type:varchar(15);"`
 	// 掛單出售Y幣
 	Sell     bool `gorm:"default:true;not null"`
 	Transfer bool `gorm:"default:true;not null"`
@@ -52,13 +54,44 @@ type Merchant struct {
 	ConsoleUrl string `gorm:"not null;type:char(100);"`
 	Url        string `gorm:"not null;type:text"`
 	// test url
-	TestUrl  string `gorm:"not null;type:text"`
-	Verified bool   `gorm:"defaut:false;not null"`
-	Enable   bool   `gorm:"default:false;not null"`
+	TestUrl string `gorm:"not null;type:text"`
+	///// 手續費
+	// 存款手續費
+	DepositFee uint `gorm:"not null;"`
+	// 提款手續費
+	WithdrawalFee uint `gorm:"not null;"`
+	// 掛單手續費
+	OrderFee uint `gorm:"not null;"`
+	// 回收手續費
+	RecyclingFee uint `gorm:"not null;"`
+	// 回收代幣數量下限
+	RecyclingLimit uint `gorm:"not null;"`
+	// 可出售Y幣
+	Salable bool `gorm:"not null;default:true;"`
+	// 會員可出款
+	Dispensable bool `gorm:"not null;default:true;"`
+	// 待審核 / 已通過 / 已拒絕
+	Status uint `gorm:"not null;"`
+	// Verified bool   `gorm:"defaut:false;not null"`
+	Enable bool   `gorm:"default:false;not null"`
+	APIKey string `gorm:"not null;type:char(50)"`
+	// 管端登入ip限制
+	LimitLoginIP      bool   `gorm:"default:true;not null"`
+	Whitelistings     string `gorm:"type:json"`
+	TestWhitelistings string `gorm:"type:json"`
 
 	MerchantSetting
 
 	common.CreateAtAndUpdateAt
+}
+
+// 商戶管理IP白名單紀錄
+type MerchantWhitelistingLog struct {
+	common.ID
+	MerchantID uint
+	Merchant
+
+	common.CreatedAt
 }
 
 type Domain struct {
@@ -67,59 +100,61 @@ type Domain struct {
 	common.CreateAtAndUpdateAt
 }
 
-// type MerchantPasswordResetLog struct {
-// 	common.ID
-// 	MerchantID uint `gorm:"not null;"`
-// 	Merchant
-// 	common.Operator
-// 	common.CreatedAt
-// }
+type MerchantPasswordResetLog struct {
+	common.ID
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	common.Operator
+	common.CreatedAt
+}
 
-// type UnbindMerchantPhoneLog struct {
-// 	common.ID
-// 	MerchantID uint `gorm:"not null;"`
-// 	Merchant
-// 	Phone string `gorm:"type:varchar(15);default:null;"`
-// 	common.Operator
-// 	common.CreatedAt
-// }
+type UnbindMerchantPhoneLog struct {
+	common.ID
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	Phone string `gorm:"type:varchar(15);default:null;"`
+	common.Operator
+	common.CreatedAt
+}
 
-// type AccountLockLog struct {
-// 	LockTime time.Time
-// 	UserID   uint `gorm:"not null;"`
-// 	User     user.User
-// 	Locked   bool   `gorm:"default:false;not null;"`
-// 	Reason   string `gorm:"type:varchar(30);not null;"`
-// 	// todo operator?
-// 	common.CreateAtAndUpdateAt
-// }
+// 控端帳號鎖定
+type AccountLockLog struct {
+	common.ID
+	LockTime time.Time
+	UserID   uint   `gorm:"not null;"`
+	Reason   string `gorm:"type:varchar(30);not null;"`
+	common.CreateAtAndUpdateAt
+}
 
-// type MerchantLockLog struct {
-// 	LockTime   time.Time
-// 	MerchantID uint `gorm:"not null;"`
-// 	Merchant
-// 	// todo operator?
-// 	common.CreateAtAndUpdateAt
-// }
+// 管端帳號鎖定
+type MerchantLockLog struct {
+	common.ID
+	LockTime   time.Time
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	common.CreateAtAndUpdateAt
+}
 
 // // google 驗證操作紀錄
-// type MerchantOTPLog struct {
-// 	MerchantID uint `gorm:"not null;"`
-// 	Merchant
-// 	// 操作內容 啟用/停用 2fa
-// 	Operation string `gorm:"not null;type:varchar(30);"`
-// 	common.Operator
-// }
+type MerchantOTPLog struct {
+	common.ID
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	// 操作內容 啟用/停用 2fa
+	Operation string `gorm:"not null;type:varchar(30);"`
+	common.Operator
+}
 
-// type Boardcast struct {
-// 	MerchantID uint `gorm:"not null;"`
-// 	Merchant
-// 	// todo 補幣/ 補Y幣 差別?
-// 	//商戶 補幣審核通過 / Y幣下發審核通過 / Y幣補幣審核通過
-// 	Flags uint
-// 	// operator?
-// 	common.CreateAtAndUpdateAt
-// }
+// 帳號類別 推播管理
+type Boardcast struct {
+	common.ID
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	// todo 補幣/ 補Y幣 差別?
+	//商戶 補幣審核通過 / Y幣下發審核通過 / Y幣補幣審核通過
+	Flags uint
+	common.CreateAtAndUpdateAt
+}
 
 type MerchantWalletSetting struct {
 	// 商戶錢包管理

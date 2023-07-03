@@ -27,6 +27,7 @@ type User struct {
 	LockedAt   time.Time
 	PublicKeys []PublicKey
 
+	Group
 	WalletConsoleUser
 	MerchantUserRole
 }
@@ -57,6 +58,7 @@ type LoginLog struct {
 	UserID uint `gorm:"not null;"`
 	User
 	// 登入平台
+	// todo 是否改成用type和數字
 	Application string `gorm:"not null;type:char(10)"`
 	common.IP
 	// login statuse 成功 / 失敗
