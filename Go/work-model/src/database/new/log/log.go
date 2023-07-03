@@ -5,8 +5,8 @@ import "appserver/src/database/new/common"
 // 審核類型
 type Type struct {
 	common.ID
-	common.Type
-	Name string `gorm:"not null;type:char(20)"`
+	SystemType common.Type
+	Name       string `gorm:"not null;type:char(20)"`
 	common.CreateAtAndUpdateAt
 }
 

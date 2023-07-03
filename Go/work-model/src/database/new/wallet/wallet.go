@@ -6,12 +6,14 @@ import (
 )
 
 // 控端銀行
-type ConsoleBank struct {
+type Bank struct {
 	common.ID
-	// todo web有填入的地方 有需要保留?
+	// todo web有填入銀行ID的地方 有需要保留?
 	BankID   string `gorm:"unique;not null;type:char(30);"`
 	BankName string `gorm:"unique;not null;type:char(30);"`
-	Enable   bool   `gorm:"not null;default:true;"`
+	// 待審核 / 已通過 / 已拒絕
+	Status uint `gorm:"not null;"`
+	Enable bool `gorm:"not null;default:true;"`
 	common.Applicant
 	common.CreateAtAndUpdateAt
 }

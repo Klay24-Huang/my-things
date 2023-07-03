@@ -6,11 +6,18 @@ import (
 )
 
 // ////////////////// trade ///////////////////////
+// 幣種
+type CoinType struct {
+	CoinType string `gorm:"not null;char(5);"`
+}
+
 // 產生/銷毀 代幣
 type CentralBank struct {
 	common.ID
 	// 造幣 create / 回收 delete
-	Type string `gorm:"not null;varchar(5)"`
+	Action string `gorm:"not null;varchar(5)"`
+	// 幣種
+	CoinType
 	common.Key
 	common.CreatedAt
 }
@@ -29,13 +36,15 @@ type Order struct {
 	ParentID    *uint
 	ParentOrder *Order
 	// 幣種
-	CoinType string `gorm:"not null;varchar(3);"`
+	CoinType
 	// 鎖定中 部分切單交易中
 	Locked bool `gorm:"not null;default:false;"`
 	// 排序值 優先值 越大越優先
 	Priority uint `gorm:"not null;defalt:0;"`
 	// 下單數量
 	Amount uint
+	// 手續費
+	Fee float32
 	// 鎖單時間
 	LockedAt time.Time
 	common.CreatedAt
@@ -89,6 +98,132 @@ type MarketMakerSupplementOrRetract struct {
 
 type Wallet struct {
 	common.UUID
-	Balance int
+	UserID uint
 	common.CreateAtAndUpdateAt
+}
+
+type WalletDetail struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	// 總餘額
+	Balance int
+
+	// todo 未全 商控 商戶錢包管理所有欄位
+	// // 總入款
+	// Desposit int
+	// // 總入款手續費
+	// DespositFee int
+	// // 總出款
+	// Withdraw int
+	// // 總出款手續費
+	// WithdrawFee int
+	// // 凍結
+	// Freeze int
+
+	common.CreateAtAndUpdateAt
+}
+
+////// merchant ////////
+
+// 入款(會員存款) 紀錄
+type DespositAndWithdrawLog struct {
+	common.ID
+	// 入款 / 出款
+	Type         uint `gorm:"not null;"`
+	UserID       uint
+	UserWalletID uint
+	UserWallet   Wallet `gorm:"references:UerWalletID;"`
+	// 手續費率
+	FeeRatio uint `gorm:"not null;"`
+	// 實收手續費
+	Fee              uint `gorm:"not null;"`
+	MerchantWalletID uint
+	MerchantWallet   Wallet `gorm:"references:MerchantWalletID;"`
+	Amount           uint   `gorm:"not null;"`
+	// 成功 / 用戶未付款 / 已付款 開分失敗
+	Status uint `gorm:"not null;"`
+	common.CreatedAt
+	CompletedAt time.Time
+}
+
+// 補幣 / 回收
+// 錢包控端補幣 / 收幣
+type WalletConsoleRefillAndRecycleLog struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	Amount uint `gorm:"not null;"`
+	common.CreatedAt
+}
+
+// 回收代幣
+type RecycleLog struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	// 申請回收金額
+	Amount int
+	// 實際回收金額
+	RecycleAmount int
+	// 手續費
+	Fee int
+	common.CreatedAt
+}
+
+// 商戶補幣
+type MerchantRefillLog struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	// 補幣金額
+	Amount int
+	// 手續費
+	Fee int
+	common.CreatedAt
+}
+
+// 申請補發x幣
+type MerchantSupplyLog struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	// 補幣金額
+	Amount int
+	common.CreatedAt
+}
+
+// 商戶交收
+type MerchantSettlementLog struct {
+	common.ID
+	// 付款方錢包ID
+	PayerWalletID string
+	PayerWallet   Wallet `gorm:"referenceKey:PayerWalletID;"`
+	Amount        int
+	Fee           int
+	// 收款方錢包ID
+	ReceiverWalletID string
+	RecieverWallet   Wallet `gorm:"referenceKey:RecieverWalletID;"`
+	common.CreatedAt
+}
+
+// 商戶戶轉
+type MerchantTransferLog struct {
+	MerchantSettlementLog
+}
+
+// 商戶系統回收
+type MerchantSystemtRecycle struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	// 申請回收金額
+	Amount int
+	common.CreatedAt
 }

@@ -55,6 +55,8 @@ type Merchant struct {
 	Url        string `gorm:"not null;type:text"`
 	// test url
 	TestUrl string `gorm:"not null;type:text"`
+	// 商戶圖示
+	Pic string `gorm:"not null;type:text:"`
 	///// 手續費
 	// 存款手續費
 	DepositFee uint `gorm:"not null;"`
@@ -70,6 +72,8 @@ type Merchant struct {
 	Salable bool `gorm:"not null;default:true;"`
 	// 會員可出款
 	Dispensable bool `gorm:"not null;default:true;"`
+	// 安全存量
+	SaftyAmount uint `gorm:"not null;"`
 	// 待審核 / 已通過 / 已拒絕
 	Status uint `gorm:"not null;"`
 	// Verified bool   `gorm:"defaut:false;not null"`
@@ -156,24 +160,12 @@ type Boardcast struct {
 	common.CreateAtAndUpdateAt
 }
 
-type MerchantWalletSetting struct {
-	// 商戶錢包管理
-	//todo 帶商戶管端開完 再回來會比較清楚
-}
-
-// yapay 錢包會員
-type WalletUser struct {
-	common.ID
-	Name string `gorm:"not null;type:varchar(30);"`
-	common.CreateAtAndUpdateAt
-}
-
+// 商控 錢包 會員綁定
 type MerchantBindWalletUser struct {
 	MerchantID uint `gorm:"not null;"`
 	Merchant
 	WalletUserID uint
-	WalletUser
-	Binding bool `gorm:"not null;default:true;"`
+	Binding      bool `gorm:"not null;default:true;"`
 	// todo 出入款紀錄
 	// todo 解除再綁定的話 出入款金額的計算方法
 	common.CreateAtAndUpdateAt
@@ -217,7 +209,7 @@ type Bulletin struct {
 	common.CreateAtAndUpdateAt
 }
 
-type MerchantSystemSetting struct {
+type MerchantConsoleSystemSetting struct {
 	// 例行性維護
 	Routine bool `gorm:"not null;default:false"`
 	// 金流系統維護
@@ -266,5 +258,14 @@ type BankCard struct {
 	common.CreateAtAndUpdateAt
 }
 
+// 營運管理
+type MerchantSystemSetting struct {
+	common.ID
+	Initial    int  `gorm:"not null;default:0;"`
+	AlarmRatio uint `gorm:"not null;default:0;"`
+	common.CreateAtAndUpdateAt
+}
+
+// todo 商戶 會員 站長
 // todo 關於商戶 補幣 上交 計算手續費 凍結 等等跟貨幣有關table 未全
 // todo 綁定遊戲api相關

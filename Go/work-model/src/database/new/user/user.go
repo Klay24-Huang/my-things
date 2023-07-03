@@ -68,6 +68,7 @@ type LoginLog struct {
 	common.CreatedAt
 }
 
+// //// 造市商 app ///////////
 // app user
 type MarketMakerUser struct {
 	common.ID
@@ -173,6 +174,8 @@ type Group struct {
 	FunctionSetting string `gorm:"not null;type:json;"`
 	common.CreateAtAndUpdateAt
 }
+
+//////// 商戶管端 ////////////
 
 // 商管腳色
 type Role struct {
