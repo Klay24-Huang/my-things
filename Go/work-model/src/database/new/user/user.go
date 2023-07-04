@@ -147,6 +147,7 @@ type WalletUser struct {
 	common.CreateAtAndUpdateAt
 }
 
+// 錢包app 實名 照片 ID card認證
 type WalletUserVerify struct {
 	common.ID
 	WalletUserID uint

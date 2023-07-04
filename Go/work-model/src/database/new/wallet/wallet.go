@@ -38,6 +38,7 @@ type SystemSetting struct {
 	common.CreateAtAndUpdateAt
 }
 
+// 同時吃單上限
 type TradeSetting struct {
 	common.ID
 	// 總代理 / 代理 / 造市商 / 自然人 / 商戶

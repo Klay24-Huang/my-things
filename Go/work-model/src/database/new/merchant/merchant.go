@@ -162,18 +162,32 @@ type Boardcast struct {
 
 // 商控 錢包 會員綁定
 type MerchantBindWalletUser struct {
+	common.ID
 	MerchantID uint `gorm:"not null;"`
 	Merchant
-	WalletUserID uint
-	Binding      bool `gorm:"not null;default:true;"`
+	WalletID string
+	Binding  bool `gorm:"not null;default:true;"`
 	// todo 出入款紀錄
 	// todo 解除再綁定的話 出入款金額的計算方法
 	common.CreateAtAndUpdateAt
 }
 
-// todo 商戶控端 先到會員綁定
+// 商戶體系
+type System struct {
+	common.ID
+	Name            string `gorm:"char(30); not null;"`
+	SystemMerchants []SystemMerchant
+	common.CreateAtAndUpdateAt
+}
 
-// todo 商戶類別先跳過
+// 體系商戶 binding
+type SystemMerchant struct {
+	common.ID
+	SystemID   uint `gorm:"not null;"`
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	common.CreatedAt
+}
 
 // 跑馬燈
 type Marquee struct {
