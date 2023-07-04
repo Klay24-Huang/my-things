@@ -94,13 +94,14 @@ func main() {
 	// fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
 
 	db.AutoMigrate(
-		&model.User{},
-		&model.MerchantGroup{},
-		&model.Corporation{},
-		&model.CorporationWhitelistring{},
-		&model.Merchant{},
-		&model.Domain{},
-		&model.LoginLog{},
+	// &model.User{},
+	// &model.MerchantGroup{},
+	// &model.Corporation{},
+	// &model.CorporationWhitelistring{},
+	// &model.Merchant{},
+	// &model.Domain{},
+	// &model.LoginLog{},
+
 	)
 
 	// domain := model.Domain{

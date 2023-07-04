@@ -26,17 +26,19 @@ type Verify struct {
 	// 標題
 	TitleID uint
 	Title
+	// todo 資料來源的db 跟table id
 	// 事項
 	Item string `gorm:"not null;type:varchar(30);"`
 	// 事由
 	Reason string `gorm:"not null;type:varchar(30);"`
-	// 1 待審核 / 2 已同意 / 3 已拒絕 / 4 已取消
+	// 1 用戶申請 / 2 管理者同意 / 3 管理者拒絕 / 4 申請人取消
 	Status uint
+	// todo 移除
 	// 回調
-	CallBackCount uint
-	// todo 尚未知作用
-	CallbackStatuse bool
-	CallbackLog     string `gorm:"varchar(256);default:null;"`
+	// CallBackCount uint
+	// // todo 尚未知作用
+	// CallbackStatuse bool
+	// CallbackLog     string `gorm:"varchar(256);default:null;"`
 	// 附檔 url
 	common.Attachment
 	// 申請者

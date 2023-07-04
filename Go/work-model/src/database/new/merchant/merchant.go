@@ -104,6 +104,7 @@ type Domain struct {
 	common.CreateAtAndUpdateAt
 }
 
+// TODO 研究丟到cloud watch
 type MerchantPasswordResetLog struct {
 	common.ID
 	MerchantID uint `gorm:"not null;"`
@@ -173,20 +174,12 @@ type MerchantBindWalletUser struct {
 }
 
 // 商戶體系
+// 一個商戶只能在一個體系
 type System struct {
 	common.ID
-	Name            string `gorm:"char(30); not null;"`
-	SystemMerchants []SystemMerchant
+	Name      string `gorm:"char(30); not null;"`
+	Merchants []Merchant
 	common.CreateAtAndUpdateAt
-}
-
-// 體系商戶 binding
-type SystemMerchant struct {
-	common.ID
-	SystemID   uint `gorm:"not null;"`
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	common.CreatedAt
 }
 
 // 跑馬燈
