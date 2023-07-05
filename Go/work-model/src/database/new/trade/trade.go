@@ -25,7 +25,7 @@ type CentralBank struct {
 type Order struct {
 	// todo 銀行卡
 	common.ID
-	common.Key
+	UserID common.ID
 	// 買單 call 1 / 賣單 put 2
 	Type int `gorm:"not null;"`
 	// 拆單
