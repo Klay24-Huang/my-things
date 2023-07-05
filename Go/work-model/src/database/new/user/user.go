@@ -164,10 +164,22 @@ type Role struct {
 	common.CreateAtAndUpdateAt
 }
 
-// 商管帳號 腳色
+// 商管帳號
+type MerchantUser struct {
+	common.ID
+	UserID        uint `gorm:"not null;"`
+	CorporationID uint `gorm:"not null;"`
+	// 如果為null 則為此集團的跨商戶帳號
+	MerchantID uint
+	MerchantUserRole
+	common.CreateAtAndUpdateAt
+}
+
+// 商管帳號 腳色 binding
 type MerchantUserRole struct {
-	UserID uint `gorm:"idx_user_role"`
-	RoleID uint `gorm:"idx_user_role"`
+	common.ID
+	MerchantUserID uint `gorm:"idx_user_role"`
+	RoleID         uint `gorm:"idx_user_role"`
 	Role
 	common.CreateAtAndUpdateAt
 }
