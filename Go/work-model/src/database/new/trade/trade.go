@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// ////////////////// trade ///////////////////////
 // 幣種
 type CoinType struct {
 	CoinType string `gorm:"not null;char(5);"`
@@ -22,6 +21,7 @@ type CentralBank struct {
 	common.CreatedAt
 }
 
+// ////////////////// trade ///////////////////////
 type Order struct {
 	// todo 銀行卡
 	common.ID
@@ -82,19 +82,7 @@ type Reversal struct {
 	common.CreatedAt
 }
 
-// 造市商收補幣
-type MarketMakerSupplementOrRetract struct {
-	common.ID
-	// 補幣 supplement 1 / 回收 retract 2
-	Type         int `gorm:"not null;"`
-	ApplicantKey common.Key
-	ApproverKey  common.Key
-	Title        string `gorm:"char(30);"`
-	// 事項
-	Content string `gorm:"char(30);"`
-	Reason  string `gorm:"char(30);"`
-	common.CreateAtAndUpdateAt
-}
+// /// market maker /////
 
 // 錢包主體
 type Wallet struct {

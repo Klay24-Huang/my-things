@@ -4,6 +4,7 @@ import "appserver/src/database/new/common"
 
 // ////////////////// 造市商控端 ///////////////////////
 
+// todo 被拔掉了 是否保留
 // 造市商 任務
 type Task struct {
 	common.ID

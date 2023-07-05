@@ -25,19 +25,6 @@ type Corporation struct {
 	common.CreateAtAndUpdateAt
 }
 
-// 集團管端登入ip白名單紀錄
-type CorporationWhitelistingLog struct {
-	common.ID
-	CorporationID string `gorm:"type:uuid;not null;uniqueIndex:corp_id_ip"`
-	Corporation   Corporation
-	IP            string `gorm:"type:char(15);not null;uniqueIndex:corp_id_ip"`
-	//狀態 1新增 / 0刪除
-	Statue bool `gorm:"default:true"`
-	// 操作者ID
-	common.Operator
-	common.CreateAtAndUpdateAt
-}
-
 // 商戶
 type Merchant struct {
 	common.ID
@@ -210,4 +197,4 @@ type MerchantSystemSetting struct {
 
 // todo 商戶 會員 站長
 // todo 關於商戶 補幣 上交 計算手續費 凍結 等等跟貨幣有關table 未全
-// todo 綁定遊戲api相關
+// todo 綁定遊戲api相關細節考慮

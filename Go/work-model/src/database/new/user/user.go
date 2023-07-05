@@ -11,14 +11,15 @@ type User struct {
 	Password string `gorm:"not null;type:char(30)"`
 	Name     string `gorm:"not null;type:char(30);"`
 	Note     string `gorm:"default:null;type:char(30)"`
-	// GroupID  uint
-	// Group    merchant.MerchantGroup
 	// 商戶管端 / 商戶控端 / 錢包管端 / 錢包user / 造市商管端 / 造市商user / 遊戲user
-	Type        uint   `gorm:"not null;"`
-	OtpEnable   bool   `gorm:"default:false;not null"`
-	OtpVerified bool   `gorm:"default:false;not null"`
-	OtpSecret   string `gorm:"default:null"`
-	OtpAuth_url string `gorm:"default:null"`
+	Type          uint   `gorm:"not null;"`
+	OtpEnable     bool   `gorm:"default:false;not null"`
+	OtpVerified   bool   `gorm:"default:false;not null"`
+	OtpSecret     string `gorm:"default:null"`
+	OtpAuth_url   string `gorm:"default:null"`
+	LastLoginedIP common.IP
+	LastLoginedAt time.Time
+
 	common.Enable
 	common.CreateAtAndUpdateAt
 	common.Deleted
@@ -48,35 +49,6 @@ type Group struct {
 	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
 	FunctionSetting string `gorm:"not null;type:json;"`
 	common.CreateAtAndUpdateAt
-}
-
-// 登入錯誤次數過多被鎖定
-type UserLockLog struct {
-	common.ID
-	UserID uint
-	User
-	// todo 錢包控端 app user看到有紀錄ip，確認其他系統或app是否也有
-	common.IP
-	LockedAt   time.Time
-	UnLockedAt time.Time
-	common.CreateAtAndUpdateAt
-}
-
-// 登入紀錄
-// 商戶控端 管端都有
-type LoginLog struct {
-	common.ID
-	UserID uint `gorm:"not null;"`
-	User
-	// 登入平台
-	// todo 是否改成用type和數字
-	Application string `gorm:"not null;type:char(10)"`
-	common.IP
-	// login statuse 成功 / 失敗
-	Statue bool `gorm:"not null;"`
-	// 失敗原因
-	Note string `gorm:"default:null;type:char(30)"`
-	common.CreatedAt
 }
 
 // //// 造市商 app ///////////
@@ -120,6 +92,7 @@ type MarketMakerUser struct {
 	// 代付上限
 	PayingDayLimit uint `gorm:"not null;"`
 
+	MarketMakerBankCardSettings []MarketMakerBankCardSetting
 	common.CreateAtAndUpdateAt
 }
 
@@ -127,7 +100,7 @@ type MarketMakerBankCardSetting struct {
 	common.ID
 	MarketUserID uint `gorm:"not null;"`
 	MarketMakerUser
-	// 代收 1 / 代付 2
+	// 代收 1 / 代付 2 / 代收付 3
 	Type   uint   `gorm:"not null;"`
 	Enable bool   `gorm:"not null;default:true;"`
 	Bank   string `gorm:"not null;default:not null;type:char(20);"`
