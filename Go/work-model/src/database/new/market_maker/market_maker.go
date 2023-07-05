@@ -3,20 +3,6 @@ package marketmaker
 import "appserver/src/database/new/common"
 
 // ////////////////// 造市商控端 ///////////////////////
-// 造市商 群組
-type MarketMakerGroup struct {
-	common.ID
-	common.Group
-	common.CreateAtAndUpdateAt
-}
-
-type MarketMakerGroupUser struct {
-	common.ID
-	UserID             int
-	MarketMakerGroupID uint
-	MarketMakerGroup
-	common.CreateAtAndUpdateAt
-}
 
 // 造市商 任務
 type Task struct {
@@ -30,6 +16,7 @@ type Task struct {
 	common.CreatedAt
 }
 
+// 任務獎勵
 type Bounus struct {
 	common.ID
 	UserID uint
@@ -40,7 +27,7 @@ type Bounus struct {
 	common.CreatedAt
 }
 
-// 造市商 設定相關
+////// 造市商 設定相關 ///////
 
 // 額度上限設定
 type QuotaSetting struct {
@@ -126,10 +113,10 @@ type IOSSignatureSetting struct {
 	common.ID
 	// 企業簽 超級簽
 	Type uint   `gorm:"not null;"`
-	Name string `gorm:"not null;type:varchar(30);"`
+	Name string `gorm:"not null;type:char(30);"`
 	// 載點
-	Url    string `gorm:"not null;type:varchar(50);"`
-	Note   string `gorm:"typevarchar(50);"`
+	Url    string `gorm:"not null;type:char(50);"`
+	Note   string `gorm:"typechar(50);"`
 	Enable bool   `gorm:"default:true"`
 	// todo 優先權
 	common.Operator

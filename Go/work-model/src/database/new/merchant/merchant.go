@@ -10,14 +10,14 @@ import (
 // 集團
 type Corporation struct {
 	common.UUID
-	Name string `gorm:"unique;not null;type:varchar(20)"`
+	Name string `gorm:"unique;not null;type:char(20)"`
 	// todo 確認用途
-	LoginUrl string `gorm:"unique;not null;type:varchar(30)"`
+	LoginUrl string `gorm:"unique;not null;type:char(30)"`
 	// 待審核 / 已通過 / 已拒絕
 	Status uint `gorm:"not null;"`
 	// Verified bool   `gorm:"defaut:false;not null"`
 	Enable bool   `gorm:"default:false;not null"`
-	Note   string `gorm:"type:varchar(30);default:null"`
+	Note   string `gorm:"type:char(30);default:null"`
 	// 管端登入ip限制
 	LimitLoginIP bool `gorm:"default:true;not null"`
 	// 登入白名單
@@ -30,7 +30,7 @@ type CorporationWhitelistingLog struct {
 	common.ID
 	CorporationID string `gorm:"type:uuid;not null;uniqueIndex:corp_id_ip"`
 	Corporation   Corporation
-	IP            string `gorm:"type:varchar(15);not null;uniqueIndex:corp_id_ip"`
+	IP            string `gorm:"type:char(15);not null;uniqueIndex:corp_id_ip"`
 	//狀態 1新增 / 0刪除
 	Statue bool `gorm:"default:true"`
 	// 操作者ID
@@ -45,8 +45,8 @@ type Merchant struct {
 	Corporation
 	// todo wallet id 是否可用user id取代/可能會有多個錢包 最多五個錢包
 	WalletID string `gorm:"not null;"`
-	Name     string `gorm:"type:varchar(20);not null;"`
-	Phone    string `gorm:"type:varchar(15);"`
+	Name     string `gorm:"type:char(20);not null;"`
+	Phone    string `gorm:"type:char(15);"`
 	// 掛單出售Y幣
 	Sell     bool `gorm:"default:true;not null"`
 	Transfer bool `gorm:"default:true;not null"`
@@ -84,70 +84,17 @@ type Merchant struct {
 	Whitelistings     string `gorm:"type:json"`
 	TestWhitelistings string `gorm:"type:json"`
 
+	System
 	MerchantSetting
 
 	common.CreateAtAndUpdateAt
 }
 
-// 商戶管理IP白名單紀錄
-type MerchantWhitelistingLog struct {
-	common.ID
-	MerchantID uint
-	Merchant
-
-	common.CreatedAt
-}
-
+// 預設域名列表 可以在創建商戶時選擇
 type Domain struct {
 	common.ID
-	Name string `gorm:"not null;type:varchar(50)"`
+	Name string `gorm:"not null;type:char(50)"`
 	common.CreateAtAndUpdateAt
-}
-
-// TODO 研究丟到cloud watch
-type MerchantPasswordResetLog struct {
-	common.ID
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	common.Operator
-	common.CreatedAt
-}
-
-type UnbindMerchantPhoneLog struct {
-	common.ID
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	Phone string `gorm:"type:varchar(15);default:null;"`
-	common.Operator
-	common.CreatedAt
-}
-
-// 控端帳號鎖定
-type AccountLockLog struct {
-	common.ID
-	LockTime time.Time
-	UserID   uint   `gorm:"not null;"`
-	Reason   string `gorm:"type:varchar(30);not null;"`
-	common.CreateAtAndUpdateAt
-}
-
-// 管端帳號鎖定
-type MerchantLockLog struct {
-	common.ID
-	LockTime   time.Time
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	common.CreateAtAndUpdateAt
-}
-
-// // google 驗證操作紀錄
-type MerchantOTPLog struct {
-	common.ID
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	// 操作內容 啟用/停用 2fa
-	Operation string `gorm:"not null;type:varchar(30);"`
-	common.Operator
 }
 
 // 帳號類別 推播管理
@@ -161,7 +108,7 @@ type Boardcast struct {
 	common.CreateAtAndUpdateAt
 }
 
-// 商控 錢包 會員綁定
+// 商控 遊戲會員錢包綁定 商戶
 type MerchantBindWalletUser struct {
 	common.ID
 	MerchantID uint `gorm:"not null;"`
@@ -173,12 +120,14 @@ type MerchantBindWalletUser struct {
 	common.CreateAtAndUpdateAt
 }
 
-// 商戶體系
+// 商戶 交收體系
 // 一個商戶只能在一個體系
 type System struct {
 	common.ID
-	Name      string `gorm:"char(30); not null;"`
-	Merchants []Merchant
+	// 主商戶ID
+	MainMerchantID uint
+	Name           string `gorm:"char(30); not null;"`
+	Merchants      []Merchant
 	common.CreateAtAndUpdateAt
 }
 
@@ -195,11 +144,10 @@ type Marquee struct {
 	// 單一商戶
 	MerchantID uint
 	Merchant
-	Content string `gorm:"not null;type:varchar(50);"`
-	StartAt time.Time
-	EndAt   time.Time
-	// VerifyID uint
-	// Verify
+	Content  string `gorm:"not null;type:char(50);"`
+	StartAt  time.Time
+	EndAt    time.Time
+	Verified bool `gorm:"defaut:false;not null"`
 	common.Operator
 	common.CreateAtAndUpdateAt
 }
@@ -207,15 +155,15 @@ type Marquee struct {
 // 公告
 type Bulletin struct {
 	common.ID
-	// 發給所有集團
-	AllCorporations bool `gorm:"not null;default:false"`
-	// 單一集團
+	// 單一集團ID 有值時發給單一集團，null時則發給全部集團
 	CorporationID uint
 	Corporation
-	Content string `gorm:"not null;type:varchar(100);"`
+	Content  string `gorm:"not null;type:char(100);"`
+	Verified bool   `gorm:"defaut:false;not null"`
 	common.CreateAtAndUpdateAt
 }
 
+// 商戶控端 系統設定
 type MerchantConsoleSystemSetting struct {
 	// 例行性維護
 	Routine bool `gorm:"not null;default:false"`
@@ -238,30 +186,17 @@ type MerchantSetting struct {
 	common.CreateAtAndUpdateAt
 }
 
-// 商控腳色
-type Role struct {
-	// 集團管理員 商戶管理員 站長 開發人員 行銷人員
-	common.NameBasic
-	common.CreateAtAndUpdateAt
-}
-
-type MerchantUserRole struct {
-	UserID uint `gorm:"idx_user_role"`
-	RoleID uint `gorm:"idx_user_role"`
-	Role
-	common.Operator
-	common.CreateAtAndUpdateAt
-}
-
 type BankCard struct {
 	common.ID
-	MerchantID uint   `gorm:"not null;"`
-	UserName   string `gorm:"not null;type:varchar(20);"`
-	BankName   string `gorm:"not null;type:varchar(30);"`
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	UserName string `gorm:"not null;type:char(20);"`
+	// TODO 關連商戶Bank list
+	BankName string `gorm:"not null;type:char(30);"`
 	// 分行名稱
-	Branch string `gorm:"not null;type:varchar(30);"`
+	Branch string `gorm:"not null;type:char(30);"`
 	// 卡號
-	Code string `gorm:"not null;type:varchar(30);"`
+	Code string `gorm:"not null;type:char(30);"`
 	common.CreateAtAndUpdateAt
 }
 

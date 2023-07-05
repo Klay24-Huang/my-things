@@ -15,7 +15,7 @@ type CoinType struct {
 type CentralBank struct {
 	common.ID
 	// 造幣 create / 回收 delete
-	Action string `gorm:"not null;varchar(5)"`
+	Action string `gorm:"not null;char(5)"`
 	// 幣種
 	CoinType
 	common.Key
@@ -23,6 +23,7 @@ type CentralBank struct {
 }
 
 type Order struct {
+	// todo 銀行卡
 	common.ID
 	common.Key
 	// 買單 call 1 / 賣單 put 2
@@ -33,8 +34,8 @@ type Order struct {
 	Splittable bool `gorm:"not null;default:false"`
 	// 所有拆單前最初的訂單
 	// 要記最上層的訂單
-	ParentID    *uint
-	ParentOrder *Order
+	HighestOrderID *uint
+	HighestOrder   *Order
 	// 幣種
 	CoinType
 	// 鎖定中 部分切單交易中
@@ -48,23 +49,22 @@ type Order struct {
 	// 鎖單時間
 	LockedAt time.Time
 	common.CreatedAt
-	// todo 拆單 parent id
 }
 
 // 搓合成功訂單 交易紀錄
 type Trade struct {
 	common.UUID
 	// // 開單前最初的交易ID
-	ParentID    *uint
-	ParentTrade *Trade
-	CallID      uint  `gorm:"index:idx_call_put;"`
-	CallOrder   Order `gorm:"foreignKey:CallID;"`
-	PutID       uint  `gorm:"index:idx_call_put;"`
-	PutOrder    Order `gorm:"foreignKey:PutID;"`
+	HighestTradeID *uint
+	HighestTrade   *Trade
+	CallID         uint  `gorm:"index:idx_call_put;"`
+	CallOrder      Order `gorm:"foreignKey:CallID;"`
+	PutID          uint  `gorm:"index:idx_call_put;"`
+	PutOrder       Order `gorm:"foreignKey:PutID;"`
 	// 代付款(進行中) / 已取消 / 已完成 / 爭議 / 自動取消 / 暫停交易 / 標記
-	Status string `gorm:"not null;varchar(10);"`
+	Status int `gorm:"not null;"`
 	// 付款照片url
-	PaymentUrl string `gorm:"varchar(30);"`
+	PaymentUrl string `gorm:"char(30);"`
 	// 付款持間
 	PaidAt time.Time
 	// 沖正
@@ -73,7 +73,7 @@ type Trade struct {
 	// todo 銀行卡匹配次數上限
 }
 
-// todo 商戶 造市商的收發幣的沖正
+// todo 確認 是否有 商戶 造市商的收發幣的沖正?
 // 訂單沖正
 type Reversal struct {
 	// todo 會有部分金額?
@@ -89,19 +89,21 @@ type MarketMakerSupplementOrRetract struct {
 	Type         int `gorm:"not null;"`
 	ApplicantKey common.Key
 	ApproverKey  common.Key
-	Title        string `gorm:"varchar(30);"`
+	Title        string `gorm:"char(30);"`
 	// 事項
-	Content string `gorm:"varchar(30);"`
-	Reason  string `gorm:"varchar(30);"`
+	Content string `gorm:"char(30);"`
+	Reason  string `gorm:"char(30);"`
 	common.CreateAtAndUpdateAt
 }
 
+// 錢包主體
 type Wallet struct {
 	common.UUID
 	UserID uint
 	common.CreateAtAndUpdateAt
 }
 
+// 錢包細節
 type WalletDetail struct {
 	common.ID
 	WalletID string
@@ -125,6 +127,32 @@ type WalletDetail struct {
 	common.CreateAtAndUpdateAt
 }
 
+// ///// 錢包控端 ///////
+// 補幣 / 收幣
+type WalletConsoleRefillAndRecycleLog struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	Amount uint `gorm:"not null;"`
+	common.CreatedAt
+}
+
+// 回收代幣
+type WalletConsoleRecycleLog struct {
+	common.ID
+	WalletID string
+	Wallet
+	CoinType
+	// 申請回收金額
+	Amount int
+	// 實際回收金額
+	RecycleAmount int
+	// 手續費
+	Fee int
+	common.CreatedAt
+}
+
 ////// merchant ////////
 
 // 入款(會員存款) 紀錄
@@ -146,32 +174,6 @@ type DespositAndWithdrawLog struct {
 	Status uint `gorm:"not null;"`
 	common.CreatedAt
 	CompletedAt time.Time
-}
-
-// 補幣 / 回收
-// 錢包控端補幣 / 收幣
-type WalletConsoleRefillAndRecycleLog struct {
-	common.ID
-	WalletID string
-	Wallet
-	CoinType
-	Amount uint `gorm:"not null;"`
-	common.CreatedAt
-}
-
-// 回收代幣
-type RecycleLog struct {
-	common.ID
-	WalletID string
-	Wallet
-	CoinType
-	// 申請回收金額
-	Amount int
-	// 實際回收金額
-	RecycleAmount int
-	// 手續費
-	Fee int
-	common.CreatedAt
 }
 
 // 商戶補幣
@@ -218,7 +220,7 @@ type MerchantTransferLog struct {
 }
 
 // 商戶系統回收
-type MerchantSystemtRecycle struct {
+type MerchantSystemtRecycleLog struct {
 	common.ID
 	WalletID string
 	Wallet

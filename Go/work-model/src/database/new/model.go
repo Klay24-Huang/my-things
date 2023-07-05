@@ -51,22 +51,22 @@ type Applicant struct {
 }
 
 type IP struct {
-	IP string `gorm:"not null;type:varchar(15)"`
+	IP string `gorm:"not null;type:char(15)"`
 }
 
 type NameBasic struct {
-	Nmae string `gorm:"primaryKey;type:varchar(30); not null;"`
+	Nmae string `gorm:"primaryKey;type:char(30); not null;"`
 	CreateAtAndUpdateAt
 }
 
 type Key struct {
-	Key string `gorm:"not null;varchar(256)"`
+	Key string `gorm:"not null;char(256)"`
 }
 
 type Group struct {
-	Name  string `gorm:"unique;not null;type:varchar(30)"`
+	Name  string `gorm:"unique;not null;type:char(30)"`
 	Level uint
-	Note  string `gorm:"type:varchar(30);default:null"`
+	Note  string `gorm:"type:char(30);default:null"`
 	// 這個群組可以用的造市商控端功能列表，json與bit flag格式
 	FunctionSetting string `gorm:"not null;type:json;"`
 }
@@ -75,10 +75,10 @@ type Group struct {
 
 type User struct {
 	ID
-	Account  string `gorm:"unique;not null;type:varchar(30)"`
-	Password string `gorm:"not null;type:varchar(30)"`
-	Name     string `gorm:"not null;type:varchar(30);"`
-	Note     string `gorm:"default:null;type:varchar(30)"`
+	Account  string `gorm:"unique;not null;type:char(30)"`
+	Password string `gorm:"not null;type:char(30)"`
+	Name     string `gorm:"not null;type:char(30);"`
+	Note     string `gorm:"default:null;type:char(30)"`
 	GroupID  uint
 	Group    MerchantGroup
 	// 商戶管端 / 商戶控端 / 錢包管端 / 錢包user / 造市商管端 / 造市商user
@@ -96,7 +96,7 @@ type User struct {
 }
 
 type PublicKey struct {
-	Key    string `gorm:"primaryKey,not null;type:varchar(256);"`
+	Key    string `gorm:"primaryKey,not null;type:char(256);"`
 	UserID uint
 	CreatedAt
 }
@@ -117,7 +117,7 @@ type LoginLog struct {
 	UserID uint `gorm:"not null;"`
 	User
 	// 登入平台
-	Application string `gorm:"not null;type:varchar(10)"`
+	Application string `gorm:"not null;type:char(10)"`
 	IP
 	// login statuse 成功 / 失敗
 	Statue bool `gorm:"not null;"`
@@ -132,8 +132,8 @@ type MarketMakerUser struct {
 	SpecialAgent bool `gorm:"not null;default:false;"`
 	Level        uint `gorm:"not null;"`
 	// 通訊軟體平台
-	Messager        string `gorm:"not null;type:varchar(30);"`
-	MessagerAccount string `gorm:"not null;type:varchar(30);"`
+	Messager        string `gorm:"not null;type:char(30);"`
+	MessagerAccount string `gorm:"not null;type:char(30);"`
 	// 推薦人
 	RecommenderID       *uint
 	Recommender         *MarketMakerUser
@@ -143,7 +143,7 @@ type MarketMakerUser struct {
 	Suspended bool `gorm:"not null;default:fasle;"`
 	// 允許編輯銀行卡
 	EditBankCard bool   `gorm:"not null;default:true;"`
-	Phone        string `gorm:"not null;type:varchar(15);"`
+	Phone        string `gorm:"not null;type:char(15);"`
 	RegisterIP   IP
 
 	/////// 代收代付
@@ -168,9 +168,9 @@ type MarketMakerBankCardSetting struct {
 	// 代收 1 / 代付 2
 	Type   uint   `gorm:"not null;"`
 	Enable bool   `gorm:"not null;default:true;"`
-	Bank   string `gorm:"not null;default:not null;type:varchar(20);"`
-	Branch string `gorm:"not null;default:not null;type:varchar(20);"`
-	Name   string `gorm:"not null;default:not null;type:varchar(20);"`
+	Bank   string `gorm:"not null;default:not null;type:char(20);"`
+	Branch string `gorm:"not null;default:not null;type:char(20);"`
+	Name   string `gorm:"not null;default:not null;type:char(20);"`
 	// 單筆上限
 	Limit uint `gorm:"not null;"`
 	// 每日上限
@@ -185,22 +185,22 @@ type MarketMakerBankCardSetting struct {
 // 商控 群組
 type MerchantGroup struct {
 	ID
-	Name  string `gorm:"unique;not null;type:varchar(30)"`
+	Name  string `gorm:"unique;not null;type:char(30)"`
 	Level uint
-	Note  string `gorm:"type:varchar(30);default:null"`
+	Note  string `gorm:"type:char(30);default:null"`
 	CreateAtAndUpdateAt
 }
 
 // 集團
 type Corporation struct {
 	UUID
-	Name     string `gorm:"unique;not null;type:varchar(20)"`
-	LoginUre string `gorm:"unique;not null;type:varchar(30)"`
+	Name     string `gorm:"unique;not null;type:char(20)"`
+	LoginUre string `gorm:"unique;not null;type:char(30)"`
 	Verified bool   `gorm:"defaut:false;not null"`
 	Enable   bool   `gorm:"default:false;not null"`
 	// 管端登入ip限制
 	LimitLoginIP bool   `gorm:"default:true;not null"`
-	Note         string `gorm:"type:varchar(30);default:null"`
+	Note         string `gorm:"type:char(30);default:null"`
 	// todo domain name
 	CreateAtAndUpdateAt
 }
@@ -209,7 +209,7 @@ type Corporation struct {
 type CorporationWhitelistring struct {
 	CorporationID string `gorm:"type:uuid;not null;uniqueIndex:corp_id_ip"`
 	Corporation   Corporation
-	IP            string `gorm:"type:varchar(15);not null;uniqueIndex:corp_id_ip"`
+	IP            string `gorm:"type:char(15);not null;uniqueIndex:corp_id_ip"`
 	//狀態 1新增 / 0刪除
 	Statue bool `gorm:"default:true"`
 	// 操作者ID
@@ -226,16 +226,16 @@ type Merchant struct {
 	Corporation
 	WalletID uint `gorm:"not null;"`
 	Wallet
-	Name  string `gorm:"type:varchar(20);not null;"`
-	Phone string `gorm:"type:varchar(15);default:null;"`
+	Name  string `gorm:"type:char(20);not null;"`
+	Phone string `gorm:"type:char(15);default:null;"`
 	// 掛單出售Y幣
 	Sell     bool `gorm:"default:true;not null"`
 	Transfer bool `gorm:"default:true;not null"`
 	// 控端 url
-	ConsoleUrl string `gorm:"not null;type:varchar(50)"`
-	Url        string `gorm:"not null;type:varchar(50)"`
+	ConsoleUrl string `gorm:"not null;type:char(50)"`
+	Url        string `gorm:"not null;type:char(50)"`
 	// test url
-	TestUrl  string `gorm:"not null;type:varchar(50)"`
+	TestUrl  string `gorm:"not null;type:char(50)"`
 	Verified bool   `gorm:"defaut:false;not null"`
 	Enable   bool   `gorm:"default:false;not null"`
 
@@ -246,7 +246,7 @@ type Merchant struct {
 
 type Domain struct {
 	ID
-	Name string `gorm:"not null;type:varchar(50)"`
+	Name string `gorm:"not null;type:char(50)"`
 	CreateAtAndUpdateAt
 }
 
@@ -262,7 +262,7 @@ type UnbindMerchantPhoneLog struct {
 	ID
 	MerchantID uint `gorm:"not null;"`
 	Merchant
-	Phone string `gorm:"type:varchar(15);default:null;"`
+	Phone string `gorm:"type:char(15);default:null;"`
 	Operator
 	CreatedAt
 }
@@ -272,7 +272,7 @@ type AccountLockLog struct {
 	UserID   uint `gorm:"not null;"`
 	User
 	Locked bool   `gorm:"default:false;not null;"`
-	Reason string `gorm:"type:varchar(30);not null;"`
+	Reason string `gorm:"type:char(30);not null;"`
 	// todo operator?
 	CreateAtAndUpdateAt
 }
@@ -290,7 +290,7 @@ type MerchantOTPLog struct {
 	MerchantID uint `gorm:"not null;"`
 	Merchant
 	// 操作內容 啟用/停用 2fa
-	Operation string `gorm:"not null;type:varchar(30);"`
+	Operation string `gorm:"not null;type:char(30);"`
 	Operator
 }
 
@@ -316,7 +316,7 @@ type OperationLog struct {
 	Operator
 	OperatorItem
 	OperationDetail
-	Content string `gorm:"type:varchar(30);not null;"`
+	Content string `gorm:"type:char(30);not null;"`
 	IP
 	CreatedAt
 }
@@ -335,7 +335,7 @@ type MerchantWalletSetting struct {
 // yapay 錢包會員
 type WalletUser struct {
 	ID
-	Name string `gorm:"not null;type:varchar(30);"`
+	Name string `gorm:"not null;type:char(30);"`
 	CreateAtAndUpdateAt
 }
 
@@ -371,18 +371,18 @@ type Verify struct {
 	// 標題
 	VerifyTitleID uint
 	VerifyTitle
-	Title string `gorm:"not null;type:varchar(30);"`
+	Title string `gorm:"not null;type:char(30);"`
 	// 事項
-	Item string `gorm:"not null;type:varchar(30);"`
+	Item string `gorm:"not null;type:char(30);"`
 	// 事由
-	Reason string `gorm:"not null;type:varchar(30);"`
+	Reason string `gorm:"not null;type:char(30);"`
 	// 1 待審核 / 2 已同意 / 3 已拒絕 / 4 已取消
 	Status uint
 	// 回調
 	CallBackCount uint
 	// todo 尚未知作用
 	CallbackStatuse bool
-	CallbackLog     string `gorm:"varchar(256);default:null;"`
+	CallbackLog     string `gorm:"char(256);default:null;"`
 	// 申請者
 	Applicant
 	// 審核人
@@ -405,7 +405,7 @@ type Marquee struct {
 	// 單一商戶
 	MerchantID uint
 	Merchant
-	Content  string `gorm:"not null;type:varchar(50);"`
+	Content  string `gorm:"not null;type:char(50);"`
 	StartAt  time.Time
 	EndAt    time.Time
 	VerifyID uint
@@ -422,7 +422,7 @@ type Bulletin struct {
 	// 單一集團
 	CorporationID uint
 	Corporation
-	Content string `gorm:"not null;type:varchar(100);"`
+	Content string `gorm:"not null;type:char(100);"`
 	CreateAtAndUpdateAt
 }
 
@@ -466,12 +466,12 @@ type MerchantUserRole struct {
 type BankCard struct {
 	ID
 	MerchantID uint   `gorm:"not null;"`
-	UserName   string `gorm:"not null;type:varchar(20);"`
-	BankName   string `gorm:"not null;type:varchar(30);"`
+	UserName   string `gorm:"not null;type:char(20);"`
+	BankName   string `gorm:"not null;type:char(30);"`
 	// 分行名稱
-	Branch string `gorm:"not null;type:varchar(30);"`
+	Branch string `gorm:"not null;type:char(30);"`
 	// 卡號
-	Code string `gorm:"not null;type:varchar(30);"`
+	Code string `gorm:"not null;type:char(30);"`
 	CreateAtAndUpdateAt
 }
 
@@ -602,10 +602,10 @@ type IOSSignatureSetting struct {
 	ID
 	// 企業簽 超級簽
 	Type uint   `gorm:"not null;"`
-	Name string `gorm:"not null;type:varchar(30);"`
+	Name string `gorm:"not null;type:char(30);"`
 	// 載點
-	Url    string `gorm:"not null;type:varchar(50);"`
-	Note   string `gorm:"typevarchar(50);"`
+	Url    string `gorm:"not null;type:char(50);"`
+	Note   string `gorm:"typechar(50);"`
 	Enable bool   `gorm:"default:true"`
 	// todo 優先權
 	Operator
@@ -621,8 +621,8 @@ type WalletGroup struct {
 
 type WalletBank struct {
 	ID
-	BankID   string `gorm:"unique;not null;type:varchar(30);"`
-	BankName string `gorm:"unique;not null;type:varchar(30);"`
+	BankID   string `gorm:"unique;not null;type:char(30);"`
+	BankName string `gorm:"unique;not null;type:char(30);"`
 	Applicant
 	CreateAtAndUpdateAt
 }
@@ -632,7 +632,7 @@ type WalletBank struct {
 type CentralBank struct {
 	ID
 	// 造幣 create / 回收 delete
-	Type string `gorm:"not null;varchar(5)"`
+	Type string `gorm:"not null;char(5)"`
 	Key
 	PublicKey `gorm:"foreignKey:Key"`
 	CreatedAt
@@ -650,7 +650,7 @@ type Order struct {
 	Splittable  bool `gorm:"not null;default:false"`
 	ParentID    *uint
 	ParentOrder *Order
-	CoinType    string `gorm:"not null;varchar(3);"`
+	CoinType    string `gorm:"not null;char(3);"`
 	// 鎖定中 部分切單交易中
 	Locked bool `gorm:"not null;default:false;"`
 	// 下單數量
@@ -668,7 +668,7 @@ type Trade struct {
 	PutID     uint  `gorm:"index:idx_call_put;"`
 	PutOrder  Order `gorm:"foreignKey:PutID;"`
 	// 代付款(進行中) / 已取消 / 已完成 / 爭議
-	Status string `gorm:"not null;varchar(10);"`
+	Status string `gorm:"not null;char(10);"`
 	// 沖正
 	Reversal
 	CreatedAt
@@ -689,10 +689,10 @@ type MarketMakerSupplementOrRetract struct {
 	// 補幣 supplement 1 / 回收 retract 2
 	Type int `gorm:"not null;"`
 	Applicant
-	Title string `gorm:"varchar(30);"`
+	Title string `gorm:"char(30);"`
 	// 事項
-	Content string `gorm:"varchar(30);"`
-	Reason  string `gorm:"varchar(30);"`
+	Content string `gorm:"char(30);"`
+	Reason  string `gorm:"char(30);"`
 	Approver
 	CreateAtAndUpdateAt
 }

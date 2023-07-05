@@ -54,6 +54,7 @@ type SeparatedBill struct {
 	common.CreateAtAndUpdateAt
 }
 
+// 錢包 獎勵活動
 type Activity struct {
 	common.ID
 	Name      string    `gorm:"not null;type:char(50);"`
@@ -65,3 +66,16 @@ type Activity struct {
 	// todo 額度設定 領取內容
 	common.CreateAtAndUpdateAt
 }
+
+// 公告
+type Bulletin struct {
+	common.ID
+	Title    string `gorm:"notn null;type:char(50);"`
+	Content  string `gorm:"not null;type:text;"`
+	Verified bool   `gorm:"defaut:false;not null"`
+	common.Attachment
+	common.Operator
+	common.CreateAtAndUpdateAt
+}
+
+// todo 公告內容 個人消息 是跟個人推撥一樣嗎?
