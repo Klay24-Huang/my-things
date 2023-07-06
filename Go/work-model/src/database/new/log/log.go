@@ -75,7 +75,9 @@ type LoginLog struct {
 	UserID uint `gorm:"not null;"`
 	// 登入平台
 	// todo 是否改成用type和數字
+	// PC / android / ios / 5min / yapay
 	Application string `gorm:"not null;type:char(10)"`
+	// 登入IP
 	common.IP
 	// login statuse 成功 / 失敗
 	Statue bool `gorm:"not null;"`
