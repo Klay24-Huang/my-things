@@ -6,7 +6,7 @@ type CreatedAt struct {
 	CreatedAt time.Time
 }
 
-type CreateAtAndUpdateAt struct {
+type CreatedAtAndUpdatedAt struct {
 	CreatedAt
 	UpdatedAt time.Time
 }
@@ -54,7 +54,7 @@ type IP struct {
 
 type NameBasic struct {
 	Nmae string `gorm:"primaryKey;type:varchar(30); not null;"`
-	CreateAtAndUpdateAt
+	CreatedAtAndUpdatedAt
 }
 
 type Key struct {
@@ -76,5 +76,5 @@ type Type struct {
 }
 
 type Attachment struct {
-	Attachment string `gorm:"not null;type:varchar(50);"`
+	Attachment string `gorm:"not null;type:text;"`
 }

@@ -2,6 +2,7 @@ package log
 
 import (
 	"appserver/src/database/new/common"
+	"appserver/src/database/new/trade"
 	"time"
 )
 
@@ -11,7 +12,7 @@ type Type struct {
 	common.ID
 	SystemType common.Type
 	Name       string `gorm:"not null;type:char(20)"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 審核標題
@@ -21,7 +22,7 @@ type Title struct {
 	TypeID uint   `gorm:"not null;"`
 	Type
 	Level uint `gorm:"not null;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 審核列表
@@ -51,7 +52,7 @@ type Verify struct {
 	Database string `gorm:"not null;type:char(10);"`
 	Table    string `gorm:"not null;type:char(10);"`
 	DataID   uint   `gorm:"not null;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 ////// 登入相關紀錄 ////////
@@ -64,7 +65,7 @@ type UserLockLog struct {
 	common.IP
 	LockedAt   time.Time
 	UnLockedAt time.Time
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 登入紀錄
@@ -93,7 +94,7 @@ type CorporationWhitelistingLog struct {
 	Statue bool `gorm:"default:true"`
 	// 操作者ID
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // /// 商戶相關紀錄 /////
@@ -137,7 +138,7 @@ type AccountLockLog struct {
 	LockTime time.Time
 	UserID   uint   `gorm:"not null;"`
 	Reason   string `gorm:"type:char(30);not null;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 管端帳號鎖定
@@ -145,7 +146,7 @@ type MerchantLockLog struct {
 	common.ID
 	LockTime   time.Time
 	MerchantID uint `gorm:"not null;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // // google 驗證操作紀錄
@@ -172,7 +173,7 @@ type MarketMakerSupplementOrRetractLog struct {
 	Content string `gorm:"char(30);"`
 	Reason  string `gorm:"char(30);"`
 	Amount  int    `gorm:"not null;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 計算成交訂單任務獎金
@@ -184,5 +185,110 @@ type MarketMakerTaskLog struct {
 	BounusRatio float32 `gorm:"not null;"`
 	// 實際收到獎金
 	Bounus float32 `gorm:"not null;"`
+	common.CreatedAt
+}
+
+// 紀錄造市商銀行卡當日是否達到次數上限 或總金額上限
+type MarketMakerUserBankCardLog struct {
+	common.ID
+	MarketMakerUserBankCardSettingID uint `gorm:"not null;"`
+	// 到達次數上限
+	Overlimited bool `gorm:"not null;default:false;"`
+	Amount      uint `gorm:"not null;default:0;"`
+	Count       uint `gorm:"not null;default:0;"`
+	common.CreatedAtAndUpdatedAt
+}
+
+// ///// 錢包控端 ///////
+// 補幣 / 收幣
+type WalletConsoleRefillAndRecycleLog struct {
+	common.ID
+	WalletID string
+	trade.CoinType
+	Amount uint `gorm:"not null;"`
+	common.CreatedAt
+}
+
+// 回收代幣
+type WalletConsoleRecycleLog struct {
+	common.ID
+	WalletID string
+	trade.CoinType
+	// 申請回收金額
+	Amount int
+	// 實際回收金額
+	RecycleAmount int
+	// 手續費
+	Fee int
+	common.CreatedAt
+}
+
+////// merchant ////////
+
+// 入款(會員存款) 紀錄
+type DespositAndWithdrawLog struct {
+	common.ID
+	// 入款 / 出款
+	Type         uint `gorm:"not null;"`
+	UserID       uint
+	UserWalletID uint
+	// 手續費率
+	FeeRatio uint `gorm:"not null;"`
+	// 實收手續費
+	Fee              uint `gorm:"not null;"`
+	MerchantWalletID uint
+	Amount           uint `gorm:"not null;"`
+	// 成功 / 用戶未付款 / 已付款 開分失敗
+	Status uint `gorm:"not null;"`
+	common.CreatedAt
+	CompletedAt time.Time
+}
+
+// 商戶補幣
+type MerchantRefillLog struct {
+	common.ID
+	WalletID string
+	trade.CoinType
+	// 補幣金額
+	Amount int
+	// 手續費
+	Fee int
+	common.CreatedAt
+}
+
+// 申請補發x幣
+type MerchantSupplyLog struct {
+	common.ID
+	WalletID string
+	trade.CoinType
+	// 補幣金額
+	Amount int
+	common.CreatedAt
+}
+
+// 商戶交收
+type MerchantSettlementLog struct {
+	common.ID
+	// 付款方錢包ID
+	PayerWalletID string
+	Amount        int
+	Fee           int
+	// 收款方錢包ID
+	ReceiverWalletID string
+	common.CreatedAt
+}
+
+// 商戶戶轉
+type MerchantTransferLog struct {
+	MerchantSettlementLog
+}
+
+// 商戶系統回收
+type MerchantSystemtRecycleLog struct {
+	common.ID
+	WalletID string
+	trade.CoinType
+	// 申請回收金額
+	Amount int
 	common.CreatedAt
 }

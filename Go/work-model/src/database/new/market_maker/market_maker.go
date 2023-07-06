@@ -40,7 +40,7 @@ type QuotaSetting struct {
 	PayingDayLimit  uint `gorm:"not null;"`
 	PayingOnceLimit uint `gorm:"not null;"`
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 獎金比例設定
@@ -52,7 +52,7 @@ type BonusSetting struct {
 	PayingRatio float32 `gorm:"not null;"`
 
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 銀行卡交易次數上限
@@ -60,7 +60,7 @@ type TradeSetting struct {
 	common.ID
 	Count uint `gorm:"not null;"`
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 帳號代收代付上限
@@ -71,7 +71,7 @@ type AccountQuotaSetting struct {
 	// 代付
 	PayingDayLimit uint `gorm:"not null;"`
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 媒合設定
@@ -82,7 +82,7 @@ type MatchSetting struct {
 	// 同步錢包訂單數量
 	SyncWalletOrder uint `gorm:"not null;"`
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 使用者服務設定
@@ -90,7 +90,7 @@ type UserAgreementSetting struct {
 	common.ID
 	Content string
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 溫馨提醒設定
@@ -98,7 +98,7 @@ type RemindSetting struct {
 	common.ID
 	Content string
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 注意事項設定
@@ -106,7 +106,7 @@ type PleaseNoteSetting struct {
 	common.ID
 	Content string
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // IOS 簽證 設定
@@ -121,5 +121,5 @@ type IOSSignatureSetting struct {
 	Enable bool   `gorm:"default:true"`
 	// todo 優先權
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }

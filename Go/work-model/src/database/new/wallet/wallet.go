@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+/////////// 放錢包控端 跟 app相關東西 並非錢包本身///////////
+
 // 控端銀行
 type Bank struct {
 	common.ID
@@ -15,15 +17,16 @@ type Bank struct {
 	Status uint `gorm:"not null;"`
 	Enable bool `gorm:"not null;default:true;"`
 	common.Applicant
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 阻擋註冊IP
 type RegistrationIPBlocking struct {
 	IP string `gorm:"primaryKey;type:char(15);"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
+// todo: 鎖單限制? 感覺不合理
 type SystemSetting struct {
 	common.ID
 	// 掛單數量限制
@@ -35,23 +38,24 @@ type SystemSetting struct {
 	// 手續費
 	Fee         uint `gorm:"not null;"`
 	AutoMatched bool `gorm:"not null;default:true;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 同時吃單上限
+// todo 達到吃單上限時 會不交易嗎?
 type TradeSetting struct {
 	common.ID
 	// 總代理 / 代理 / 造市商 / 自然人 / 商戶
 	Type int `gorm:"not null;"`
 	Call int `gorm:"not null;"`
 	Put  int `gorm:"not null;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 拆單數量
 type SeparatedBill struct {
 	Number uint `gorm:"not null;"`
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 錢包 獎勵活動
@@ -64,7 +68,7 @@ type Activity struct {
 	Title   string `gorm:"not null;type:char(50);"`
 	Content string `gorm:"not null;type:text;"`
 	// todo 額度設定 領取內容
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 公告
@@ -75,7 +79,7 @@ type Bulletin struct {
 	Verified bool   `gorm:"defaut:false;not null"`
 	common.Attachment
 	common.Operator
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // todo 公告內容 個人消息 是跟個人推撥一樣嗎?

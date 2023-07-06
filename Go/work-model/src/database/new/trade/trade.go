@@ -29,13 +29,13 @@ type Order struct {
 	// 買單 call 1 / 賣單 put 2
 	Type int `gorm:"not null;"`
 	// 拆單
-	// todo 要記成percent?
+	// todo 要記成percent? 或記成最小拆單金額 畢竟拆單數量可在控端更改
 	// todo 拆單細節邏輯考慮
 	Splittable bool `gorm:"not null;default:false"`
 	// 所有拆單前最初的訂單
 	// 要記最上層的訂單
-	HighestOrderID *uint
-	HighestOrder   *Order
+	TopOrderID *uint
+	TopOrder   *Order
 	// 幣種
 	CoinType
 	// 鎖定中 部分切單交易中
@@ -55,12 +55,12 @@ type Order struct {
 type Trade struct {
 	common.UUID
 	// // 開單前最初的交易ID
-	HighestTradeID *uint
-	HighestTrade   *Trade
-	CallID         uint  `gorm:"index:idx_call_put;"`
-	CallOrder      Order `gorm:"foreignKey:CallID;"`
-	PutID          uint  `gorm:"index:idx_call_put;"`
-	PutOrder       Order `gorm:"foreignKey:PutID;"`
+	TopTradeID *uint
+	TopTrade   *Trade
+	CallID     uint  `gorm:"index:idx_call_put;"`
+	CallOrder  Order `gorm:"foreignKey:CallID;"`
+	PutID      uint  `gorm:"index:idx_call_put;"`
+	PutOrder   Order `gorm:"foreignKey:PutID;"`
 	// 代付款(進行中) / 已取消 / 已完成 / 爭議 / 自動取消 / 暫停交易 / 標記
 	Status int `gorm:"not null;"`
 	// 付款照片url
@@ -68,27 +68,20 @@ type Trade struct {
 	// 付款持間
 	PaidAt time.Time
 	// 沖正
-	Reversal
-	common.CreateAtAndUpdateAt
+	// todo 確認 是否有 商戶 造市商的收發幣的沖正?
+	Reversal bool `gorm:"defalt:false;"`
+	common.CreatedAtAndUpdatedAt
 	// todo 銀行卡匹配次數上限
-}
-
-// todo 確認 是否有 商戶 造市商的收發幣的沖正?
-// 訂單沖正
-type Reversal struct {
-	// todo 會有部分金額?
-	common.ID
-	TradeID string `gorm:"type:uuid;"`
-	common.CreatedAt
 }
 
 // /// market maker /////
 
+// /// 錢包相關 //////
 // 錢包主體
 type Wallet struct {
 	common.UUID
 	UserID uint
-	common.CreateAtAndUpdateAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 錢包細節
@@ -99,121 +92,40 @@ type WalletDetail struct {
 	CoinType
 	// 總餘額
 	Balance int
+	// 留存
+	// 下訂單的時候暫時要把金額放進來，避免下單金額超過錢包餘額
+	Retain int
 
+	MerchantWalletDetail
+	MarketMakerWalletDetail
+	common.CreatedAtAndUpdatedAt
+}
+
+// 商戶錢包的特殊的統計
+type MerchantWalletDetail struct {
+	common.ID
+	WalletDetailID uint
 	// todo 未全 商控 商戶錢包管理所有欄位
-	// // 總入款
-	// Desposit int
-	// // 總入款手續費
-	// DespositFee int
-	// // 總出款
-	// Withdraw int
-	// // 總出款手續費
-	// WithdrawFee int
-	// // 凍結
-	// Freeze int
-
-	common.CreateAtAndUpdateAt
+	// 總入款
+	Desposit int
+	// 總入款手續費
+	DespositFee int
+	// 總出款
+	Withdraw int
+	// 總出款手續費
+	WithdrawFee int
+	// 凍結
+	Freeze int
+	common.CreatedAtAndUpdatedAt
 }
 
-// ///// 錢包控端 ///////
-// 補幣 / 收幣
-type WalletConsoleRefillAndRecycleLog struct {
+// 造市商錢包的特殊統計
+type MarketMakerWalletDetail struct {
 	common.ID
-	WalletID string
-	Wallet
-	CoinType
-	Amount uint `gorm:"not null;"`
-	common.CreatedAt
-}
-
-// 回收代幣
-type WalletConsoleRecycleLog struct {
-	common.ID
-	WalletID string
-	Wallet
-	CoinType
-	// 申請回收金額
-	Amount int
-	// 實際回收金額
-	RecycleAmount int
-	// 手續費
-	Fee int
-	common.CreatedAt
-}
-
-////// merchant ////////
-
-// 入款(會員存款) 紀錄
-type DespositAndWithdrawLog struct {
-	common.ID
-	// 入款 / 出款
-	Type         uint `gorm:"not null;"`
-	UserID       uint
-	UserWalletID uint
-	UserWallet   Wallet `gorm:"references:UerWalletID;"`
-	// 手續費率
-	FeeRatio uint `gorm:"not null;"`
-	// 實收手續費
-	Fee              uint `gorm:"not null;"`
-	MerchantWalletID uint
-	MerchantWallet   Wallet `gorm:"references:MerchantWalletID;"`
-	Amount           uint   `gorm:"not null;"`
-	// 成功 / 用戶未付款 / 已付款 開分失敗
-	Status uint `gorm:"not null;"`
-	common.CreatedAt
-	CompletedAt time.Time
-}
-
-// 商戶補幣
-type MerchantRefillLog struct {
-	common.ID
-	WalletID string
-	Wallet
-	CoinType
-	// 補幣金額
-	Amount int
-	// 手續費
-	Fee int
-	common.CreatedAt
-}
-
-// 申請補發x幣
-type MerchantSupplyLog struct {
-	common.ID
-	WalletID string
-	Wallet
-	CoinType
-	// 補幣金額
-	Amount int
-	common.CreatedAt
-}
-
-// 商戶交收
-type MerchantSettlementLog struct {
-	common.ID
-	// 付款方錢包ID
-	PayerWalletID string
-	PayerWallet   Wallet `gorm:"referenceKey:PayerWalletID;"`
-	Amount        int
-	Fee           int
-	// 收款方錢包ID
-	ReceiverWalletID string
-	RecieverWallet   Wallet `gorm:"referenceKey:RecieverWalletID;"`
-	common.CreatedAt
-}
-
-// 商戶戶轉
-type MerchantTransferLog struct {
-	MerchantSettlementLog
-}
-
-// 商戶系統回收
-type MerchantSystemtRecycleLog struct {
-	common.ID
-	WalletID string
-	Wallet
-	CoinType
-	// 申請回收金額
-	Amount int
-	common.CreatedAt
+	WalletDetail uint
+	// 團隊累計獎金
+	CroupBonus float32
+	// 個人累計獎金
+	TotalBonus float32
+	common.CreatedAtAndUpdatedAt
 }
