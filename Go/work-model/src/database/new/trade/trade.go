@@ -17,7 +17,7 @@ type CentralBank struct {
 	Action string `gorm:"not null;char(5)"`
 	// 幣種
 	CoinType
-	common.Key
+	UserID uint
 	common.CreatedAt
 }
 
@@ -25,7 +25,7 @@ type CentralBank struct {
 type Order struct {
 	// todo 銀行卡
 	common.ID
-	UserID common.ID
+	UserID uint
 	// 買單 call 1 / 賣單 put 2
 	Type int `gorm:"not null;"`
 	// 拆單
