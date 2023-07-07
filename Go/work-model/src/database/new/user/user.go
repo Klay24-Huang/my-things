@@ -11,7 +11,7 @@ type User struct {
 	Password string `gorm:"not null;type:char(30);"`
 	Name     string `gorm:"not null;type:char(30);"`
 	Note     string `gorm:"default:null;type:char(30)"`
-	// 商戶管端 / 商戶控端 / 錢包管端 / 錢包user / 造市商管端 / 造市商user / 遊戲user
+	// 商戶管端 / 商戶控端 / 錢包管端 / 錢包user / 造市商管端 / 造市商user
 	Type          uint   `gorm:"not null;uniqueIndex:uqidx_account_type;"`
 	OtpEnable     bool   `gorm:"default:false;not null"`
 	OtpVerified   bool   `gorm:"default:false;not null"`
@@ -126,7 +126,9 @@ type WalletUser struct {
 	common.ID
 	UserID       uint `gorm:"not null;"`
 	RegisteredIP common.IP
-	Verified     bool `gorm:"not null;default:false;"`
+	// 娛樂城打綁定錢包api給我們的
+	UUID     string
+	Verified bool `gorm:"not null;default:false;"`
 	WalletUserVerify
 	common.CreatedAtAndUpdatedAt
 }
