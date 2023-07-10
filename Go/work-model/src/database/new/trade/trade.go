@@ -17,21 +17,21 @@ type CoinType struct {
 type Order struct {
 	// todo 是否放使用者名稱和銀行卡相關資訊
 	common.UUID
-	UserID uint
+	UserID uint `gorm:"not null;default:0;"`
 	// 買單 call 1 / 賣單 put 2
-	Type int `gorm:"not null;"`
+	Type uint `gorm:"not null;default:0;"`
 	// 幣種
 	CoinType
 	// 排序值 優先值 越大越優先
-	Priority uint `gorm:"not null;defalt:0;"`
+	Priority uint `gorm:"not null;default:0;"`
 	// 下單數量
-	Amount uint `gorm:"not null;"`
+	Amount uint `gorm:"not null;default:0;"`
 	// 最小下單數量，比如下單1000，目前系統設定最多切五單，1000 / 5 = 200
-	MinimumAmount uint
+	MinimumAmount uint `gorm:"not null;default:0;"`
 	// 手續費
-	Fee float32
-	// 完成 / 取消
-	Status int `gorm:"not null;"`
+	Fee float32 `gorm:"not null;default:0;"`
+	// 進行中 / 完成 / 取消
+	Status uint `gorm:"not null;default:0;"`
 
 	//// 付款 買單才有 /////
 	// 付款照片url
@@ -41,7 +41,7 @@ type Order struct {
 	common.CreatedAt
 }
 
-// lock table
+// lock table，媒合成功 等待後續變化
 type LockedOrder struct {
 	common.ID
 	CallID    uint  `gorm:"index:idx_call_put;"`
@@ -81,17 +81,17 @@ type CanceledTransaction struct {
 // 錢包主體
 type Wallet struct {
 	common.UUID
-	UserID uint
+	UserID uint `gorm:"not null;default:0;"`
 	// todo 是否把商戶的錢包 直接綁在商戶控端的admin帳號上
-	MerchantID uint
+	MerchantID uint `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // 錢包細節
 type WalletDetail struct {
 	common.ID
-	WalletID string
-	Wallet
+	WalletID string `gorm:"not null;"`
+	Wallet   Wallet
 	CoinType
 	common.CreatedAtAndUpdatedAt
 }

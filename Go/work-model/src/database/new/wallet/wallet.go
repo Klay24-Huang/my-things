@@ -30,13 +30,13 @@ type RegistrationIPBlocking struct {
 type SystemSetting struct {
 	common.ID
 	// 掛單數量限制
-	OrderLimit uint `gorm:"not null;"`
+	OrderLimit uint `gorm:"not null;default:0;"`
 	// 鎖單數量限制
-	LockedOrderLimit uint `gorm:"not null;"`
+	LockedOrderLimit uint `gorm:"not null;default:0;"`
 	// 取消數量限制
-	CanceledOrderLimit uint `gorm:"not null;"`
+	CanceledOrderLimit uint `gorm:"not null;default:0;"`
 	// 手續費
-	Fee         uint `gorm:"not null;"`
+	Fee         uint `gorm:"not null;default:0;"`
 	AutoMatched bool `gorm:"not null;default:true;"`
 	common.CreatedAtAndUpdatedAt
 }
@@ -46,15 +46,15 @@ type SystemSetting struct {
 type TradeSetting struct {
 	common.ID
 	// 總代理 / 代理 / 造市商 / 自然人 / 商戶
-	Type int `gorm:"not null;"`
-	Call int `gorm:"not null;"`
-	Put  int `gorm:"not null;"`
+	Type int `gorm:"not null;default:0;"`
+	Call int `gorm:"not null;default:0;"`
+	Put  int `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // 拆單數量
 type SeparatedBill struct {
-	Number uint `gorm:"not null;"`
+	Number uint `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }
 

@@ -12,12 +12,12 @@ type User struct {
 	Name     string `gorm:"not null;type:char(30);"`
 	Note     string `gorm:"default:null;type:char(30)"`
 	// 商戶管端 / 商戶控端 / 錢包管端 / 錢包user / 造市商管端 / 造市商user
-	Type          uint      `gorm:"not null;default:0;uniqueIndex:uqidx_account_type;"`
-	OtpEnable     bool      `gorm:"default:false;not null"`
-	OtpVerified   bool      `gorm:"default:false;not null"`
-	OtpSecret     string    `gorm:"default:null"`
-	OtpAuth_url   string    `gorm:"default:null"`
-	LastLoginedIP common.IP `gorm:"embedded;"`
+	Type          uint   `gorm:"not null;default:0;uniqueIndex:uqidx_account_type;"`
+	OtpEnable     bool   `gorm:"default:false;not null"`
+	OtpVerified   bool   `gorm:"default:false;not null"`
+	OtpSecret     string `gorm:"default:null"`
+	OtpAuth_url   string `gorm:"default:null"`
+	LastLoginedIP string `gorm:"not null;type:char(15);"`
 	LastLoginedAt time.Time
 	// 啟用
 	// 商控 後台帳號管理 新增帳號直接啟用且不用審核
@@ -26,11 +26,11 @@ type User struct {
 	LockedAt   time.Time
 	PublicKeys []PublicKey
 
-	GroupID uint `gorm:"not null;default:0;"`
-	Group   `gorm:"foreignKey:GroupID;"`
-	WalletUser
-	MerchantUser
-	MarketMakerUser
+	GroupID         uint `gorm:"not null;default:0;"`
+	Group           `gorm:"foreignKey:GroupID;"`
+	WalletUser      WalletUser
+	MerchantUser    MerchantUser
+	MarketMakerUser MarketMakerUser
 	common.CreatedAtAndUpdatedAt
 	common.Deleted
 }
@@ -123,14 +123,14 @@ type MarketMakerUserBankCardSetting struct {
 // 錢包app使用者
 type WalletUser struct {
 	common.ID
-	UserID       uint      `gorm:"not null;default:0;"`
-	RegisteredIP common.IP `gorm:"embedded"`
+	UserID       uint   `gorm:"not null;default:0;"`
+	RegisteredIP string `gorm:"not null;type:char(15);"`
 	// 娛樂城打綁定錢包api給我們的，對應他們會員的唯一值
-	UUID     string `gorm:"type:uuid;"`
+	UUID     string `gorm:"type:uuid;unique;"`
 	Verified bool   `gorm:"not null;default:false;"`
 	// 交易密碼
 	TransactionPassword string `gorm:"type:char(5)"`
-	WalletUserVerify
+	WalletUserVerify    WalletUserVerify
 	WalletUserBankCards []WalletUserBankCard
 	common.CreatedAtAndUpdatedAt
 }
@@ -154,11 +154,11 @@ type WalletUserVerify struct {
 // 錢包使用者 銀行卡
 type WalletUserBankCard struct {
 	common.ID
-	WalletUserID uint `gorm:"not null;defalt:0;"`
-	WalletUser   `gorm:"reference:WalletUserID;"`
-	BankID       uint   `gorm:"not null;default:0;"`
-	Branch       string `gorm:"not null;default:not null;type:char(20);"`
-	Code         string `gorm:"not null;type:char(20);"`
+	WalletUserID uint       `gorm:"not null;defalt:0;"`
+	WalletUser   WalletUser //`gorm:"reference:WalletUserID;"`
+	BankID       uint       `gorm:"not null;default:0;"`
+	Branch       string     `gorm:"not null;default:not null;type:char(20);"`
+	Code         string     `gorm:"not null;type:char(20);"`
 	// 新增銀行卡時不再填入名稱，直接只用實名驗證的名稱
 
 	common.CreatedAtAndUpdatedAt
@@ -182,26 +182,30 @@ type MerchantUser struct {
 	CorporationID uint `gorm:"not null;"`
 	// 如商戶為null 則為此集團的跨商戶帳號
 	MerchantID uint
-	MerchantUserRole
+	RoleID     uint `gorm:"not null;default:0;"`
+	Role       Role
+	// 	// 如果腳色是站長，且帳號為跨商戶的話，則要記錄所屬的所有站台
+	MerchantUserStantionMasters []MerchantUserStantionMaster //`gorm:"foreignKey:MerchantUserRoleID;"`
 	common.CreatedAtAndUpdatedAt
 }
 
-// 商管帳號 腳色 binding
-type MerchantUserRole struct {
-	common.ID
-	MerchantUserID uint `gorm:"idx_user_role"`
-	RoleID         uint `gorm:"idx_user_role"`
-	Role
-	// 如果腳色是站長，且帳號為跨商戶的話，則要記錄所屬的所有站台
-	MerchantUserStantionMasters []MerchantUserStantionMaster `gorm:"foreignKey:MerchantUserRoleID;"`
-	common.CreatedAtAndUpdatedAt
-}
+// todo 確認一個帳號是否有可能有多個腳色
+// // 商管帳號 腳色 binding
+// type MerchantUserRole struct {
+// 	common.ID
+// 	MerchantUserID uint `gorm:"idx_user_role"`
+// 	RoleID         uint `gorm:"idx_user_role"`
+// 	Role
+// 	// 如果腳色是站長，且帳號為跨商戶的話，則要記錄所屬的所有站台
+// 	MerchantUserStantionMasters []MerchantUserStantionMaster `gorm:"foreignKey:MerchantUserRoleID;"`
+// 	common.CreatedAtAndUpdatedAt
+// }
 
 // 記錄跨商戶站長資料
 type MerchantUserStantionMaster struct {
 	common.ID
-	MerchantUserRoleID uint `gorm:"not null;default:0;"`
-	MerchantID         uint `gorm:"not null;default:0;"`
+	MerchantUserID uint `gorm:"not null;default:0;"`
+	MerchantID     uint `gorm:"not null;default:0;"`
 	common.CreatedAt
 }
 
