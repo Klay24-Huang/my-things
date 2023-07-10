@@ -22,16 +22,17 @@ type User struct {
 	// 啟用
 	// 商控 後台帳號管理 新增帳號直接啟用且不用審核
 	common.Enable
-	common.CreatedAtAndUpdatedAt
-	common.Deleted
 	// 連續登入失敗被封鎖
 	LockedAt   time.Time
 	PublicKeys []PublicKey
 
-	Group
+	GroupID uint `gorm:"not null;default:0;"`
+	Group   `gorm:"foreignKey:GroupID;"`
 	WalletUser
 	MerchantUser
 	MarketMakerUser
+	common.CreatedAtAndUpdatedAt
+	common.Deleted
 }
 
 // user 每次登入的時候要傳public key上來
@@ -77,9 +78,9 @@ type MarketMakerUser struct {
 	// // 暫時停用
 	// Suspended bool `gorm:"not null;default:fasle;"`
 	// 允許編輯銀行卡
-	CanEditBankCard bool      `gorm:"not null;default:true;"`
-	Phone           string    `gorm:"not null;type:char(15);"`
-	RegisterIP      common.IP `gorm:"embedded;"`
+	CanEditBankCard bool   `gorm:"not null;default:true;"`
+	Phone           string `gorm:"not null;type:char(15);"`
+	RegisteredIP    string `gorm:"not null;type:char(15);"`
 
 	/////// 代收代付設定 ////////
 	// 可代收
