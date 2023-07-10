@@ -108,7 +108,7 @@ type MarketMakerUserBankCardSetting struct {
 	// 代收 1 / 代付 2 / 代收付 3
 	Type   uint   `gorm:"not null;"`
 	Enable bool   `gorm:"not null;default:true;"`
-	Bank   string `gorm:"not null;default:not null;type:char(20);"`
+	BankID uint   `gorm:"not null;default:not null;"`
 	Branch string `gorm:"not null;default:not null;type:char(20);"`
 	Name   string `gorm:"not null;default:not null;type:char(20);"`
 	// 單筆上限
@@ -129,7 +129,10 @@ type WalletUser struct {
 	// 娛樂城打綁定錢包api給我們的，對應他們會員的唯一值
 	UUID     string `gorm:"type:uuid;"`
 	Verified bool   `gorm:"not null;default:false;"`
+	// 交易密碼
+	TransactionPassword string `gorm:"type:char(5)"`
 	WalletUserVerify
+	WalletUserBankCards []WalletUserBankCard
 	common.CreatedAtAndUpdatedAt
 }
 
@@ -147,6 +150,20 @@ type WalletUserVerify struct {
 	// 待審核 已同意 已拒絕
 	Status uint `gorm:"not null;"`
 	common.CreatedAtAndUpdatedAt
+}
+
+// 錢包使用者 銀行卡
+type WalletUserBankCard struct {
+	common.ID
+	WalletUserID uint `gorm:"not null;"`
+	WalletUser   `gorm:"reference:WalletUserID;"`
+	BankID       uint   `gorm:"not null;default:not null;"`
+	Branch       string `gorm:"not null;default:not null;type:char(20);"`
+	Code         string `gorm:"not null;type:char(20);"`
+	// 新增銀行卡時不再填入名稱，直接只用實名驗證的名稱
+
+	common.CreatedAtAndUpdatedAt
+	common.Deleted
 }
 
 //////// 商戶管端 ////////////

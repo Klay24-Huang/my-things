@@ -79,6 +79,20 @@ type Merchant struct {
 	common.CreatedAtAndUpdatedAt
 }
 
+// 商戶銀行卡 此商戶底下所有的帳號都可以看到銀行卡資訊
+type MerchantBankCard struct {
+	common.ID
+	MerchantID uint `gorm:"not null;"`
+	Merchant
+	BankID     uint   `gorm:"not null;"`
+	BranchName string `gorm:"not null;type:char(20);"`
+	Code       string `gorm:"not null;type:char(20);"`
+	// 卡片使用者名稱
+	Name string `gorm:"not null;type:char(20);"`
+	common.CreatedAtAndUpdatedAt
+	common.DeletedAt
+}
+
 // 預設域名列表 可以在創建商戶時選擇
 type Domain struct {
 	common.ID
@@ -97,17 +111,17 @@ type Boardcast struct {
 	common.CreatedAtAndUpdatedAt
 }
 
-// 商控 遊戲會員錢包綁定 商戶
-type MerchantBindWalletUser struct {
-	common.ID
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	WalletID string
-	Binding  bool `gorm:"not null;default:true;"`
-	// todo 出入款紀錄
-	// todo 解除再綁定的話 出入款金額的計算方法
-	common.CreatedAtAndUpdatedAt
-}
+// // 商控 遊戲會員錢包綁定 商戶
+// type MerchantBindWalletUser struct {
+// 	common.ID
+// 	MerchantID uint `gorm:"not null;"`
+// 	Merchant
+// 	WalletID string
+// 	Binding  bool `gorm:"not null;default:true;"`
+// 	// todo 出入款紀錄
+// 	// todo 解除再綁定的話 出入款金額的計算方法
+// 	common.CreatedAtAndUpdatedAt
+// }
 
 // 商戶 交收體系
 // 一個商戶只能在一個體系
@@ -166,7 +180,7 @@ type MerchantConsoleSystemSetting struct {
 
 // ////////////////// 商戶管端 ///////////////////////
 type MerchantSetting struct {
-	// 商戶配置葉面
+	// 商戶配置頁面
 	MerchantID  uint
 	Page        bool `gorm:"not null;default:false;"`
 	ApiKey      bool `gorm:"not null;default:false;"`
