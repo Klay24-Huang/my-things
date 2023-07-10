@@ -126,9 +126,9 @@ type WalletUser struct {
 	common.ID
 	UserID       uint `gorm:"not null;"`
 	RegisteredIP common.IP
-	// 娛樂城打綁定錢包api給我們的
-	UUID     string
-	Verified bool `gorm:"not null;default:false;"`
+	// 娛樂城打綁定錢包api給我們的，對應他們會員的唯一值
+	UUID     string `gorm:"type:uuid;"`
+	Verified bool   `gorm:"not null;default:false;"`
 	WalletUserVerify
 	common.CreatedAtAndUpdatedAt
 }
