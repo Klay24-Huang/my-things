@@ -1,14 +1,21 @@
 package main
 
 import (
+	"appserver/src/database/new/user"
 	"fmt"
-
-	"gorm-example/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )
+
+type DatabaseInfo struct {
+	Host     string
+	Port     string
+	Database string
+	User     string
+	Password string
+}
 
 const (
 	HOST     = "localhost"
@@ -19,12 +26,12 @@ const (
 	// SSL      = "disable"
 )
 
-func getGormDB() *gorm.DB {
+func getGormDB(databaseInfo DatabaseInfo) *gorm.DB {
 	dsn := fmt.Sprintf(
 		// "host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		// HOST, PORT, USER, PASSWORD, DATABASE, SSL)
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		USER, PASSWORD, HOST, PORT, DATABASE)
+		databaseInfo.User, databaseInfo.Password, databaseInfo.Host, databaseInfo.Port, databaseInfo.Database)
 
 	gormDB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
@@ -39,33 +46,27 @@ func getGormDB() *gorm.DB {
 }
 
 func main() {
-	db := getGormDB()
-
-	// emp := Employee{}
-
-	// db.Migrator().AddColumn(emp, "NewName")
-	// db.First(&emp) // SELECT * FROM employee ORDER BY id LIMIT 1;
-
-	// fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
-
-	db.AutoMigrate(
-	// &model.User{},
-	// &model.MerchantGroup{},
-	// &model.Corporation{},
-	// &model.CorporationWhitelistring{},
-	// &model.Merchant{},
-	// &model.Domain{},
-	// &model.LoginLog{},
-
+	userDbInfo := &DatabaseInfo{
+		Host:     "localhost",
+		Port:     "3307",
+		Database: "user",
+		User:     "admin",
+		Password: "password",
+	}
+	userDb := getGormDB(*userDbInfo)
+	userDb.AutoMigrate(
+		&user.User{},
+		&user.PublicKey{},
+		&user.Group{},
+		&user.MarketMakerUser{},
+		&user.MarketMakerUserBankCardSetting{},
+		&user.WalletUser{},
+		&user.WalletUserVerify{},
+		&user.WalletUserBankCard{},
+		&user.Role{},
+		&user.MerchantUser{},
+		&user.MerchantUserRole{},
+		&user.MerchantUserStantionMaster{},
 	)
 
-	// domain := model.Domain{
-	// 	Name: "123",
-	// }
-	// db.Create(&domain)
-
-	domain := &model.Domain{}
-	db.First(&domain)
-	domain.Name = "foofoo"
-	db.Save(&domain)
 }
