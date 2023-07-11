@@ -70,7 +70,7 @@ type Group struct {
 }
 
 // 分辨使用的系統
-type Type struct {
+type SystemType struct {
 	// 商控 / 商管 / 錢包管 / 造市商管
 	Type uint `gorm:"not null;"`
 }

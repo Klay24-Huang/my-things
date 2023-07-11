@@ -6,7 +6,7 @@ import (
 )
 
 type Session struct {
-	common.Key `gorm:"primaryKey;"`
-	LogoutAt   time.Time
+	Key        string `gorm:"not null;type:char(255);primaryKey;"`
+	LogoutedAt time.Time
 	common.CreatedAt
 }

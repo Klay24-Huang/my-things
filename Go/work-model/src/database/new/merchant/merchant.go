@@ -14,12 +14,12 @@ type Corporation struct {
 	// todo 確認用途
 	LoginUrl string `gorm:"unique;not null;type:char(30)"`
 	// 待審核 / 已通過 / 已拒絕
-	Status uint `gorm:"not null;"`
+	Status uint `gorm:"not null;default:0;"`
 	// Verified bool   `gorm:"defaut:false;not null"`
-	Enable bool   `gorm:"default:false;not null"`
-	Note   string `gorm:"type:char(30);default:null"`
+	Enable bool   `gorm:"default:false;not null;"`
+	Note   string `gorm:"type:char(30);default:null;"`
 	// 管端登入ip限制
-	LimitLoginIP bool `gorm:"default:true;not null"`
+	LimitLoginIP bool `gorm:"default:true;not null;"`
 	// 登入白名單
 	Whitelistings string `gorm:"type:json"`
 	common.CreatedAtAndUpdatedAt
@@ -29,7 +29,7 @@ type Corporation struct {
 // 非商戶相關會員
 type Merchant struct {
 	common.ID
-	CorperationID uint `gorm:"not null;"`
+	CorperationID uint `gorm:"not null;default:0;"`
 	Corporation
 	// todo wallet id 是否可用user id取代/可能會有多個錢包 最多五個錢包
 	WalletID string `gorm:"not null;"`
@@ -45,26 +45,26 @@ type Merchant struct {
 	// test url
 	TestUrl string `gorm:"not null;type:text"`
 	// 商戶圖示
-	Picture common.Attachment
+	Picture string `gorm:"not null;type:text;"`
 	///// 手續費
 	// 存款手續費
-	DepositFee uint `gorm:"not null;"`
+	DepositFee uint `gorm:"not null;default:0;"`
 	// 提款手續費
-	WithdrawalFee uint `gorm:"not null;"`
+	WithdrawalFee uint `gorm:"not null;default:0;"`
 	// 掛單手續費
-	OrderFee uint `gorm:"not null;"`
+	OrderFee uint `gorm:"not null;default:0;"`
 	// 回收手續費
-	RecyclingFee uint `gorm:"not null;"`
+	RecyclingFee uint `gorm:"not null;default:0;"`
 	// 回收代幣數量下限
-	RecyclingLimit uint `gorm:"not null;"`
+	RecyclingLimit uint `gorm:"not null;default:0;"`
 	// 可出售Y幣
 	Salable bool `gorm:"not null;default:true;"`
 	// 會員可出款
 	Dispensable bool `gorm:"not null;default:true;"`
 	// 安全存量
-	SaftyAmount uint `gorm:"not null;"`
+	SaftyAmount uint `gorm:"not null;default:0;"`
 	// 待審核 / 已通過 / 已拒絕
-	Status uint `gorm:"not null;"`
+	Status uint `gorm:"not null;defualt:0;"`
 	// Verified bool   `gorm:"defaut:false;not null"`
 	Enable bool   `gorm:"default:false;not null"`
 	APIKey string `gorm:"not null;type:char(50)"`
@@ -73,18 +73,22 @@ type Merchant struct {
 	Whitelistings     string `gorm:"type:json"`
 	TestWhitelistings string `gorm:"type:json"`
 
-	System
-	MerchantSetting
+	///// 體系 /////
+	// 如果是屬於某個體系，則此欄位有值
+	SystemID uint
+	// 如果是體系的主商戶，則指這對應資料
+	System  System `gorm:"foreignKey:MainMerchantID;"`
+	Setting Setting
 
 	common.CreatedAtAndUpdatedAt
 }
 
 // 商戶銀行卡 此商戶底下所有的帳號都可以看到銀行卡資訊
-type MerchantBankCard struct {
+type BankCard struct {
 	common.ID
-	MerchantID uint `gorm:"not null;"`
+	MerchantID uint `gorm:"not null;default:0;"`
 	Merchant
-	BankID     uint   `gorm:"not null;"`
+	BankID     uint   `gorm:"not null;defualt:0;"`
 	BranchName string `gorm:"not null;type:char(20);"`
 	Code       string `gorm:"not null;type:char(20);"`
 	// 卡片使用者名稱
@@ -103,11 +107,11 @@ type Domain struct {
 // 帳號類別 推播管理
 type Boardcast struct {
 	common.ID
-	MerchantID uint `gorm:"not null;"`
+	MerchantID uint `gorm:"not null;default:0;"`
 	Merchant
 	// todo 補幣/ 補Y幣 差別?
 	//商戶 補幣審核通過 / Y幣下發審核通過 / Y幣補幣審核通過
-	Flags uint
+	Type uint `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }
 
@@ -128,7 +132,7 @@ type Boardcast struct {
 type System struct {
 	common.ID
 	// 主商戶ID
-	MainMerchantID uint
+	MainMerchantID uint   `gorm:"not null;default:0;"`
 	Name           string `gorm:"char(30); not null;"`
 	Merchants      []Merchant
 	common.CreatedAtAndUpdatedAt
@@ -147,10 +151,10 @@ type Marquee struct {
 	// 單一商戶
 	MerchantID uint
 	Merchant
-	Content  string `gorm:"not null;type:char(50);"`
-	StartAt  time.Time
-	EndAt    time.Time
-	Verified bool `gorm:"defaut:false;not null"`
+	Content   string `gorm:"not null;type:char(50);"`
+	StartedAt time.Time
+	EndedAt   time.Time
+	Verified  bool `gorm:"defaut:false;not null"`
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
@@ -167,7 +171,7 @@ type Bulletin struct {
 }
 
 // 商戶控端 系統設定
-type MerchantConsoleSystemSetting struct {
+type ConsoleSystemSetting struct {
 	// 例行性維護
 	Routine bool `gorm:"not null;default:false"`
 	// 金流系統維護
@@ -179,7 +183,7 @@ type MerchantConsoleSystemSetting struct {
 }
 
 // ////////////////// 商戶管端 ///////////////////////
-type MerchantSetting struct {
+type Setting struct {
 	// 商戶配置頁面
 	MerchantID  uint
 	Page        bool `gorm:"not null;default:false;"`
@@ -189,23 +193,10 @@ type MerchantSetting struct {
 	common.CreatedAtAndUpdatedAt
 }
 
-type BankCard struct {
-	common.ID
-	MerchantID uint `gorm:"not null;"`
-	Merchant
-	UserName string `gorm:"not null;type:char(20);"`
-	BankID   uint   `gorm:"not null;"`
-	// 分行名稱
-	Branch string `gorm:"not null;type:char(30);"`
-	// 卡號
-	Code string `gorm:"not null;type:char(30);"`
-	common.CreatedAtAndUpdatedAt
-}
-
 // 營運管理
-type MerchantSystemSetting struct {
+type SystemSetting struct {
 	common.ID
-	Initial    int  `gorm:"not null;default:0;"`
+	Initial    uint `gorm:"not null;default:0;"`
 	AlarmRatio uint `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }

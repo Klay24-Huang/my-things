@@ -9,7 +9,7 @@ import "appserver/src/database/new/common"
 type Task struct {
 	common.ID
 	// 代收 call 1 / 代付 put 2
-	Type int `gorm:"not null;"`
+	Type uint `gorm:"not null;default:0;"`
 	// uuid yapay訂單id
 	TradeID string
 	// 總獎金
@@ -34,11 +34,11 @@ type Bounus struct {
 type QuotaSetting struct {
 	common.ID
 	// 代收
-	CollectionDayLimit  uint `gorm:"not null;"`
-	CollectionOnceLimit uint `gorm:"not null;"`
+	CollectionDayLimit  uint `gorm:"not null;default:0;"`
+	CollectionOnceLimit uint `gorm:"not null;default:0;"`
 	// 代付
-	PayingDayLimit  uint `gorm:"not null;"`
-	PayingOnceLimit uint `gorm:"not null;"`
+	PayingDayLimit  uint `gorm:"not null;default:0;"`
+	PayingOnceLimit uint `gorm:"not null;default:0;"`
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
@@ -47,9 +47,9 @@ type QuotaSetting struct {
 type BonusSetting struct {
 	common.ID
 	// 代收獎金比例
-	CollectionRatio float32 `gorm:"not null;"`
+	CollectionRatio float32 `gorm:"not null;default:0;"`
 	// 代付獎金比例
-	PayingRatio float32 `gorm:"not null;"`
+	PayingRatio float32 `gorm:"not null;default:0;"`
 
 	common.Operator
 	common.CreatedAtAndUpdatedAt
@@ -58,7 +58,7 @@ type BonusSetting struct {
 // 銀行卡交易次數上限
 type TradeSetting struct {
 	common.ID
-	Count uint `gorm:"not null;"`
+	Count uint `gorm:"not null;default:0;"`
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
@@ -67,9 +67,9 @@ type TradeSetting struct {
 type AccountQuotaSetting struct {
 	common.ID
 	// 代收
-	CollectionDayLimit uint `gorm:"not null;"`
+	CollectionDayLimit uint `gorm:"not null;default:0;"`
 	// 代付
-	PayingDayLimit uint `gorm:"not null;"`
+	PayingDayLimit uint `gorm:"not null;default:0;"`
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
@@ -78,9 +78,9 @@ type AccountQuotaSetting struct {
 type MatchSetting struct {
 	common.ID
 	// 每日同銀行卡片匹配次數
-	DayLimitOfSameBank uint `gorm:"not null;"`
+	DayLimitOfSameBank uint `gorm:"not null;default:0;"`
 	// 同步錢包訂單數量
-	SyncWalletOrder uint `gorm:"not null;"`
+	SyncWalletOrder uint `gorm:"not null;default:0;"`
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
@@ -113,12 +113,12 @@ type PleaseNoteSetting struct {
 type IOSSignatureSetting struct {
 	common.ID
 	// 企業簽 超級簽
-	Type uint   `gorm:"not null;"`
+	Type uint   `gorm:"not null;default:0;"`
 	Name string `gorm:"not null;type:char(30);"`
 	// 載點
 	Url    string `gorm:"not null;type:char(50);"`
 	Note   string `gorm:"typechar(50);"`
-	Enable bool   `gorm:"default:true"`
+	Enable bool   `gorm:"not null;default:true"`
 	// todo 優先權
 	common.Operator
 	common.CreatedAtAndUpdatedAt

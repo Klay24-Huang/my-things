@@ -1,6 +1,10 @@
 package main
 
 import (
+	login "appserver/src/database/new/Login"
+	"appserver/src/database/new/log"
+	"appserver/src/database/new/marketmaker"
+	"appserver/src/database/new/merchant"
 	"appserver/src/database/new/trade"
 	"appserver/src/database/new/user"
 	"appserver/src/database/new/wallet"
@@ -109,5 +113,95 @@ func main() {
 		&trade.CanceledTransaction{},
 		&trade.Wallet{},
 		&trade.WalletDetail{},
+	)
+
+	logDbInfo := &DatabaseInfo{
+		Host:     "localhost",
+		Port:     "3307",
+		Database: "log",
+		User:     "admin",
+		Password: "password",
+	}
+
+	logDb := getGormDB(*logDbInfo)
+
+	logDb.AutoMigrate(
+		&log.VerificationType{},
+		&log.VerificationTitle{},
+		&log.Verification{},
+		&log.UserLockLog{},
+		&log.LoginLog{},
+		&log.CorporationWhitelistingLog{},
+		&log.MerchantWhitelistingLog{},
+		&log.MerchantPasswordResetLog{},
+		&log.UnbindMerchantPhoneLog{},
+		&log.MerchantOTPLog{},
+		&log.MarketMakerUserBankCardLog{},
+		// todo 交易相關 可能需要移到帳本
+		&log.MarketMakerTaskLog{},
+		&log.WalletConsoleRefillAndRecycleLog{},
+		&log.WalletConsoleRecycleLog{},
+	)
+
+	loginDbInfo := &DatabaseInfo{
+		Host:     "localhost",
+		Port:     "3307",
+		Database: "login",
+		User:     "admin",
+		Password: "password",
+	}
+
+	loginDb := getGormDB(*loginDbInfo)
+
+	loginDb.AutoMigrate(
+		&login.Session{},
+	)
+
+	marketMakerDbInfo := &DatabaseInfo{
+		Host:     "localhost",
+		Port:     "3307",
+		Database: "market_maker",
+		User:     "admin",
+		Password: "password",
+	}
+
+	marketMakerDb := getGormDB(*marketMakerDbInfo)
+
+	marketMakerDb.AutoMigrate(
+		&marketmaker.BonusSetting{},
+		&marketmaker.TradeSetting{},
+		&marketmaker.AccountQuotaSetting{},
+		&marketmaker.MatchSetting{},
+		&marketmaker.UserAgreementSetting{},
+		&marketmaker.RemindSetting{},
+		&marketmaker.PleaseNoteSetting{},
+		&marketmaker.IOSSignatureSetting{},
+		// todo 確認是否還有此功能
+		&marketmaker.Task{},
+		&marketmaker.Bounus{},
+	)
+
+	merchantDbInfo := &DatabaseInfo{
+		Host:     "localhost",
+		Port:     "3307",
+		Database: "merchant",
+		User:     "admin",
+		Password: "password",
+	}
+
+	merchantDb := getGormDB(*merchantDbInfo)
+
+	merchantDb.AutoMigrate(
+		&merchant.Corporation{},
+		&merchant.Merchant{},
+		&merchant.BankCard{},
+		&merchant.Domain{},
+		&merchant.Boardcast{},
+		&merchant.System{},
+		&merchant.Marquee{},
+		&merchant.Bulletin{},
+		&merchant.ConsoleSystemSetting{},
+		&merchant.Setting{},
+		&merchant.SystemSetting{},
 	)
 }

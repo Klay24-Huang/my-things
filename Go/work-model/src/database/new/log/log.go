@@ -8,29 +8,30 @@ import (
 
 // //// 審核相關 ///////////
 // 審核類型
-type Type struct {
+type VerificationType struct {
 	common.ID
-	SystemType common.Type
-	Name       string `gorm:"not null;type:char(20)"`
+	common.SystemType
+	Name string `gorm:"not null;type:char(20)"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // 審核標題
-type Title struct {
+type VerificationTitle struct {
 	common.ID
 	Name   string `gorm:"not null;type:char(20)"`
-	TypeID uint   `gorm:"not null;"`
-	Type
-	Level uint `gorm:"not null;"`
+	TypeID uint   `gorm:"not null;default:0;"`
+	// 審核類型
+	VerificationType VerificationType `gorm:"foreignKey:TypeID;"`
+	Level            uint             `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // 審核列表
-type Verify struct {
+type Verification struct {
 	common.ID
 	// 標題
-	TitleID uint
-	Title
+	TitleID           uint              `gorm:"not null;default:0;"`
+	VerificationTitle VerificationTitle `gorm:"foreignKey:TitleID;"`
 	// 事項
 	Item string `gorm:"not null;type:char(30);"`
 	// 事由
@@ -41,7 +42,7 @@ type Verify struct {
 	After string `gorm:"not null;type:json"`
 
 	// 1 用戶申請 / 2 管理者同意 / 3 管理者拒絕 / 4 申請人取消
-	Status uint
+	Status uint `gorm:"not null;default:0;"`
 	// 附檔 url
 	common.Attachment
 	// 申請者
@@ -51,7 +52,7 @@ type Verify struct {
 	// 當審核通過 直接只用下方資訊修改資料內容
 	Database string `gorm:"not null;type:char(10);"`
 	Table    string `gorm:"not null;type:char(10);"`
-	DataID   uint   `gorm:"not null;"`
+	DataID   uint   `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }
 
@@ -60,7 +61,7 @@ type Verify struct {
 // 登入錯誤次數過多被鎖定
 type UserLockLog struct {
 	common.ID
-	UserID uint
+	UserID uint `gorm:"not null;default:0;"`
 	// todo 錢包控端 app user看到有紀錄ip，確認其他系統或app是否也有
 	common.IP
 	LockedAt   time.Time
@@ -72,7 +73,7 @@ type UserLockLog struct {
 // 商戶控端 管端都有
 type LoginLog struct {
 	common.ID
-	UserID uint `gorm:"not null;"`
+	UserID uint `gorm:"not null;default:0;"`
 	// 登入平台
 	// todo 是否改成用type和數字
 	// PC / android / ios / 5min / yapay
@@ -80,7 +81,7 @@ type LoginLog struct {
 	// 登入IP
 	common.IP
 	// login statuse 成功 / 失敗
-	Statue bool `gorm:"not null;"`
+	Statue bool `gorm:"not null;default:false;"`
 	// 失敗原因
 	Note string `gorm:"default:null;type:char(30)"`
 	common.CreatedAt
@@ -93,7 +94,7 @@ type CorporationWhitelistingLog struct {
 	CorporationID string `gorm:"type:uuid;not null;uniqueIndex:corp_id_ip"`
 	IP            string `gorm:"type:char(15);not null;uniqueIndex:corp_id_ip"`
 	//狀態 1新增 / 0刪除
-	Statue bool `gorm:"default:true"`
+	Statue bool `gorm:"default:true;default:true;"`
 	// 操作者ID
 	common.Operator
 	common.CreatedAtAndUpdatedAt
@@ -103,7 +104,7 @@ type CorporationWhitelistingLog struct {
 // 商戶管理IP白名單紀錄
 type MerchantWhitelistingLog struct {
 	common.ID
-	MerchantID uint
+	MerchantID uint `gorm:"not null;default:0;"`
 	////// 變動前ip紀錄 //////
 	BeforeIPWhitelisting     string `gorm:"type:json;"`
 	BeforeTestIPWhitelisting string `gorm:"type:json;"`
@@ -112,7 +113,7 @@ type MerchantWhitelistingLog struct {
 	AfterTestIPWhitelisting string `gorm:"type:json;"`
 	// 控端管端都可以編輯商戶ip
 	// 控端 0 / 管端 1
-	Source uint `gorm:"not null;"`
+	Source uint `gorm:"not null;default:0;"`
 	common.Operator
 	common.CreatedAt
 }
@@ -121,35 +122,35 @@ type MerchantWhitelistingLog struct {
 // TODO 下方所有log 是否要在收斂成一個類別 用type去切換
 type MerchantPasswordResetLog struct {
 	common.ID
-	MerchantID uint `gorm:"not null;"`
+	MerchantID uint `gorm:"not null;default:0;"`
 	common.Operator
 	common.CreatedAt
 }
 
 type UnbindMerchantPhoneLog struct {
 	common.ID
-	MerchantID uint   `gorm:"not null;"`
+	MerchantID uint   `gorm:"not null;default:0;"`
 	Phone      string `gorm:"type:char(15);default:null;"`
 	common.Operator
 	common.CreatedAt
 }
 
 // 控端帳號鎖定
-type AccountLockLog struct {
-	common.ID
-	LockTime time.Time
-	UserID   uint   `gorm:"not null;"`
-	Reason   string `gorm:"type:char(30);not null;"`
-	common.CreatedAtAndUpdatedAt
-}
+// type AccountLockLog struct {
+// 	common.ID
+// 	LockTime time.Time
+// 	UserID   uint   `gorm:"not null;default:0;"`
+// 	Reason   string `gorm:"type:char(30);not null;"`
+// 	common.CreatedAtAndUpdatedAt
+// }
 
-// 管端帳號鎖定
-type MerchantLockLog struct {
-	common.ID
-	LockTime   time.Time
-	MerchantID uint `gorm:"not null;"`
-	common.CreatedAtAndUpdatedAt
-}
+// // 管端帳號鎖定
+// type MerchantLockLog struct {
+// 	common.ID
+// 	LockTime   time.Time
+// 	MerchantID uint `gorm:"not null;"`
+// 	common.CreatedAtAndUpdatedAt
+// }
 
 // // google 驗證操作紀錄
 type MerchantOTPLog struct {
@@ -164,36 +165,36 @@ type MerchantOTPLog struct {
 
 // 造市商收補幣
 // todo 目前沒有這個功能 是否保留?
-type MarketMakerSupplementOrRetractLog struct {
-	common.ID
-	// 補幣 supplement 1 / 回收 retract 2
-	Type         int `gorm:"not null;"`
-	ApplicantKey common.Key
-	ApproverKey  common.Key
-	Title        string `gorm:"char(30);"`
-	// 事項
-	Content string `gorm:"char(30);"`
-	Reason  string `gorm:"char(30);"`
-	Amount  int    `gorm:"not null;"`
-	common.CreatedAtAndUpdatedAt
-}
+// type MarketMakerSupplementOrRetractLog struct {
+// 	common.ID
+// 	// 補幣 supplement 1 / 回收 retract 2
+// 	Type         int `gorm:"not null;"`
+// 	ApplicantKey common.Key
+// 	ApproverKey  common.Key
+// 	Title        string `gorm:"char(30);"`
+// 	// 事項
+// 	Content string `gorm:"char(30);"`
+// 	Reason  string `gorm:"char(30);"`
+// 	Amount  int    `gorm:"not null;"`
+// 	common.CreatedAtAndUpdatedAt
+// }
 
 // 計算成交訂單任務獎金
 type MarketMakerTaskLog struct {
 	common.ID
-	OrderID uint
+	OrderID uint `gorm:"not null;default:0;"`
 	// 獎金比例
 	// todo 要每次紀錄嗎? 每個碼商user的獎金比例設定會不一樣，且隨時可以修改
-	BounusRatio float32 `gorm:"not null;"`
+	BounusRatio float32 `gorm:"not null;default:0;"`
 	// 實際收到獎金
-	Bounus float32 `gorm:"not null;"`
+	Bounus float32 `gorm:"not null;default:0;"`
 	common.CreatedAt
 }
 
 // 紀錄造市商銀行卡當日是否達到次數上限 或總金額上限
 type MarketMakerUserBankCardLog struct {
 	common.ID
-	MarketMakerUserBankCardSettingID uint `gorm:"not null;"`
+	MarketMakerUserBankCardSettingID uint `gorm:"not null;default:0;"`
 	// 到達次數上限
 	Overlimited bool `gorm:"not null;default:false;"`
 	Amount      uint `gorm:"not null;default:0;"`
@@ -205,92 +206,94 @@ type MarketMakerUserBankCardLog struct {
 // 補幣 / 收幣
 type WalletConsoleRefillAndRecycleLog struct {
 	common.ID
-	WalletID string
+	WalletID string `gorm:"not null;"`
 	trade.CoinType
-	Amount uint `gorm:"not null;"`
+	Amount uint `gorm:"not null;default:0;"`
 	common.CreatedAt
 }
 
 // 回收代幣
 type WalletConsoleRecycleLog struct {
 	common.ID
-	WalletID string
+	WalletID string `gorm:"not null;"`
 	trade.CoinType
 	// 申請回收金額
-	Amount int
+	Amount uint `gorm:"not null;default:0;"`
 	// 實際回收金額
-	RecycleAmount int
+	RecycleAmount uint `gorm:"not null;default:0;"`
 	// 手續費
-	Fee int
+	Fee float32 `gorm:"not null;default:0;"`
 	common.CreatedAt
 }
 
 ////// merchant ////////
 
+// todo 下方的log改成帳本形式
+
 // 入款(會員存款) 紀錄
-type DespositAndWithdrawLog struct {
-	common.ID
-	// 入款 / 出款
-	Type         uint `gorm:"not null;"`
-	UserID       uint
-	UserWalletID uint
-	// 手續費率
-	FeeRatio uint `gorm:"not null;"`
-	// 實收手續費
-	Fee              uint `gorm:"not null;"`
-	MerchantWalletID uint
-	Amount           uint `gorm:"not null;"`
-	// 成功 / 用戶未付款 / 已付款 開分失敗
-	Status uint `gorm:"not null;"`
-	common.CreatedAt
-	CompletedAt time.Time
-}
+// type DespositAndWithdrawLog struct {
+// 	common.ID
+// 	// 入款 / 出款
+// 	Type         uint `gorm:"not null;defautl:0;"`
+// 	UserID       uint
+// 	UserWalletID uint
+// 	// 手續費率
+// 	FeeRatio uint `gorm:"not null;"`
+// 	// 實收手續費
+// 	Fee              uint `gorm:"not null;"`
+// 	MerchantWalletID uint
+// 	Amount           uint `gorm:"not null;"`
+// 	// 成功 / 用戶未付款 / 已付款 開分失敗
+// 	Status uint `gorm:"not null;"`
+// 	common.CreatedAt
+// 	CompletedAt time.Time
+// }
 
 // 商戶補幣
-type MerchantRefillLog struct {
-	common.ID
-	WalletID string
-	trade.CoinType
-	// 補幣金額
-	Amount int
-	// 手續費
-	Fee int
-	common.CreatedAt
-}
+// type MerchantRefillLog struct {
+// 	common.ID
+// 	WalletID string
+// 	trade.CoinType
+// 	// 補幣金額
+// 	Amount int
+// 	// 手續費
+// 	Fee int
+// 	common.CreatedAt
+// }
 
-// 申請補發x幣
-type MerchantSupplyLog struct {
-	common.ID
-	WalletID string
-	trade.CoinType
-	// 補幣金額
-	Amount int
-	common.CreatedAt
-}
+// // 申請補發x幣
+// type MerchantSupplyLog struct {
+// 	common.ID
+// 	WalletID string
+// 	trade.CoinType
+// 	// 補幣金額
+// 	Amount int
+// 	common.CreatedAt
+// }
 
-// 商戶交收
-type MerchantSettlementLog struct {
-	common.ID
-	// 付款方錢包ID
-	PayerWalletID string
-	Amount        int
-	Fee           int
-	// 收款方錢包ID
-	ReceiverWalletID string
-	common.CreatedAt
-}
+// // 商戶交收
+// type MerchantSettlementLog struct {
+// 	common.ID
+// 	// 付款方錢包ID
+// 	PayerWalletID string
+// 	Amount        int
+// 	Fee           int
+// 	// 收款方錢包ID
+// 	ReceiverWalletID string
+// 	common.CreatedAt
+// }
 
-// 商戶戶轉
-type MerchantTransferLog struct {
-	MerchantSettlementLog
-}
+// // 商戶戶轉
+// type MerchantTransferLog struct {
+// 	MerchantSettlementLog
+// }
 
-// 商戶系統回收
-type MerchantSystemtRecycleLog struct {
-	common.ID
-	WalletID string
-	trade.CoinType
-	// 申請回收金額
-	Amount int
-	common.CreatedAt
-}
+// // 商戶系統回收
+// type MerchantSystemtRecycleLog struct {
+// 	common.ID
+// 	WalletID string
+// 	trade.CoinType
+// 	// 申請回收金額
+// 	Amount int
+// 	common.CreatedAt
+// }
