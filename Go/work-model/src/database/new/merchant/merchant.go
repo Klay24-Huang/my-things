@@ -74,11 +74,11 @@ type Merchant struct {
 	TestWhitelistings string `gorm:"type:json"`
 
 	///// 體系 /////
-	// 如果是屬於某個體系，則此欄位有值
+	// 如果是某個體系的主商戶，則此欄位有值
 	SystemID uint
-	// 如果是體系的主商戶，則指這對應資料
-	System  System `gorm:"foreignKey:MainMerchantID;"`
-	Setting Setting
+	// 如果屬於某個體系的成員，則此欄位有值
+	AssociatedSystemID uint
+	Setting            Setting
 
 	common.CreatedAtAndUpdatedAt
 }
@@ -131,10 +131,11 @@ type Boardcast struct {
 // 一個商戶只能在一個體系
 type System struct {
 	common.ID
-	// 主商戶ID
-	MainMerchantID uint   `gorm:"not null;default:0;"`
-	Name           string `gorm:"char(30); not null;"`
-	Merchants      []Merchant
+	// 主商戶
+	MainMerchant Merchant
+	Name         string `gorm:"char(30); not null;"`
+	// 此體系底下的商戶
+	Merchants []Merchant `gorm:"foreignKey:AssociatedSystemID;"`
 	common.CreatedAtAndUpdatedAt
 }
 

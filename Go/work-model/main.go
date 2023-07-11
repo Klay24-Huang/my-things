@@ -192,12 +192,12 @@ func main() {
 	merchantDb := getGormDB(*merchantDbInfo)
 
 	merchantDb.AutoMigrate(
+		&merchant.System{},
 		&merchant.Corporation{},
 		&merchant.Merchant{},
 		&merchant.BankCard{},
 		&merchant.Domain{},
 		&merchant.Boardcast{},
-		&merchant.System{},
 		&merchant.Marquee{},
 		&merchant.Bulletin{},
 		&merchant.ConsoleSystemSetting{},
