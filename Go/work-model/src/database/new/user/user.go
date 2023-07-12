@@ -105,11 +105,12 @@ type MarketMakerUserBankCardSetting struct {
 	common.ID
 	MarketMakerUserID uint `gorm:"not null;default:0;"`
 	// 代收 1 / 代付 2 / 代收付 3
-	Type   uint   `gorm:"not null;default:0;"`
-	Enable bool   `gorm:"not null;default:true;"`
-	BankID uint   `gorm:"not null;default:0;"`
-	Branch string `gorm:"not null;default:not null;type:char(20);"`
-	Name   string `gorm:"not null;default:not null;type:char(20);"`
+	Type       uint   `gorm:"not null;default:0;"`
+	Enable     bool   `gorm:"not null;default:true;"`
+	BankID     uint   `gorm:"not null;default:0;"`
+	BranchName string `gorm:"not null;default:not null;type:char(20);"`
+	// 卡片所有人名稱
+	Name string `gorm:"not null;default:not null;type:char(20);"`
 	// 單筆上限
 	Limit uint `gorm:"not null;default:0;"`
 	// 每日上限
@@ -157,8 +158,8 @@ type WalletUserBankCard struct {
 	WalletUserID uint       `gorm:"not null;defalt:0;"`
 	WalletUser   WalletUser //`gorm:"reference:WalletUserID;"`
 	BankID       uint       `gorm:"not null;default:0;"`
-	Branch       string     `gorm:"not null;default:not null;type:char(20);"`
-	Code         string     `gorm:"not null;type:char(20);"`
+	BranchName   string     `gorm:"not null;default:not null;type:char(20);"`
+	BankCode     string     `gorm:"not null;type:char(20);"`
 	// 新增銀行卡時不再填入名稱，直接只用實名驗證的名稱
 
 	common.CreatedAtAndUpdatedAt

@@ -15,9 +15,15 @@ type CoinType struct {
 
 // ////////////////// trade ///////////////////////
 type Order struct {
-	// todo 是否放使用者名稱和銀行卡相關資訊
 	common.UUID
 	UserID uint `gorm:"not null;default:0;"`
+
+	// todo 是否放使用者名稱和銀行卡相關資訊
+	UserName   string `gorm:"not null;"`
+	BankID     uint   `gorm:"not null;default:0;"`
+	BankName   string `gorm:"not null;default:0;"`
+	BranchName string `gorm:"not null;"`
+
 	// 買單 call 1 / 賣單 put 2
 	Type uint `gorm:"not null;default:0;"`
 	// 幣種
