@@ -125,16 +125,31 @@ type MarketMakerUserBankCardSetting struct {
 type WalletUser struct {
 	common.ID
 	UserID       uint   `gorm:"not null;default:0;"`
+	Freezed      bool   `gorm:"not null;default:false;"`
 	RegisteredIP string `gorm:"not null;type:char(15);"`
 	// 娛樂城打綁定錢包api給我們的，對應他們會員的唯一值
-	UUID     string `gorm:"type:uuid;unique;"`
-	Verified bool   `gorm:"not null;default:false;"`
+	// todo 要改成可以綁定多娛樂城
+	// UUID     string `gorm:"type:uuid;unique;"`
+
+	Verified bool `gorm:"not null;default:false;"`
 	// 交易密碼
 	TransactionPassword string `gorm:"type:char(5)"`
 	WalletUserVerify    WalletUserVerify
 	WalletUserBankCards []WalletUserBankCard
 	common.CreatedAtAndUpdatedAt
 }
+
+// 改成不綁定 羅哥!!待確認
+// 給錢包id給娛樂城 看他們要不要檢查
+
+// 錢包和遊戲的binding
+// type WalletUserMerchant struct {
+// 	// todo 完善這個table
+// 	WalletUserId uint
+// 	MerchantId   uint
+// 	// 娛樂城 帳號id
+// 	UUID string
+// }
 
 // 錢包app 實名 照片 ID card認證
 type WalletUserVerify struct {

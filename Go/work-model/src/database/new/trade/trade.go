@@ -19,9 +19,10 @@ type Order struct {
 	UserID uint `gorm:"not null;default:0;"`
 
 	// todo 是否放使用者名稱和銀行卡相關資訊
+	// 使用者名稱 5min pay可以改暱稱，所以每次記
 	UserName   string `gorm:"not null;"`
 	BankID     uint   `gorm:"not null;default:0;"`
-	BankName   string `gorm:"not null;default:0;"`
+	BankName   string `gorm:"not null;;"`
 	BranchName string `gorm:"not null;"`
 
 	// 買單 call 1 / 賣單 put 2
@@ -33,17 +34,17 @@ type Order struct {
 	// 下單數量
 	Amount uint `gorm:"not null;default:0;"`
 	// 最小下單數量，比如下單1000，目前系統設定最多切五單，1000 / 5 = 200
-	MinimumAmount uint `gorm:"not null;default:0;"`
+	// null時表示可拆單
+	MinimumAmount uint
+	// 未成交的餘額  todo 名稱確認
+	Portion uint
 	// 手續費
-	Fee float32 `gorm:"not null;default:0;"`
+	// todo 確認是否要再套用decimal套件
+	// todo 轉進去會不會變成decimal fix point
+	Fee float64 `gorm:"not null;default:0;"`
+	// 同時記錄拆單是否被處理完
 	// 進行中 / 完成 / 取消
 	Status uint `gorm:"not null;default:0;"`
-
-	//// 付款 買單才有 /////
-	// 付款照片url
-	PaymentUrl string `gorm:"char(30);"`
-	// 付款持間
-	PaidAt time.Time
 	common.CreatedAt
 }
 
@@ -52,18 +53,32 @@ type LockedOrder struct {
 	common.ID
 	CallID    uint  `gorm:"index:idx_call_put;"`
 	CallOrder Order `gorm:"foreignKey:CallID;"`
-	PutID     uint  `gorm:"index:idx_call_put;"`
-	PutOrder  Order `gorm:"foreignKey:PutID;"`
+	//// 付款 買單才有 /////
+	// 付款照片url 路徑會加密
+	PaymentUrl string
+	// 付款持間
+	PaidAt   time.Time
+	PutID    uint  `gorm:"index:idx_call_put;"`
+	PutOrder Order `gorm:"foreignKey:PutID;"`
+	// 未付款 / 已付款(賣方要確認才能放款)
+	Staute uint `gorm:"not null;default:0;"`
 	common.CreatedAt
 }
 
+// 非帳本 只是交易紀錄
 // 搓合成功訂單 交易紀錄，只放交易成功的紀錄
 type Transaction struct {
 	common.UUID
-	CallID    uint  `gorm:"index:idx_call_put;"`
-	CallOrder Order `gorm:"foreignKey:CallID;"`
-	PutID     uint  `gorm:"index:idx_call_put;"`
-	PutOrder  Order `gorm:"foreignKey:PutID;"`
+	// todo 其他table也要改
+	BuyerID    uint  `gorm:"index:idx_call_put;"`
+	BuyerOrder Order `gorm:"foreignKey:CallID;"`
+	//// 付款 買單才有 /////
+	// 付款照片url 路徑會加密
+	PaymentUrl string
+	// 付款持間
+	PaidAt      time.Time
+	SellerID    uint  `gorm:"index:idx_call_put;"`
+	SellerOrder Order `gorm:"foreignKey:PutID;"`
 	common.CreatedAtAndUpdatedAt
 }
 
@@ -74,6 +89,8 @@ type CanceledTransaction struct {
 	CallOrder Order `gorm:"foreignKey:CallID;"`
 	PutID     uint  `gorm:"index:idx_call_put;"`
 	PutOrder  Order `gorm:"foreignKey:PutID;"`
+	//  已取消 /自動取消
+	Type uint
 	common.CreatedAt
 }
 
