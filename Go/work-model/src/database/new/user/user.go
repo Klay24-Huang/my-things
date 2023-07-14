@@ -75,6 +75,8 @@ type MarketMakerUser struct {
 	RecommenderVerified bool `gorm:"not null;default:false;"`
 	// 帳號開通
 	Active bool `gorm:"not null;default:false;"`
+	// 凍結 or 停權
+	Freezed bool `gorm:"not null;default:false;"`
 	// // 暫時停用
 	// Suspended bool `gorm:"not null;default:fasle;"`
 	// 允許編輯銀行卡
@@ -124,7 +126,8 @@ type MarketMakerUserBankCardSetting struct {
 // 錢包app使用者
 type WalletUser struct {
 	common.ID
-	UserID       uint   `gorm:"not null;default:0;"`
+	UserID uint `gorm:"not null;default:0;"`
+	// 凍結
 	Freezed      bool   `gorm:"not null;default:false;"`
 	RegisteredIP string `gorm:"not null;type:char(15);"`
 	// 娛樂城打綁定錢包api給我們的，對應他們會員的唯一值
@@ -188,6 +191,7 @@ type Role struct {
 	common.ID
 	// 集團管理員 商戶管理員 站長 開發人員 行銷人員
 	Name string `gorm:"not null;type:char(20)"`
+	// todo 權限分化
 	common.CreatedAtAndUpdatedAt
 }
 

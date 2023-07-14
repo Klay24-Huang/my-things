@@ -4,6 +4,8 @@ import (
 	"appserver/src/database/new/common"
 	"appserver/src/database/new/trade"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 // //// 審核相關 ///////////
@@ -164,30 +166,29 @@ type MerchantOTPLog struct {
 ///// 造市商 ////////
 
 // 造市商收補幣
-// todo 目前沒有這個功能 是否保留?
-// type MarketMakerSupplementOrRetractLog struct {
-// 	common.ID
-// 	// 補幣 supplement 1 / 回收 retract 2
-// 	Type         int `gorm:"not null;"`
-// 	ApplicantKey common.Key
-// 	ApproverKey  common.Key
-// 	Title        string `gorm:"char(30);"`
-// 	// 事項
-// 	Content string `gorm:"char(30);"`
-// 	Reason  string `gorm:"char(30);"`
-// 	Amount  int    `gorm:"not null;"`
-// 	common.CreatedAtAndUpdatedAt
-// }
+type MarketMakerSupplementOrRetractLog struct {
+	common.ID
+	// todo 目前沒有補幣功能，造市商如何拿碧?
+	// 補幣 supplement 1 / 回收 retract 2
+	Type  int    `gorm:"not null;"`
+	Title string `gorm:"char(30);"`
+	// 事項
+	Content  string `gorm:"char(30);"`
+	Reason   string `gorm:"char(30);"`
+	Amount   uint   `gorm:"not null;"`
+	Discount uint   `gorm:"not null;"`
+	common.Applicant
+	common.CreatedAtAndUpdatedAt
+}
 
 // 計算成交訂單任務獎金
 type MarketMakerTaskLog struct {
 	common.ID
 	OrderID uint `gorm:"not null;default:0;"`
 	// 獎金比例
-	// todo 要每次紀錄嗎? 每個碼商user的獎金比例設定會不一樣，且隨時可以修改
-	BounusRatio float32 `gorm:"not null;default:0;"`
+	BounusRatio decimal.Decimal `gorm:"not null;default:0;"`
 	// 實際收到獎金
-	Bounus float32 `gorm:"not null;default:0;"`
+	Bounus decimal.Decimal `gorm:"not null;default:0;"`
 	common.CreatedAt
 }
 
@@ -228,72 +229,65 @@ type WalletConsoleRecycleLog struct {
 
 ////// merchant ////////
 
-// todo 下方的log改成帳本形式
+// todo 放在trade 還是 log
 
 // 入款(會員存款) 紀錄
-// type DespositAndWithdrawLog struct {
-// 	common.ID
-// 	// 入款 / 出款
-// 	Type         uint `gorm:"not null;defautl:0;"`
-// 	UserID       uint
-// 	UserWalletID uint
-// 	// 手續費率
-// 	FeeRatio uint `gorm:"not null;"`
-// 	// 實收手續費
-// 	Fee              uint `gorm:"not null;"`
-// 	MerchantWalletID uint
-// 	Amount           uint `gorm:"not null;"`
-// 	// 成功 / 用戶未付款 / 已付款 開分失敗
-// 	Status uint `gorm:"not null;"`
-// 	common.CreatedAt
-// 	CompletedAt time.Time
-// }
+type DespositAndWithdrawLog struct {
+	common.ID
+	// 入款 / 出款
+	Type         uint `gorm:"not null;defautl:0;"`
+	UserWalletID uint
+	// 手續費率
+	FeeRatio uint `gorm:"not null;"`
+	// 實收手續費
+	Fee              uint `gorm:"not null;"`
+	MerchantWalletID uint
+	Amount           uint `gorm:"not null;"`
+	// 成功 / 用戶未付款 / 已付款 開分失敗
+	Status uint `gorm:"not null;"`
+	common.CreatedAt
+	CompletedAt time.Time
+}
 
 // 商戶補幣
-// type MerchantRefillLog struct {
-// 	common.ID
-// 	WalletID string
-// 	trade.CoinType
-// 	// 補幣金額
-// 	Amount int
-// 	// 手續費
-// 	Fee int
-// 	common.CreatedAt
-// }
+type MerchantRefillLog struct {
+	common.ID
+	WalletID string
+	trade.CoinType
+	// 補幣金額
+	Amount uint
+	// 手續費
+	Fee uint
+	// 匯款資訊
+	Payment string
+	// 上傳附檔
+	Attachment string
+	common.CreatedAt
+}
 
-// // 申請補發x幣
-// type MerchantSupplyLog struct {
-// 	common.ID
-// 	WalletID string
-// 	trade.CoinType
-// 	// 補幣金額
-// 	Amount int
-// 	common.CreatedAt
-// }
+// 商戶交收
+type MerchantSettlementLog struct {
+	common.ID
+	// 付款方錢包ID
+	PayerWalletID string
+	Amount        int
+	Fee           int
+	// 收款方錢包ID
+	ReceiverWalletID string
+	common.CreatedAt
+}
 
-// // 商戶交收
-// type MerchantSettlementLog struct {
-// 	common.ID
-// 	// 付款方錢包ID
-// 	PayerWalletID string
-// 	Amount        int
-// 	Fee           int
-// 	// 收款方錢包ID
-// 	ReceiverWalletID string
-// 	common.CreatedAt
-// }
+// 商戶戶轉
+type MerchantTransferLog struct {
+	MerchantSettlementLog
+}
 
-// // 商戶戶轉
-// type MerchantTransferLog struct {
-// 	MerchantSettlementLog
-// }
-
-// // 商戶系統回收
-// type MerchantSystemtRecycleLog struct {
-// 	common.ID
-// 	WalletID string
-// 	trade.CoinType
-// 	// 申請回收金額
-// 	Amount int
-// 	common.CreatedAt
-// }
+// 商戶系統回收
+type MerchantSystemtRecycleLog struct {
+	common.ID
+	WalletID string
+	trade.CoinType
+	// 申請回收金額
+	Amount int
+	common.CreatedAt
+}

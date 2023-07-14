@@ -3,6 +3,8 @@ package trade
 import (
 	"appserver/src/database/new/common"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 ////////////// Central Bank //////////////
@@ -51,15 +53,15 @@ type Order struct {
 // lock table，媒合成功 等待後續變化
 type LockedOrder struct {
 	common.ID
-	CallID    uint  `gorm:"index:idx_call_put;"`
-	CallOrder Order `gorm:"foreignKey:CallID;"`
+	BuyerOrderID uint  `gorm:"index:idx_call_put;"`
+	BuyerOrder   Order `gorm:"foreignKey:BuyerOrderID;"`
 	//// 付款 買單才有 /////
 	// 付款照片url 路徑會加密
 	PaymentUrl string
 	// 付款持間
-	PaidAt   time.Time
-	PutID    uint  `gorm:"index:idx_call_put;"`
-	PutOrder Order `gorm:"foreignKey:PutID;"`
+	PaidAt        time.Time
+	SellerOrderID uint  `gorm:"index:idx_call_put;"`
+	SellerOrder   Order `gorm:"foreignKey:SellerOrderID;"`
 	// 未付款 / 已付款(賣方要確認才能放款)
 	Staute uint `gorm:"not null;default:0;"`
 	common.CreatedAt
@@ -69,26 +71,27 @@ type LockedOrder struct {
 // 搓合成功訂單 交易紀錄，只放交易成功的紀錄
 type Transaction struct {
 	common.UUID
-	// todo 其他table也要改
-	BuyerID    uint  `gorm:"index:idx_call_put;"`
-	BuyerOrder Order `gorm:"foreignKey:CallID;"`
+	BuyerOrderID uint  `gorm:"index:idx_call_put;"`
+	BuyerOrder   Order `gorm:"foreignKey:CallID;"`
 	//// 付款 買單才有 /////
 	// 付款照片url 路徑會加密
 	PaymentUrl string
 	// 付款持間
-	PaidAt      time.Time
-	SellerID    uint  `gorm:"index:idx_call_put;"`
-	SellerOrder Order `gorm:"foreignKey:PutID;"`
+	PaidAt        time.Time
+	SellerOrderID uint  `gorm:"index:idx_call_put;"`
+	SellerOrder   Order `gorm:"foreignKey:PutID;"`
+	// todo 確認orm在begin transaction時 可以先達到Insert ledger的id
+	LedgerID uint
 	common.CreatedAtAndUpdatedAt
 }
 
 // 取消交易的table
 type CanceledTransaction struct {
 	common.ID
-	CallID    uint  `gorm:"index:idx_call_put;"`
-	CallOrder Order `gorm:"foreignKey:CallID;"`
-	PutID     uint  `gorm:"index:idx_call_put;"`
-	PutOrder  Order `gorm:"foreignKey:PutID;"`
+	BuyerOrderID  uint  `gorm:"index:idx_call_put;"`
+	BuyerOrder    Order `gorm:"foreignKey:CallID;"`
+	SellerOrderID uint  `gorm:"index:idx_call_put;"`
+	SellerOrder   Order `gorm:"foreignKey:SellerOrderID;"`
 	//  已取消 /自動取消
 	Type uint
 	common.CreatedAt
@@ -117,6 +120,22 @@ type WalletDetail struct {
 	Wallet   Wallet
 	CoinType
 	common.CreatedAtAndUpdatedAt
+}
+
+// 總帳本
+type Ledger struct {
+	common.ID
+	PayerWalletID    string `type:"uuid;"`
+	ReceiverWalletID string `type:"uuid;"`
+	Amount           decimal.Decimal
+	// todo 發行者的錢包跟回收錢包要寫死在程式裡
+	// 交易種類 ex:發行 回收 冲正 交易
+	Type uint
+	// 冲正的id
+	ReversalID uint
+	// 紀錄冲正的原因
+	Note string
+	common.CreatedAt
 }
 
 // 要及時算 先記錄欄位

@@ -146,16 +146,19 @@ type Marquee struct {
 	AllCorporations bool `gorm:"not null;default:false"`
 	// 單一集團
 	CorporationID uint
-	Corporation
+	Corporation   Corporation
 	// 所有商戶
 	AllMerchants bool `gorm:"not null;default:false"`
 	// 單一商戶
 	MerchantID uint
-	Merchant
+	Merchant   Merchant
+
 	Content   string `gorm:"not null;type:char(50);"`
 	StartedAt time.Time
 	EndedAt   time.Time
 	Verified  bool `gorm:"defaut:false;not null"`
+	// 附檔
+	common.Attachment
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
