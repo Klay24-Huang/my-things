@@ -74,12 +74,51 @@ type Activity struct {
 // 公告
 type Bulletin struct {
 	common.ID
+	Title   string `gorm:"notn null;type:char(50);"`
+	Content string `gorm:"not null;type:text;"`
+	// 置頂
+	OnTop    bool `gorm:"not null;default:false;"`
+	Verified bool `gorm:"defaut:false;not null"`
+	common.Operator
+	common.CreatedAtAndUpdatedAt
+}
+
+// 個人消息
+type Message struct {
+	common.ID
 	Title    string `gorm:"notn null;type:char(50);"`
 	Content  string `gorm:"not null;type:text;"`
 	Verified bool   `gorm:"defaut:false;not null"`
-	common.Attachment
 	common.Operator
 	common.CreatedAtAndUpdatedAt
+}
+
+// 個人消息接收者
+type MessageUser struct {
+	common.ID
+	MessageID    uint `gorm:"unique_index:uqidx_message_wallet_user;"`
+	WalletUserID uint `gorm:"unique_index:uqidx_message_wallet_user;"`
+	// todo 待確認是否有這個功能
+	// 已傳送
+	Sended bool `gorm:"not null;default:false;"`
+	common.CreatedAt
+}
+
+// 推撥 不會進db 先定義型別
+type BoardcastBase struct {
+	Title  string
+	Conten string
+}
+
+type BoardcastByUser struct {
+	BoardcastBase
+	WalletUserIDs []string
+}
+
+type BoardcastByDevice struct {
+	BoardcastBase
+	// 0 ios 1 android
+	Device uint
 }
 
 // todo 公告內容 個人消息 是跟個人推撥一樣嗎?

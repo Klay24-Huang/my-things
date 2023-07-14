@@ -31,7 +31,6 @@ type Merchant struct {
 	common.ID
 	CorperationID uint `gorm:"not null;default:0;"`
 	Corporation
-	// todo wallet id 是否可用user id取代/可能會有多個錢包 最多五個錢包
 	WalletID string `gorm:"not null;"`
 	Name     string `gorm:"type:char(20);not null;"`
 	Phone    string `gorm:"type:char(15);"`
@@ -115,18 +114,6 @@ type Boardcast struct {
 	common.CreatedAtAndUpdatedAt
 }
 
-// // 商控 遊戲會員錢包綁定 商戶
-// type MerchantBindWalletUser struct {
-// 	common.ID
-// 	MerchantID uint `gorm:"not null;"`
-// 	Merchant
-// 	WalletID string
-// 	Binding  bool `gorm:"not null;default:true;"`
-// 	// todo 出入款紀錄
-// 	// todo 解除再綁定的話 出入款金額的計算方法
-// 	common.CreatedAtAndUpdatedAt
-// }
-
 // 商戶 交收體系
 // 一個商戶只能在一個體系
 type System struct {
@@ -205,6 +192,4 @@ type SystemSetting struct {
 	common.CreatedAtAndUpdatedAt
 }
 
-// todo 商戶 會員 站長
 // todo 關於商戶 補幣 上交 計算手續費 凍結 等等跟貨幣有關table 未全
-// todo 綁定遊戲api相關細節考慮

@@ -22,6 +22,7 @@ type User struct {
 	// 啟用
 	// 商控 後台帳號管理 新增帳號直接啟用且不用審核
 	common.Enable
+	Freezed bool `gorm:"not null;default:false;"`
 	// 連續登入失敗被封鎖
 	LockedAt   time.Time
 	PublicKeys []PublicKey
@@ -36,6 +37,7 @@ type User struct {
 }
 
 // user 每次登入的時候要傳public key上來
+// todo 可能不需要記在db 記錄在redis就好
 type PublicKey struct {
 	Key    string `gorm:"primaryKey,not null;type:char(255);"`
 	UserID uint
@@ -45,6 +47,7 @@ type PublicKey struct {
 // 群組 (共用)
 type Group struct {
 	common.ID
+	// todo 是否要把商管的腳色納入
 	// 商控 / 商管 / 錢包管 / 造市商管
 	Type  uint   `gorm:"not null;default:0;"`
 	Name  string `gorm:"not null;type:char(20);"`
@@ -63,20 +66,18 @@ type MarketMakerUser struct {
 	// 是否為特殊代理
 	IsSpecialAgent bool `gorm:"not null;default:false;"`
 	// 此user的一級代理是誰
-	TopUserID *uint `gorm:"not null;default:0;"`
-	TopUser   *MarketMakerUser
-	Level     uint `gorm:"not null;default:0"`
+	// TopUserID *uint `gorm:"not null;default:0;"`
+	// TopUser   *MarketMakerUser
+	Level uint `gorm:"not null;default:0"`
 	// 通訊軟體平台
 	Messager        string `gorm:"not null;type:char(30);"`
 	MessagerAccount string `gorm:"not null;type:char(30);"`
-	// 推薦人
+	// 推薦人 上級代理人
 	RecommenderID       *uint `gomr:"not null;defualt:0;"`
 	Recommender         *MarketMakerUser
 	RecommenderVerified bool `gorm:"not null;default:false;"`
 	// 帳號開通
 	Active bool `gorm:"not null;default:false;"`
-	// 凍結 or 停權
-	Freezed bool `gorm:"not null;default:false;"`
 	// // 暫時停用
 	// Suspended bool `gorm:"not null;default:fasle;"`
 	// 允許編輯銀行卡
@@ -126,28 +127,21 @@ type MarketMakerUserBankCardSetting struct {
 // 錢包app使用者
 type WalletUser struct {
 	common.ID
-	UserID uint `gorm:"not null;default:0;"`
-	// 凍結
-	Freezed      bool   `gorm:"not null;default:false;"`
+	UserID       uint   `gorm:"not null;default:0;"`
 	RegisteredIP string `gorm:"not null;type:char(15);"`
-	// 娛樂城打綁定錢包api給我們的，對應他們會員的唯一值
-	// todo 要改成可以綁定多娛樂城
-	// UUID     string `gorm:"type:uuid;unique;"`
-
-	Verified bool `gorm:"not null;default:false;"`
+	Verified     bool   `gorm:"not null;default:false;"`
 	// 交易密碼
-	TransactionPassword string `gorm:"type:char(5)"`
+	TransactionPassword string `gorm:"type:char(6)"`
 	WalletUserVerify    WalletUserVerify
 	WalletUserBankCards []WalletUserBankCard
 	common.CreatedAtAndUpdatedAt
 }
 
-// 改成不綁定 羅哥!!待確認
-// 給錢包id給娛樂城 看他們要不要檢查
-
+// 先保留
+// 當有任何操作錢包行為時，例如掃code上分
+// 當上分行為完成後，call back娛樂城我們的wallet id和他們給的transaction id
 // 錢包和遊戲的binding
 // type WalletUserMerchant struct {
-// 	// todo 完善這個table
 // 	WalletUserId uint
 // 	MerchantId   uint
 // 	// 娛樂城 帳號id
@@ -202,24 +196,13 @@ type MerchantUser struct {
 	CorporationID uint `gorm:"not null;"`
 	// 如商戶為null 則為此集團的跨商戶帳號
 	MerchantID uint
-	RoleID     uint `gorm:"not null;default:0;"`
-	Role       Role
+	// todo 使用role 還是 group
+	RoleID uint `gorm:"not null;default:0;"`
+	Role   Role
 	// 	// 如果腳色是站長，且帳號為跨商戶的話，則要記錄所屬的所有站台
 	MerchantUserStantionMasters []MerchantUserStantionMaster //`gorm:"foreignKey:MerchantUserRoleID;"`
 	common.CreatedAtAndUpdatedAt
 }
-
-// todo 確認一個帳號是否有可能有多個腳色
-// // 商管帳號 腳色 binding
-// type MerchantUserRole struct {
-// 	common.ID
-// 	MerchantUserID uint `gorm:"idx_user_role"`
-// 	RoleID         uint `gorm:"idx_user_role"`
-// 	Role
-// 	// 如果腳色是站長，且帳號為跨商戶的話，則要記錄所屬的所有站台
-// 	MerchantUserStantionMasters []MerchantUserStantionMaster `gorm:"foreignKey:MerchantUserRoleID;"`
-// 	common.CreatedAtAndUpdatedAt
-// }
 
 // 記錄跨商戶站長資料
 type MerchantUserStantionMaster struct {
@@ -228,12 +211,3 @@ type MerchantUserStantionMaster struct {
 	MerchantID     uint `gorm:"not null;default:0;"`
 	common.CreatedAt
 }
-
-// // //// 商戶 遊戲腳色 ///////
-// type MerchantGameUser struct {
-// 	common.ID
-// 	MerchantID uint   `gorm:"not null;"`
-// 	UserID     uint   `gorm:"not null;"`
-// 	WalletID   string `gorm:"not null;"`
-// 	common.CreatedAtAndUpdatedAt
-// }

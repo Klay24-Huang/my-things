@@ -12,16 +12,13 @@ import (
 // 幣種
 type CoinType struct {
 	CoinType string `gorm:"primaryKey;not null;char(16);"`
-	// address coin id code
+	// todo 區塊鍊相關欄位 address coin id code
 }
 
 // ////////////////// trade ///////////////////////
 type Order struct {
 	common.UUID
-	UserID uint `gorm:"not null;default:0;"`
-
-	// todo 是否放使用者名稱和銀行卡相關資訊
-	// 使用者名稱 5min pay可以改暱稱，所以每次記
+	UserID     uint   `gorm:"not null;default:0;"`
 	UserName   string `gorm:"not null;"`
 	BankID     uint   `gorm:"not null;default:0;"`
 	BankName   string `gorm:"not null;;"`
@@ -38,49 +35,47 @@ type Order struct {
 	// 最小下單數量，比如下單1000，目前系統設定最多切五單，1000 / 5 = 200
 	// null時表示可拆單
 	MinimumAmount uint
-	// 未成交的餘額  todo 名稱確認
-	Portion uint
+	// 未成交的餘額
+	RemainingAmount uint
 	// 手續費
-	// todo 確認是否要再套用decimal套件
-	// todo 轉進去會不會變成decimal fix point
-	Fee float64 `gorm:"not null;default:0;"`
+	Fee decimal.Decimal `gorm:"not null;default:0;"`
 	// 同時記錄拆單是否被處理完
 	// 進行中 / 完成 / 取消
 	Status uint `gorm:"not null;default:0;"`
-	common.CreatedAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // lock table，媒合成功 等待後續變化
 type LockedOrder struct {
 	common.ID
-	BuyerOrderID uint  `gorm:"index:idx_call_put;"`
+	BuyerOrderID uint  `gorm:"index:idx_buy_sell;"`
 	BuyerOrder   Order `gorm:"foreignKey:BuyerOrderID;"`
 	//// 付款 買單才有 /////
 	// 付款照片url 路徑會加密
 	PaymentUrl string
 	// 付款持間
 	PaidAt        time.Time
-	SellerOrderID uint  `gorm:"index:idx_call_put;"`
+	SellerOrderID uint  `gorm:"index:idx_buy_sell;"`
 	SellerOrder   Order `gorm:"foreignKey:SellerOrderID;"`
 	// 未付款 / 已付款(賣方要確認才能放款)
 	Staute uint `gorm:"not null;default:0;"`
-	common.CreatedAt
+	common.CreatedAtAndUpdatedAt
 }
 
 // 非帳本 只是交易紀錄
-// 搓合成功訂單 交易紀錄，只放交易成功的紀錄
+// 搓合成功的訂單，只放交易成功的紀錄
 type Transaction struct {
 	common.UUID
-	BuyerOrderID uint  `gorm:"index:idx_call_put;"`
+	BuyerOrderID uint  `gorm:"index:idx_buy_sell;"`
 	BuyerOrder   Order `gorm:"foreignKey:CallID;"`
 	//// 付款 買單才有 /////
 	// 付款照片url 路徑會加密
 	PaymentUrl string
 	// 付款持間
 	PaidAt        time.Time
-	SellerOrderID uint  `gorm:"index:idx_call_put;"`
+	SellerOrderID uint  `gorm:"index:idx_buy_sell;"`
 	SellerOrder   Order `gorm:"foreignKey:PutID;"`
-	// todo 確認orm在begin transaction時 可以先達到Insert ledger的id
+	// 帳本id
 	LedgerID uint
 	common.CreatedAtAndUpdatedAt
 }
@@ -99,7 +94,6 @@ type CanceledTransaction struct {
 
 // 所有訂單狀態
 // // 代付款(進行中) / 已取消 / 已完成 / 爭議 / 自動取消 / 暫停交易 / 標記
-// Status int `gorm:"not null;"`
 
 // /// market maker /////
 

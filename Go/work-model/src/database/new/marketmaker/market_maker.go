@@ -4,29 +4,29 @@ import "appserver/src/database/new/common"
 
 // ////////////////// 造市商控端 ///////////////////////
 
-// todo 被拔掉了 是否保留
-// 造市商 任務
-type Task struct {
-	common.ID
-	// 代收 call 1 / 代付 put 2
-	Type uint `gorm:"not null;default:0;"`
-	// uuid yapay訂單id
-	TradeID string
-	// 總獎金
-	Amount float32
-	common.CreatedAt
-}
+// 目前沒有 先保留
+// // 造市商 任務
+// type Task struct {
+// 	common.ID
+// 	// 代收 call 1 / 代付 put 2
+// 	Type uint `gorm:"not null;default:0;"`
+// 	// uuid yapay訂單id
+// 	TradeID string
+// 	// 總獎金
+// 	Amount float32
+// 	common.CreatedAt
+// }
 
-// 任務獎勵
-type Bounus struct {
-	common.ID
-	UserID uint
-	TaskID uint
-	Task
-	Ratio  float32
-	Amount float32
-	common.CreatedAt
-}
+// // 任務獎勵
+// type Bounus struct {
+// 	common.ID
+// 	UserID uint
+// 	TaskID uint
+// 	Task
+// 	Ratio  float32
+// 	Amount float32
+// 	common.CreatedAt
+// }
 
 ////// 造市商 設定相關 ///////
 
@@ -66,10 +66,10 @@ type TradeSetting struct {
 // 帳號代收代付上限
 type AccountQuotaSetting struct {
 	common.ID
-	// 代收
-	CollectionDayLimit uint `gorm:"not null;default:0;"`
-	// 代付
-	PayingDayLimit uint `gorm:"not null;default:0;"`
+	// 每日代收上限
+	DayCollectionLimit uint `gorm:"not null;default:0;"`
+	// 每日代付上限
+	DayPayingLimit uint `gorm:"not null;default:0;"`
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
@@ -119,7 +119,7 @@ type IOSSignatureSetting struct {
 	Url    string `gorm:"not null;type:char(50);"`
 	Note   string `gorm:"typechar(50);"`
 	Enable bool   `gorm:"not null;default:true"`
-	// todo 優先權
+	// todo 優先權 目前看起來沒作用
 	common.Operator
 	common.CreatedAtAndUpdatedAt
 }
