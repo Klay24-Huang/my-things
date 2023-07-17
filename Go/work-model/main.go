@@ -1,7 +1,9 @@
 package main
 
 import (
+	"appserver/src/database/new/trade"
 	"appserver/src/database/new/user"
+	"appserver/src/database/new/wallet"
 	"fmt"
 
 	"gorm.io/driver/mysql"
@@ -69,45 +71,45 @@ func main() {
 		&user.MerchantUserStantionMaster{},
 	)
 
-	// walletDbInfo := &DatabaseInfo{
-	// 	Host:     "localhost",
-	// 	Port:     "3307",
-	// 	Database: "wallet",
-	// 	User:     "admin",
-	// 	Password: "password",
-	// }
+	walletDbInfo := &DatabaseInfo{
+		Host:     "localhost",
+		Port:     "3307",
+		Database: "wallet",
+		User:     "admin",
+		Password: "password",
+	}
 
-	// walletDb := getGormDB(*walletDbInfo)
+	walletDb := getGormDB(*walletDbInfo)
 
-	// walletDb.AutoMigrate(
-	// 	&wallet.Bank{},
-	// 	&wallet.RegistrationIPBlocking{},
-	// 	&wallet.SystemSetting{},
-	// 	&wallet.TradeSetting{},
-	// 	&wallet.SeparatedBill{},
-	// 	&wallet.Activity{},
-	// 	&wallet.Bulletin{},
-	// )
+	walletDb.AutoMigrate(
+		&wallet.Bank{},
+		&wallet.RegistrationIPBlocking{},
+		&wallet.SystemSetting{},
+		&wallet.TradeSetting{},
+		&wallet.SeparatedBill{},
+		&wallet.Activity{},
+		&wallet.Bulletin{},
+	)
 
-	// tradeDbInfo := &DatabaseInfo{
-	// 	Host:     "localhost",
-	// 	Port:     "3307",
-	// 	Database: "trade",
-	// 	User:     "admin",
-	// 	Password: "password",
-	// }
+	tradeDbInfo := &DatabaseInfo{
+		Host:     "localhost",
+		Port:     "3307",
+		Database: "trade",
+		User:     "admin",
+		Password: "password",
+	}
 
-	// tradeDb := getGormDB(*tradeDbInfo)
+	tradeDb := getGormDB(*tradeDbInfo)
 
-	// tradeDb.AutoMigrate(
-	// 	&trade.CoinType{},
-	// 	&trade.Order{},
-	// 	&trade.LockedOrder{},
-	// 	&trade.Transaction{},
-	// 	&trade.CanceledTransaction{},
-	// 	&trade.Wallet{},
-	// 	&trade.WalletDetail{},
-	// )
+	tradeDb.AutoMigrate(
+		&trade.CoinType{},
+		&trade.Order{},
+		&trade.LockedOrder{},
+		&trade.Transaction{},
+		&trade.CanceledTransaction{},
+		&trade.Wallet{},
+		&trade.WalletDetail{},
+	)
 
 	// logDbInfo := &DatabaseInfo{
 	// 	Host:     "localhost",
