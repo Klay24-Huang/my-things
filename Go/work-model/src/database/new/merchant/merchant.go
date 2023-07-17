@@ -132,7 +132,7 @@ type Marquee struct {
 	// 發給所有集團
 	AllCorporations bool `gorm:"not null;default:false"`
 	// 單一集團
-	CorporationID uint
+	CorporationID string `gorm:"type:UUID();"`
 	Corporation   Corporation
 	// 所有商戶
 	AllMerchants bool `gorm:"not null;default:false"`
