@@ -7,17 +7,13 @@ import (
 	"testing"
 
 	user "example.com/grpc-unit-test-example/service/user/utils"
+	"github.com/golang/mock/gomock"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 )
 
 func TestCreateUser(t *testing.T) {
-	ctx := context.Background()
-
-	userClient, closer := userMockServer(ctx)
-	defer closer()
-
 	tests := []struct {
 		// 測試情境名稱
 		name string
@@ -52,6 +48,20 @@ func TestCreateUser(t *testing.T) {
 			expect: true,
 		},
 	}
+	ctx := context.Background()
+
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+
+	mockUserRepostiry := user.NewMockIRepository(ctl)
+	gomock.InOrder(
+		mockUserRepostiry.EXPECT().Create(ctx, tests[0].in).Return(user.CreateUserReply{
+			Result: "",
+		}),
+	)
+
+	userClient, closer := userMockServer(ctx, mockUserRepostiry)
+	defer closer()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -65,12 +75,12 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func userMockServer(ctx context.Context) (user.UserClient, func()) {
+func userMockServer(ctx context.Context, r user.IRepository) (user.UserClient, func()) {
 	buffer := 101024 * 1024
 	lis := bufconn.Listen(buffer)
 
 	s := grpc.NewServer()
-	user.RegisterUserServer(s, user.NewServer(userRepository))
+	user.RegisterUserServer(s, user.NewServer(r))
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Printf("error serving server: %v", err)
