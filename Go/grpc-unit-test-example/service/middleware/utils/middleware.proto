@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package middleware;
+
+option go_package = "./service/middleware";
+
+service Middleware {
+    rpc CreateUser (CreateUserRequest) returns (CreateUserReply) {}
+}
+
+message CreateUserRequest {
+    string name = 1;
+    string password = 2;
+}
+
+message CreateUserReply {
+    string result = 1;
+}
