@@ -13,7 +13,36 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 )
 
+func TestFoo(t *testing.T) {
+	t.Log("foo")
+}
+
+// func TestMockServer(t *testing.T) {
+// 	t.Log("start")
+// 	ctx := context.Background()
+
+// 	ctl := gomock.NewController(t)
+// 	defer ctl.Finish()
+// 	mockUserService := user.NewMockIService(ctl)
+// 	gomock.InOrder(
+// 		mockUserService.EXPECT().CreateUser(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
+// 			Result: "",
+// 		}, nil),
+// 	)
+// 	userClient, closer := userMockServer(t, ctx, mockUserService)
+// 	defer closer()
+
+// 	_, err := userClient.CreateUser(ctx, &user.CreateUserRequest{
+// 		Name:     "",
+// 		Password: "123",
+// 	})
+// 	if err != nil {
+// 		t.Error("error")
+// 	}
+// }
+
 func TestCreateUser(t *testing.T) {
+	t.Log("start")
 	// 所有測試情境
 	tests := []struct {
 		// 測試情境名稱
@@ -53,23 +82,38 @@ func TestCreateUser(t *testing.T) {
 
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-	// mock repository related functions
-	mockUserRepostiry := user.NewMockIRepository(ctl)
+	// // mock repository related functions
+	// mockUserRepostiry := user.NewMockIRepository(ctl)
+	// gomock.InOrder(
+	// 	mockUserRepostiry.EXPECT().Create(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
+	// 		Result: "",
+	// 	}, nil),
+	// )
+
+	// userServie := user.NewService(mockUserRepostiry)
+
+	// userClient, closer := userMockServer(t, ctx, userServie)
+	mockUserService := user.NewMockIService(ctl)
+	// gomock.InOrder(
+	// 	mockUserService.EXPECT().CreateUser(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
+	// 		Result: "",
+	// 	}, nil),
+	// )
 	gomock.InOrder(
-		mockUserRepostiry.EXPECT().Create(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
+		mockUserService.EXPECT().CreateUser(ctx, tests[0].in).Return(&user.CreateUserReply{
 			Result: "",
 		}, nil),
 	)
+	userClient, closer := userMockServer(t, ctx, mockUserService)
 
-	userServie := user.NewService(mockUserRepostiry)
-
-	userClient, closer := userMockServer(ctx, userServie)
 	defer closer()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			reply, err := userClient.CreateUser(ctx, tt.in)
 			// 是否創建user成功
+			// var err error
+			// t.Log(userClient)
 			successful := err == nil
 			if successful != tt.expected {
 				t.Errorf("case: '%s' failed, in %v, reply %v", tt.name, tt.in, reply)
@@ -78,7 +122,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func userMockServer(ctx context.Context, s user.IService) (user.UserClient, func()) {
+func userMockServer(t *testing.T, ctx context.Context, s user.IService) (user.UserClient, func()) {
 	buffer := 101024 * 1024
 	lis := bufconn.Listen(buffer)
 
@@ -96,12 +140,14 @@ func userMockServer(ctx context.Context, s user.IService) (user.UserClient, func
 		}), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("error connecting to server: %v", err)
+		t.FailNow()
 	}
 
 	closer := func() {
 		err := lis.Close()
 		if err != nil {
 			log.Printf("error closing listener: %v", err)
+			t.FailNow()
 		}
 		baseServer.Stop()
 	}

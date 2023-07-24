@@ -12,6 +12,14 @@ mockgen-user:
 	mockgen --source=./service/user/utils/repository.go \
 	--destination=./service/user/utils/repository_mock.go \
 	--package=user
+
+mockgen-user-service:
+	mockgen --source=./service/user/utils/service.go \
+	--destination=./service/user/utils/service_mock.go \
+	--package=user
     
 test:
-	go test ./...
+	go test -v ./...
+
+run-user:
+	go run ./service/user/main.go
