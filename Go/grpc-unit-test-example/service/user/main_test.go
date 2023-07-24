@@ -13,34 +13,6 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 )
 
-func TestFoo(t *testing.T) {
-	t.Log("foo")
-}
-
-// func TestMockServer(t *testing.T) {
-// 	t.Log("start")
-// 	ctx := context.Background()
-
-// 	ctl := gomock.NewController(t)
-// 	defer ctl.Finish()
-// 	mockUserService := user.NewMockIService(ctl)
-// 	gomock.InOrder(
-// 		mockUserService.EXPECT().CreateUser(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
-// 			Result: "",
-// 		}, nil),
-// 	)
-// 	userClient, closer := userMockServer(t, ctx, mockUserService)
-// 	defer closer()
-
-// 	_, err := userClient.CreateUser(ctx, &user.CreateUserRequest{
-// 		Name:     "",
-// 		Password: "123",
-// 	})
-// 	if err != nil {
-// 		t.Error("error")
-// 	}
-// }
-
 func TestCreateUser(t *testing.T) {
 	t.Log("start")
 	// 所有測試情境
@@ -82,29 +54,17 @@ func TestCreateUser(t *testing.T) {
 
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-	// // mock repository related functions
-	// mockUserRepostiry := user.NewMockIRepository(ctl)
-	// gomock.InOrder(
-	// 	mockUserRepostiry.EXPECT().Create(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
-	// 		Result: "",
-	// 	}, nil),
-	// )
-
-	// userServie := user.NewService(mockUserRepostiry)
-
-	// userClient, closer := userMockServer(t, ctx, userServie)
-	mockUserService := user.NewMockIService(ctl)
-	// gomock.InOrder(
-	// 	mockUserService.EXPECT().CreateUser(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
-	// 		Result: "",
-	// 	}, nil),
-	// )
+	// mock repository related functions
+	mockUserRepostiry := user.NewMockIRepository(ctl)
 	gomock.InOrder(
-		mockUserService.EXPECT().CreateUser(ctx, tests[0].in).Return(&user.CreateUserReply{
+		mockUserRepostiry.EXPECT().Create(gomock.Any(), gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
 			Result: "",
 		}, nil),
 	)
-	userClient, closer := userMockServer(t, ctx, mockUserService)
+
+	userServie := user.NewService(mockUserRepostiry)
+
+	userClient, closer := userMockServer(t, ctx, userServie)
 
 	defer closer()
 
