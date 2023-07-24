@@ -60,7 +60,9 @@ func TestCreateUser(t *testing.T) {
 		}, nil),
 	)
 
-	userClient, closer := userMockServer(ctx, mockUserRepostiry)
+	usrService := user.NewService(mockUserRepostiry)
+
+	userClient, closer := userMockServer(ctx, usrService)
 	defer closer()
 
 	for _, tt := range tests {
@@ -75,14 +77,14 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func userMockServer(ctx context.Context, r user.IRepository) (user.UserClient, func()) {
+func userMockServer(ctx context.Context, s user.IService) (user.UserClient, func()) {
 	buffer := 101024 * 1024
 	lis := bufconn.Listen(buffer)
 
-	s := grpc.NewServer()
-	user.RegisterUserServer(s, user.NewServer(r))
+	baseServer := grpc.NewServer()
+	user.RegisterUserServer(baseServer, user.NewServer(s))
 	go func() {
-		if err := s.Serve(lis); err != nil {
+		if err := baseServer.Serve(lis); err != nil {
 			log.Printf("error serving server: %v", err)
 		}
 	}()
@@ -100,7 +102,7 @@ func userMockServer(ctx context.Context, r user.IRepository) (user.UserClient, f
 		if err != nil {
 			log.Printf("error closing listener: %v", err)
 		}
-		s.Stop()
+		baseServer.Stop()
 	}
 
 	client := user.NewUserClient(conn)

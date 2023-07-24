@@ -34,9 +34,10 @@ func main() {
 	// create repository
 	userRepository := user.NewRepository(middlewareClient)
 
+	userService := user.NewService(userRepository)
 	// create server
 	s := grpc.NewServer()
-	user.RegisterUserServer(s, user.NewServer(userRepository))
+	user.RegisterUserServer(s, user.NewServer(userService))
 	log.Printf("user server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("user server failed to serve: %v", err)
