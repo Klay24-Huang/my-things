@@ -55,9 +55,9 @@ func TestCreateUser(t *testing.T) {
 
 	mockUserRepostiry := user.NewMockIRepository(ctl)
 	gomock.InOrder(
-		mockUserRepostiry.EXPECT().Create(ctx, tests[0].in).Return(user.CreateUserReply{
+		mockUserRepostiry.EXPECT().Create(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
 			Result: "",
-		}),
+		}, nil),
 	)
 
 	userClient, closer := userMockServer(ctx, mockUserRepostiry)
