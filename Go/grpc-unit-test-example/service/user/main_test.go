@@ -82,6 +82,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
+// create unit test server
 func userMockServer(t *testing.T, ctx context.Context, s user.IService) (user.UserClient, func()) {
 	buffer := 101024 * 1024
 	lis := bufconn.Listen(buffer)
