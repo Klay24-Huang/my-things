@@ -1,6 +1,9 @@
 package user
 
-import context "context"
+import (
+	context "context"
+	"errors"
+)
 
 type Server struct {
 	UnimplementedUserServer
@@ -19,13 +22,13 @@ func (s *Server) CreateUser(ctx context.Context, in *CreateUserRequest) (*Create
 
 	// 做一些帳號資訊上的判斷
 	if userName == "" {
-		result = "User's name can't be empty."
-		return &CreateUserReply{Result: result}, nil
+		result = "user's name can't be empty"
+		return nil, errors.New(result)
 	}
 
 	if userPassword == "" {
-		result = "User's password can't be empty."
-		return &CreateUserReply{Result: result}, nil
+		result = "user's password can't be empty"
+		return nil, errors.New(result)
 	}
 
 	result = "User Created."
