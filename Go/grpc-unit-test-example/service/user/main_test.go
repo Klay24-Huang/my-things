@@ -14,13 +14,14 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
+	// 所有測試情境
 	tests := []struct {
 		// 測試情境名稱
 		name string
 		// request
 		in *user.CreateUserRequest
 		// 預期測試結果
-		expect bool
+		expected bool
 	}{
 		// 所有測試情境
 		{
@@ -29,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 				Name:     "",
 				Password: "123",
 			},
-			expect: false,
+			expected: false,
 		},
 		{
 			name: "user password can't be empty.",
@@ -37,30 +38,32 @@ func TestCreateUser(t *testing.T) {
 				Name:     "John",
 				Password: "",
 			},
-			expect: false,
+			expected: false,
 		},
 		{
 			name: "create user successfully.",
 			in: &user.CreateUserRequest{
-				Name:     "John",
-				Password: "123",
+				Name:     "abc",
+				Password: "456",
 			},
-			expect: true,
+			expected: true,
 		},
 	}
 	ctx := context.Background()
 
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
-
+	// mock repository related functions
 	mockUserRepostiry := user.NewMockIRepository(ctl)
 	gomock.InOrder(
-		mockUserRepostiry.EXPECT().Create(ctx, tests[0].in).Return(user.CreateUserReply{
+		mockUserRepostiry.EXPECT().Create(ctx, gomock.Any()).AnyTimes().Return(&user.CreateUserReply{
 			Result: "",
-		}),
+		}, nil),
 	)
 
-	userClient, closer := userMockServer(ctx, mockUserRepostiry)
+	userServie := user.NewService(mockUserRepostiry)
+
+	userClient, closer := userMockServer(ctx, userServie)
 	defer closer()
 
 	for _, tt := range tests {
@@ -68,21 +71,21 @@ func TestCreateUser(t *testing.T) {
 			reply, err := userClient.CreateUser(ctx, tt.in)
 			// 是否創建user成功
 			successful := err == nil
-			if successful != tt.expect {
+			if successful != tt.expected {
 				t.Errorf("case: '%s' failed, in %v, reply %v", tt.name, tt.in, reply)
 			}
 		})
 	}
 }
 
-func userMockServer(ctx context.Context, r user.IRepository) (user.UserClient, func()) {
+func userMockServer(ctx context.Context, s user.IService) (user.UserClient, func()) {
 	buffer := 101024 * 1024
 	lis := bufconn.Listen(buffer)
 
-	s := grpc.NewServer()
-	user.RegisterUserServer(s, user.NewServer(r))
+	baseServer := grpc.NewServer()
+	user.RegisterUserServer(baseServer, user.NewServer(s))
 	go func() {
-		if err := s.Serve(lis); err != nil {
+		if err := baseServer.Serve(lis); err != nil {
 			log.Printf("error serving server: %v", err)
 		}
 	}()
@@ -100,7 +103,7 @@ func userMockServer(ctx context.Context, r user.IRepository) (user.UserClient, f
 		if err != nil {
 			log.Printf("error closing listener: %v", err)
 		}
-		s.Stop()
+		baseServer.Stop()
 	}
 
 	client := user.NewUserClient(conn)

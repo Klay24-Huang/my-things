@@ -1,34 +1,23 @@
 package user
 
-import context "context"
+import (
+	context "context"
+)
 
 type Server struct {
 	UnimplementedUserServer
-	repository IRepository
+	service IService
 }
 
-func NewServer(r IRepository) *Server {
-	return &Server{repository: r}
+func NewServer(s IService) *Server {
+	return &Server{service: s}
 }
 
 // 處理商業邏輯的地方
 func (s *Server) CreateUser(ctx context.Context, in *CreateUserRequest) (*CreateUserReply, error) {
-	userName := in.GetName()
-	userPassword := in.GetPassword()
-	var result string
+	// 將security proxy傳進來的泛型data轉型
+	// 如果失敗直接return
 
-	// 做一些帳號資訊上的判斷
-	if userName == "" {
-		result = "User's name can't be empty."
-		return &CreateUserReply{Result: result}, nil
-	}
-
-	if userPassword == "" {
-		result = "User's password can't be empty."
-		return &CreateUserReply{Result: result}, nil
-	}
-
-	result = "User Created."
-
-	return &CreateUserReply{Result: result}, nil
+	// 送到service 處理商業邏輯
+	return s.service.CreateUser(ctx, in)
 }
