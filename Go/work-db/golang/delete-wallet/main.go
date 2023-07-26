@@ -2,71 +2,85 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/zngw/sshtunnel/ssht"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+type member struct {
+	ID primitive.ObjectID `bson:"_id"`
+}
+
+func getMongoDb(uri string) *mongo.Client {
+	if uri == "" {
+		log.Fatal("You must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
+	}
+
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	if err != nil {
+		panic(err)
+	}
+
+	// defer func() {
+	// 	if err := client.Disconnect(context.TODO()); err != nil {
+	// 		panic(err)
+	// 	}
+	// }()
+
+	return client
+
+}
 
 func main() {
 	if err := godotenv.Load("config.env"); err != nil {
 		log.Println("No .env file found")
 	}
+	// 連線 .11 mongo db
+	mongo11Uri := os.Getenv("MONGO_11")
+	mongo11Client := getMongoDb(mongo11Uri)
+	memberCollection := mongo11Client.Database("walletdb").Collection("members")
 
-	foo := os.Getenv("FOO")
-	fmt.Println(foo)
-
-	sshUri := "ssh://"
-	mongoUri := ""
-
-	listen, err := ssht.TunnelUri(sshUri, u.Host, ":3717")
+	// 取出5min app 會員cursor
+	cursor, err := memberCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
-		log.Fatal("ssh failed %v", err)
-	} else {
-		log.Println("ssh successed %s", listen)
+		log.Fatal(err)
 	}
-}
 
-// 連ssh
-// https://www.jianshu.com/p/e3617a2883ea
+	// 轉型
+	var members []member
+	if err = cursor.All(context.TODO(), &members); err != nil {
+		log.Fatal(err)
+	}
 
-func foo() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
+	// member id to string
+	var memberids []string
+	for _, member := range members {
+		memberids = append(memberids, member.ID.Hex())
 	}
-	uri := os.Getenv("MONGODB_URI")
-	if uri == "" {
-		log.Fatal("You must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
-	}
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+
+	// 連線 .12
+	mongo12Uri := os.Getenv("MONGO_12")
+	mongo12Client := getMongoDb(mongo12Uri)
+	userWalletCollection := mongo12Client.Database("Wallet").Collection("userWallet")
+	// 刪除無對應會員的錢包
+	filter := bson.M{"uid": bson.M{"$nin": memberids}}
+	_, err = userWalletCollection.DeleteMany(context.TODO(), filter)
+
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
-	coll := client.Database("sample_mflix").Collection("movies")
-	title := "Back to the Future"
-	var result bson.M
-	err = coll.FindOne(context.TODO(), bson.D{{"title", title}}).Decode(&result)
-	if err == mongo.ErrNoDocuments {
-		fmt.Printf("No document was found with the title %s\n", title)
-		return
-	}
-	if err != nil {
-		panic(err)
-	}
-	jsonData, err := json.MarshalIndent(result, "", "    ")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%s\n", jsonData)
+
+	// 確認是否有對應不到會員的錢包存在
+	// cursor, err = userWalletCollection.Find(context.TODO(), filter)
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// log.Print(cursor)
+
 }
