@@ -17,6 +17,11 @@ COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
 
 ### insert
+ARG APP_ENV = "dev"
+ENV APP_ENV = ${APP_ENV}
+
+ARG APP_PUBLIC_KEY
+ENV APP_PUBLIC_KEY = ${APP_PUBLIC_KEY}
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
