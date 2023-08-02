@@ -2,7 +2,7 @@ package model
 
 import (
 	"appserver/db/common"
-	"appserver/src/database/new/trade"
+	"appserver/db/trade"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -12,6 +12,7 @@ import (
 // todo 會根據security proxy再調整
 type Session struct {
 	Key        string `gorm:"not null;type:char(255);primaryKey;"`
+	UserId     uint
 	LogoutedAt time.Time
 	common.CreatedAt
 }
@@ -45,7 +46,7 @@ type Session struct {
 ////// 造市商 設定相關 ///////
 
 // 額度上限設定
-type QuotaSetting struct {
+type MarketMakerQuotaSetting struct {
 	common.ID
 	// 代收
 	CollectionDayLimit  uint `gorm:"not null;default:0;"`
@@ -58,7 +59,7 @@ type QuotaSetting struct {
 }
 
 // 獎金比例設定
-type BonusSetting struct {
+type MarketMakerBonusSetting struct {
 	common.ID
 	// 代收獎金比例
 	CollectionRatio float32 `gorm:"not null;default:0;"`
@@ -78,7 +79,7 @@ type MarketMakerTradeSetting struct {
 }
 
 // 帳號代收代付上限
-type AccountQuotaSetting struct {
+type MarketMakerAccountQuotaSetting struct {
 	common.ID
 	// 每日代收上限
 	DayCollectionLimit uint `gorm:"not null;default:0;"`
@@ -89,7 +90,7 @@ type AccountQuotaSetting struct {
 }
 
 // 媒合設定
-type MatchSetting struct {
+type MarketMakerMatchSetting struct {
 	common.ID
 	// 每日同銀行卡片匹配次數
 	DayLimitOfSameBank uint `gorm:"not null;default:0;"`
@@ -100,7 +101,7 @@ type MatchSetting struct {
 }
 
 // 使用者服務設定
-type UserAgreementSetting struct {
+type MarketMakerUserAgreementSetting struct {
 	common.ID
 	Content string
 	common.Operator
@@ -108,7 +109,7 @@ type UserAgreementSetting struct {
 }
 
 // 溫馨提醒設定
-type RemindSetting struct {
+type MarketMakerRemindSetting struct {
 	common.ID
 	Content string
 	common.Operator
@@ -116,7 +117,7 @@ type RemindSetting struct {
 }
 
 // 注意事項設定
-type PleaseNoteSetting struct {
+type MarketMakerPleaseNoteSetting struct {
 	common.ID
 	Content string
 	common.Operator
@@ -124,7 +125,7 @@ type PleaseNoteSetting struct {
 }
 
 // IOS 簽證 設定
-type IOSSignatureSetting struct {
+type MarketMakerIOSSignatureSetting struct {
 	common.ID
 	// 企業簽 超級簽
 	Type uint   `gorm:"not null;default:0;"`
@@ -142,7 +143,7 @@ type IOSSignatureSetting struct {
 //////// 商戶控端 ////////////
 
 // 集團
-type Corporation struct {
+type MerchantCorporation struct {
 	common.UUID
 	Name string `gorm:"unique;not null;type:char(20)"`
 	// todo 確認用途
@@ -164,7 +165,7 @@ type Corporation struct {
 type Merchant struct {
 	common.ID
 	CorperationID uint `gorm:"not null;default:0;"`
-	Corporation
+	MerchantCorporation
 	WalletID string `gorm:"not null;"`
 	Name     string `gorm:"type:char(20);not null;"`
 	Phone    string `gorm:"type:char(15);"`
@@ -202,8 +203,9 @@ type Merchant struct {
 	Enable bool   `gorm:"default:false;not null"`
 	APIKey string `gorm:"not null;type:char(50)"`
 	// 管端登入ip限制
-	LimitLoginIP      bool   `gorm:"default:true;not null"`
-	Whitelistings     string `gorm:"type:json"`
+	LimitLoginIP  bool   `gorm:"default:true;not null"`
+	Whitelistings string `gorm:"type:json"`
+	// 測試用白名單
 	TestWhitelistings string `gorm:"type:json"`
 
 	///// 體系 /////
@@ -211,19 +213,20 @@ type Merchant struct {
 	SystemID uint
 	// 如果屬於某個體系的成員，則此欄位有值
 	AssociatedSystemID uint
-	Setting            Setting
+	Setting            MerchantSetting
 
 	common.CreatedAtAndUpdatedAt
 }
 
 // 商戶銀行卡 此商戶底下所有的帳號都可以看到銀行卡資訊
-type BankCard struct {
+type MerchantBankCard struct {
 	common.ID
 	MerchantID uint `gorm:"not null;default:0;"`
 	Merchant
 	BankID     uint   `gorm:"not null;defualt:0;"`
 	BranchName string `gorm:"not null;type:char(20);"`
-	Code       string `gorm:"not null;type:char(20);"`
+	// 銀行帳號
+	Code string `gorm:"not null;type:char(20);"`
 	// 卡片使用者名稱
 	Name string `gorm:"not null;type:char(20);"`
 	common.CreatedAtAndUpdatedAt
@@ -231,14 +234,14 @@ type BankCard struct {
 }
 
 // 預設域名列表 可以在創建商戶時選擇
-type Domain struct {
+type MerchantDomain struct {
 	common.ID
 	Name string `gorm:"not null;type:char(50)"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // 帳號類別 推播管理
-type Boardcast struct {
+type MerchantfBoardcast struct {
 	common.ID
 	MerchantID uint `gorm:"not null;default:0;"`
 	Merchant
@@ -250,7 +253,7 @@ type Boardcast struct {
 
 // 商戶 交收體系
 // 一個商戶只能在一個體系
-type System struct {
+type MerchantSystem struct {
 	common.ID
 	// 主商戶
 	MainMerchant Merchant
@@ -261,13 +264,13 @@ type System struct {
 }
 
 // 跑馬燈
-type Marquee struct {
+type MerchantMarquee struct {
 	common.ID
 	// 發給所有集團
 	AllCorporations bool `gorm:"not null;default:false"`
 	// 單一集團
 	CorporationID uint
-	Corporation   Corporation
+	Corporation   MerchantCorporation
 	// 所有商戶
 	AllMerchants bool `gorm:"not null;default:false"`
 	// 單一商戶
@@ -289,14 +292,14 @@ type MerchantBulletin struct {
 	common.ID
 	// 單一集團ID 有值時發給單一集團，null時則發給全部集團
 	CorporationID uint
-	Corporation
+	MerchantCorporation
 	Content  string `gorm:"not null;type:char(100);"`
 	Verified bool   `gorm:"defaut:false;not null"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // 商戶控端 系統設定
-type ConsoleSystemSetting struct {
+type MerchantConsoleSystemSetting struct {
 	// 例行性維護
 	Routine bool `gorm:"not null;default:false"`
 	// 金流系統維護
@@ -308,7 +311,7 @@ type ConsoleSystemSetting struct {
 }
 
 // ////////////////// 商戶管端 ///////////////////////
-type Setting struct {
+type MerchantSetting struct {
 	// 商戶配置頁面
 	MerchantID  uint
 	Page        bool `gorm:"not null;default:false;"`
@@ -346,10 +349,10 @@ type User struct {
 	// 啟用
 	// 商控 後台帳號管理 新增帳號直接啟用且不用審核
 	common.Enable
+	// 凍結 暫時停權
 	Freezed bool `gorm:"not null;default:false;"`
 	// 連續登入失敗被封鎖
-	LockedAt   time.Time
-	PublicKeys []PublicKey
+	LockedAt time.Time
 
 	GroupID         uint `gorm:"not null;default:0;"`
 	Group           `gorm:"foreignKey:GroupID;"`
@@ -358,14 +361,6 @@ type User struct {
 	MarketMakerUser MarketMakerUser
 	common.CreatedAtAndUpdatedAt
 	common.Deleted
-}
-
-// user 每次登入的時候要傳public key上來
-// todo 可能不需要記在db 記錄在redis就好
-type PublicKey struct {
-	Key    string `gorm:"primaryKey,not null;type:char(255);"`
-	UserID uint
-	common.CreatedAt
 }
 
 // 群組 (共用)
@@ -505,7 +500,7 @@ type WalletUserBankCard struct {
 //////// 商戶管端 ////////////
 
 // 商管腳色
-type Role struct {
+type MerchantRole struct {
 	common.ID
 	// 集團管理員 商戶管理員 站長 開發人員 行銷人員
 	Name string `gorm:"not null;type:char(20)"`
@@ -522,7 +517,7 @@ type MerchantUser struct {
 	MerchantID uint
 	// todo 使用role 還是 group
 	RoleID uint `gorm:"not null;default:0;"`
-	Role   Role
+	Role   MerchantRole
 	// 	// 如果腳色是站長，且帳號為跨商戶的話，則要記錄所屬的所有站台
 	MerchantUserStantionMasters []MerchantUserStantionMaster //`gorm:"foreignKey:MerchantUserRoleID;"`
 	common.CreatedAtAndUpdatedAt
@@ -540,7 +535,7 @@ type MerchantUserStantionMaster struct {
 /////////// 放錢包控端 跟 app相關東西 並非錢包本身///////////
 
 // 控端銀行
-type Bank struct {
+type WalletConsoleBank struct {
 	common.ID
 	// todo web有填入銀行ID的地方 有需要保留?
 	BankID   string `gorm:"unique;not null;type:char(30);"`
@@ -553,13 +548,13 @@ type Bank struct {
 }
 
 // 阻擋註冊IP
-type RegistrationIPBlocking struct {
+type WalletConsoleRegistrationIPBlocking struct {
 	IP string `gorm:"primaryKey;type:char(15);"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // todo: 鎖單限制? 感覺不合理
-type SystemSetting struct {
+type WalletConsoleSystemSetting struct {
 	common.ID
 	// 掛單數量限制
 	OrderLimit uint `gorm:"not null;default:0;"`
@@ -575,7 +570,7 @@ type SystemSetting struct {
 
 // 同時吃單上限
 // todo 達到吃單上限時 會不交易嗎?
-type TradeSetting struct {
+type WalletConsoleTradeSetting struct {
 	common.ID
 	// 總代理 / 代理 / 造市商 / 自然人 / 商戶
 	Type int `gorm:"not null;default:0;"`
@@ -585,13 +580,13 @@ type TradeSetting struct {
 }
 
 // 拆單數量
-type SeparatedBill struct {
+type WalletConsoleSeparatedBill struct {
 	Number uint `gorm:"not null;default:0;"`
 	common.CreatedAtAndUpdatedAt
 }
 
 // 錢包 獎勵活動
-type Activity struct {
+type WalletConsoleActivity struct {
 	common.ID
 	Name      string    `gorm:"not null;type:char(50);"`
 	StartedAt time.Time `gorm:"not null;"`
@@ -604,7 +599,7 @@ type Activity struct {
 }
 
 // 公告
-type Bulletin struct {
+type WalletConsoleBulletin struct {
 	common.ID
 	Title   string `gorm:"notn null;type:char(50);"`
 	Content string `gorm:"not null;type:text;"`
@@ -616,7 +611,7 @@ type Bulletin struct {
 }
 
 // 個人消息
-type Message struct {
+type WalletConsoleMessage struct {
 	common.ID
 	Title    string `gorm:"notn null;type:char(50);"`
 	Content  string `gorm:"not null;type:text;"`
@@ -626,7 +621,7 @@ type Message struct {
 }
 
 // 個人消息接收者
-type MessageUser struct {
+type WalletConsoleMessageUser struct {
 	common.ID
 	MessageID    uint `gorm:"unique_index:uqidx_message_wallet_user;"`
 	WalletUserID uint `gorm:"unique_index:uqidx_message_wallet_user;"`
@@ -636,7 +631,8 @@ type MessageUser struct {
 	common.CreatedAt
 }
 
-// 推撥 不會進db 先定義型別
+// 推撥
+// todo 不確定是否有存db的需要? 或存redis 先定義型別
 type BoardcastBase struct {
 	Title  string
 	Conten string
