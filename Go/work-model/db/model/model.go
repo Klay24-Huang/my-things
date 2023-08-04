@@ -241,7 +241,7 @@ type MerchantDomain struct {
 }
 
 // 帳號類別 推播管理
-type MerchantfBoardcast struct {
+type MerchantBoardcast struct {
 	common.ID
 	MerchantID uint `gorm:"not null;default:0;"`
 	Merchant
@@ -256,8 +256,8 @@ type MerchantfBoardcast struct {
 type MerchantSystem struct {
 	common.ID
 	// 主商戶
-	MainMerchant Merchant
-	Name         string `gorm:"char(30); not null;"`
+	MainMerchant Merchant `gorm:"foreignKey:SystemID;"`
+	Name         string   `gorm:"char(30); not null;"`
 	// 此體系底下的商戶
 	Merchants []Merchant `gorm:"foreignKey:AssociatedSystemID;"`
 	common.CreatedAtAndUpdatedAt
@@ -455,17 +455,6 @@ type WalletUser struct {
 	WalletUserBankCards []WalletUserBankCard
 	common.CreatedAtAndUpdatedAt
 }
-
-// 先保留
-// 當有任何操作錢包行為時，例如掃code上分
-// 當上分行為完成後，call back娛樂城我們的wallet id和他們給的transaction id
-// 錢包和遊戲的binding
-// type WalletUserMerchant struct {
-// 	WalletUserId uint
-// 	MerchantId   uint
-// 	// 娛樂城 帳號id
-// 	UUID string
-// }
 
 // 錢包app 實名 照片 ID card認證
 type WalletUserVerify struct {

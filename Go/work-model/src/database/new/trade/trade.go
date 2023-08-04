@@ -67,14 +67,14 @@ type LockedOrder struct {
 type Transaction struct {
 	common.UUID
 	BuyerOrderID uint  `gorm:"index:idx_buy_sell;"`
-	BuyerOrder   Order `gorm:"foreignKey:CallID;"`
+	BuyerOrder   Order `gorm:"foreignKey:BuyerOrderID;"`
 	//// 付款 買單才有 /////
 	// 付款照片url 路徑會加密
 	PaymentUrl string
 	// 付款持間
 	PaidAt        time.Time
 	SellerOrderID uint  `gorm:"index:idx_buy_sell;"`
-	SellerOrder   Order `gorm:"foreignKey:PutID;"`
+	SellerOrder   Order `gorm:"foreignKey:SellOrderID;"`
 	// 帳本id
 	LedgerID uint
 	common.CreatedAtAndUpdatedAt
@@ -83,9 +83,9 @@ type Transaction struct {
 // 取消交易的table
 type CanceledTransaction struct {
 	common.ID
-	BuyerOrderID  uint  `gorm:"index:idx_call_put;"`
-	BuyerOrder    Order `gorm:"foreignKey:CallID;"`
-	SellerOrderID uint  `gorm:"index:idx_call_put;"`
+	BuyerOrderID  uint  `gorm:"index:idx_buy_sell;"`
+	BuyerOrder    Order `gorm:"foreignKey:BuyerOrderID;"`
+	SellerOrderID uint  `gorm:"index:idx_buy_sell;"`
 	SellerOrder   Order `gorm:"foreignKey:SellerOrderID;"`
 	//  已取消 /自動取消
 	Type uint
