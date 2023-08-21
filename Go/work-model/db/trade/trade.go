@@ -74,7 +74,7 @@ type Transaction struct {
 	// 付款持間
 	PaidAt        time.Time
 	SellerOrderID uint  `gorm:"index:idx_buy_sell;"`
-	SellerOrder   Order `gorm:"foreignKey:SellOrderID;"`
+	SellerOrder   Order `gorm:"foreignKey:SellerOrderID;"`
 	// 帳本id
 	LedgerID uint
 	common.CreatedAtAndUpdatedAt

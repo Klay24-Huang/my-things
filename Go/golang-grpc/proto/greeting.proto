@@ -3,14 +3,48 @@ syntax = "proto3";
 option go_package = "/pb";
 
 service GreetingService {
-    rpc Greeting(GreetingServiceRequest) returns (GreetingServiceReply) {}
+    rpc Greeting(TransferDataPackage) returns (GreetingServiceReply) {}
+    rpc Login(TransferDataPackage) returns (GreetingServiceReply) {}
+    rpc Logout(TransferDataPackage) returns (GreetingServiceReply) {}
+    rpc GetUserInfo(TransferDataPackage) returns (GreetingServiceReply) {}
+}
+
+message TransferDataPackage {
+    string publicKey = 1;
+    string data = 2;
+    string signature =3; 
 }
 
 message GreetingServiceRequest {
     string name = 1;
+    string message = 2; 
 }
 
 message GreetingServiceReply {
     string message = 2;
 }
 
+message LoginRequest {
+    string account = 1;
+    string password = 2;
+}
+
+message LoginReply {
+    string message = 1;
+}
+
+message LogoutRequest {
+    int32 userId = 1;
+}
+
+message LogoutReply {
+    string message = 1;
+}
+
+message GetUserInfo {
+
+}
+
+message GetUserInfoReply {
+
+}
