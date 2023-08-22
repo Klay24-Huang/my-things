@@ -1,4 +1,5 @@
 import moveZeroes from './moveZeroes'
+import deepClone from '../utils/deepClone'
 
 var tests = [{
         title: 'case 1',
@@ -17,8 +18,6 @@ var tests = [{
 //         expect(moveZeroes(test.input)).toBe(test.expect)
 //     })
 // }
-
-var deepClone = (obj) => JSON.parse(JSON.stringify(obj))
 
 test('move zeroes', () => {
     for (const test of tests) {
