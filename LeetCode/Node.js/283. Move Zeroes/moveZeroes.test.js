@@ -12,7 +12,7 @@ it('test move zeroes function', () => {
         {
             title: 'case 2',
             input: [0],
-            expect: [0]
+            expect: [1]
         },
     ]
 
@@ -23,7 +23,8 @@ it('test move zeroes function', () => {
             ans = moveZeroes(input)
             expect(ans).toStrictEqual(test.expect)
         } catch (error) {
-            const message = `${test.title},
+            const message = `
+                    ${test.title},
                     input: ${test.input},
                     ans: ${ans},
                     expect: ${test.expect}`
