@@ -18,14 +18,20 @@ var tests = [{
 //     })
 // }
 
+var deepClone = (obj) => JSON.parse(JSON.stringify(obj))
+
 test('move zeroes', () => {
     for (const test of tests) {
-        var ans = moveZeroes(test.input)
+        var input = deepClone(test.input)
+        var ans = moveZeroes(input)
         var message = `${test.title},
         input: ${test.input},
         ans: ${ans},
         expect: ${test.expect}`
         console.log(message)
-        expect(ans).toBe(test.expect)
+        expect(ans).toStrictEqual(test.expect)
     }
 })
+
+
+// yarn jest '283. Move Zeroes/moveZeroes.test.js'

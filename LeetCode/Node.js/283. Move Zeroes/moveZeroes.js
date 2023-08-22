@@ -6,12 +6,10 @@ var moveZeroes = function (nums) {
         const num = nums[index];
 
         if (num === 0 && zeroPointer === undefined) zeroPointer = index
-        if (num === 0 && index < zeroPointer) zeroPointer = index
         if (num !== 0 && zeroPointer !== undefined) {
             nums[zeroPointer] = nums[index]
             nums[index] = 0
-            zeroPointer = index
-            console.log(nums)
+            zeroPointer++
         }
     }
     return nums
