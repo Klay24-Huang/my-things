@@ -41,6 +41,14 @@ func Test_findMaxAverage(t *testing.T) {
 			},
 			expect: 4,
 		},
+		{
+			title: "case 5",
+			arg: arg{
+				nums: []int{4, 0, 4, 3, 3},
+				k:    5,
+			},
+			expect: 2.8,
+		},
 	}
 
 	for _, tt := range tests {
