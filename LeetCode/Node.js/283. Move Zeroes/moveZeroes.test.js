@@ -12,7 +12,7 @@ it('test move zeroes function', () => {
         {
             title: 'case 2',
             input: [0],
-            expect: [1]
+            expect: [0]
         },
     ]
 
