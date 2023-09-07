@@ -1,0 +1,378 @@
+{
+  "id": "ac93b0c2-179c-4102-a9aa-fac45b0574d2",
+  "version": "2.0",
+  "name": "Okteto",
+  "url": "https://www.okteto.com/",
+  "tests": [{
+    "id": "0e1e4af1-86e0-413a-b763-4e35a875f2cb",
+    "name": "loginNew",
+    "commands": [{
+      "id": "9202b0e7-ce6e-49b0-ae33-e75e2d027d82",
+      "comment": "",
+      "command": "open",
+      "target": "https://www.okteto.com/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5fb84e8d-01ab-4f9d-ad9a-fa0cffe18842",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1552x832",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9d80d9fc-cdc9-4414-b735-da8a0542fe82",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Login",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.selected:nth-child(3) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='gatsby-focus-wrapper']/div/header/div[2]/ul[2]/li[3]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, 'https://cloud.okteto.com')]", "xpath:href"],
+        ["xpath=//ul[2]/li[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f7a078d9-30a7-424a-b9d2-8019f54ce94a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.Button",
+      "targets": [
+        ["css=.Button", "css:finder"],
+        ["xpath=//div[@id='app']/div/div[2]/div/div[2]/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Log in with GitHub')]", "xpath:innerText"]
+      ],
+      "value": "",
+      "opensWindow": true,
+      "windowHandleName": "win4398",
+      "windowTimeout": 2000
+    }, {
+      "id": "942462e5-c138-4895-bd97-3d5b0d6d8f32",
+      "comment": "",
+      "command": "storeWindowHandle",
+      "target": "root",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c1f8c8a5-76f1-4aa4-b87e-7b17a4422622",
+      "comment": "",
+      "command": "selectWindow",
+      "target": "handle=${win4398}",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8ce270d4-8668-44c5-a998-b11e896322f0",
+      "comment": "",
+      "command": "click",
+      "target": "id=login_field",
+      "targets": [
+        ["id=login_field", "id"],
+        ["name=login", "name"],
+        ["css=#login_field", "css:finder"],
+        ["xpath=//input[@id='login_field']", "xpath:attributes"],
+        ["xpath=//div[@id='login']/div[3]/form/input[2]", "xpath:idRelative"],
+        ["xpath=//input[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c44773f8-d65b-43c3-bf7f-040c0a9d1ef4",
+      "comment": "",
+      "command": "type",
+      "target": "id=login_field",
+      "targets": [
+        ["id=login_field", "id"],
+        ["name=login", "name"],
+        ["css=#login_field", "css:finder"],
+        ["xpath=//input[@id='login_field']", "xpath:attributes"],
+        ["xpath=//div[@id='login']/div[3]/form/input[2]", "xpath:idRelative"],
+        ["xpath=//input[2]", "xpath:position"]
+      ],
+      "value": "wkus963@gmail.com"
+    }, {
+      "id": "ed4c78aa-19be-4d93-a3d2-19d48a29e05b",
+      "comment": "",
+      "command": "click",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='login']/div[3]/form/div/input", "xpath:idRelative"],
+        ["xpath=//form/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7c168688-3e89-4671-90c2-5ca036bccd04",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//div[@id='login']/div[3]/form/div/input", "xpath:idRelative"],
+        ["xpath=//form/div/input", "xpath:position"]
+      ],
+      "value": "800824arkGithub"
+    }, {
+      "id": "3cb8d130-221f-4c23-a123-b1c36a43f3a8",
+      "comment": "",
+      "command": "click",
+      "target": "name=commit",
+      "targets": [
+        ["name=commit", "name"],
+        ["css=.btn", "css:finder"],
+        ["xpath=//input[@name='commit']", "xpath:attributes"],
+        ["xpath=//div[@id='login']/div[3]/form/div/input[13]", "xpath:idRelative"],
+        ["xpath=//input[13]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "65feafb4-4173-4a34-b3da-f2136a1b2e8c",
+      "comment": "",
+      "command": "//close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "27b9e5db-2e44-474e-9f21-9e0d3435c54d",
+      "comment": "",
+      "command": "selectWindow",
+      "target": "handle=${root}",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "bf6e4de2-129d-4028-bc67-1739ca640cb1",
+    "name": "logoutNew",
+    "commands": [{
+      "id": "38c01ea1-03da-4324-b8e0-700e19a5608b",
+      "comment": "",
+      "command": "open",
+      "target": "https://www.okteto.com/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "cf906bf3-af85-40cd-be42-fe39af60d220",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1552x832",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8c53bbf5-f84e-48cd-814b-8ccc9d6e1e68",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Login",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.selected:nth-child(3) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='gatsby-focus-wrapper']/div/header/div[2]/ul[2]/li[3]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, 'https://cloud.okteto.com')]", "xpath:href"],
+        ["xpath=//ul[2]/li[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d37826a9-281b-4dfc-b513-6008b2afde06",
+      "comment": "",
+      "command": "click",
+      "target": "css=img",
+      "targets": [
+        ["css=img", "css:finder"],
+        ["xpath=//img[@alt='KlayHuang avatar']", "xpath:img"],
+        ["xpath=//div[@id='app']/div/div[2]/div/div[2]/div/div/img", "xpath:idRelative"],
+        ["xpath=//img", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ce10e693-01c0-472a-9f62-081fafcb3609",
+      "comment": "",
+      "command": "click",
+      "target": "css=.MenuItem",
+      "targets": [
+        ["css=.MenuItem", "css:finder"],
+        ["xpath=//div[@id='app']/div/div[2]/div/div[2]/div[2]/div[3]", "xpath:idRelative"],
+        ["xpath=//div[2]/div[3]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "03b86554-f224-4b62-94f9-2b9f2eee1316",
+    "name": "deployNew",
+    "commands": [{
+      "id": "42e7dec5-0e8b-4cbb-af18-688e85d1dcc6",
+      "comment": "",
+      "command": "open",
+      "target": "https://www.okteto.com/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a36793b0-d678-46ce-8179-8363663ce1d6",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1536x816",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5d3aaafb-277e-4921-a16a-82edd5310110",
+      "comment": "",
+      "command": "//click",
+      "target": "css=.HeaderHighlightWrapper",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "214dfd8b-4fce-4662-8e0a-a30096dee884",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Login",
+      "targets": [
+        ["linkText=Login", "linkText"],
+        ["css=.selected:nth-child(3) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
+        ["xpath=//div[@id='gatsby-focus-wrapper']/div/header/div[2]/ul[2]/li[3]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, 'https://cloud.okteto.com')]", "xpath:href"],
+        ["xpath=//ul[2]/li[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Login')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "cae0f673-6ba2-4300-a8ba-ea115f9e8c4f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.selected .ResourceItem__Title",
+      "targets": [
+        ["css=.selected .ResourceItem__Title", "css:finder"],
+        ["xpath=//div[@id='app']/div/div[2]/div[2]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/div/div/div[2]/div", "xpath:idRelative"],
+        ["xpath=//div/div/div/div/div/div/div/div/div/div/div[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a3b219d0-e52b-4f9f-a9c0-cc077a17ef52",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ResourceDetailsButtons > .ToolbarButton:nth-child(1)",
+      "targets": [
+        ["css=.ResourceDetailsButtons > .ToolbarButton:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='app']/div/div[2]/div[2]/div/div/div[2]/div/div[2]/div/div/div[2]/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[2]/div/div/div[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3ba57bb9-2cfd-4dec-8407-74ad0973957b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.Button:nth-child(1) > .button-content",
+      "targets": [
+        ["css=.Button:nth-child(1) > .button-content", "css:finder"],
+        ["xpath=//div[2]/button/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "eb7a39f7-5647-4177-8db5-036e768d867d",
+      "comment": "",
+      "command": "//click",
+      "target": "css=.ResourceListItem:nth-child(2) > .ResourceListItemParent .ResourceItem__Title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "00945fb0-2fae-4d07-a5d8-0f83e8641eca",
+      "comment": "",
+      "command": "//click",
+      "target": "css=.ResourceDetailsButtons > .ToolbarButton:nth-child(1)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "12c1eb81-e441-4c7a-bb25-7898fb32cfb1",
+      "comment": "",
+      "command": "//click",
+      "target": "css=.Button:nth-child(1)",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "e9e9c72c-eb92-4bc2-b8ad-8d70a43fe3c1",
+    "name": "logoutGithub",
+    "commands": [{
+      "id": "bbf3f279-8b0d-4cdc-8770-cb97da22143b",
+      "comment": "",
+      "command": "open",
+      "target": "https://github.com/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "73b6dfe6-2795-4599-bd53-fc3f863d135d",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1536x816",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "70cec2ef-b9a7-4fd2-a28e-3be63559d833",
+      "comment": "",
+      "command": "click",
+      "target": "css=.Button-label > .avatar",
+      "targets": [
+        ["css=.Button-label > .avatar", "css:finder"],
+        ["xpath=//img[contains(@src,'https://avatars.githubusercontent.com/u/55428987?v=4')]", "xpath:img"],
+        ["xpath=//button[@id='dialog-show-dialog-c5720b9d-6693-46b5-98b3-6cd1843abe4c']/span/span/img", "xpath:idRelative"],
+        ["xpath=//img", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b0096aad-224d-4360-9590-442ba402ec47",
+      "comment": "",
+      "command": "//mouseOver",
+      "target": "css=#item-c7981bd0-bade-4a3c-946a-4e0080d37b87 > .ActionListItem-label",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "81d44679-0272-4ea5-8ab0-f5d71dc056a3",
+      "comment": "",
+      "command": "//mouseOut",
+      "target": "css=#item-c7981bd0-bade-4a3c-946a-4e0080d37b87 > .ActionListItem-label",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "bed4c9fa-fb50-4206-8189-8f6c29da2f46",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ActionListItem-label:nth-child(1)",
+      "targets": [
+        ["css=.ActionListItem-label:nth-child(1)", "css:finder"],
+        ["xpath=//a[@id='item-3b2224af-15d8-48af-87ed-0e564eb958af']/span", "xpath:idRelative"],
+        ["xpath=//li[23]/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign out')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "215957f5-77e7-49df-9eeb-c5fc251fc137",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//input[@value='Sign out']", "xpath:attributes"],
+        ["xpath=//form/input[2]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "6f6f8822-fbdb-4fc7-8771-9af2e17a1de4",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["https://cloud.okteto.com/", "https://www.okteto.com/"],
+  "plugins": []
+}

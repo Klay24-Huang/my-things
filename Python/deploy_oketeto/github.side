@@ -1,0 +1,103 @@
+{
+  "id": "c7137e69-27fd-47ef-9b56-98b0e872600e",
+  "version": "2.0",
+  "name": "github",
+  "url": "https://github.com/",
+  "tests": [{
+    "id": "642648b2-9be2-4e6f-89c5-0008216664bd",
+    "name": "logout",
+    "commands": [{
+      "id": "880bd079-a30e-425e-b69e-5b4de0b9afbe",
+      "comment": "",
+      "command": "open",
+      "target": "https://github.com/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9309b91e-6745-40a5-8ca9-0436946b0c2e",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "895x716",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "33e6c80c-66a3-41cd-92ca-1a83246d4c98",
+      "comment": "",
+      "command": "click",
+      "target": "css=.Button-label > .avatar",
+      "targets": [
+        ["css=.Button-label > .avatar", "css:finder"],
+        ["xpath=//img[contains(@src,'https://avatars.githubusercontent.com/u/55428987?v=4')]", "xpath:img"],
+        ["xpath=//button[@id='dialog-show-dialog-02826fe3-8741-43d4-814d-080635e575df']/span/span/img", "xpath:idRelative"],
+        ["xpath=//img", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7ab3d5b8-b470-4cf1-993c-328dd6fb051e",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.Overlay-header:nth-child(2) .octicon",
+      "targets": [
+        ["css=.Overlay-header:nth-child(2) .octicon", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "3b2e602e-1f24-47ec-abc9-134397291143",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=#item-42861537-be12-41e5-9283-3bcdacdf8226 > .ActionListItem-label",
+      "targets": [
+        ["css=#item-42861537-be12-41e5-9283-3bcdacdf8226 > .ActionListItem-label", "css:finder"],
+        ["xpath=//a[@id='item-42861537-be12-41e5-9283-3bcdacdf8226']/span[2]", "xpath:idRelative"],
+        ["xpath=//li[10]/a/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'Your stars')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7fe7a407-b5ea-4666-a6e5-f0e0c8ee1070",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=#item-42861537-be12-41e5-9283-3bcdacdf8226 > .ActionListItem-label",
+      "targets": [
+        ["css=#item-42861537-be12-41e5-9283-3bcdacdf8226 > .ActionListItem-label", "css:finder"],
+        ["xpath=//a[@id='item-42861537-be12-41e5-9283-3bcdacdf8226']/span[2]", "xpath:idRelative"],
+        ["xpath=//li[10]/a/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'Your stars')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "abe02a84-8618-41db-9e99-1e5898d243f0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ActionListItem-label:nth-child(1)",
+      "targets": [
+        ["css=.ActionListItem-label:nth-child(1)", "css:finder"],
+        ["xpath=//a[@id='item-343e59f6-dafc-4397-b6c0-c63e1b891872']/span", "xpath:idRelative"],
+        ["xpath=//li[23]/a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign out')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "24fa3e12-a033-4487-909d-b0d3844ffeff",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//input[@value='Sign out']", "xpath:attributes"],
+        ["xpath=//form/input[2]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "9867b1a9-5ac1-452a-8da4-03287d58178d",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["642648b2-9be2-4e6f-89c5-0008216664bd"]
+  }],
+  "urls": [],
+  "plugins": []
+}
