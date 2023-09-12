@@ -46,23 +46,23 @@ class TestLogin():
     self.driver.find_element(By.ID, "password").send_keys("800824arkGithub")
     self.driver.find_element(By.NAME, "commit").click()
     self.driver.switch_to.window(self.vars["root"])
-    self.foo = 1
-    # time.sleep(5)
-    # self.driver.find_element(By.CSS_SELECTOR, ".selected .ResourceItem__Title").click()
-    # self.driver.find_element(By.CSS_SELECTOR, ".ResourceDetailsButtons > .ToolbarButton:nth-child(1)").click()
-    # self.driver.find_element(By.CSS_SELECTOR, ".Button:nth-child(1) > .button-content").click()
-    # time.sleep(10)
-
-  def test_deployNew(self):
-    print(self.foo)
-    # self.driver.switch_to.window(self.vars["root"])
-    # self.driver.get("https://www.okteto.com/")
-    # self.driver.set_window_size(1536, 816)
-    # self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.get("https://cloud.okteto.com/spaces/klay24-huang")
-    time.sleep(10)
+    # self.foo = 1
+    time.sleep(5)
     self.driver.find_element(By.CSS_SELECTOR, ".selected .ResourceItem__Title").click()
     self.driver.find_element(By.CSS_SELECTOR, ".ResourceDetailsButtons > .ToolbarButton:nth-child(1)").click()
     self.driver.find_element(By.CSS_SELECTOR, ".Button:nth-child(1) > .button-content").click()
+    time.sleep(10)
+
+  # def test_deployNew(self):
+  #   print(self.foo)
+  #   # self.driver.switch_to.window(self.vars["root"])
+  #   # self.driver.get("https://www.okteto.com/")
+  #   # self.driver.set_window_size(1536, 816)
+  #   # self.driver.find_element(By.LINK_TEXT, "Login").click()
+  #   self.driver.get("https://cloud.okteto.com/spaces/klay24-huang")
+  #   time.sleep(10)
+  #   self.driver.find_element(By.CSS_SELECTOR, ".selected .ResourceItem__Title").click()
+  #   self.driver.find_element(By.CSS_SELECTOR, ".ResourceDetailsButtons > .ToolbarButton:nth-child(1)").click()
+  #   self.driver.find_element(By.CSS_SELECTOR, ".Button:nth-child(1) > .button-content").click()
 
   
