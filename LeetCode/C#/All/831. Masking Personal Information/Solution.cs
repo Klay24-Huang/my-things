@@ -12,67 +12,23 @@ namespace All._831._Masking_Personal_Information
     {
         public string MaskPII(string s)
         {
-            var emailReg = "^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-            var isEmail = Regex.IsMatch(s, emailReg);
-            if (isEmail)
+            var indexOfAt = s.IndexOf("@");
+            // is email
+            if (indexOfAt >= 0)
             {
-                var subs = s.Split("@");
-                subs[0] = subs[0].ToLower();
-                subs[0] = $"{subs[0].First()}*****{subs[0].Last()}";
-                subs[1] = subs[1].ToLower();
-                return string.Join("@", subs);
+                return $"{s[0]}*****{s[(indexOfAt - 1)..]}".ToLower();
             }
 
-            var count = 0;
-            var lastfourNumb = new char[4];
-            for (var i = s.Length -1; i >= 0; i--)
+            // is phone
+            var removeChar = new string[] { " ", "(", ")", "-", "+" };
+            foreach (var c in removeChar)
             {
-                var c = s[i];
-                var isNum = char.IsNumber(c);
-
-                if (count < 4 && isNum)
-                {
-                    lastfourNumb[3-count] = c;
-                }
-
-                if(isNum)
-                {
-                    count++;
-                }
+                s = s.Replace(c, string.Empty);
             }
-
-            var baseStr = "***-***-";
-            var prefix = "";
-            var countryCodeCount= count - 10;
-
-            if(countryCodeCount != 0)
-            {
-                prefix = "+" + new string('*', countryCodeCount)+"-";
-            }
-
-            Console.WriteLine(JsonSerializer.Serialize(lastfourNumb));
-            return $"{prefix}{baseStr}{string.Join("", lastfourNumb)}";
-
-            //var phoneReg = "";
-            //var isPhone = Regex.IsMatch(s, phoneReg);
-            //if (isPhone)
-            //{
-
-            //}
-
-            //return "";
+            var common = "***-***-";
+            var countyCodeCount = s.Length - 10;
+            var prefix = countyCodeCount > 0 ? $"+{new string('*', countyCodeCount)}-" : "";
+            return $"{prefix}{common}{s[(s.Length-4)..]}";
         }
-
-        //public string MaskEmail(string s)
-        //{
-        //    var subs = s.Split("@");
-        //    subs[0] = $"{s[0]}*****";
-        //    return string.Join("@", subs);
-        //}
-
-        //public string MaskPhone(string s)
-        //{
-
-        //}
     }
 }
