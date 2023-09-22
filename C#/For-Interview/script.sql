@@ -1,0 +1,1 @@
+CREATE DATABASE for_interview;

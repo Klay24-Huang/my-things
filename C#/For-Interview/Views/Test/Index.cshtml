@@ -1,0 +1,34 @@
+﻿@using For_Interview.Models.ViewModels;
+@model TestViewModel
+
+@*<form method="post" enctype="multipart/form-data" actoin="/Register/CreateUser">
+  <div class="form-group">
+    <label asp-for="Email">Email address</label>
+    <input type="email" class="form-control" id="inputEmail" name="email" asp-for="Email"/>
+    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+    <div class="form-group">
+    <label asp-for="File">附檔</label>
+    <input type="file" asp-for="File"/>
+  </div>*@
+ @* <div class="form-group">
+    <label for="exampleInputPassword1">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+  </div>
+  <div class="form-group form-check">
+    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+  </div>*@
+@*  <div>@TempData["Test"]</div>
+  <button type="submit" class="btn btn-primary">註冊</button>
+</form>*@
+
+
+ <button class="btn btn-primary" onclick="location.href='@Url.Action("Download", "Register")'">下載</button>
+
+    @Html.ActionLink(
+        "button text",
+        "TestParam",
+        "Test",
+        new {Model.MyProperty },
+        new { @class = "btn btn-info"})
