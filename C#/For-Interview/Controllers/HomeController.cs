@@ -28,13 +28,18 @@ namespace For_Interview.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel login)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Account == login.Account && Base64Helper.Encode(u.Password) ==   login.Password);
+            if (!ModelState.IsValid)
+            { 
+                return View("Index", login);
+            }
+
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Account == login.Account && u.Password ==  Base64Helper.Encode(login.Password));
 
             if (user == null)
             {
                 TempData["LoginResult"] = "帳號或密碼錯誤";
             }
-            else if (user != null && user.Status)
+            else if (user != null && !user.Status)
             {
                 TempData["LoginResult"] = "帳號尚未啟用";
             }

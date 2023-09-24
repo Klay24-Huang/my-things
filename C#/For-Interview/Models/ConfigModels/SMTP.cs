@@ -1,6 +1,6 @@
 ﻿namespace For_Interview.Models.ConfigModels
 {
-    public class SMPT
+    public class SMTP
     {
         public string Host { get; set; } = "smtp.gmail.com";
         public int Port { get; set; } = 587;

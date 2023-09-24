@@ -3,7 +3,7 @@
     public class VerifyViewModel
     {
         public UserBase SearchConditoin { get; set; } = new UserBase();
-        public IEnumerable<UserBase> SearchResult { get; set; } = new List<UserBase>();
+        public List<UserBase> SearchResult { get; set; } = new List<UserBase>();
         // 現在分頁
         public int CurrentPage { get; set; } = 1;
         // 總分頁數
@@ -20,5 +20,10 @@
         public DateTime Birthday { get; set; }
         public string Organizatoin { get; set; } = string.Empty;
         public bool Status { get; set; }
+    }
+
+    public class Foo
+    {
+        public int Id { get; set; }
     }
 }

@@ -24,69 +24,69 @@ namespace For_Interview.Controllers
         }
 
 
-        public IActionResult Index(RegisterViewModel model)
+        public IActionResult Index()
         {
-            return View(model);
+            return View(new RegisterViewModel());
         }
 
         [HttpPost]
-        public async Task Register(RegisterViewModel model)
+        public async Task<IActionResult> CreateUser(RegisterViewModel model)
         {
             try
             {
+                if (!ModelState.IsValid)
+                { 
+                    return View("Index", model);
+                }
 
-            
-            //if (ModelState.IsValid)
-            //{ }
+                var orgTitle = model.Organizatoin.Trim();
+                var organization = await _dBContext.Orgs.FirstOrDefaultAsync(x => x.Title == orgTitle);
 
-            var orgTitle = model.Organizatoin.Trim();
-            var organization = await _dBContext.Orgs.FirstOrDefaultAsync(x => x.Title == orgTitle);
+                using var trasaction = await _dBContext.Database.BeginTransactionAsync();
+                var newUser = new User
+                {
+                    Name = model.Name,
+                    Birthday = model.Birthday,
+                    Email = model.Email,
+                    Account = model.Account,
+                    Password = Base64Helper.Encode(model.Password),
+                    Status = false,
+                };
 
-            using var trasaction = await _dBContext.Database.BeginTransactionAsync();
-            var newUser = new User
-            {
-                Name = model.Name,
-                Birthday = model.Birthday,
-                Email = model.Email,
-                Account = model.Account,
-                Password = Base64Helper.Encode(model.Password),
-                Status = false,
-            };
+                if (organization != null)
+                {
+                    newUser.OrgId = organization.Id;
+                }
+                else
+                {
+                    var newOrg = new Org { Title = orgTitle };
+                    await _dBContext.Orgs.AddAsync(newOrg);
+                    await _dBContext.SaveChangesAsync();
+                    newUser.OrgId = newOrg.Id;
+                }
 
-            if (organization != null)
-            {
-                newUser.OrgId = organization.Id;
-            }
-            else
-            {
-                var newOrg = new Org { Title = orgTitle };
-                await _dBContext.Orgs.AddAsync(newOrg);
+                await _dBContext.Users.AddAsync(newUser);
                 await _dBContext.SaveChangesAsync();
-                newUser.OrgId = newOrg.Id;
-            }
 
-            await _dBContext.Users.AddAsync(newUser);
-            await _dBContext.SaveChangesAsync();
+                // copy file to server                
+                var file = model.File;
+                if (file != null && file.Length > 0)
+                {
+                    var path = $@"{_environment.WebRootPath}\{file.FileName}";
+                    using var stream = new FileStream(path, FileMode.Create);
+                    await file.CopyToAsync(stream);
+                }
 
-            // copy file to server                
-            var file = model.File;
-            if (file != null && file.Length > 0)
-            {
-                var path = $@"{_environment.WebRootPath}\{file.FileName}";
-                using var stream = new FileStream(path, FileMode.Create);
-                await file.CopyToAsync(stream);
-            }
+                var newApplyFile = new ApplyFile
+                {
+                    UserId = newUser.Id,
+                    FilePath = @$"{_environment.ContentRootPath}\UploadFiles\{file?.FileName}",
+                };
 
-            var newApplyFile = new ApplyFile
-            {
-                UserId = newUser.Id,
-                FilePath = $"{_environment.ContentRootPath}/{file?.FileName}",
-            };
-
-            await _dBContext.ApplyFiles.AddAsync(newApplyFile);
-            await _dBContext.SaveChangesAsync();
-            await trasaction.CommitAsync();
-            TempData["RegisterResult"] = "註冊成功";
+                await _dBContext.ApplyFiles.AddAsync(newApplyFile);
+                await _dBContext.SaveChangesAsync();
+                await trasaction.CommitAsync();
+                TempData["RegisterResult"] = "註冊成功";
             }
             catch (Exception e)
             {
@@ -94,12 +94,7 @@ namespace For_Interview.Controllers
                 _logger.LogError(null, e, null);
                 throw;
             }
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View("Index", model);
         }
     }
 }

@@ -14,6 +14,8 @@ using System.Text;
 using System.IO;
 using System.Data;
 using ClosedXML.Excel;
+using Dapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace For_Interview.Controllers
 {
@@ -51,98 +53,95 @@ namespace For_Interview.Controllers
         [HttpPost]
         public async Task<IActionResult> Search(VerifyViewModel searchViewModel)
         {
+            using var dapper = new SqlConnection(_configuration.GetConnectionString("Default"));
             var condition = searchViewModel.SearchConditoin;
-            var p = new List<SqlParameter>();
+            var p = new DynamicParameters();
             var whereConditionList = new List<string>();
 
-            if (string.IsNullOrWhiteSpace(condition.Account))
+            if (!string.IsNullOrWhiteSpace(condition.Account))
             {
-                whereConditionList.Add("u.account=@account");
-                p.Add(new SqlParameter("@account", condition.Account));
+                whereConditionList.Add("u.account LIKE @Account");
+                p.Add("@Account", $"%{condition.Account}%");
             }
 
-            if (string.IsNullOrWhiteSpace(condition.Name))
+            if (!string.IsNullOrWhiteSpace(condition.Name))
             {
-                whereConditionList.Add("u.name=@name");
-                p.Add(new SqlParameter("@name", condition.Name));
+                whereConditionList.Add("u.name LIKE @Name");
+                p.Add("@Name", $"%{condition.Name}%");
             }
 
-            if (string.IsNullOrWhiteSpace(condition.Email))
+            if (!string.IsNullOrWhiteSpace(condition.Email))
             {
-                whereConditionList.Add("u.email=@email");
-                p.Add(new SqlParameter("@email", condition.Email));
+                whereConditionList.Add("u.email LIKE @Email");
+                p.Add("@Email", $"%{condition.Email}%");
             }
 
-            if (string.IsNullOrWhiteSpace(condition.Organizatoin))
+            if (!string.IsNullOrWhiteSpace(condition.Organizatoin))
             {
 
-                whereConditionList.Add("o.title=@org");
-                p.Add(new SqlParameter("@org", condition.Organizatoin));
+                whereConditionList.Add("o.title LIKE @Org");
+                p.Add("@Org", $"%{condition.Organizatoin}%");
             }
 
-            // 分頁
+            // 總頁數
+            var countSql = @"SELECT 
+                COUNT(*) cnt
+                FROM users u
+                JOIN orgs o ON u.org_id = o.id";
+
+            var whereStr = string.Empty;
+            if (p.ParameterNames.Count() > 0)
+            {
+                whereStr = " WHERE " + string.Join(" AND ", whereConditionList);
+                countSql += whereStr;
+            }
+            var totalCount = await dapper.QueryFirstOrDefaultAsync<int>(countSql, p);
+            searchViewModel.TotalPage = totalCount / 10 + 1;
+
+            // table data, search result
+            var resultSql = @"SELECT 
+                u.*,
+                o.title 'organizatoin'
+                FROM users u
+                JOIN orgs o ON u.org_id = o.id";
+
+            resultSql += whereStr;
+
+            // 分頁 sql
             var pagaSql = @"
                 ORDER BY u.id 
                 OFFSET @OFFSET ROWS 
                 FETCH NEXT 10 ROWS ONLY";
-            p.Add(new SqlParameter("@OFFSET", (searchViewModel.CurrentPage - 1) * 10));
-
-            var resultSql = @"SELECT 
-                u.*,;
-                o.title;
-                FROM users u;
-                JOIN orgs o ON u.org_id = o.id";
-
-            var whereStr = string.Empty;
-            if (p.Count > 0)
-            {
-                whereStr = " where " + string.Join(" and ", whereConditionList);
-                resultSql += whereStr;
-            }
+            p.Add("@OFFSET", (searchViewModel.CurrentPage - 1) * 10);
 
             resultSql += pagaSql;
 
-            var searchResult = _dbContext.Database.SqlQueryRaw<UserBase>(resultSql, p);
-            searchViewModel.SearchResult = searchResult;
-
-            var countSql = @"SELECT 
-                COUNT(*)
-                FROM users u
-                JOIN orgs o ON u.org_id = o.id";
-
-            if (p.Count > 0)
-            {
-                countSql += whereStr;
-            }
-
-            var totalCount = await _dbContext.Database.SqlQueryRaw<int>(countSql, p).FirstOrDefaultAsync();
-            searchViewModel.TotalPage = totalCount / 10;
+            var searchResult = await dapper.QueryAsync<UserBase>(resultSql, p);
+            searchViewModel.SearchResult = searchResult.ToList();
 
             return View("index", searchViewModel);
         }
 
-        public async Task<IActionResult> PrevOrNext(int pageIndex, VerifyViewModel searchViewModel)
+        public async Task<IActionResult> Page(int pageIndex, VerifyViewModel searchViewModel)
         {
             searchViewModel.CurrentPage = pageIndex;
             return await Search(searchViewModel);
         }
 
-        public async Task SendEmail(int userId)
+        public async Task<IActionResult> SendEmail(int userId)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync();
+            var smtpSetting = _configuration.GetSection("SMTP").Get<SMTP>();
 
-            var smtpSetting = _configuration.Get<SMPT>();
-            var client = new SmtpClient
-            {
-                Host = smtpSetting.Host,
-                Port = smtpSetting.Port,
-                Credentials = new NetworkCredential(smtpSetting.SenderEmail, smtpSetting.Password),
-                EnableSsl = true
-            };
+            var client = new SmtpClient();
+            client.Host = "smtp.gmail.com";
+            client.Port = 587;
+            client.Credentials = new NetworkCredential(smtpSetting.SenderEmail, smtpSetting.Password);
+            client.EnableSsl = true;
 
             var mail = new MailMessage();
             mail.From = new MailAddress(smtpSetting.SenderEmail, "測試帳號");
-            mail.To.Add(user?.Email);
+            mail.To.Add(user.Email);
             //設定標題
             mail.Subject = "啟用帳號";
 
@@ -153,20 +152,22 @@ namespace For_Interview.Controllers
             mail.IsBodyHtml = true;
 
             //信件內容 
-            mail.Body = $@"<a href=""https://localhost:7110/verify/activeAccount/{Base64Helper.Encode(user.Account)}"">開通帳號</a>";
+            mail.Body = $@"<a href=""https://localhost:7110/activeAccount/{Base64Helper.Encode(user.Account)}"">開通帳號</a>";
 
             //內容編碼
             mail.BodyEncoding = Encoding.UTF8;
-            await client.SendMailAsync(mail);
+            client.Send(mail);
+
+            return Ok("已寄送認證信");
         }
 
         // 開通帳號
-        [HttpGet("/ActiveAccount/{baseUserAccount}")]
+        [HttpGet("activeAccount/{baseUserAccount}")]
         public async Task<IActionResult> ActiveAccount(string baseUserAccount)
         {
             _logger.LogInformation($"Active {baseUserAccount}");
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Account == Base64Helper.Decode(baseUserAccount));
-          
+
             if (user != null)
             {
                 user.Status = true;
@@ -194,7 +195,7 @@ namespace For_Interview.Controllers
             //}
         }
 
-        public async Task<IActionResult> ExportExcel(VerifyViewModel model)
+        public IActionResult ExportExcel(VerifyViewModel searchViewModel)
         {
             DataTable dt = new DataTable("Grid");
             dt.Columns.AddRange(new DataColumn[] {
@@ -207,9 +208,9 @@ namespace For_Interview.Controllers
                 new DataColumn("狀態"),
             });
 
-            foreach (var user in model.SearchResult)
+            foreach (var user in searchViewModel.SearchResult)
             {
-                var status = user.Status ? "已認證" : "未認證";
+                var status = user.Status ? "已開通" : "未開通";
                 dt.Rows.Add(user.Id, user.Account, user.Name, user.Email, user.Birthday, user.Organizatoin, status);
             }
             //using ClosedXML.Excel;  

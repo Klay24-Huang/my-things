@@ -4,9 +4,9 @@ namespace For_Interview.Models.ViewModels
 {
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage ="帳號不可為空")]
         public string Account { get; set; } = string.Empty;
-        [Required]
+        [Required(ErrorMessage ="密碼不可為空")]
         public string Password { get; set; } = string.Empty;
     }
 }
