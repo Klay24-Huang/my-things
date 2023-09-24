@@ -153,7 +153,7 @@ namespace For_Interview.Controllers
             mail.IsBodyHtml = true;
 
             //信件內容 
-            mail.Body = $@"<a href=""https://localhost:7110/verify/active/{Base64Helper.Encode(user.Account)}"">開通帳號</a>";
+            mail.Body = $@"<a href=""https://localhost:7110/verify/activeAccount/{Base64Helper.Encode(user.Account)}"">開通帳號</a>";
 
             //內容編碼
             mail.BodyEncoding = Encoding.UTF8;
@@ -161,9 +161,10 @@ namespace For_Interview.Controllers
         }
 
         // 開通帳號
-        [HttpGet("/{baseUserAccount}")]
+        [HttpGet("/ActiveAccount/{baseUserAccount}")]
         public async Task<IActionResult> ActiveAccount(string baseUserAccount)
         {
+            _logger.LogInformation($"Active {baseUserAccount}");
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Account == Base64Helper.Decode(baseUserAccount));
           
             if (user != null)
@@ -212,15 +213,11 @@ namespace For_Interview.Controllers
                 dt.Rows.Add(user.Id, user.Account, user.Name, user.Email, user.Birthday, user.Organizatoin, status);
             }
             //using ClosedXML.Excel;  
-            using (XLWorkbook wb = new XLWorkbook())
-            {
-                wb.Worksheets.Add(dt);
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    wb.SaveAs(stream);
-                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "審核列表.xlsx");
-                }
-            }
+            using XLWorkbook wb = new();
+            wb.Worksheets.Add(dt);
+            using MemoryStream stream = new();
+            wb.SaveAs(stream);
+            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "審核列表.xlsx");
         }
 
 
