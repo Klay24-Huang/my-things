@@ -22,7 +22,6 @@ namespace For_Interview.Controllers
 
         public IActionResult Index()
         {
-            _logger.LogInformation($"foo foo foo");
             return View(new LoginViewModel());
         }
 

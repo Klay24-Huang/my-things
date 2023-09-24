@@ -1,10 +1,16 @@
 using For_Interview.Models.ConfigModels;
 using For_Interview.Models.DbModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<MyDBContext>(options =>
+ options.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
+);
+
 
 var app = builder.Build();
 

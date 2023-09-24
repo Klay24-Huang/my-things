@@ -161,10 +161,11 @@ namespace For_Interview.Controllers
         }
 
         // 開通帳號
-        [HttpGet("{baseUserAccount}")]
-        public async Task<IActionResult> Active(string baseUserAccount)
+        [HttpGet("/{baseUserAccount}")]
+        public async Task<IActionResult> ActiveAccount(string baseUserAccount)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Account == Base64Helper.Decode(baseUserAccount));
+          
             if (user != null)
             {
                 user.Status = true;

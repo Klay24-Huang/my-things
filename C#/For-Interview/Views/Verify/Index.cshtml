@@ -1,5 +1,5 @@
-﻿@VerifyViewModelview.Models.ViewModels;
-@model SearchViewModel
+﻿@using For_Interview.Models.ViewModels;
+@model VerifyViewModel;
 
 
 <div>
@@ -59,7 +59,7 @@
                 "下載",
                 "Download",
                 "Verify",
-                new { userId = item.id },
+                new { userId = item.Id },
                 new { @class = $"btn btn-info"})
             </td>
             <td>
@@ -67,7 +67,7 @@
                 "認可",
                 "SendEmail",
                 "Verify",
-                new { userId = item.id },
+                new { userId = item.Id },
                 new { @class = "btn btn-info", @disabled = $"{!item.Status}"})
             </td>
            </tr>  
