@@ -10,32 +10,30 @@
 <h1>搜尋</h1>
 <form method="post" enctype="multipart/form-data" asp-controller="Verify" asp-action="Search">
   <div class="form-group row">
-    <label class="col-sm-2 col-form-label" asp-for="SearchConditoin.Account">帳號</label>
+    <label class="col-sm-2 col-form-label" asp-for="Account">帳號</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" asp-for="SearchConditoin.Account">
+      <input type="text" class="form-control" asp-for="Account">
     </div>
   </div>
   <div class="form-group row mt-2">
-    <label class="col-sm-2 col-form-label" asp-for="SearchConditoin.Name">姓名</label>
+    <label class="col-sm-2 col-form-label" asp-for="Name">姓名</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" asp-for="SearchConditoin.Name">
+      <input type="text" class="form-control" asp-for="Name">
     </div>
   </div>
   <div class="form-group row mt-2">
-    <label class="col-sm-2 col-form-label" asp-for="SearchConditoin.Email">Email</label>
+    <label class="col-sm-2 col-form-label" asp-for="Email">Email</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" asp-for="SearchConditoin.Email">
+      <input type="text" class="form-control" asp-for="Email">
     </div>
   </div>
   <div class="form-group row mt-2">
-    <label class="col-sm-2 col-form-label" asp-for="SearchConditoin.Organizatoin">組織</label>
+    <label class="col-sm-2 col-form-label" asp-for="Organization">組織</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" asp-for="SearchConditoin.Organizatoin">
+      <input type="text" class="form-control" asp-for="Organization">
     </div>
   </div>
   <button type="submit" class="btn btn-primary mt-2">搜尋</button>
-  @Html.Raw(Model.SearchResult)
-  @Html.HiddenFor(x => x.SearchResult)
 </form>
 
 <form method="post" enctype="multipart/form-data" asp-controller="Verify" asp-action="ExportExcel">
@@ -53,15 +51,25 @@
       </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.SearchResult)
+        @for(var i=0; i < Model.SearchResult.Count(); i++)
         {
-          <tr>            
+            @*資料binding*@
+            @Html.HiddenFor(x => x.SearchResult[i].Id);
+            @Html.HiddenFor(x => x.SearchResult[i].Account);
+            @Html.HiddenFor(x => x.SearchResult[i].Name);
+            @Html.HiddenFor(x => x.SearchResult[i].Organizatoin);
+            @Html.HiddenFor(x => x.SearchResult[i].Email);
+            @Html.HiddenFor(x => x.SearchResult[i].Birthday);
+            @Html.HiddenFor(x => x.SearchResult[i].Status);
+
+            var item = Model.SearchResult[i];
+            <tr>            
             <th scope="row">@item.Id</th>
             <td >@item.Account</td>
             <td>@item.Name</td>
             <td>@item.Organizatoin</td>
             <td>@item.Email</td>
-            <td>@item.Birthday</td>
+            <td>@item.Birthday.ToString("yyyy/MM/dd")</td>
             <td>    @Html.ActionLink(
                 "下載",
                 "Download",
@@ -88,29 +96,28 @@
     </tbody>
   </table>
   <button type="submit" class="btn btn-primary mt-2">匯出</button>
-   @*@Html.ActionLink(
-                "匯出",
-                "ExportExcel",
-                "Verify",
-                new { data = Model.SearchResult},
-                new { @class = "btn btn-info"})*@
 </form>
 
 @*分頁              *@
   <nav aria-label="Page navigation">
   <ul class="pagination mt-2">
     <li class="page-item">
-      <a class="page-link" aria-label="Previous" onclick="location.href='@Url.Action("Page", "Verify", new {PageIndex = Model.CurrentPage-1 == 0 ? 1 : Model.CurrentPage-1 })'>
+      <a class="page-link" aria-label="Next" onclick="location.href='@Url.Action("Page", "Verify", new {name = Model.Name, account = Model.Account, email = Model.Email, organization = Model.Organization, pageIndex = Model.CurrentPage == 1? 1: Model.CurrentPage-1 })'">
         <span aria-hidden="true">&laquo;</span>
       </a>
     </li>
-      @for (var i = Model.CurrentPage; i <= Model.TotalPage; i++)
-      {
-         <li class="page-item"><a class="page-link @(i == Model.CurrentPage? "active" : "")" onclick="location.href='@Url.Action("Page", "Verify", new {PageIndex = i})'">@i</a></li>
-         @if (i == Model.CurrentPage + 5) break;
+      @{
+        // 做多10個頁面按鈕
+      var pageCount = 0;
+      for (var i = Model.CurrentPage -5; i <= Model.TotalPage; i++){
+                if (i < 1) continue;
+                    <li class="page-item @(i == Model.CurrentPage? "active": string.Empty)"><a class="page-link" onclick="location.href='@Url.Action("Page", "Verify", new {name = Model.Name, account = Model.Account, email = Model.Email, organization = Model.Organization,  pageIndex = i})'">@i</a></li>
+                    pageCount++;
+                    if (pageCount == 10) break;
+        }
       }
     <li class="page-item">
-      <a class="page-link" aria-label="Next" onclick="location.href='@Url.Action("Page", "Verify", new {PageIndex = Model.CurrentPage+1 >= Model.TotalPage ? Model.TotalPage: Model.CurrentPage+1 })'">
+      <a class="page-link" aria-label="Next" onclick="location.href='@Url.Action("Page", "Verify", new {name = Model.Name, account = Model.Account, email = Model.Email, organization = Model.Organization, pageIndex = Model.CurrentPage+1 >= Model.TotalPage ? Model.TotalPage: Model.CurrentPage+1 })'">
         <span aria-hidden="true">&raquo;</span>
       </a>
     </li>

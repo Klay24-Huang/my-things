@@ -2,7 +2,11 @@
 {
     public class VerifyViewModel
     {
-        public UserBase SearchConditoin { get; set; } = new UserBase();
+        public string Name { get; set; } = string.Empty;
+        public string Account { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Organization { get; set; } = string.Empty;
+        //public UserBase SearchConditoin { get; set; } = new UserBase();
         public List<UserBase> SearchResult { get; set; } = new List<UserBase>();
         // 現在分頁
         public int CurrentPage { get; set; } = 1;
@@ -20,10 +24,5 @@
         public DateTime Birthday { get; set; }
         public string Organizatoin { get; set; } = string.Empty;
         public bool Status { get; set; }
-    }
-
-    public class Foo
-    {
-        public int Id { get; set; }
     }
 }

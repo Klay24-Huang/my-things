@@ -70,9 +70,10 @@ namespace For_Interview.Controllers
 
                 // copy file to server                
                 var file = model.File;
+                
                 if (file != null && file.Length > 0)
                 {
-                    var path = $@"{_environment.WebRootPath}\{file.FileName}";
+                    var path = $@"{_environment.ContentRootPath}\UploadFiles\{file.FileName}";
                     using var stream = new FileStream(path, FileMode.Create);
                     await file.CopyToAsync(stream);
                 }
@@ -80,7 +81,7 @@ namespace For_Interview.Controllers
                 var newApplyFile = new ApplyFile
                 {
                     UserId = newUser.Id,
-                    FilePath = @$"{_environment.ContentRootPath}\UploadFiles\{file?.FileName}",
+                    FilePath = $@"\UploadFiles\{file.FileName}",
                 };
 
                 await _dBContext.ApplyFiles.AddAsync(newApplyFile);

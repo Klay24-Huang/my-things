@@ -24,14 +24,13 @@ public partial class MyDBContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=127.0.0.1,1434;Database=for_interview; TrustServerCertificate=True;User ID=sa;Password=r^JJo032+A0^");
+    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ApplyFile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__apply_fi__3213E83FAF0B1C8E");
+            entity.HasKey(e => e.Id).HasName("PK__apply_fi__3213E83F2A007780");
 
             entity.ToTable("apply_file");
 
@@ -42,7 +41,6 @@ public partial class MyDBContext : DbContext
                 .HasColumnName("create_at");
             entity.Property(e => e.FilePath)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("file_path");
             entity.Property(e => e.UpdateAt)
                 .HasColumnType("datetime")
@@ -52,14 +50,16 @@ public partial class MyDBContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.ApplyFiles)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__apply_fil__user___4222D4EF");
+                .HasConstraintName("FK__apply_fil__user___4316F928");
         });
 
         modelBuilder.Entity<Org>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__orgs__3213E83F7016DFAA");
+            entity.HasKey(e => e.Id).HasName("PK__orgs__3213E83F11238F2D");
 
             entity.ToTable("orgs");
+
+            entity.HasIndex(e => e.Title, "UQ__orgs__E52A1BB3812D8994").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreateAt)
@@ -68,7 +68,6 @@ public partial class MyDBContext : DbContext
                 .HasColumnName("create_at");
             entity.Property(e => e.Title)
                 .HasMaxLength(30)
-                .IsUnicode(false)
                 .HasColumnName("title");
             entity.Property(e => e.UpdateAt)
                 .HasColumnType("datetime")
@@ -77,14 +76,13 @@ public partial class MyDBContext : DbContext
 
         modelBuilder.Entity<Syslog>(entity =>
         {
-            entity.HasKey(e => e.SeqNo).HasName("PK__syslog__4B660EB174D9FA2E");
+            entity.HasKey(e => e.SeqNo).HasName("PK__syslog__4B660EB1E4C704EC");
 
             entity.ToTable("syslog");
 
             entity.Property(e => e.SeqNo).HasColumnName("seq_no");
             entity.Property(e => e.Account)
                 .HasMaxLength(15)
-                .IsUnicode(false)
                 .HasColumnName("account");
             entity.Property(e => e.CreateAt)
                 .HasDefaultValueSql("(getdate())")
@@ -92,7 +90,6 @@ public partial class MyDBContext : DbContext
                 .HasColumnName("create_at");
             entity.Property(e => e.Ipaddress)
                 .HasMaxLength(15)
-                .IsUnicode(false)
                 .HasColumnName("ipaddress");
             entity.Property(e => e.LoginAt)
                 .HasColumnType("datetime")
@@ -101,18 +98,17 @@ public partial class MyDBContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F6BD8FEEE");
+            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F6BD77EE2");
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.Email, "UQ__users__AB6E6164E8933D68").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__users__AB6E6164B9BE1F72").IsUnique();
 
-            entity.HasIndex(e => e.Account, "UQ__users__EA162E1180829247").IsUnique();
+            entity.HasIndex(e => e.Account, "UQ__users__EA162E1160DC5525").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Account)
                 .HasMaxLength(15)
-                .IsUnicode(false)
                 .HasColumnName("account");
             entity.Property(e => e.Birthday)
                 .HasColumnType("datetime")
@@ -123,16 +119,13 @@ public partial class MyDBContext : DbContext
                 .HasColumnName("create_at");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("email");
             entity.Property(e => e.Name)
                 .HasMaxLength(10)
-                .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.OrgId).HasColumnName("org_id");
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("password");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.UpdateAt)
@@ -142,7 +135,7 @@ public partial class MyDBContext : DbContext
             entity.HasOne(d => d.Org).WithMany(p => p.Users)
                 .HasForeignKey(d => d.OrgId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__users__org_id__3E52440B");
+                .HasConstraintName("FK__users__org_id__3F466844");
         });
 
         OnModelCreatingPartial(modelBuilder);

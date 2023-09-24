@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using For_Interview.Helper;
 using For_Interview.Models;
 using For_Interview.Models.DbModels;
 using For_Interview.Models.ViewModels;
@@ -16,101 +17,66 @@ namespace For_Interview.Controllers
     {
         //private readonly ILogger _logger;
         private readonly MyDBContext _dBContext;
-        public TestController(MyDBContext dBContext) { 
+        public TestController(MyDBContext dBContext)
+        {
             _dBContext = dBContext;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(new TestViewModel { MyProperty = 222});
-        }
+            var orgs = new List<Org> {
+                new Org
+                {
+                    Title = "A1",
+                },
+                new Org
+                {
+                    Title = "B1",
+                },
+                new Org
+                {
+                    Title = "C1",
+                },
 
-        public class Employee
-        {
-            public int EmpID { get; set; }
-            public string EmpName { get; set; } = string.Empty;
-        }
+            };
+            await _dBContext.AddRangeAsync(orgs);
+            await _dBContext.SaveChangesAsync();
 
-        //public async Task TestParam(int myProperty, TestViewModel model)
-        //{
-            //Console.WriteLine(model.MyProperty);
-            //    Console.WriteLine(myProperty);
+            var users = new List<User>();
+            var password = Base64Helper.Encode("aaa111aaa11");
+            for (var i = 0; i <= 200; i++)
+            {
+                var user = new User
+                {
+                    Name = $"使用者{i}",
+                    OrgId = orgs[i % 3].Id,
+                    Birthday = DateTime.Now,
+                    Email = $"test{i}@gmail.com",
+                    Account = $"forTest{i}",
+                    Password = password,
+                    Status = i % 2 == 0,
+                };
+                users.Add(user);
+            }
+            await _dBContext.AddRangeAsync(users);
+            await _dBContext.SaveChangesAsync();
 
+            var files = new List<ApplyFile>();
+            var filePath = @"\UploadFiles\test.jpg";
 
-            //    var testdata = new List<Employee>()
-            //{
-            //    new Employee(){ EmpID=101, EmpName="Johnny"},
-            //    new Employee(){ EmpID=102, EmpName="Tom"},
-            //    new Employee(){ EmpID=103, EmpName="Jack"},
-            //    new Employee(){ EmpID=104, EmpName="Vivian"},
-            //    new Employee(){ EmpID=105, EmpName="Edward"},
-            //};
-            //    //using System.Data;  
-            //    DataTable dt = new DataTable("Grid");
-            //    dt.Columns.AddRange(new DataColumn[2] { new DataColumn("EmpID"),
-            //                            new DataColumn("EmpName") });
+            for (var i = 0; i <= 200; i++)
+            {
+                var file = new ApplyFile {
+                    UserId = users[i].Id,
+                    FilePath = filePath,
+                };
+                files.Add(file);
+            }
 
-            //    foreach (var emp in testdata)
-            //    {
-            //        dt.Rows.Add(emp.EmpID, emp.EmpName);
-            //    }
-            //    //using ClosedXML.Excel;  
-            //    using (XLWorkbook wb = new XLWorkbook())
-            //    {
-            //        wb.Worksheets.Add(dt);
-            //        using (MemoryStream stream = new MemoryStream())
-            //        {
-            //            wb.SaveAs(stream);
-            //            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Grid.xlsx");
-            //        }
-            //    }
-
-
-            //var client = new SmtpClient();
-            //client.Host = "smtp.gmail.com";
-            //client.Port = 587;
-            //client.Credentials = new NetworkCredential("wkus963@gmail.com", "rtle uysi prrg ecpq");
-            //client.EnableSsl = true;
-
-            //var mail = new MailMessage();
-            //mail.From = new MailAddress("wkus963@gamil.com", "測試帳號");
-            //mail.To.Add("sean200365@hotmail.com");
-            ////設定標題
-            //mail.Subject = "啟用帳號";
-
-            ////標題編碼
-            //mail.SubjectEncoding = Encoding.UTF8;
-
-            ////是否使用html當作信件內容主體
-            //mail.IsBodyHtml = true;
-
-            ////信件內容 
-            //mail.Body = "adfdsafdasgewqg";
-
-            ////內容編碼
-            //mail.BodyEncoding = Encoding.UTF8;
-            //client.Send(mail);
-            //return Ok();
+            await _dBContext.AddRangeAsync(files);
+            await _dBContext.SaveChangesAsync();
 
 
-            //var log = await _dBContext.Syslogs.FirstOrDefaultAsync();
-            //Console.WriteLine(log);
-            //_logger.LogInformation("some info");
-            //var log = new Syslog
-            //{
-            //    Account = "asdfaaa",
-            //    Ipaddress = "127.0.10.10",
-            //};
-
-            //_dBContext.Syslogs.Add(log);
-            //await _dBContext.SaveChangesAsync();
-
-            //return Ok();
-        //}
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new TestViewModel { MyProperty = 222 });
         }
     }
 }

@@ -29,11 +29,17 @@ namespace For_Interview.Controllers
         public async Task<IActionResult> Login(LoginViewModel login)
         {
             if (!ModelState.IsValid)
-            { 
+            {
                 return View("Index", login);
             }
 
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Account == login.Account && u.Password ==  Base64Helper.Encode(login.Password));
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Account == login.Account && u.Password == Base64Helper.Encode(login.Password));
+
+            var log = new Syslog
+            {
+                Account = login.Account,
+                Ipaddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            };
 
             if (user == null)
             {
@@ -46,16 +52,10 @@ namespace For_Interview.Controllers
             else
             {
                 TempData["LoginResult"] = "登入成功";
-
-                var log = new Syslog
-                {
-                    Account = login.Account,
-                    Ipaddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                    LoginAt = DateTime.Now,
-                };
-                await _dbContext.Syslogs.AddAsync(log);
-                await _dbContext.SaveChangesAsync();
+                log.LoginAt = DateTime.Now;
             }
+            await _dbContext.Syslogs.AddAsync(log);
+            await _dbContext.SaveChangesAsync();
 
             return View("Index", login);
         }

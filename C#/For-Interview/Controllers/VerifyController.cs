@@ -36,17 +36,6 @@ namespace For_Interview.Controllers
 
         public IActionResult Index()
         {
-            //var users = new List<User>();
-            //for (int i = 0; i < 20; i++)
-            //{
-            //    users.Add(new User { 
-            //        Id = i,
-            //        Name = "name",
-            //        Account = "aaa",
-            //        Email = "aaa@gmail.com"
-            //    });
-            //}
-            //return View(users);
             return View(new VerifyViewModel());
         }
 
@@ -54,33 +43,32 @@ namespace For_Interview.Controllers
         public async Task<IActionResult> Search(VerifyViewModel searchViewModel)
         {
             using var dapper = new SqlConnection(_configuration.GetConnectionString("Default"));
-            var condition = searchViewModel.SearchConditoin;
             var p = new DynamicParameters();
             var whereConditionList = new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(condition.Account))
+            if (!string.IsNullOrWhiteSpace(searchViewModel.Account))
             {
                 whereConditionList.Add("u.account LIKE @Account");
-                p.Add("@Account", $"%{condition.Account}%");
+                p.Add("@Account", $"%{searchViewModel.Account}%");
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.Name))
+            if (!string.IsNullOrWhiteSpace(searchViewModel.Name))
             {
                 whereConditionList.Add("u.name LIKE @Name");
-                p.Add("@Name", $"%{condition.Name}%");
+                p.Add("@Name", $"%{searchViewModel.Name}%");
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.Email))
+            if (!string.IsNullOrWhiteSpace(searchViewModel.Email))
             {
                 whereConditionList.Add("u.email LIKE @Email");
-                p.Add("@Email", $"%{condition.Email}%");
+                p.Add("@Email", $"%{searchViewModel.Email}%");
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.Organizatoin))
+            if (!string.IsNullOrWhiteSpace(searchViewModel.Organization))
             {
 
                 whereConditionList.Add("o.title LIKE @Org");
-                p.Add("@Org", $"%{condition.Organizatoin}%");
+                p.Add("@Org", $"%{searchViewModel.Organization}%");
             }
 
             // 總頁數
@@ -122,10 +110,17 @@ namespace For_Interview.Controllers
             return View("index", searchViewModel);
         }
 
-        public async Task<IActionResult> Page(int pageIndex, VerifyViewModel searchViewModel)
+        public async Task<IActionResult> Page(int pageIndex, string name, string email, string account, string organization)
         {
-            searchViewModel.CurrentPage = pageIndex;
-            return await Search(searchViewModel);
+            var model = new VerifyViewModel
+            {
+                Name = name,
+                Email = email,
+                Account = account,
+                Organization = organization,
+                CurrentPage = pageIndex
+            };
+            return await Search(model);
         }
 
         public async Task<IActionResult> SendEmail(int userId)
@@ -187,12 +182,7 @@ namespace For_Interview.Controllers
         public async Task<IActionResult> Download(int userId)
         {
             var applyFile = await _dbContext.ApplyFiles.FirstOrDefaultAsync(x => x.UserId == userId);
-            return File(System.IO.File.OpenRead(applyFile.FilePath), "application/octet-stream", Path.GetFileName(applyFile.FilePath));
-
-            //if (System.IO.File.Exists(applyFile.FilePath))
-            //{
-            //    return File(System.IO.File.OpenRead(applyFile.FilePath), "application/octet-stream", Path.GetFileName(applyFile.FilePath));
-            //}
+            return File(System.IO.File.OpenRead($"{_environment.ContentRootPath}{applyFile.FilePath}"), "application/octet-stream", Path.GetFileName(applyFile.FilePath));
         }
 
         public IActionResult ExportExcel(VerifyViewModel searchViewModel)
@@ -211,7 +201,7 @@ namespace For_Interview.Controllers
             foreach (var user in searchViewModel.SearchResult)
             {
                 var status = user.Status ? "已開通" : "未開通";
-                dt.Rows.Add(user.Id, user.Account, user.Name, user.Email, user.Birthday, user.Organizatoin, status);
+                dt.Rows.Add(user.Id, user.Account, user.Name, user.Email, user.Birthday.ToString("yyyy/MM/dd"), user.Organizatoin, status);
             }
             //using ClosedXML.Excel;  
             using XLWorkbook wb = new();
@@ -219,13 +209,6 @@ namespace For_Interview.Controllers
             using MemoryStream stream = new();
             wb.SaveAs(stream);
             return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "審核列表.xlsx");
-        }
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
