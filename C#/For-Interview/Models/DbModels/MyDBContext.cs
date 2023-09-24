@@ -31,7 +31,7 @@ public partial class MyDBContext : DbContext
     {
         modelBuilder.Entity<ApplyFile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__apply_fi__3213E83F6166FFC0");
+            entity.HasKey(e => e.Id).HasName("PK__apply_fi__3213E83FD1B9C12F");
 
             entity.ToTable("apply_file");
 
@@ -52,12 +52,12 @@ public partial class MyDBContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.ApplyFiles)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__apply_fil__user___5441852A");
+                .HasConstraintName("FK__apply_fil__user___48CFD27E");
         });
 
         modelBuilder.Entity<Org>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__orgs__3213E83F444FAAF2");
+            entity.HasKey(e => e.Id).HasName("PK__orgs__3213E83F9EF6B069");
 
             entity.ToTable("orgs");
 
@@ -77,7 +77,7 @@ public partial class MyDBContext : DbContext
 
         modelBuilder.Entity<Syslog>(entity =>
         {
-            entity.HasKey(e => e.SeqNo).HasName("PK__syslog__4B660EB1D30331DF");
+            entity.HasKey(e => e.SeqNo).HasName("PK__syslog__4B660EB12C5C51C1");
 
             entity.ToTable("syslog");
 
@@ -101,13 +101,13 @@ public partial class MyDBContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83FE1E27603");
+            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F39EC610C");
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.Email, "UQ__users__AB6E6164771B711C").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__users__AB6E616479FB723C").IsUnique();
 
-            entity.HasIndex(e => e.Account, "UQ__users__EA162E11BE19BA7F").IsUnique();
+            entity.HasIndex(e => e.Account, "UQ__users__EA162E1157CCEC7D").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Account)
@@ -142,7 +142,7 @@ public partial class MyDBContext : DbContext
             entity.HasOne(d => d.Org).WithMany(p => p.Users)
                 .HasForeignKey(d => d.OrgId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__users__org_id__5070F446");
+                .HasConstraintName("FK__users__org_id__44FF419A");
         });
 
         OnModelCreatingPartial(modelBuilder);

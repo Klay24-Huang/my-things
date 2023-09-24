@@ -1,3 +1,6 @@
+using For_Interview.Models.ConfigModels;
+using For_Interview.Models.DbModels;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

@@ -20,6 +20,15 @@
       <input type="password" class="form-control" asp-for="Password">
     </div>
   </div>
+        @{
+            var loginResult = TempData["LoginResult"]?.ToString();
+            if (loginResult != null)
+            {
+                <div class="mt-2 text-danger">
+                    @loginResult
+                </div>
+            }
+        }
   <button type="submit" class="btn btn-primary mt-2">登入</button>
   <a class="nav-link text-dark mt-2" asp-area="" asp-controller="Register" asp-action="Index">註冊</a>
 </form>

@@ -1,58 +1,105 @@
-﻿using For_Interview.Models.ViewModels;
+﻿using For_Interview.Helper;
+using For_Interview.Models;
+using For_Interview.Models.DbModels;
+using For_Interview.Models.ViewModels;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace For_Interview.Controllers
 {
     public class RegisterController : Controller
     {
-        private readonly ILogger<RegisterController> _logger;
+        private readonly MyDBContext _dBContext;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogger<RegisterController> _logger;
 
-        public RegisterController(ILogger<RegisterController> logger, IWebHostEnvironment hostingEnvironment)
+        public RegisterController(MyDBContext dBContext, ILogger<RegisterController> logger, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
+            _dBContext = dBContext;
             _environment = hostingEnvironment;
         }
 
-        public IActionResult Index()
+
+        public IActionResult Index(RegisterViewModel model)
         {
-            return View();
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(RegisterViewModel form)
+        public async Task Register(RegisterViewModel model)
         {
-            _logger.LogTrace(form.Email);
-
-            if (form.File != null)
+            try
             {
-                //string _FileName = Path.GetFileName(form.File.FileName);
-                var a = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                Console.WriteLine(a);
-                Console.WriteLine(a + "\\" + form.File);
 
-                using (var stream = System.IO.File.Create(a +"\\"+ form.File.FileName))
-                {
-                    await form.File.CopyToAsync(stream);
-                }
-            }
             
-            TempData["Test"] = "foooo";
-            return View(form);
+            //if (ModelState.IsValid)
+            //{ }
+
+            var orgTitle = model.Organizatoin.Trim();
+            var organization = await _dBContext.Orgs.FirstOrDefaultAsync(x => x.Title == orgTitle);
+
+            using var trasaction = await _dBContext.Database.BeginTransactionAsync();
+            var newUser = new User
+            {
+                Name = model.Name,
+                Birthday = model.Birthday,
+                Email = model.Email,
+                Account = model.Account,
+                Password = Base64Helper.Encode(model.Password),
+                Status = false,
+            };
+
+            if (organization != null)
+            {
+                newUser.OrgId = organization.Id;
+            }
+            else
+            {
+                var newOrg = new Org { Title = orgTitle };
+                await _dBContext.Orgs.AddAsync(newOrg);
+                await _dBContext.SaveChangesAsync();
+                newUser.OrgId = newOrg.Id;
+            }
+
+            await _dBContext.Users.AddAsync(newUser);
+            await _dBContext.SaveChangesAsync();
+
+            // copy file to server                
+            var file = model.File;
+            if (file != null && file.Length > 0)
+            {
+                var path = $@"{_environment.WebRootPath}\{file.FileName}";
+                using var stream = new FileStream(path, FileMode.Create);
+                await file.CopyToAsync(stream);
+            }
+
+            var newApplyFile = new ApplyFile
+            {
+                UserId = newUser.Id,
+                FilePath = $"{_environment.ContentRootPath}/{file?.FileName}",
+            };
+
+            await _dBContext.ApplyFiles.AddAsync(newApplyFile);
+            await _dBContext.SaveChangesAsync();
+            await trasaction.CommitAsync();
+            TempData["RegisterResult"] = "註冊成功";
+            }
+            catch (Exception e)
+            {
+                TempData["RegisterResult"] = "註冊失敗";
+                _logger.LogError(null, e, null);
+                throw;
+            }
         }
 
-        public IActionResult Download()
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
         {
-            //var path = @"C:\code\my-things\C#\For-Interview\UploadFiles\";
-            //var a = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            //FileStream stream = new FileStream(a+"\\"+ "2023 Uark C# 題目.pdf", FileMode.Open, FileAccess.Read, FileShare.Read);
-            //return File(stream, "application/octet-stream", "abc.pdf");
-
-            // get root path
-            Console.WriteLine(this._environment.ContentRootPath);
-            return View();
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

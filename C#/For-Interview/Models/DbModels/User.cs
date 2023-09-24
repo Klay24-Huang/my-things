@@ -19,7 +19,7 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
-    public int Status { get; set; }
+    public bool Status { get; set; }
 
     public DateTime CreateAt { get; set; }
 
