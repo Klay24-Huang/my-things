@@ -30,9 +30,9 @@ namespace For_Interview.Controllers
             public string EmpName { get; set; } = string.Empty;
         }
 
-        public async Task TestParam(int myProperty, TestViewModel model)
-        {
-            Console.WriteLine(model.MyProperty);
+        //public async Task TestParam(int myProperty, TestViewModel model)
+        //{
+            //Console.WriteLine(model.MyProperty);
             //    Console.WriteLine(myProperty);
 
 
@@ -105,7 +105,7 @@ namespace For_Interview.Controllers
             //await _dBContext.SaveChangesAsync();
 
             //return Ok();
-        }
+        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
