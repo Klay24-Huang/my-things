@@ -5,6 +5,7 @@ import deepClone from '../utils/deepClone'
 
 it('test combinationSum3 function', () => {
     const tests = [
+
         // {
         //     title: 'case 1',
         //     input: {
@@ -12,7 +13,7 @@ it('test combinationSum3 function', () => {
         //         n: 1,
         //     },
         //     expect: []
-        // }, 
+        // },
         // {
         //     title: 'case 2',
         //     input: {
@@ -61,17 +62,6 @@ it('test combinationSum3 function', () => {
         //             [3, 5, 7],
         //             [4, 5, 6]
         //         ]
-        //     ]
-        // },
-        // {
-        //     title: 'case 5',
-        //     input: {
-        //         k: 2,
-        //         n: 6,
-        //     },
-        //     expect: [
-        //         [1, 5],
-        //         [2, 4]
         //     ]
         // },
         {
