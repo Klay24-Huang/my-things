@@ -20,8 +20,8 @@ namespace All.Question2
             }
             Task.WaitAll(tasks.ToArray());
 
-            Console.WriteLine("currentId=" + GetCurrentId());
             //Console.ReadKey();
+            Console.WriteLine("currentId=" + GetCurrentId());
         }
 
         //private int currentId;
