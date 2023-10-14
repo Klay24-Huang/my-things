@@ -1,3 +1,5 @@
+// Ignore Spelling: api
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_unit_test.Controllers
@@ -21,6 +23,7 @@ namespace api_unit_test.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            _logger.LogInformation("some log info.");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
