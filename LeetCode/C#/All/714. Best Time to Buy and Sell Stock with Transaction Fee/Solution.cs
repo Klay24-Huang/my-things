@@ -13,39 +13,68 @@ namespace All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee
     {
         public int MaxProfit(int[] prices, int fee)
         {
-            var dp = new int[prices.Length, prices.Length + 1];
-            //for (var i = 0; i < prices.Length; i++)
-            //{
-            //    dp[i, 0] = 0;
-            //}
+            var len = prices.Length;
+            var dp = new int[len];
+            var prevHigh = 0;
 
-            //for (var i = 0; i < prices.Length + 1; i++)
-            //{
-            //    dp[0, i] = 0;
-            //}
-
-            for (var i = 1; i < prices.Length; i++)
+            for (var i = 0; i < len - 1; i++)
             {
-                for (var j = i + 1; j < prices.Length + 1; j++)
+                var currDp = new int[len];
+                for (var j = i + 1; j < len; j++)
                 {
-                    var profit = prices[j - 1] - prices[i - 1] - fee;
-                    //Console.WriteLine($"index i: {i}, j: {j}, raw profit: {profit}");
+                    var profit = prices[j] - prices[i] - fee;
+                    //Console.WriteLine($"i : {i}, price i {prices[i]},j: {j}, price j {prices[j]}, profit: {profit}");
                     if (profit < 0)
                         profit = 0;
                     if (i - 2 >= 0)
-                    {
-                        //Console.WriteLine($"in ,{dp[i, j]}");
-                        profit += dp[i-2, i-1];
-                    }
-                    //Console.WriteLine($"profit: {profit}");
-                    dp[i, j] = profit;
-                    dp[i, j] = new int[] { dp[i - 1, j], dp[i, j - 1], profit }.Max();
-                    //dp[i, j] = new int[] { dp[i - 1, j], dp[i, j - 1], (profit + dp[i - 1, j - 1]) }.Max();
+                        profit += prevHigh;
+                    currDp[j] = new int[] { currDp[j - 1], dp[j], profit }.Max();
                 }
+                // 紀錄第n天前的最高值
+                //Console.WriteLine($"prevHigh:{prevHigh}");
+                prevHigh = currDp[i + 1];
+                //Console.WriteLine(JsonSerializer.Serialize(currDp));
+                dp = currDp;
             }
             //Print2DArray(dp);
-            return dp[prices.Length - 1, prices.Length];
+            return dp[len - 1];
         }
+
+        //public int MaxProfit(int[] prices, int fee)
+        //{
+        //    var dp = new int[prices.Length, prices.Length + 1];
+        //    //for (var i = 0; i < prices.Length; i++)
+        //    //{
+        //    //    dp[i, 0] = 0;
+        //    //}
+
+        //    //for (var i = 0; i < prices.Length + 1; i++)
+        //    //{
+        //    //    dp[0, i] = 0;
+        //    //}
+
+        //    for (var i = 1; i < prices.Length; i++)
+        //    {
+        //        for (var j = i + 1; j < prices.Length + 1; j++)
+        //        {
+        //            var profit = prices[j - 1] - prices[i - 1] - fee;
+        //            //Console.WriteLine($"index i: {i}, j: {j}, raw profit: {profit}");
+        //            if (profit < 0)
+        //                profit = 0;
+        //            if (i - 2 >= 0)
+        //            {
+        //                //Console.WriteLine($"in ,{dp[i, j]}");
+        //                profit += dp[i - 2, i - 1];
+        //            }
+        //            //Console.WriteLine($"profit: {profit}");
+        //            dp[i, j] = profit;
+        //            dp[i, j] = new int[] { dp[i - 1, j], dp[i, j - 1], profit }.Max();
+        //            //dp[i, j] = new int[] { dp[i - 1, j], dp[i, j - 1], (profit + dp[i - 1, j - 1]) }.Max();
+        //        }
+        //    }
+        //    //Print2DArray(dp);
+        //    return dp[prices.Length - 1, prices.Length];
+        //}
 
 
         public static void Print2DArray<T>(T[,] matrix)
