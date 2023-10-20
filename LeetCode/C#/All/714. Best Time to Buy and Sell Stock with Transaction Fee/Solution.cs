@@ -13,31 +13,17 @@ namespace All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee
     {
         public int MaxProfit(int[] prices, int fee)
         {
-            var len = prices.Length;
-            var dp = new int[len];
-            var prevHigh = 0;
+            int holding = -prices[0];
+            int notHolding = 0;
 
-            for (var i = 0; i < len - 1; i++)
+            for (int day = 1; day < prices.Length; day++)
             {
-                var currDp = new int[len];
-                for (var j = i + 1; j < len; j++)
-                {
-                    var profit = prices[j] - prices[i] - fee;
-                    //Console.WriteLine($"i : {i}, price i {prices[i]},j: {j}, price j {prices[j]}, profit: {profit}");
-                    if (profit < 0)
-                        profit = 0;
-                    if (i - 2 >= 0)
-                        profit += prevHigh;
-                    currDp[j] = new int[] { currDp[j - 1], dp[j], profit }.Max();
-                }
-                // 紀錄第n天前的最高值
-                //Console.WriteLine($"prevHigh:{prevHigh}");
-                prevHigh = currDp[i + 1];
-                //Console.WriteLine(JsonSerializer.Serialize(currDp));
-                dp = currDp;
+                holding = Math.Max(holding, notHolding - prices[day]);
+                notHolding = Math.Max(notHolding, holding + prices[day] - fee);
+                Console.WriteLine($"{holding}, {notHolding}");
             }
-            //Print2DArray(dp);
-            return dp[len - 1];
+
+            return Math.Max(holding, notHolding);
         }
 
         //public int MaxProfit(int[] prices, int fee)

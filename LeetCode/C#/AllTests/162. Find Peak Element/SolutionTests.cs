@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee;
+using All._162._Find_Peak_Element;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using AllTests;
 
-namespace All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee.Tests
+namespace All._162._Find_Peak_Element.Tests
 {
     [TestClass()]
     public class SolutionTests
     {
         [TestMethod()]
-        public void MaxProfitTest()
+        public void FindPeakElementTest()
         {
             var tests = new List<Test<Args, int>>
             {
@@ -21,19 +21,33 @@ namespace All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee.Tests
                 {
                     Name = "case: 1",
                     Args = new Args{
-                        Prices = new int[] { 1,3,2,8,4,9},
-                        Fee = 2
+                        Nums = new int[] { 1,2,3,1},
                     },
-                    Want = 8
+                    Want = 2
                 },
                 new Test<Args, int>
                 {
                     Name = "case: 2",
                     Args = new Args{
-                        Prices = new int[] { 1, 3, 7, 5, 10, 3 },
-                        Fee = 3
+                        Nums = new int[] { 1,2,1,3,5,6,4 },
                     },
-                    Want = 6
+                    Want = 5
+                },
+                 new Test<Args, int>
+                {
+                    Name = "case: 3",
+                    Args = new Args{
+                        Nums = new int[] { 1,2,3 },
+                    },
+                    Want = 2
+                },
+                 new Test<Args, int>
+                {
+                    Name = "case: 4",
+                    Args = new Args{
+                        Nums = new int[] { 2,1 },
+                    },
+                    Want = 0
                 },
             };
 
@@ -42,7 +56,7 @@ namespace All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee.Tests
             {
                 Console.WriteLine(test.Name);
                 var input = test.Args;
-                var result = s.MaxProfit(input.Prices, input.Fee);
+                var result = s.FindPeakElement(input.Nums);
                 var errorMessage = $"{test.Name}";
 
                 Assert.AreEqual(test.Want, result, errorMessage);
@@ -51,8 +65,7 @@ namespace All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee.Tests
 
         private class Args
         {
-            public int[] Prices { get; set; } = Array.Empty<int>();
-            public int Fee { get; set; }
+            public int[] Nums { get; set; } = Array.Empty<int>();
         }
     }
 }
