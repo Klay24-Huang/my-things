@@ -10,37 +10,27 @@ namespace All._2542._Maximum_Subsequence_Score
     {
         public long MaxScore(int[] nums1, int[] nums2, int k)
         {
+
+            long result = 0;
+            long sum = 0;
+            PriorityQueue<int, int> heap = new();
+
             Array.Sort(nums2, nums1);
-            //long ans = 0;
 
-            long ans = 0;
-            void action(ref long ans, int index, int[] sub1, int[] sub2)
+            for (int i = 1; i <= k; i++)
             {
-                for (var i = index; i < nums1.Length; i++)
-                {
-                    var newSub1 = sub1;
-                    var newSub2 = sub2;
-                    if (newSub1.Length < k)
-                    {
-                        newSub1 = newSub1.Append(nums1[i]).ToArray();
-                        newSub2 = newSub2.Append(nums2[i]).ToArray();
+                sum += nums1[^i];
+                heap.Enqueue(nums1[^i], nums1[^i]);
+            }
+            result = sum * nums2[^k];
 
-                        if (newSub1.Length == k)
-                        {
-                            var r = newSub1.Sum() * newSub2.Min();
-                            Console.WriteLine(r);
-                            if (r > ans)
-                                ans = r;
-                        }
-                    }
-
-                    action(ref ans, i+1, newSub1, newSub2);
-                }
+            for (int i = k + 1; i <= nums1.Length; i++)
+            {
+                sum = sum + nums1[^i] - heap.EnqueueDequeue(nums1[^i], nums1[^i]);
+                result = Math.Max(result, result = sum * nums2[^i]);
             }
 
-            action(ref ans, 0, Array.Empty<int>(), Array.Empty<int>());
-
-            return ans;
+            return result;
         }
     }
 }
