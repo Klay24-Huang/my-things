@@ -11,23 +11,35 @@ namespace All._2542._Maximum_Subsequence_Score
         public long MaxScore(int[] nums1, int[] nums2, int k)
         {
             Array.Sort(nums2, nums1);
-            var sub1 = nums1.Take(k);
-            var sub2 = nums2.Take(k);
-            long ans = sub1.Sum() * sub2.Min();
-            
-            
-            for (var i = k; i < nums1.Length; i++)
+            //long ans = 0;
+
+            long ans = 0;
+            void action(ref long ans, int index, int[] sub1, int[] sub2)
             {
-                //Console.WriteLine(i);
-                //Console.WriteLine(k < nums1.Length);
-                sub1 = sub1.Skip(1);
-                sub1 = sub1.Append(nums1[i]);
-                sub2 = sub2.Skip(1);
-                sub2 = sub2.Append(nums2[i]);
-                long r = sub1.Sum() * sub2.Min();
-                if (r > ans)
-                    ans = r;
+                for (var i = index; i < nums1.Length; i++)
+                {
+                    var newSub1 = sub1;
+                    var newSub2 = sub2;
+                    if (newSub1.Length < k)
+                    {
+                        newSub1 = newSub1.Append(nums1[i]).ToArray();
+                        newSub2 = newSub2.Append(nums2[i]).ToArray();
+
+                        if (newSub1.Length == k)
+                        {
+                            var r = newSub1.Sum() * newSub2.Min();
+                            Console.WriteLine(r);
+                            if (r > ans)
+                                ans = r;
+                        }
+                    }
+
+                    action(ref ans, i+1, newSub1, newSub2);
+                }
             }
+
+            action(ref ans, 0, Array.Empty<int>(), Array.Empty<int>());
+
             return ans;
         }
     }
