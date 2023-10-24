@@ -11,108 +11,54 @@ namespace All._2462._Total_Cost_to_Hire_K_Workers
     {
         public long TotalCost(int[] costs, int k, int candidates)
         {
-            var n = costs.Length;
-            var pqLeft = new PriorityQueue<int, int>();
-            var pqRight = new PriorityQueue<int, int>();
-
+            var len = costs.Length;
+            var pq = new PriorityQueue<int, int>();
             var l = 0;
+            var r = len - 1;
 
-            for (; l < candidates;)
-            {
-                pqLeft.Enqueue(l, costs[l]);
-                l++;
-
-            }
-
-            var r = n - 1;
             for (var i = 0; i < candidates; i++)
             {
-                if (l > r)
+                l = i;
+                pq.Enqueue(l, costs[l]);
+                var newR = len - 1 - i;
+                if (newR >  candidates - 1)
                 {
-                    break;
+                    r = newR;
+                    pq.Enqueue(r, costs[r]);
                 }
-                pqRight.Enqueue(r, costs[r]);
-                r--;
             }
-
-            long cost = 0;
+            //Console.WriteLine($"left index {l}, right index {r}");
+            long totalCost = 0;
             for (var i = 0; i < k; i++)
             {
-                var rIndex = int.MaxValue;
-                var rCost = int.MaxValue;
-                var rHasItem = pqRight.TryPeek(out rIndex, out rCost);
+                var hasItem = pq.TryDequeue(out int index, out int cost);
 
-                var lIndex = int.MaxValue;
-                var lCost = int.MaxValue;
-                var lHasItem = pqLeft.TryPeek(out lIndex, out lCost);
-
-                Console.WriteLine();
-                Console.WriteLine();
-                if ((lHasItem && !rHasItem) || lCost < rCost || ((lCost == rCost) && (lIndex < rIndex)))
+                if (hasItem)
                 {
-                    cost += lCost;
-                    pqLeft.Dequeue();
-                    if (l <= r)
+                    totalCost += cost;
+                    //Console.WriteLine($"add: {cost}, index {index}, total cost {totalCost}");
+                    //Console.WriteLine($"{l} {r}");
+
+                    // check if there remain item to enqueue
+                    if (r - 1 > l)
                     {
-                        pqLeft.Enqueue(l, costs[l]);
-                        Console.WriteLine($"enquue index {l}");
-                        l++;
+                        if (index - r > 0)
+                        {
+                            // from right
+                            r--;
+                            pq.Enqueue(r, costs[r]);
+                        }
+                        else
+                        {
+                            // from left
+                            l++;
+                            pq.Enqueue(l, costs[l]);
+                        }
                     }
                 }
-
-                if ((rHasItem && !lHasItem) || rCost < lCost || ((rCost == lCost) && (rIndex < lIndex)))
-                {
-                    cost += rCost;
-                    pqRight.Dequeue();
-                    if (r >= l)
-                    {
-                        pqRight.Enqueue(r, costs[r]);
-                        Console.WriteLine($"enquue index {r}");
-                        r--;
-                    }
-                }
-                Console.WriteLine($"r, index {rIndex}, cost {rCost}");
-
-                Console.WriteLine($"l, index {lIndex}, cost {lCost}");
-                Console.WriteLine($"after round. cost is {cost}");
+                //Console.WriteLine($"left index {l}, right index {r}");
             }
-            return cost;
-            //var n = costs.Length;
-            //var pqFromStart = new PriorityQueue<int,int>();
-            //var pqFromEnd = new PriorityQueue<int,int>();
-            //for(var i = 0; i < k; i++)
-            //{
-            //    pqFromStart.Enqueue(i, costs[i]);
-            //    pqFromEnd.Enqueue(i, costs[n - 1 - i]);
-            //    pqFromStart.con
-            //}
-
-            //long cost = 0;
-            //for (var i = 0; i < k; i++)
-            //{
-            //    int i1 = -1;
-            //    int c1 = -1;
-            //    pqFromStart.TryPeek(out i1, out c1);
-
-            //    int i2 = -1;
-            //    int c2 = -1;
-            //    pqFromEnd.TryPeek(out i2, out c2);
-
-            //    if (c1< c2)
-            //    {
-            //        cost += c1;
-            //        pqFromStart.Dequeue();
-            //        pqFromStart.Enqueue(i1 + 1, costs[i1 + 1]);
-            //    }
-            //    else
-            //    {
-            //        cost += c2;
-            //        pqFromEnd.Dequeue();
-            //        pqFromEnd.Enqueue(i2 + 1, costs[i2 + 1]);
-            //    }
-            //}
-
-            //return cost;
+            return totalCost;
         }
     }
 }

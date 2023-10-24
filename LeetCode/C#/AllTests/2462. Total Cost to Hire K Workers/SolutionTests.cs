@@ -17,16 +17,16 @@ namespace All._2462._Total_Cost_to_Hire_K_Workers.Tests
         {
             var tests = new List<Test<Args, int>>
             {
-                //new Test<Args, int>
-                //{
-                //    Name = "case: 1",
-                //    Args = new Args{
-                //        Costs = new int[] {17,12,10,2,7,2,11,20,8},
-                //        K = 3,
-                //        Candidates = 4,
-                //    },
-                //    Want = 11
-                //},
+                new Test<Args, int>
+                {
+                    Name = "case: 1",
+                    Args = new Args{
+                        Costs = new int[] {17,12,10,2,7,2,11,20,8},
+                        K = 3,
+                        Candidates = 4,
+                    },
+                    Want = 11
+                },
                  new Test<Args, int>
                 {
                     Name = "case: 2",
