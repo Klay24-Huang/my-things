@@ -13,49 +13,46 @@ namespace All._1493._Longest_Subarray_of_1_s_After_Deleting_One_Element
         public int LongestSubarray(int[] nums)
         {
             var ans = 0;
-            var holder = new List<int>();
-            var add  = (int num) => { 
-                holder.Add(num);
-                if (holder.Count > 3)
-                {
-                    holder.RemoveAt(0);
-                }
-            };
-
-            var getAns = () =>
+            var hasZero = false;
+            var prev = 0;
+            var curr = 0;
+            for (var i = 0; i < nums.Length; i++)
             {
-                Console.WriteLine(JsonSerializer.Serialize(holder));
-                var r = holder.Sum();
-                ans = r > ans ? r : ans;
-            };
-
-            var currLen = 0;
-            foreach (var item in nums)
-            {
-                if (item == 0)
+                var num = nums[i];
+                if (num == 0)
                 {
-                    if(currLen > 0)
+                    hasZero = true;
+                    if (i - 1 >= 0 && nums[i - 1] == 0)
                     {
-                        add(currLen);
-                        getAns();
-                        currLen = 0;
+                        // two zero continue; chain break;
+                        prev = 0;
                     }
-                    add(0);
-                    getAns();
+
+                    // meet first zero after chain
+
+                    // calculate result
+                    var r = curr + prev;
+                    ans = r > ans ? r : ans;
+                    //Console.WriteLine($"curr {curr}, prev {prev}");
+                    prev = curr;
+                    curr = 0;
                 }
                 else
                 {
                     // is one
-                    currLen++;
+                    curr++;
                 }
             }
 
-            if(currLen > 0)
+            if (curr > 0)
             {
-                add(currLen);
-                getAns();
+                // calculate result
+                var r = curr + prev;
+                ans = r > ans ? r : ans;
             }
-            
+
+            ans = !hasZero ? --ans : ans;
+
             return ans;
         }
     }
