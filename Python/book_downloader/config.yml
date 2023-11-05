@@ -1,0 +1,11 @@
+base_path: "C:\\others\\book"
+category: "Investment"
+
+book:
+    name: ""
+    start_at: 0
+    total_pages: 100
+
+location:
+    left_top: []
+    right_bottom: []
