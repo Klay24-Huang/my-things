@@ -1,5 +1,8 @@
 base_path: "C:\\others\\book"
 category: "Investment"
+# second
+sleep: 0.5
+is_test: false
 
 book:
     name: "ALL_2023_06"
