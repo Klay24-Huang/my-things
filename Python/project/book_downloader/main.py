@@ -1,35 +1,19 @@
-import yaml
-import os
-import pyautogui
-from PIL import ImageGrab
+import keyboard
+import worker
 
-# load config
-with open('config.yml', 'r') as yaml_file:
-    config = yaml.safe_load(yaml_file)
+# 监听键盘事件
+def key_listener(e):
+    global running
+    if e.event_type == keyboard.KEY_DOWN:
+        if e.name == 'q' and keyboard.is_pressed('w'):
+            # start screenshot
+            worker.start_screenshot_task()
+        elif e.name == 'q' and keyboard.is_pressed('e'):
+            # stop manual
+            worker.stop()
 
-# make direct
-folder_path = f'{config['base_path']}\\{config['category']}\\{config['book']['name']}'
-if not os.path.exists(folder_path):
-    os.makedirs(folder_path)
+# 设置键盘事件监听
+keyboard.on_press(key_listener)
 
-# screenshot and save# screenshot and save
-start_at = config['book']['start_at']
-prefix = '#'
-left_top = config['book']['top_left']  # 例如 (100, 100)
-right_bottom = config['book']['bottom_right']  # 例如 (300, 300)
-
-for page in range(config['book']['total_pages']):
-
-    screenshot = ImageGrab.grab(bbox=(left_top[0], left_top[1], right_bottom[0], right_bottom[1]))
-
-    # file name
-    if prefix == '#' and current_page >= start_at:
-        prefix = ''
-
-    current_page = page + 1
-
-    file_name = f'{prefix}{current_page}.png'
-    screenshot.save(f"{folder_path}//{file_name}")
-
-    # next page
-    pyautogui.press('right')
+# 保持程序运行
+keyboard.wait('esc')  # 按下 "Esc" 键结束程序
