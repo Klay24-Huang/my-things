@@ -2,9 +2,9 @@ base_path: "C:\\others\\book"
 category: "Investment"
 
 book:
-    name: ""
-    start_at: 0
-    total_pages: 100
+    name: "ALL_2023_06"
+    start_at: 2
+    total_pages: 84
 
 location:
     left_top: []
