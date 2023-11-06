@@ -1,8 +1,8 @@
 base_path: "C:\\others\\book"
-category: "Investment"
+category: "english"
 # second
 sleep: 0.5
-is_test: false
+is_test: true
 
 book:
     name: "ALL_2023_06"
@@ -10,5 +10,5 @@ book:
     total_pages: 84
 
 location:
-    left_top: []
-    right_bottom: []
+    left_top: [-2160, 520]
+    right_bottom: [-3, 3432]

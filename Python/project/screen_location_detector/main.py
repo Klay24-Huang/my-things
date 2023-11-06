@@ -3,7 +3,6 @@ import pyautogui
 
 # 监听键盘事件
 def key_listener(e):
-    global running
     if e.event_type == keyboard.KEY_DOWN:
         if e.name == 'q' and keyboard.is_pressed('w'):
             current_mouse_x, current_mouse_y = pyautogui.position()

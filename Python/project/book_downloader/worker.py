@@ -18,6 +18,7 @@ def start_screenshot_task():
     thread.start()
 
 def screenshot():
+    print("start")
     # load config
     with open('config.yml', 'r') as yaml_file:
         config = yaml.safe_load(yaml_file)
@@ -30,8 +31,8 @@ def screenshot():
     # screenshot and save
     start_at = config['book']['start_at']
     prefix = '#'
-    left_top = config['book']['left_top']  # 例如 (100, 100)
-    right_bottom = config['book']['right_bottom']  # 例如 (300, 300)
+    left_top = config['location']['left_top']  # 例如 (100, 100)
+    right_bottom = config['location']['right_bottom']  # 例如 (300, 300)
 
     for page in range(config['book']['total_pages']):
         if not running:
