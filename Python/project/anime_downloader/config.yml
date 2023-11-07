@@ -1,2 +1,7 @@
+path:
+    download: ""
+    real: ""
 name: ""
-episode_count: 12
+episode:
+    count: 12
+    skip_section: []
