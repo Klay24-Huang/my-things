@@ -38,7 +38,7 @@ def screenshot():
         if not running:
             break
 
-        screenshot = ImageGrab.grab(bbox=(left_top[0], left_top[1], right_bottom[0], right_bottom[1]))
+        screenshot = ImageGrab.grab(bbox=(left_top[0], left_top[1], right_bottom[0], right_bottom[1]), include_layered_windows=False, all_screens=True)
 
         # file name
         current_page = page + 1
