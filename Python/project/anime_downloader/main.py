@@ -7,7 +7,7 @@ def key_listener(e):
     if e.event_type == keyboard.KEY_DOWN:
         if e.name == 'q' and keyboard.is_pressed('w'):
             # start screenshot
-            worker.start_screenshot_task()
+            worker.start()
         elif e.name == 'q' and keyboard.is_pressed('e'):
             # stop manual
             worker.stop()
@@ -19,7 +19,3 @@ keyboard.on_press(key_listener)
 keyboard.wait('esc')  # 按下 "Esc" 键结束程序
 
 
-# 下載動作
-# 從下載資料夾 轉移到儲存資料夾
-# 從影片檔抽取音源
-# 音源檔除去op ed片段

@@ -2,6 +2,9 @@ from moviepy.editor import *
 from pydub import AudioSegment
 from pydub.playback import play
 
+def start():
+    print(0)
+
 def extract_audio(video_path: str, audio_path: str):
     # 載入影片文件
     video = VideoFileClip(video_path)

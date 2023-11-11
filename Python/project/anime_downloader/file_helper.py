@@ -2,6 +2,9 @@ import os
 import shutil
 import time
 
+def move_to_destination():
+    print()
+
 def filter_and_copy_files(folder_path1, file_type, file_size, file_created_at, folder_path2):
     # 检查文件夹路径是否存在
     if not os.path.exists(folder_path1) or not os.path.exists(folder_path2):

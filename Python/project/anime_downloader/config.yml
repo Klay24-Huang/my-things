@@ -1,7 +1,32 @@
+isTest: true
 path:
     download: ""
     real: ""
-name: ""
-episode:
-    count: 12
-    skip_section: []
+
+anime:
+    name: ""
+    position:
+        # press english dub button
+        dub: []
+        # play button
+        play: []
+        # next episode button
+        next: []
+        # anime web position
+        tab: []
+    episode:
+        count: 12
+        skip_section: []
+
+download_tool:
+    wait:
+        # wait for anime play (sec)
+        play: 10
+        # wait for video loading (sec)
+        loading: 120
+    position:
+        icon: []
+        open_download_page: []
+        # tab: []
+        # download after video loading
+        download: []
