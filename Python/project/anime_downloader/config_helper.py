@@ -8,3 +8,6 @@ def get():
             _config = yaml.safe_load(yaml_file)
     
     return _config
+
+def get_destination_path():
+    return rf'{_config['path']['destination']}\{_config['anime']['name']}'

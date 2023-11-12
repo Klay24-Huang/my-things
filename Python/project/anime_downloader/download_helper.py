@@ -38,6 +38,9 @@ def start():
 
         time.sleep(wait_for_anime_play)
 
+        if config['isTest']:
+            break
+
 
 def move_mouse_and_click(location):
     pyautogui.moveTo(location[0], location[1], duration=1)

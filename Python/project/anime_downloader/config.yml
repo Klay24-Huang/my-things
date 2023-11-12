@@ -1,7 +1,13 @@
 isTest: true
 path:
     download: ""
-    real: ""
+    destination: ""
+
+filter:
+    # MB
+    size: 50
+    min_created_before: 60
+    file_type: [".mp4"]
 
 anime:
     name: ""
@@ -16,7 +22,8 @@ anime:
         tab: []
     episode:
         count: 12
-        skip_section: []
+        # section of retain
+        section: []
 
 download_tool:
     wait:
