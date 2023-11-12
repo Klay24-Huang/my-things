@@ -20,7 +20,7 @@ def start_screenshot_task():
 def screenshot():
     print("start")
     # load config
-    with open('config.yml', 'r') as yaml_file:
+    with open('config.yml', 'r', encoding='utf-8') as yaml_file:
         config = yaml.safe_load(yaml_file)
 
     # make direct
@@ -46,7 +46,7 @@ def screenshot():
             prefix = ''
             current_page -= (start_at - 1)
 
-        file_name = f'{prefix}{current_page}.png'
+        file_name = f'{prefix}{current_page}.webp'
         screenshot.save(f"{folder_path}//{file_name}")
 
         # only screen shot once in test mode
