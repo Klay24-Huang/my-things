@@ -1,12 +1,11 @@
 import os
 import shutil
-import time
 import config_helper
 import mimetypes
 from datetime import datetime, timedelta
 
 def get_file_and_root(folder_path):
-    root, _, files = os.walk(folder_path)
+    root, _, files = next(os.walk(folder_path))
     return  root, files
 
 def move_to_destination():
@@ -22,26 +21,29 @@ def move_to_destination():
     # get all file in download folder 
     root, files = get_file_and_root(config['path']['download'])
     for file in files:
-        for file in files:
-            file_path = os.path.join(root, file)
-            file_info = os.stat(file_path)
-
-            # check create time
-            if file_info.st_ctime < (datetime.now() - timedelta(minutes= filter_config['min_created_before'])):
-                continue
-
-            # check file size
-            if (file_info.st_size /(1024 * 1024)) < filter_config['size']:
-                continue
-
-            # check datatype
-            file_type, _ = mimetypes.guess_type(file_path)
-            if file_type not in file_type_set:
-                continue
-            
-            # copy file
-            shutil.copy2(file_path, destination_path)
-            print(f"copy file: {os.path.basename(file_path)}")
+        file_path = os.path.join(root, file)
+        file_info = os.stat(file_path)
+        # print(os.path.basename(file_path))
+        
+        # check create time
+        file_create_time = datetime.fromtimestamp(file_info.st_ctime)
+        if file_create_time < (datetime.now() - timedelta(minutes= filter_config['min_created_before'])):
+            # print('skip by created time')
+            continue
+        # check file size
+        if (file_info.st_size /(1024 * 1024)) < filter_config['size']:
+            # print('skip by file size')
+            continue
+        # check datatype
+        file_type, _ = mimetypes.guess_type(file_path)
+        main_type, sub_type = file_type.split('/')
+        if main_type != 'video' and sub_type not in file_type_set:
+            # print('skip by file type')
+            continue
+        
+        # copy file
+        shutil.copy2(file_path, destination_path)
+        print(f"copy file: {os.path.basename(file_path)}")
             
 
 

@@ -1,6 +1,5 @@
 from moviepy.editor import *
 from pydub import AudioSegment
-from pydub.playback import play
 import config_helper
 import file_helper
 import os
@@ -9,22 +8,43 @@ def start():
     # get all video file
     path = config_helper.get_destination_path()
     root, files = file_helper.get_file_and_root(path)
-    
-    for file in files:
+
+    # sort by create time
+    sorted_files = sorted(files, key=lambda x: os.path.getctime(os.path.join(path, x)))
+
+    # get section
+    all_sections = config_helper.get()['anime']['episode']['sections']
+
+    for index, file in enumerate(sorted_files):
         video_path = os.path.join(root, file)
-        video = VideoFileChilp(video_path)
+        video = VideoFileClip(video_path)
 
         # extract audio
         audio = video.audio
 
-        # remove segment
+        # combine need section
+        sections = all_sections[index]
+        new_audio = None
+        for section in sections:
+            start_time_ms = time_to_ms(section[0])
+            end_time_ms = time_to_ms(section[1])
+            if new_audio is None:
+                new_audio = audio[start_time_ms: end_time_ms]
+            else:
+                new_audio += audio[start_time_ms: end_time_ms]
 
         # save audio file
-        audio.write_audiofile()
+        new_audio.write_audiofile(rf'{path}\{index}.mp3', codec='mp3')
 
-        # 先保留 以免操作錯誤
+        # No need to explicitly close video file (handled by MoviePy)
+
+        # 先保留以免操作错误
         # remove video
 
+def time_to_ms(time_str):
+    # 将时间字符串（例如"1:30"）转换为毫秒
+    minutes, seconds = map(int, time_str.split(":"))
+    return (minutes * 60 + seconds) * 1000
 
 # def extract_audio(video_path: str, audio_path: str):
 #     # 載入影片文件
@@ -54,11 +74,6 @@ def start():
 
 #     # 將結果保存到輸出文件
 #     audio.export(output_file, format="mp3")
-
-# def time_to_ms(time_str):
-#     # 將時間字符串（例如"1:30"）轉換為毫秒
-#     minutes, seconds = map(int, time_str.split(":"))
-#     return (minutes * 60 + seconds) * 1000
 
 # # 使用示例
 # input_file = "your_audio_file.mp3"

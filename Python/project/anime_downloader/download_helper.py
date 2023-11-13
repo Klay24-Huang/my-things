@@ -14,11 +14,11 @@ def start():
     time.sleep(wait_for_anime_play)
 
     download_tool_config = config['download_tool']
-    for index in range(config['anime']['episode']['count']):
+    for _ in range(config['anime']['episode']['count']):
         # click play btn
-        # play_btn_location = anime_location_config['play']
-        # pyautogui.moveTo(play_btn_location[0], play_btn_location[1], duration=1)
-        # pyautogui.click()
+        play_btn_location = anime_location_config['play']
+        pyautogui.moveTo(play_btn_location[0], play_btn_location[1], duration=1)
+        pyautogui.click()
 
         # open coconut download window
         move_mouse_and_click(download_tool_config['position']['icon'])
@@ -29,7 +29,7 @@ def start():
 
         # wait loading and download
         time.sleep(download_tool_config['wait']['loading'])
-        move_mouse_and_click(download_tool_config['position']['loading'])
+        move_mouse_and_click(download_tool_config['position']['download'])
         # close loading page
         pyautogui.hotkey('ctrl', 'w')
 
@@ -38,7 +38,7 @@ def start():
 
         time.sleep(wait_for_anime_play)
 
-        if config['isTest']:
+        if config['is_test']:
             break
 
 

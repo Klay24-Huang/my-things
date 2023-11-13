@@ -1,7 +1,7 @@
-isTest: true
+is_test: true
 path:
-    download: ""
-    destination: ""
+    download: "C:\\Users\\sean2\\Downloads"
+    destination: "C:\\others\\anime_download"
 
 filter:
     # MB
@@ -10,30 +10,37 @@ filter:
     file_type: [".mp4"]
 
 anime:
-    name: ""
+    name: "The Eminence in Shadow"
     position:
         # press english dub button
-        dub: []
+        dub: [1487, 1814]
         # play button
-        play: []
+        # play: [799 , 1487]wq
         # next episode button
-        next: []
+        next: [2206, 1590]
         # anime web position
-        tab: []
+        # tab: []
     episode:
         count: 12
         # section of retain
-        section: []
+        sections: [
+                # 1
+                [["1:00", "2:00"], ["4:00", "5:00"]],
+                # 2
+                [["20:00", "21:00"]],
+                # 3
+                [["0:00", "10:00"]],
+            ]
 
 download_tool:
     wait:
         # wait for anime play (sec)
         play: 10
         # wait for video loading (sec)
-        loading: 120
+        loading: 180
     position:
-        icon: []
-        open_download_page: []
+        icon: [3312, 97]
+        open_download_page: [2788, 164]
         # tab: []
         # download after video loading
-        download: []
+        download: [2487, 954]
