@@ -19,22 +19,25 @@ def start():
         video_path = os.path.join(root, file)
         video = VideoFileClip(video_path)
 
-        # extract audio
+        # # extract audio
         audio = video.audio
 
         # combine need section
         sections = all_sections[index]
-        new_audio = None
-        for section in sections:
-            start_time_ms = time_to_ms(section[0])
-            end_time_ms = time_to_ms(section[1])
-            if new_audio is None:
-                new_audio = audio[start_time_ms: end_time_ms]
-            else:
-                new_audio += audio[start_time_ms: end_time_ms]
+        print(len(sections))
+        sub_clip = []
+        if len(sections) == 0:
+            # if no section, get all 
+            sub_clip.append(audio)
+        else:
+            for section in sections:
+                start_time_ms = time_to_ms(section[0])
+                end_time_ms = time_to_ms(section[1])
+                slice_audio =  audio.subclip(start_time_ms/1000, end_time_ms/1000)
+                sub_clip.append(slice_audio)
 
         # save audio file
-        new_audio.write_audiofile(rf'{path}\{index}.mp3', codec='mp3')
+        CompositeAudioClip(sub_clip).write_audiofile(rf'{path}\{index + 1}.mp3', codec='mp3', progress_bar = False, fps = 44100)
 
         # No need to explicitly close video file (handled by MoviePy)
 
