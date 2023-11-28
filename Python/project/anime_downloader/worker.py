@@ -11,3 +11,4 @@ def start():
     # 從影片檔抽取音源
     # 音源檔除去op ed片段
     audio_helper.start()
+    print("all work finished.")

@@ -1,6 +1,8 @@
 import keyboard
 import worker
 
+print("running.")
+
 # 监听键盘事件
 def key_listener(e):
     global running
@@ -17,5 +19,4 @@ keyboard.on_press(key_listener)
 
 # 保持程序运行
 keyboard.wait('esc')  # 按下 "Esc" 键结束程序
-
 

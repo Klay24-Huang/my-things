@@ -27,7 +27,9 @@ def move_to_destination():
         
         # check create time
         file_create_time = datetime.fromtimestamp(file_info.st_ctime)
-        if file_create_time < (datetime.now() - timedelta(minutes= filter_config['min_created_before'])):
+        # 如果沒設定時間則忽略
+        min_created_before = filter_config['min_created_before']
+        if  min_created_before > 0 and file_create_time < (datetime.now() - timedelta(minutes= filter_config['min_created_before'])):
             # print('skip by created time')
             continue
         # check file size
