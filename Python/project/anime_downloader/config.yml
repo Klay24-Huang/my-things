@@ -6,28 +6,28 @@ path:
 filter:
     # MB
     size: 50
-    min_created_before: 0
+    min_created_before: 60
     file_type: [".mp4"]
 
 anime:
-    name: "The Eminence in Shadow"
+    name: "My Happy Marriage"
     position:
         # press english dub button
-        dub: [1487, 1814]
+        dub: [-2320, 1846]
         # play button
-        # play: [799 , 1487]wq
+        play: [-3038, 1538]
         # next episode button
-        next: [2206, 1590]
+        next: [-1679, 1635]
         # anime web position
         # tab: []
     episode:
-        count: 1
+        count: 2
         # section of retain
         sections: [
                 # 1
-                [["0:00", "1:51"], ["3:19", "5:00"]],
+                [["0:00", "24:47"]],
                 # # # 2
-                # [["1:00", "2:00"]],
+                [["0:00", "0:50"], ["2:21": "22:20"]],
                 # # # 3
                 # [["0:00", "10:00"]],
             ]
@@ -39,8 +39,8 @@ download_tool:
         # wait for video loading (sec)
         loading: 180
     position:
-        icon: [3312, 97]
-        open_download_page: [2788, 164]
+        icon: [-517, 136]
+        open_download_page: [-1024, 209]
         # tab: []
         # download after video loading
-        download: [2487, 954]
+        download: [-1374, 1003]
