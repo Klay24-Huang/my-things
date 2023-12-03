@@ -1,0 +1,14 @@
+base_path: "C:\\others\\book"
+category: "english"
+# second
+sleep: 1.5
+is_test: false
+
+book:
+    name: "ALL_2023_03"
+    start_at: 2
+    total_pages: 84
+
+location:
+    left_top: [-2160, 548]
+    right_bottom: [0, 3443]
