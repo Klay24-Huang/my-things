@@ -1,6 +1,6 @@
 keyboard==0.13.5
-moviepy==1.0.3
+Pillow==10.0.1
+Pillow==10.1.0
 PyAutoGUI==0.9.54
-pydub==0.25.1
 PyYAML==6.0.1
 PyYAML==6.0.1
