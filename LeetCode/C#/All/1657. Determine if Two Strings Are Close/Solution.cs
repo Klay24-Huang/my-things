@@ -70,8 +70,8 @@ namespace All._1657._Determine_if_Two_Strings_Are_Close
             l2.Add(count2);
             l1.Sort();
             l2.Sort() ;
-            Console.WriteLine($"{JsonSerializer.Serialize(l1)}");
-            Console.WriteLine($"{JsonSerializer.Serialize(l2)}");
+            // Console.WriteLine($"{JsonSerializer.Serialize(l1)}");
+            // Console.WriteLine($"{JsonSerializer.Serialize(l2)}");
             return s1.SetEquals(s2) && l1.OrderBy(x=>x).SequenceEqual(l2.OrderBy(x => x));
         }
     }

@@ -27,8 +27,8 @@ namespace All._875._Koko_Eating_Bananas
                 {
                     decimal pile = piles[i];
                     hour -= (int)Math.Ceiling(pile / speedToEat);
-                    Console.WriteLine($"current eat hour: {(int)Math.Ceiling(pile / speedToEat)}");
-                    Console.WriteLine($"hour is {hour}");
+                    // Console.WriteLine($"current eat hour: {(int)Math.Ceiling(pile / speedToEat)}");
+                    // Console.WriteLine($"hour is {hour}");
 
                     if (hour < 0)
                     {
@@ -41,11 +41,11 @@ namespace All._875._Koko_Eating_Bananas
             while (l <= r)
             {
                 int speedToEat = (l + r) / 2;
-                Console.WriteLine($"eat speed {speedToEat}");
-                Console.WriteLine($"l: {l}, r: {r}");
+                // Console.WriteLine($"eat speed {speedToEat}");
+                // Console.WriteLine($"l: {l}, r: {r}");
                 var hour = h;
                 hour = action(hour, speedToEat);
-                Console.WriteLine($"end, hour: {hour}");
+                // Console.WriteLine($"end, hour: {hour}");
 
                 if (hour == 0)
                 {

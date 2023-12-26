@@ -67,7 +67,7 @@ namespace All._875._Koko_Eating_Bananas.Tests
             var s = new Solution();
             foreach (var test in tests)
             {
-                Console.WriteLine(test.Name);
+                // Console.WriteLine(test.Name);
                 var input = test.Args;
                 var result = s.MinEatingSpeed(input.Piles, input.Hour);
                 var errorMessage = $"{test.Name}";

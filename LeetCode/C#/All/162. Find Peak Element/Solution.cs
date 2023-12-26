@@ -15,7 +15,7 @@ namespace All._162._Find_Peak_Element
             while (l <= r)
             {
                 var i = (l + r) / 2;
-                Console.WriteLine("index" + i);
+                // Console.WriteLine("index" + i);
                 if ((i - 1 < 0 || nums[i] > nums[i - 1]) && (i + 1 == nums.Length || nums[i] > nums[i + 1]))
                 {
                     return i;
@@ -29,7 +29,7 @@ namespace All._162._Find_Peak_Element
                 {
                     r = --i;
                 }
-                Console.WriteLine($"i {l}, j {r}");
+                // Console.WriteLine($"i {l}, j {r}");
             }
             return -1;
         }

@@ -23,7 +23,7 @@ namespace All.GetSameValues
             }
 
             DateTime now = DateTime.Now;
-            Console.WriteLine("同時出現在2個陣列的數字有 {0} 筆, 費時 {1:0.00}秒",
+            // Console.WriteLine("同時出現在2個陣列的數字有 {0} 筆, 費時 {1:0.00}秒",
                 GetSameValues(itemsA, itemsB).Length, (DateTime.Now - now).TotalSeconds);
         }
 

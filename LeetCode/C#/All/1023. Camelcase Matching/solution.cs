@@ -19,7 +19,7 @@
 
             foreach (char c in s)
             {
-                //Console.WriteLine($"{c}, {pattern[i]}");
+                //// Console.WriteLine($"{c}, {pattern[i]}");
                 if (i == pattern.Length && char.IsUpper(c))
                 {
                     // pattern的所有char 都走完
@@ -42,7 +42,7 @@
             }
 
             // s 匹配pattern 所有char
-            //Console.WriteLine(i);
+            //// Console.WriteLine(i);
             return i == pattern.Length;
         }
     }

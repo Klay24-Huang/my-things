@@ -36,7 +36,7 @@ namespace All._2352._Equal_Row_and_Column_Pairs
                 var str = string.Join(separator, arr);
                 if (dic.ContainsKey(str))
                 {
-                    //Console.WriteLine(string.Join("",arr));
+                    //// Console.WriteLine(string.Join("",arr));
                     ans += dic[str];
                 }
             }

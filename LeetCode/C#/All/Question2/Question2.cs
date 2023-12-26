@@ -21,7 +21,7 @@ namespace All.Question2
             Task.WaitAll(tasks.ToArray());
 
             //Console.ReadKey();
-            Console.WriteLine("currentId=" + GetCurrentId());
+            // Console.WriteLine("currentId=" + GetCurrentId());
         }
 
         //private int currentId;

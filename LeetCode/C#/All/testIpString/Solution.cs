@@ -17,7 +17,7 @@ namespace All.testIpString
 
             foreach (var ip in ips)
             {
-                Console.WriteLine(ip.Split(new char[] { ',' }).FirstOrDefault());
+                // Console.WriteLine(ip.Split(new char[] { ',' }).FirstOrDefault());
             }
         }
     }
