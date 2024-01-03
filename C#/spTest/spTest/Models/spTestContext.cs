@@ -27,7 +27,7 @@ namespace spTest.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=H-HICEIT6-20\\NEWSERVER;Initial Catalog=spTest;User ID=sa;Password=1qaz@WSX");
+                optionsBuilder.UseSqlServer("Server=H-HICEIT6-20\\NEWSERVER;Database=spTest;MultipleActiveResultSets=true;User ID=sa;Password=1qaz@WSX");
             }
         }
 
@@ -35,126 +35,95 @@ namespace spTest.Models
         {
             modelBuilder.Entity<Assignment>(entity =>
             {
-                entity.ToTable("assignments");
-
-                entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
-
-                entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-
-                entity.Property(e => e.ProjectId).HasColumnName("project_id");
-
-                entity.Property(e => e.TaskId).HasColumnName("task_id");
+                entity.ToTable("Assignment");
 
                 entity.HasOne(d => d.Employee)
                     .WithMany(p => p.Assignments)
                     .HasForeignKey(d => d.EmployeeId)
-                    .HasConstraintName("FK__assignmen__emplo__403A8C7D");
-
-                entity.HasOne(d => d.Project)
-                    .WithMany(p => p.Assignments)
-                    .HasForeignKey(d => d.ProjectId)
-                    .HasConstraintName("FK__assignmen__proje__412EB0B6");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Assignmen__Emplo__412EB0B6");
 
                 entity.HasOne(d => d.Task)
                     .WithMany(p => p.Assignments)
                     .HasForeignKey(d => d.TaskId)
-                    .HasConstraintName("FK__assignmen__task___4222D4EF");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Assignmen__TaskI__4222D4EF");
             });
 
             modelBuilder.Entity<Department>(entity =>
             {
-                entity.ToTable("department");
-
-                entity.Property(e => e.DepartmentId).HasColumnName("department_id");
+                entity.ToTable("Department");
 
                 entity.Property(e => e.DepartmentName)
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("department_name");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Location)
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("location");
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Employee>(entity =>
             {
-                entity.ToTable("employee");
-
-                entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-
-                entity.Property(e => e.DepartmentId).HasColumnName("department_id");
+                entity.ToTable("Employee");
 
                 entity.Property(e => e.EmployeeName)
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("employee_name");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.EmployeeStatus)
                     .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("employee_status");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.EmployeeType)
                     .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("employee_type");
+                    .IsUnicode(false);
 
-                entity.Property(e => e.LeaveEndDate)
-                    .HasColumnType("date")
-                    .HasColumnName("leave_end_date");
+                entity.Property(e => e.LeaveEndDate).HasColumnType("date");
 
-                entity.Property(e => e.LeaveStartDate)
-                    .HasColumnType("date")
-                    .HasColumnName("leave_start_date");
+                entity.Property(e => e.LeaveStartDate).HasColumnType("date");
 
-                entity.Property(e => e.Salary)
-                    .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("salary");
+                entity.Property(e => e.Salary).HasColumnType("decimal(10, 2)");
 
                 entity.HasOne(d => d.Department)
                     .WithMany(p => p.Employees)
                     .HasForeignKey(d => d.DepartmentId)
-                    .HasConstraintName("FK__employee__depart__3D5E1FD2");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Employee__Depart__3E52440B");
             });
 
             modelBuilder.Entity<Project>(entity =>
             {
-                entity.ToTable("project");
-
-                entity.Property(e => e.ProjectId).HasColumnName("project_id");
+                entity.ToTable("Project");
 
                 entity.Property(e => e.ProjectName)
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("project_name");
+                    .IsUnicode(false);
 
-                entity.Property(e => e.StartDate)
-                    .HasColumnType("date")
-                    .HasColumnName("start_date");
+                entity.Property(e => e.StartDate).HasColumnType("date");
             });
 
             modelBuilder.Entity<Task>(entity =>
             {
-                entity.ToTable("task");
-
-                entity.Property(e => e.TaskId).HasColumnName("task_id");
+                entity.ToTable("Task");
 
                 entity.Property(e => e.Priority)
                     .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("priority");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TaskName)
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("task_name");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TaskStatus)
                     .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("task_status");
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.Tasks)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Task__ProjectId__3B75D760");
             });
 
             OnModelCreatingPartial(modelBuilder);

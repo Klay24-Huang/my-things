@@ -7,13 +7,13 @@ namespace spTest.Models
     {
         public Project()
         {
-            Assignments = new HashSet<Assignment>();
+            Tasks = new HashSet<Task>();
         }
 
         public int ProjectId { get; set; }
         public string? ProjectName { get; set; }
         public DateTime? StartDate { get; set; }
 
-        public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<Task> Tasks { get; set; }
     }
 }
