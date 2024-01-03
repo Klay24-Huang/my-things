@@ -37,7 +37,7 @@ class Program
         stopwatch.Restart();
         for (int i = 0; i < count; i++)
         {
-            QueryEmployeesWithDapper();
+            //QueryEmployeesWithDapper();
         }
         stopwatch.Stop();
         Console.WriteLine($"sp 查詢時間：{stopwatch.Elapsed.TotalMilliseconds} 毫秒");
@@ -85,23 +85,39 @@ class Program
             "Finance",
             //"Operations"
         };
-        var employeesWithComplexConditions = context.Employees
-            .Where(e => departmentsFilter.Contains(e.Department.DepartmentName) &&
-                e.EmployeeType == "Full-Time" &&
-                e.Salary >= 60000m && e.Salary <= 120000m &&
-                e.Assignments.Any(a => a.Task.Priority == "High"))
-            .Include(e => e.Department)
-            .Include(e => e.Assignments.Where(a => a.Task.Priority == "High"))
-            .ThenInclude(a => a.Task).ToList();
 
-        //var sql = context.Employees
-        //    .Where(e => departmentsFilter.Contains(e.Department.DepartmentName) &&
-        //        e.EmployeeType == "Full-Time" &&
-        //        e.Salary >= 60000m && e.Salary <= 120000m &&
-        //        e.Assignments.Any(a => a.Task.Priority == "High"))
-        //    .Include(e => e.Department)
-        //    .Include(e => e.Assignments.Where(a => a.Task.Priority == "High"))
-        //    .ThenInclude(a => a.Task).ToQueryString();
+        var projectFilter = new List<string>
+        {
+            "project Name 1",
+            "project Name 3",
+            "project Name 5",
+        };
+
+        var employeesWithComplexConditions = context.Employees
+            .Where(e => departmentsFilter.Contains(e.Department.DepartmentName)
+                && e.EmployeeType == "Full-Time"
+                && e.Salary >= 60000m 
+                && e.Salary <= 120000m 
+                && e.Assignments.Count >=2
+                )
+            .Include(e => e.Department)
+            .Include(e => e.Assignments)
+            //.Include(e => e.Assignments.Where(a => a.Task.Priority == "High" && projectFilter.Contains(a.Task.Project.ProjectName)
+            .ThenInclude(a => a.Task)
+            .ToList();
+
+        var sql = context.Employees
+            .Where(e => departmentsFilter.Contains(e.Department.DepartmentName)
+                && e.EmployeeType == "Full-Time"
+                && e.Salary >= 60000m
+                && e.Salary <= 120000m
+                && e.Assignments.Count >= 2
+                )
+            .Include(e => e.Department)
+            .Include(e => e.Assignments)
+            //.Include(e => e.Assignments.Where(a => a.Task.Priority == "High" && projectFilter.Contains(a.Task.Project.ProjectName)
+            .ThenInclude(a => a.Task)
+            .ToQueryString();
 
     }
 
