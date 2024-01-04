@@ -11,6 +11,7 @@ using System.Diagnostics;
 
 class Program
 {
+    // https://www.entityframeworktutorial.net/entityframework6/linq-to-entities-queries-in-entity-framework.aspx
     // Scaffold-DbContext "Server=H-HICEIT6-20\NEWSERVER;Database=spTest;MultipleActiveResultSets=true;User ID=sa;Password=1qaz@WSX" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
     // reference: https://ithelp.ithome.com.tw/articles/10262110
     static void Main()
