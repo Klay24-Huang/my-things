@@ -1,0 +1,6 @@
+https://joolfe.github.io/postman-to-openapi/
+
+// 安裝
+npm i postman-to-openapi -g
+
+p2o ./iRent2.0API.postman_collection.json -f ./result.yml
