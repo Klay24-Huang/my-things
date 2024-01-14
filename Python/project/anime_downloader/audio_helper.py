@@ -10,13 +10,17 @@ def start():
     path = config_helper.get_destination_path()
     root, files = file_helper.get_file_and_root(path)
 
-    # sort by create time
-    sorted_files = sorted(files, key=lambda x: os.path.getctime(os.path.join(path, x)))
+    # sort by update time
+    sorted_files = sorted(files, key=lambda x: os.path.getmtime(os.path.join(path, x)))
+
+    # get config
+    config = config_helper.get()
 
     # get section
-    all_sections = config_helper.get()['anime']['episode']['sections']
+    all_sections = config['anime']['episode']['sections']
 
     for index, file in enumerate(sorted_files):
+        print(os.path.join(root, file))
         # list to store file paths
         audio_files = []
         # get video and audio
@@ -28,7 +32,6 @@ def start():
 
         # combine need section
         sections = all_sections[index]
-        print(len(sections))
         if len(sections) == 0:
             # if no section, get all 
             audio_file_path = rf'{path}\{index + 1}.mp3'
@@ -49,7 +52,8 @@ def start():
             combined_audio = concatenate_audioclips([AudioFileClip(file) for file in audio_files])
 
             # save combined audio file
-            combined_audio.write_audiofile(rf'{path}\{index + 1}.mp3', codec='mp3', fps=44100)
+            
+            combined_audio.write_audiofile(rf'{path}\{config["anime"]["name"]}_{str(index + 1).zfill(2)}.mp3', codec='mp3', fps=44100)
 
         # remove part mp3 files
         for audio_file in audio_files:

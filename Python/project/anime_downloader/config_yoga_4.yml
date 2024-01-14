@@ -1,0 +1,46 @@
+is_test: false
+path:
+    download: "C:\\Users\\sean2\\Downloads"
+    destination: "C:\\others\\anime_download"
+
+filter:
+    # MB
+    size: 50
+    min_created_before: 60
+    file_type: ['.mp4']
+
+anime:
+    name: 'Kage no Jitsuryokusha ni Naritakute!'
+    position:
+        # press english dub button
+        dub: [925, 1016]
+        # play button
+        play: [436, 822]
+        # next episode button
+        next: [1292, 871]
+        # anime web position
+        # tab: []
+    episode:
+        count: 20
+        # section of retain
+        sections: [
+                # 1
+                [['0:00', '1:00']],
+                # # # 2
+                # [["0:00", "0:50"], ["2:21": "22:20"]],
+                # # # 3
+                # [["0:00", "10:00"]],
+            ]
+
+download_tool:
+    wait:
+        # wait for anime play (sec)
+        play: 10
+        # wait for video loading (sec)
+        loading: 180
+    position:
+        icon: [1607, 81]
+        open_download_page: [1276, 124]
+        # tab: []
+        # download after video loading
+        download: [1107, 647]

@@ -1,0 +1,64 @@
+is_test: false
+path:
+    download: "C:\\Users\\sean2\\Downloads"
+    destination: "C:\\others\\anime_download"
+
+filter:
+    # MB
+    size: 50
+    min_created_before: 60
+    file_type: ['.mp4']
+
+anime:
+    name: 'Sweet Reincarnation'
+    position:
+        # press english dub button
+        dub: [925, 1016]
+        # play button
+        play: [436, 822]
+        # next episode button
+        next: [1292, 871]
+        # anime web position
+        # tab: []
+    episode:
+        count: 12
+        # section of retain
+        sections: [
+                # 1
+                [['0:00', '2:05'], ['3:30', '22:10']],
+                # 2
+                [['0:00', '1:55'], ['3:15', '22:10']],
+                # 3
+                [['0:00', '1:33'], ['2:50', '21:45']],
+                # 4
+                [['0:00', '2:35'], ['3:50', '22:10']],
+                # 5
+                [['0:00', '2:00'], ['3:33', '22:10']],
+                # 6
+                [['0:00', '2:50'], ['4:10', '22:10']],
+                # 7
+                [['0:00', '1:10'], ['2:30', '22:10']],
+                # 8
+                [['0:00', '2:30'], ['3:45', '22:10']],
+                # 9
+                [['0:00', '1:35'], ['2:50', '22:10']],
+                # 10
+                [['2:10', '22:10']],
+                # 11
+                [['0:00', '1:55'], ['3:15', '22:10']],
+                # 12
+                [['1:45', '23:40']],
+            ]
+
+download_tool:
+    wait:
+        # wait for anime play (sec)
+        play: 10
+        # wait for video loading (sec)
+        loading: 180
+    position:
+        icon: [1601, 83]
+        open_download_page: [1268, 123]
+        # tab: []
+        # download after video loading
+        download: [1320, 655]

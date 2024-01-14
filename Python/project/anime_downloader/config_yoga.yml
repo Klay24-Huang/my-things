@@ -1,0 +1,63 @@
+is_test: false
+path:
+    download: "C:\\Users\\sean2\\Downloads"
+    destination: "C:\\others\\anime_download"
+
+filter:
+    # MB
+    size: 50
+    min_created_before: 60
+    file_type: [".mp4"]
+
+anime:
+    name: "Restaurant to Another World 2"
+    position:
+        # press english dub button
+        dub: [925, 1016]
+        # play button
+        play: [436, 822]
+        # next episode button
+        next: [1292, 871]
+        # anime web position
+        # tab: []
+    episode:
+        count: 12
+        # section of retain
+        sections: [
+                [["0:00", "1:30"], ["3:05", "22:06"]],
+                # 2
+                [["1:27", "22:06"]],
+                # 3
+                [["1:27", "22:06"]],
+                # 4
+                [["1:27", "22:06"]],
+                # 5
+                [["1:27", "22:06"]],
+                # 6
+                [["1:27", "22:06"]],
+                # 7
+                [["1:27", "22:06"]],
+                # 8
+                [["1:27", "22:06"]],
+                # 9
+                [["1:27", "22:06"]],
+                # 10
+                [["1:27", "22:06"]],
+                # 11
+                [["1:27", "22:06"]],
+                # 12
+                [["0:00", "1:05"], ["2:33", "22:19"]],
+            ]
+
+download_tool:
+    wait:
+        # wait for anime play (sec)
+        play: 10
+        # wait for video loading (sec)
+        loading: 180
+    position:
+        icon: [1554, 82]
+        open_download_page: [1227, 130]
+        # tab: []
+        # download after video loading
+        download: [1320, 655]
