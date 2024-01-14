@@ -40,7 +40,7 @@ namespace All._714._Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee.Tests
             var s = new Solution();
             foreach (var test in tests)
             {
-                Console.WriteLine(test.Name);
+                // Console.WriteLine(test.Name);
                 var input = test.Args;
                 var result = s.MaxProfit(input.Prices, input.Fee);
                 var errorMessage = $"{test.Name}";

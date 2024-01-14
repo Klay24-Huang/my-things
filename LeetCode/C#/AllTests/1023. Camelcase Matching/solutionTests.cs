@@ -64,8 +64,8 @@ namespace All._1023._Camelcase_Matching.Tests
                 var errorMessage = $"{test.Name}";
                 //var r = JsonConvert.SerializeObject(result);
                 //var w = JsonConvert.SerializeObject(test.Want);
-                //Console.WriteLine(r);
-                //Console.WriteLine(w);
+                //// Console.WriteLine(r);
+                //// Console.WriteLine(w);
                 CollectionAssert.AreEquivalent(test.Want.ToList(), result.ToList(), errorMessage);
             }
         }

@@ -1,0 +1,88 @@
+2024/1/4 下午 04:18:58	This log contains information about the import schema operation into project 'Database1' on computer 'H-HICEIT6-20' by user 'HICEIT6'.
+2024/1/4 下午 04:18:58	Import of database schema has started.
+2024/1/4 下午 04:19:17	Gathering database credentials
+2024/1/4 下午 04:19:17	Gathering database options
+2024/1/4 下午 04:19:17	Gathering generic database scoped configuration option
+2024/1/4 下午 04:19:17	Gathering users
+2024/1/4 下午 04:19:17	Gathering roles
+2024/1/4 下午 04:19:17	Gathering application roles
+2024/1/4 下午 04:19:17	Gathering role memberships
+2024/1/4 下午 04:19:17	Gathering filegroups
+2024/1/4 下午 04:19:17	Gathering full-text catalogs
+2024/1/4 下午 04:19:17	Gathering assemblies
+2024/1/4 下午 04:19:17	Gathering certificates
+2024/1/4 下午 04:19:17	Gathering asymmetric keys
+2024/1/4 下午 04:19:17	Gathering symmetric keys
+2024/1/4 下午 04:19:17	Gathering encrypted symmetric keys
+2024/1/4 下午 04:19:17	Gathering schemas
+2024/1/4 下午 04:19:17	Gathering XML schema collections
+2024/1/4 下午 04:19:17	Gathering user-defined data types
+2024/1/4 下午 04:19:17	Gathering user-defined types
+2024/1/4 下午 04:19:17	Gathering table types
+2024/1/4 下午 04:19:17	Gathering unique keys for table types
+2024/1/4 下午 04:19:17	Gathering primary keys for table types
+2024/1/4 下午 04:19:18	Gathering indexes for table types
+2024/1/4 下午 04:19:18	Gathering check constraints for table types
+2024/1/4 下午 04:19:18	Gathering default constraints for table types
+2024/1/4 下午 04:19:18	Gathering partition functions
+2024/1/4 下午 04:19:18	Gathering partition schemes
+2024/1/4 下午 04:19:18	Gathering functions
+2024/1/4 下午 04:19:18	Gathering encrypted functions
+2024/1/4 下午 04:19:18	Gathering aggregates
+2024/1/4 下午 04:19:18	Gathering procedures
+2024/1/4 下午 04:19:18	Gathering encrypted procedures
+2024/1/4 下午 04:19:18	Gathering tables
+2024/1/4 下午 04:19:19	Gathering primary keys
+2024/1/4 下午 04:19:19	Gathering unique constraints
+2024/1/4 下午 04:19:19	Gathering foreign keys
+2024/1/4 下午 04:19:19	Gathering default constraints
+2024/1/4 下午 04:19:19	Gathering check constraints
+2024/1/4 下午 04:19:19	Gathering views
+2024/1/4 下午 04:19:19	Gathering encrypted views
+2024/1/4 下午 04:19:19	Gathering indexes
+2024/1/4 下午 04:19:19	Gathering statistics
+2024/1/4 下午 04:19:19	Gathering full-text index stoplists
+2024/1/4 下午 04:19:19	Gathering search property lists
+2024/1/4 下午 04:19:19	Gathering search properties
+2024/1/4 下午 04:19:19	Gathering full-text indexes
+2024/1/4 下午 04:19:19	Gathering column store indexes
+2024/1/4 下午 04:19:19	Gathering spatial indexes
+2024/1/4 下午 04:19:19	Gathering XML indexes
+2024/1/4 下午 04:19:19	Gathering Selective XML indexes
+2024/1/4 下午 04:19:19	Gathering encrypted triggers
+2024/1/4 下午 04:19:19	Gathering triggers
+2024/1/4 下午 04:19:19	Gathering encrypted and clr ddl triggers
+2024/1/4 下午 04:19:19	Gathering ddl triggers
+2024/1/4 下午 04:19:19	Creating edge constraints
+2024/1/4 下午 04:19:19	Gathering synonyms
+2024/1/4 下午 04:19:19	Gathering defaults
+2024/1/4 下午 04:19:19	Gathering data constraint uddt bindings
+2024/1/4 下午 04:19:19	Gathering rules
+2024/1/4 下午 04:19:19	Gathering data constraint uddt bindings
+2024/1/4 下午 04:19:19	Gathering message types
+2024/1/4 下午 04:19:19	Gathering queues
+2024/1/4 下午 04:19:19	Gathering contracts
+2024/1/4 下午 04:19:19	Gathering services
+2024/1/4 下午 04:19:19	Gathering event notifications
+2024/1/4 下午 04:19:19	Gathering remote service bindings
+2024/1/4 下午 04:19:19	Gathering broker priorities
+2024/1/4 下午 04:19:19	Gathering signatures
+2024/1/4 下午 04:19:19	Gathering compression options
+2024/1/4 下午 04:19:19	Gathering sequence types
+2024/1/4 下午 04:19:19	Gathering security policies
+2024/1/4 下午 04:19:19	Gather column encryption keys
+2024/1/4 下午 04:19:19	Gathering column master keys
+2024/1/4 下午 04:19:19	Gathering external data sources
+2024/1/4 下午 04:19:19	Gathering external file formats
+2024/1/4 下午 04:19:19	Gathering external tables
+2024/1/4 下午 04:19:19	Gathering XML index compression options
+2024/1/4 下午 04:19:19	Gathering extended properties
+2024/1/4 下午 04:19:19	Gathering assemblies
+2024/1/4 下午 04:19:19	Gathering credentials
+2024/1/4 下午 04:19:19	Gathering logins
+2024/1/4 下午 04:19:19	Gathering server audits
+2024/1/4 下午 04:19:20	Scanning project for duplicate elements
+2024/1/4 下午 04:19:20	Finished duplicate element processing
+2024/1/4 下午 04:19:21	Finished importing database.
+2024/1/4 下午 04:19:21	A summary of the import was saved to the following location: D:\code\my-things\C#\SSDT-Test\Database1\Import Schema Logs\Database1_20240104081858.log
+2024/1/4 下午 04:19:21	Click Finish to continue...

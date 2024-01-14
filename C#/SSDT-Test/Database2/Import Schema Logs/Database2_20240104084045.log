@@ -1,0 +1,15 @@
+2024/1/4 下午 04:40:45	This log contains information about the import schema operation into project 'Database2' on computer 'H-HICEIT6-20' by user 'HICEIT6'.
+2024/1/4 下午 04:40:45	Import of database schema has started.
+2024/1/4 下午 04:40:51	Your permissions to see all objects in the server or database could not be verified.  The original error was:
+The SELECT permission has not been granted on 'sys.sql_logins' for the 'master' database. You must be a member of the 'loginmanager' role to access this system view. 
+Reverse Engineer will continue the import process, and logins will not be imported.
+The reverse engineering operation will attempt to continue anyway, but the resulting model might be incomplete, malformed, or incorrect.
+2024/1/4 下午 04:40:51	An exception was generated.
+The reverse engineering operation cannot continue because you do not have View Definition permission on the 'IRENT_V2T' database.
+2024/1/4 下午 04:40:51	Your permissions to see all objects in the server or database could not be verified.  The original error was:
+The SELECT permission has not been granted on 'sys.sql_logins' for the 'master' database. You must be a member of the 'loginmanager' role to access this system view. 
+Reverse Engineer will continue the import process, and logins will not be imported.
+The reverse engineering operation will attempt to continue anyway, but the resulting model might be incomplete, malformed, or incorrect.
+2024/1/4 下午 04:40:51	Finished importing database.
+2024/1/4 下午 04:40:51	A summary of the import was saved to the following location: D:\code\my-things\C#\SSDT-Test\Database2\Import Schema Logs\Database2_20240104084045.log
+2024/1/4 下午 04:40:51	Click Finish to continue...

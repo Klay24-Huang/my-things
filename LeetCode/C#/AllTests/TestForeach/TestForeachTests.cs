@@ -14,7 +14,7 @@ namespace All.TestForeach.Tests
         [TestMethod()]
         public void TestForeachFuncTest()
         {
-            //Console.WriteLine("before test");
+            //// Console.WriteLine("before test");
             TestForeach.TestForeachFunc();
             Assert.IsTrue(true);
         }

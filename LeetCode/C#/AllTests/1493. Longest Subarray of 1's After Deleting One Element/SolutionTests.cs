@@ -46,7 +46,7 @@ namespace All._1493._Longest_Subarray_of_1_s_After_Deleting_One_Element.Tests
             var s = new Solution();
             foreach (var test in tests)
             {
-                Console.WriteLine($"case: {test.Name}");
+                // Console.WriteLine($"case: {test.Name}");
                 var input = test.Args;
                 var result = s.LongestSubarray(input.Nums);
                 Assert.AreEqual(test.Want, result);

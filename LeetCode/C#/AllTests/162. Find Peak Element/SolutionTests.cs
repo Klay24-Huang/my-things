@@ -54,7 +54,7 @@ namespace All._162._Find_Peak_Element.Tests
             var s = new Solution();
             foreach (var test in tests)
             {
-                Console.WriteLine(test.Name);
+                // Console.WriteLine(test.Name);
                 var input = test.Args;
                 var result = s.FindPeakElement(input.Nums);
                 var errorMessage = $"{test.Name}";

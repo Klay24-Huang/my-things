@@ -53,7 +53,7 @@ namespace All._2462._Total_Cost_to_Hire_K_Workers
                 };
                 pq.Enqueue(item, item);
             }
-            // Console.WriteLine($"left index {l}, right index {r}, pq count {pq.Count}");
+            // // Console.WriteLine($"left index {l}, right index {r}, pq count {pq.Count}");
             for (var i = 0; i < candidates; i++)
             {
                 var newR = len - 1 - i;
@@ -74,17 +74,17 @@ namespace All._2462._Total_Cost_to_Hire_K_Workers
 
 
             //PrintPQ(pq, costs)
-            // Console.WriteLine($"left index {l}, right index {r}, pq count {pq.Count}");
+            // // Console.WriteLine($"left index {l}, right index {r}, pq count {pq.Count}");
             long totalCost = 0;
             for (var i = 0; i < k; i++)
             {
-                //Console.WriteLine($"count of pq {pq.Count}");
+                //// Console.WriteLine($"count of pq {pq.Count}");
                 var hasItem = pq.TryDequeue(out var item, out _);
                 if (hasItem)
                 {
                     totalCost += item.Cost;
-                    // Console.WriteLine($"add: {item.Cost}, index {item.Index}, total cost {totalCost}");
-                    //Console.WriteLine($"{l} {r}");
+                    // // Console.WriteLine($"add: {item.Cost}, index {item.Index}, total cost {totalCost}");
+                    //// Console.WriteLine($"{l} {r}");
 
                     // check if there remain item to enqueue
                     if (r - 1 > l)
@@ -114,7 +114,7 @@ namespace All._2462._Total_Cost_to_Hire_K_Workers
                     }
                 }
 
-                //Console.WriteLine($"left index {l}, right index {r}");
+                //// Console.WriteLine($"left index {l}, right index {r}");
             }
             return totalCost;
         }

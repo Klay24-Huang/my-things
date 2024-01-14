@@ -33,7 +33,7 @@ namespace All._1493._Longest_Subarray_of_1_s_After_Deleting_One_Element
                     // calculate result
                     var r = curr + prev;
                     ans = r > ans ? r : ans;
-                    //Console.WriteLine($"curr {curr}, prev {prev}");
+                    //// Console.WriteLine($"curr {curr}, prev {prev}");
                     prev = curr;
                     curr = 0;
                 }

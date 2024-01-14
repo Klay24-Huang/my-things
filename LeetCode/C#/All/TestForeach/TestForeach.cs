@@ -18,10 +18,10 @@ namespace All.TestForeach
 
             foo.ForEach(x =>
             {
-                Console.WriteLine(x);
+                // Console.WriteLine(x);
             });
-            Console.WriteLine($"bar is {bar}");
-            Console.WriteLine("end");
+            // Console.WriteLine($"bar is {bar}");
+            // Console.WriteLine("end");
         }
     }
 }

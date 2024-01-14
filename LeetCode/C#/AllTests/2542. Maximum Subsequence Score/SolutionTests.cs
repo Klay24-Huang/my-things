@@ -42,7 +42,7 @@ namespace All._2542._Maximum_Subsequence_Score.Tests
             var s = new Solution();
             foreach (var test in tests)
             {
-                Console.WriteLine(test.Name);
+                // Console.WriteLine(test.Name);
                 var input = test.Args;
                 var result = s.MaxScore(input.Nums1, input.Nums2, input.K);
                 var errorMessage = $"{test.Name}";

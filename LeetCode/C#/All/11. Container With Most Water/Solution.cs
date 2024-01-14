@@ -17,7 +17,7 @@ namespace All._11._Container_With_Most_Water
             while (l < r)
             {
                 var curr = (r - l) * Math.Min(height[r], height[l]);
-                Console.WriteLine(curr);
+                // Console.WriteLine(curr);
                 ans = Math.Max(ans, curr);
                 
                 if (height[r] > height[l])

@@ -73,7 +73,7 @@ namespace All._2462._Total_Cost_to_Hire_K_Workers.Tests
             var s = new Solution();
             foreach (var test in tests)
             {
-                Console.WriteLine(test.Name);
+                // Console.WriteLine(test.Name);
                 var input = test.Args;
                 var result = s.TotalCost(input.Costs, input.K, input.Candidates);
                 var errorMessage = $"{test.Name}";
