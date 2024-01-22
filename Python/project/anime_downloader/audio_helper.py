@@ -34,7 +34,7 @@ def start():
         sections = all_sections[index]
         if len(sections) == 0:
             # if no section, get all 
-            audio_file_path = rf'{path}\{index + 1}.mp3'
+            audio_file_path = rf'{path}\{config["anime"]["name"]}_{str(index + 1).zfill(2)}.mp3'
             audio.write_audiofile(audio_file_path, codec='mp3', fps=44100)
             continue
         else:
