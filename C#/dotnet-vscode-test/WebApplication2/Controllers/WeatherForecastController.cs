@@ -29,11 +29,5 @@ namespace WebApplication2.Controllers
             })
             .ToArray();
         }
-
-        public Task Foo()
-        {
-            var a = "aaa";
-            return new List<int>()
-        }
     }
 }
