@@ -7,22 +7,29 @@ func trap(height []int) int {
 	for i, h := range height {
 		if h > 0 {
 			if len(indexesOfLeftWalls) > 0 {
-				indexOfPrevH := peek(indexesOfLeftWalls)
-				if i-indexOfPrevH == 1 {
-					// no gap
-					continue
-				}
+				checkPrevWallsFlag := true
+				preWallLowerOrEqual := true
+				for checkPrevWallsFlag {
+					indexOfPrevH := peek(indexesOfLeftWalls)
+					prevH := height[indexOfPrevH]
+					preWallLowerOrEqual = prevH <= h
+					lowerHigh := h // shorter height of this gap's walls
+					if preWallLowerOrEqual {
+						lowerHigh = prevH
+					}
+					prevUsedHeigh := peek(usedHeight)
+					count += (lowerHigh - prevUsedHeigh) * (indexOfPrevH - i - 1)
 
-				prevH := height[indexOfPrevH]
-				shorterHigh := h // shorter height of this gap's walls
-				if prevH <= h {
-					shorterHigh = prevH
-				}
-				prevUsedHeigh := peek(usedHeight)
-				count += (shorterHigh - prevUsedHeigh) * (indexOfPrevH - i - 1)
+					if preWallLowerOrEqual {
+						indexesOfLeftWalls = pop(indexesOfLeftWalls)
+					}
 
-				if prevH <= h {
-					indexesOfLeftWalls = pop(indexesOfLeftWalls)
+					if len(indexesOfLeftWalls) == 0 || !preWallLowerOrEqual {
+						checkPrevWallsFlag = false
+					}
+				}
+				if preWallLowerOrEqual {
+					usedHeight = usedHeight[:0]
 				}
 				usedHeight = append(usedHeight, h)
 			}
