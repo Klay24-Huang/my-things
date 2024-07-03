@@ -18,20 +18,23 @@ func trap(height []int) int {
 					if preWallLowerOrEqual {
 						lowerHigh = prevH
 					}
-					count += (lowerHigh - filledHeight) * (indexOfPrevH - i - 1)
-
+					count += (lowerHigh - filledHeight) * (i - indexOfPrevH - 1)
+					// filledWater := (lowerHigh - filledHeight) * (i - indexOfPrevH - 1)
+					// if filledWater > 0 {
+					// 	fmt.Printf("filledWater is: %d, [left wall index: %d, height: %d] [right wall index: %d, height: %d] \n", filledWater, indexOfPrevH, prevH, i, h)
+					// }
 					if preWallLowerOrEqual {
 						indexesOfLeftWalls = pop(indexesOfLeftWalls)
 					}
 
-					if len(indexesOfLeftWalls) == 0 || !preWallLowerOrEqual {
+					if len(indexesOfLeftWalls) == 0 || (prevH == h || prevH > h) {
 						checkPrevWallsFlag = false
 					}
-				}
-				if preWallLowerOrEqual {
-					filledHeight = prevH
-				} else {
-					filledHeight = h
+					if preWallLowerOrEqual {
+						filledHeight = prevH
+					} else {
+						filledHeight = h
+					}
 				}
 			}
 			indexesOfLeftWalls = append(indexesOfLeftWalls, i)
