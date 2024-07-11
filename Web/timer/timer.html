@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        #timer {
+            font-size: 2em;
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">15:00</div>
+    <script>
+        function startCountdown(duration, display) {
+            var start = Date.now(),
+                diff,
+                minutes,
+                seconds;
+            var alerted = false; // 用于确保alert只显示一次
+            function timer() {
+                // 获取已过去的时间（以秒为单位）
+                diff = duration - (((Date.now() - start) / 1000) | 0);
+
+                // 计算分钟和秒
+                minutes = (diff / 60) | 0;
+                seconds = (diff % 60) | 0;
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (diff <= 0) {
+                    // 倒计时结束
+                    clearInterval(interval);
+                }
+
+                // 剩余3分钟时显示alert
+                if (diff <= 180 && !alerted) {
+                    alert("快没时间了！");
+                    alerted = true;
+                }
+            };
+            // 立即调用一次，确保倒计时立即显示
+            timer();
+            var interval = setInterval(timer, 100);
+        }
+
+        window.onload = function () {
+            var fifteenMinutes = 60 * 4,
+                display = document.querySelector('#timer');
+            startCountdown(fifteenMinutes, display);
+        };
+    </script>
+</body>
+</html>
