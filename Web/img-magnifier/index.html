@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Magnifier Test</title>
+	<style>
+		.img-magnifier-container {
+			position: relative;
+			display: inline-block;
+		}
+
+		.magnifier-view {
+			position: absolute;
+			border: 3px solid #000;
+			width: 300px;
+			height: 300px;
+			background-repeat: no-repeat;
+			background-position: 0 0;
+			background-size: 500%;
+			z-index: 1000;
+			top: 10px; /* Positioning of the magnifier view window */
+			left: 720px; /* Adjust this according to the image position */
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	<div class="img-magnifier-container">
+		<img id="ImgInPictureModel" src="https://i2.momoshop.com.tw/1720587888/goodsimg/0013/027/583/13027583_OR.webp" style="max-width: 700px; max-height: 700px;" />
+	</div>
+
+	<div id="magnifierView" class="magnifier-view"></div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const img = document.getElementById('ImgInPictureModel');
+			const magnifierView = document.getElementById('magnifierView');
+
+			console.log('Magnifier view added to DOM');
+
+			const magnify = (e) => {
+				console.log('Mousemove detected', e.offsetX, e.offsetY);
+				const { offsetX, offsetY, target } = e;
+				const { width, height } = target.getBoundingClientRect();
+
+				let bgPosX = (offsetX / width) * 100;
+				let bgPosY = (offsetY / height) * 100;
+
+				magnifierView.style.backgroundImage = `url('${img.src}')`;
+				magnifierView.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+			};
+
+			img.addEventListener('mousemove', magnify);
+		});
+	</script>
+</body>
+</html>
