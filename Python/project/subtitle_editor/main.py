@@ -34,7 +34,7 @@ def process_vtt_files_in_folder(input_folder_path):
             process_vtt_file(input_file_path, output_file_path)
 
 # 使用範例
-input_folder_path = 'D:\subtitles\\test'  # 替換為你的資料夾路徑
+input_folder_path = 'C:\others\subtitles\我的幸福婚約'  # 替換為你的資料夾路徑
 process_vtt_files_in_folder(input_folder_path)
 
 
