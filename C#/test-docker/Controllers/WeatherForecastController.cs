@@ -18,6 +18,10 @@ namespace test_docker.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Gets the weather forecast for the next 5 days.
+        /// </summary>
+        /// <returns>A list of 5 <see cref="WeatherForecast"/> objects.</returns>
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
