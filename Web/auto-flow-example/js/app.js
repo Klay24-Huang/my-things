@@ -8,6 +8,7 @@ class CourseRegistrationApp {
         };
         this.isBasicInfoCompleted = false;
         this.autoFillInProgress = false;
+        this.autoFillCurrentStep = null;
         this.autoFillData = this.loadAutoFillData();
         
         this.init();
@@ -245,10 +246,24 @@ class CourseRegistrationApp {
         // Show success message
         this.showNotification('基本資料已儲存，請繼續選擇課程', 'success');
         
-        // Auto switch to course selection tab after a short delay
-        setTimeout(() => {
-            this.switchTab('course-selection');
-        }, 1000);
+        // 如果正在進行自動填寫，繼續下一步驟
+        if (this.autoFillInProgress && this.autoFillCurrentStep === 'basic') {
+            // 標記基本資料步驟為完成
+            this.updateAutoFillProgress('basic', 'completed');
+            
+            setTimeout(() => {
+                this.switchTab('course-selection');
+                // 延遲一下讓tab切換完成，然後繼續自動填寫
+                setTimeout(() => {
+                    this.continueAutoFillToCourseSelection();
+                }, 500);
+            }, 1000);
+        } else {
+            // 正常流程：自動切換到課程選擇tab
+            setTimeout(() => {
+                this.switchTab('course-selection');
+            }, 1000);
+        }
     }
 
     handleCourseSelectionSubmit() {
@@ -460,7 +475,6 @@ class CourseRegistrationApp {
         return {
             basicInfo: {
                 steps: [
-                    { type: 'click', selector: '#guide button', description: '點擊開始填寫按鈕' },
                     { type: 'change', selector: '#fullName', value: '王小明', description: '填寫姓名' },
                     { type: 'change', selector: '#email', value: 'xiaoming@example.com', description: '填寫電子郵件' },
                     { type: 'change', selector: '#phone', value: '0912345678', description: '填寫手機號碼' },
@@ -484,11 +498,39 @@ class CourseRegistrationApp {
         if (this.autoFillInProgress) return;
         
         this.autoFillInProgress = true;
+        this.autoFillCurrentStep = 'basic';
         this.showAutoFillProgressBar();
         
+        // 先切換到基本資料頁面
+        this.switchTab('basic-info');
+        
+        // 延遲一下讓頁面切換完成
+        await this.delay(500);
+        
         try {
-            // Step 1: Basic Information
+            // Step 1: Basic Information (不包含提交)
             await this.executeAutoFillStep('basic', this.autoFillData.basicInfo.steps);
+            
+            // 基本資料完成後，等待用戶手動提交
+            this.showStepCompletionToast('basic');
+            
+        } catch (error) {
+            console.error('Auto-fill error:', error);
+            this.showAutoFillToast(
+                '自動填寫失敗',
+                '自動填寫過程中發生錯誤，請手動填寫表單。',
+                [{ text: '確定', action: 'close' }]
+            );
+            this.autoFillInProgress = false;
+            this.hideAutoFillProgressBar();
+        }
+    }
+
+    async continueAutoFillToCourseSelection() {
+        if (!this.autoFillInProgress || this.autoFillCurrentStep !== 'basic') return;
+        
+        try {
+            this.autoFillCurrentStep = 'course';
             
             // Step 2: Course Selection
             await this.executeAutoFillStep('course', this.autoFillData.courseSelection.steps);
@@ -505,11 +547,12 @@ class CourseRegistrationApp {
             console.error('Auto-fill error:', error);
             this.showAutoFillToast(
                 '自動填寫失敗',
-                '自動填寫過程中發生錯誤，請手動填寫表單。',
+                '課程選擇自動填寫發生錯誤，請手動填寫。',
                 [{ text: '確定', action: 'close' }]
             );
         } finally {
             this.autoFillInProgress = false;
+            this.autoFillCurrentStep = null;
             this.hideAutoFillProgressBar();
         }
     }
@@ -518,27 +561,22 @@ class CourseRegistrationApp {
         this.updateAutoFillProgress(stepName, 'active');
         this.showAutoFillMask(`執行 ${stepName === 'basic' ? '基本資料' : '課程選擇'} 自動填寫...`);
         
-        for (let i = 0; i < steps.length; i++) {
-            const step = steps[i];
+        // 篩選出非提交按鈕的步驟
+        const fillSteps = steps.filter(step => 
+            !(step.type === 'click' && step.selector.includes('submit'))
+        );
+        
+        for (let i = 0; i < fillSteps.length; i++) {
+            const step = fillSteps[i];
             await this.executeAutoFillAction(step);
             await this.delay(800); // 每個動作間隔800ms
         }
         
-        // 如果是基本資料步驟，提交表單
-        if (stepName === 'basic') {
-            await this.delay(1000);
-            const submitBtn = document.querySelector('#basicInfoForm .submit-btn');
-            if (submitBtn) {
-                submitBtn.click();
-                await this.delay(1500); // 等待表單提交處理
-            }
-        }
-        
         this.hideAutoFillMask();
-        this.updateAutoFillProgress(stepName, 'completed');
-        
-        // 步驟完成後顯示確認toast
-        this.showStepCompletionToast(stepName);
+        // 不要立即標記為completed，等用戶手動提交後再標記
+        if (stepName !== 'basic') {
+            this.updateAutoFillProgress(stepName, 'completed');
+        }
     }
 
     async executeAutoFillAction(step) {
@@ -628,14 +666,14 @@ class CourseRegistrationApp {
         };
         
         const message = stepName === 'basic' 
-            ? '基本資料已自動填寫完成，請確認資料無誤後進行下一步。'
+            ? '基本資料已自動填寫完成，請確認資料無誤後點擊「完成基本資料」按鈕繼續下一步。'
             : '課程選擇已自動填寫完成，請檢查所選課程和時段是否符合需求。';
             
         this.showAutoFillToast(
-            `${stepNames[stepName]}完成`,
+            `${stepNames[stepName]}自動填寫完成`,
             message,
             stepName === 'basic' 
-                ? [{ text: '確認並繼續', action: 'continue' }]
+                ? [{ text: '我知道了', action: 'close' }]
                 : [{ text: '確認資料', action: 'confirm' }]
         );
     }
@@ -722,14 +760,16 @@ function handleToastAction(action) {
     switch (action) {
         case 'continue':
         case 'confirm':
+        case 'close':
             window.app.hideAutoFillToast();
             break;
         case 'reset':
             window.app.hideAutoFillToast();
             window.app.resetApplication();
-            break;
-        case 'close':
-            window.app.hideAutoFillToast();
+            // 重置自動填寫狀態
+            window.app.autoFillInProgress = false;
+            window.app.autoFillCurrentStep = null;
+            window.app.hideAutoFillProgressBar();
             break;
     }
 }
