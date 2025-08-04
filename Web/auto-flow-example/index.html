@@ -7,6 +7,31 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- Auto-fill Progress Bar -->
+    <div id="autoFillProgressBar" class="auto-fill-progress-bar hidden">
+        <div class="auto-fill-progress-content">
+            <div class="auto-fill-progress-text">自動化填寫進度</div>
+            <div class="auto-fill-progress-steps">
+                <div class="auto-fill-step" data-step="basic">
+                    <div class="step-circle">1</div>
+                    <span>基本資料</span>
+                </div>
+                <div class="auto-fill-step" data-step="course">
+                    <div class="step-circle">2</div>
+                    <span>課程選擇</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Mask -->
+    <div id="autoFillMask" class="auto-fill-mask hidden">
+        <div class="auto-fill-spinner">
+            <div class="spinner"></div>
+            <p>自動填寫中，請稍候...</p>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>線上課程報名系統</h1>
@@ -60,7 +85,10 @@
                             <li>報名確認後將發送確認信至您的電子郵箱</li>
                         </ul>
                     </div>
-                    <button class="next-btn" onclick="switchTab('basic-info')">開始填寫</button>
+                    <div class="guide-actions">
+                        <button class="next-btn" onclick="switchTab('basic-info')">開始填寫</button>
+                        <button class="auto-fill-btn" onclick="startAutoFill()">🤖 自動填寫示範</button>
+                    </div>
                 </div>
             </section>
 

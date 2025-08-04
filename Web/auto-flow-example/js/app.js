@@ -7,6 +7,8 @@ class CourseRegistrationApp {
             courseSelection: {}
         };
         this.isBasicInfoCompleted = false;
+        this.autoFillInProgress = false;
+        this.autoFillData = this.loadAutoFillData();
         
         this.init();
     }
@@ -452,6 +454,247 @@ class CourseRegistrationApp {
         this.checkTabAccess();
         this.switchTab('guide');
     }
+
+    // Auto-fill functionality
+    loadAutoFillData() {
+        return {
+            basicInfo: {
+                steps: [
+                    { type: 'click', selector: '#guide button', description: '點擊開始填寫按鈕' },
+                    { type: 'change', selector: '#fullName', value: '王小明', description: '填寫姓名' },
+                    { type: 'change', selector: '#email', value: 'xiaoming@example.com', description: '填寫電子郵件' },
+                    { type: 'change', selector: '#phone', value: '0912345678', description: '填寫手機號碼' },
+                    { type: 'change', selector: '#birthDate', value: '1990-01-01', description: '填寫生日' },
+                    { type: 'change', selector: '#education', value: 'bachelor', description: '選擇教育程度' },
+                    { type: 'change', selector: '#motivation', value: '希望透過學習提升職業技能，增加就業競爭力。', description: '填寫學習動機' }
+                ]
+            },
+            courseSelection: {
+                steps: [
+                    { type: 'click', selector: '#frontend', description: '選擇前端開發課程' },
+                    { type: 'change', selector: '#timeSlot', value: 'weekday-evening', description: '選擇上課時段' },
+                    { type: 'click', selector: '#certificate', description: '選擇需要證書' },
+                    { type: 'change', selector: '#specialRequests', value: '希望能夠安排實作專案練習時間。', description: '填寫特殊需求' }
+                ]
+            }
+        };
+    }
+
+    async startAutoFill() {
+        if (this.autoFillInProgress) return;
+        
+        this.autoFillInProgress = true;
+        this.showAutoFillProgressBar();
+        
+        try {
+            // Step 1: Basic Information
+            await this.executeAutoFillStep('basic', this.autoFillData.basicInfo.steps);
+            
+            // Step 2: Course Selection
+            await this.executeAutoFillStep('course', this.autoFillData.courseSelection.steps);
+            
+            this.showAutoFillToast(
+                '自動填寫完成',
+                '所有表單已自動填寫完成，請檢查資料是否正確。',
+                [
+                    { text: '確認資料', action: 'confirm' },
+                    { text: '重新填寫', action: 'reset' }
+                ]
+            );
+        } catch (error) {
+            console.error('Auto-fill error:', error);
+            this.showAutoFillToast(
+                '自動填寫失敗',
+                '自動填寫過程中發生錯誤，請手動填寫表單。',
+                [{ text: '確定', action: 'close' }]
+            );
+        } finally {
+            this.autoFillInProgress = false;
+            this.hideAutoFillProgressBar();
+        }
+    }
+
+    async executeAutoFillStep(stepName, steps) {
+        this.updateAutoFillProgress(stepName, 'active');
+        this.showAutoFillMask(`執行 ${stepName === 'basic' ? '基本資料' : '課程選擇'} 自動填寫...`);
+        
+        for (let i = 0; i < steps.length; i++) {
+            const step = steps[i];
+            await this.executeAutoFillAction(step);
+            await this.delay(800); // 每個動作間隔800ms
+        }
+        
+        // 如果是基本資料步驟，提交表單
+        if (stepName === 'basic') {
+            await this.delay(1000);
+            const submitBtn = document.querySelector('#basicInfoForm .submit-btn');
+            if (submitBtn) {
+                submitBtn.click();
+                await this.delay(1500); // 等待表單提交處理
+            }
+        }
+        
+        this.hideAutoFillMask();
+        this.updateAutoFillProgress(stepName, 'completed');
+        
+        // 步驟完成後顯示確認toast
+        this.showStepCompletionToast(stepName);
+    }
+
+    async executeAutoFillAction(step) {
+        const element = document.querySelector(step.selector);
+        if (!element) {
+            console.warn(`Element not found: ${step.selector}`);
+            return;
+        }
+
+        // 突出顯示當前操作的元素
+        this.highlightElement(element);
+
+        switch (step.type) {
+            case 'click':
+                element.click();
+                break;
+            case 'change':
+                if (element.type === 'checkbox' || element.type === 'radio') {
+                    element.checked = true;
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                } else {
+                    element.value = step.value;
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                break;
+        }
+
+        await this.delay(300);
+        this.removeHighlight(element);
+    }
+
+    highlightElement(element) {
+        element.style.transition = 'all 0.3s ease';
+        element.style.boxShadow = '0 0 15px rgba(99, 102, 241, 0.6)';
+        element.style.borderColor = 'var(--primary-color)';
+    }
+
+    removeHighlight(element) {
+        setTimeout(() => {
+            element.style.boxShadow = '';
+            element.style.borderColor = '';
+        }, 300);
+    }
+
+    showAutoFillProgressBar() {
+        const progressBar = document.getElementById('autoFillProgressBar');
+        progressBar.classList.remove('hidden');
+        
+        // 重置所有步驟狀態
+        document.querySelectorAll('.auto-fill-step').forEach(step => {
+            step.classList.remove('active', 'completed');
+        });
+    }
+
+    hideAutoFillProgressBar() {
+        setTimeout(() => {
+            const progressBar = document.getElementById('autoFillProgressBar');
+            progressBar.classList.add('hidden');
+        }, 3000);
+    }
+
+    updateAutoFillProgress(stepName, status) {
+        const step = document.querySelector(`[data-step="${stepName}"]`);
+        if (step) {
+            step.classList.remove('active', 'completed');
+            step.classList.add(status);
+        }
+    }
+
+    showAutoFillMask(message = '自動填寫中，請稍候...') {
+        const mask = document.getElementById('autoFillMask');
+        const messageElement = mask.querySelector('p');
+        messageElement.textContent = message;
+        mask.classList.remove('hidden');
+    }
+
+    hideAutoFillMask() {
+        const mask = document.getElementById('autoFillMask');
+        mask.classList.add('hidden');
+    }
+
+    showStepCompletionToast(stepName) {
+        const stepNames = {
+            'basic': '基本資料',
+            'course': '課程選擇'
+        };
+        
+        const message = stepName === 'basic' 
+            ? '基本資料已自動填寫完成，請確認資料無誤後進行下一步。'
+            : '課程選擇已自動填寫完成，請檢查所選課程和時段是否符合需求。';
+            
+        this.showAutoFillToast(
+            `${stepNames[stepName]}完成`,
+            message,
+            stepName === 'basic' 
+                ? [{ text: '確認並繼續', action: 'continue' }]
+                : [{ text: '確認資料', action: 'confirm' }]
+        );
+    }
+
+    showAutoFillToast(title, message, actions = []) {
+        // 移除現有的toast
+        const existingToast = document.querySelector('.auto-fill-toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+
+        // 創建新的toast
+        const toast = document.createElement('div');
+        toast.className = 'auto-fill-toast';
+        
+        const actionsHtml = actions.map(action => 
+            `<button class="toast-btn ${action.action === 'confirm' || action.action === 'continue' ? 'primary' : 'secondary'}" 
+                     onclick="handleToastAction('${action.action}')">${action.text}</button>`
+        ).join('');
+
+        toast.innerHTML = `
+            <div class="toast-header">
+                <div class="toast-icon success">✓</div>
+                <div class="toast-title">${title}</div>
+            </div>
+            <div class="toast-message">${message}</div>
+            <div class="toast-actions">
+                ${actionsHtml}
+            </div>
+        `;
+
+        document.body.appendChild(toast);
+        
+        // 顯示toast
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        // 自動隱藏
+        setTimeout(() => {
+            this.hideAutoFillToast();
+        }, 8000);
+    }
+
+    hideAutoFillToast() {
+        const toast = document.querySelector('.auto-fill-toast');
+        if (toast) {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 }
 
 // Global functions for HTML onclick events
@@ -464,6 +707,30 @@ function switchTab(tabName) {
 function closeModal() {
     if (window.app) {
         window.app.closeModal();
+    }
+}
+
+function startAutoFill() {
+    if (window.app) {
+        window.app.startAutoFill();
+    }
+}
+
+function handleToastAction(action) {
+    if (!window.app) return;
+    
+    switch (action) {
+        case 'continue':
+        case 'confirm':
+            window.app.hideAutoFillToast();
+            break;
+        case 'reset':
+            window.app.hideAutoFillToast();
+            window.app.resetApplication();
+            break;
+        case 'close':
+            window.app.hideAutoFillToast();
+            break;
     }
 }
 
