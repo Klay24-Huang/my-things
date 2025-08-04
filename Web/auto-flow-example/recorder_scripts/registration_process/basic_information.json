@@ -1,0 +1,142 @@
+{
+    "title": "test recorder",
+    "steps": [
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/開始填寫"
+                ],
+                [
+                    "#guide button"
+                ],
+                [
+                    "xpath///*[@id=\"guide\"]/div/button"
+                ],
+                [
+                    "pierce/#guide button"
+                ],
+                [
+                    "text/開始填寫"
+                ]
+            ],
+            "offsetY": 22.59375,
+            "offsetX": 85.5
+        },
+        {
+            "type": "change",
+            "value": "a",
+            "selectors": [
+                [
+                    "aria/姓名 *"
+                ],
+                [
+                    "#fullName"
+                ],
+                [
+                    "xpath///*[@id=\"fullName\"]"
+                ],
+                [
+                    "pierce/#fullName"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "wkus963@gmail.com",
+            "selectors": [
+                [
+                    "aria/電子郵件 *"
+                ],
+                [
+                    "#email"
+                ],
+                [
+                    "xpath///*[@id=\"email\"]"
+                ],
+                [
+                    "pierce/#email"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "0958800824",
+            "selectors": [
+                [
+                    "aria/手機號碼 *"
+                ],
+                [
+                    "#phone"
+                ],
+                [
+                    "xpath///*[@id=\"phone\"]"
+                ],
+                [
+                    "pierce/#phone"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "2025-08-23",
+            "selectors": [
+                [
+                    "aria/生日"
+                ],
+                [
+                    "#birthDate"
+                ],
+                [
+                    "xpath///*[@id=\"birthDate\"]"
+                ],
+                [
+                    "pierce/#birthDate"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "high-school",
+            "selectors": [
+                [
+                    "aria/教育程度"
+                ],
+                [
+                    "#education"
+                ],
+                [
+                    "xpath///*[@id=\"education\"]"
+                ],
+                [
+                    "pierce/#education"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "adf",
+            "selectors": [
+                [
+                    "aria/學習動機"
+                ],
+                [
+                    "#motivation"
+                ],
+                [
+                    "xpath///*[@id=\"motivation\"]"
+                ],
+                [
+                    "pierce/#motivation"
+                ]
+            ],
+            "target": "main"
+        }
+    ]
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上課程報名系統</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>線上課程報名系統</h1>
+            <p class="subtitle">開啟您的學習之旅</p>
+        </header>
+
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="guide">流程小助手</button>
+            <button class="tab-btn" data-tab="basic-info">學員基本資料</button>
+            <button class="tab-btn disabled" data-tab="course-selection">課程選擇與確認</button>
+        </nav>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <main class="content-area">
+            <!-- Tab 1: 流程小助手 -->
+            <section class="tab-content active" id="guide">
+                <div class="guide-card">
+                    <h2>📚 報名流程說明</h2>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>填寫基本資料</h3>
+                                <p>請提供您的基本個人資訊，包括姓名、聯絡方式等</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>選擇課程</h3>
+                                <p>根據您的興趣和需求選擇適合的課程類型</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>確認報名</h3>
+                                <p>檢視所有資訊並完成報名手續</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide-tips">
+                        <h3>💡 注意事項</h3>
+                        <ul>
+                            <li>所有標示 * 的欄位均為必填項目</li>
+                            <li>請確保聯絡資訊正確，以便後續通知</li>
+                            <li>完成基本資料填寫後，才能進行課程選擇</li>
+                            <li>報名確認後將發送確認信至您的電子郵箱</li>
+                        </ul>
+                    </div>
+                    <button class="next-btn" onclick="switchTab('basic-info')">開始填寫</button>
+                </div>
+            </section>
+
+            <!-- Tab 2: 學員基本資料 -->
+            <section class="tab-content" id="basic-info">
+                <div class="form-card">
+                    <h2>📝 學員基本資料</h2>
+                    <form id="basicInfoForm">
+                        <div class="form-group">
+                            <label for="fullName">姓名 *</label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">電子郵件 *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">手機號碼 *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthDate">生日</label>
+                            <input type="date" id="birthDate" name="birthDate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="education">教育程度</label>
+                            <select id="education" name="education">
+                                <option value="">請選擇</option>
+                                <option value="high-school">高中職</option>
+                                <option value="college">專科</option>
+                                <option value="bachelor">大學</option>
+                                <option value="master">碩士</option>
+                                <option value="phd">博士</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="motivation">學習動機</label>
+                            <textarea id="motivation" name="motivation" rows="4" placeholder="請簡單描述您的學習目標和期望..."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="back-btn" onclick="switchTab('guide')">返回</button>
+                            <button type="submit" class="submit-btn">完成基本資料</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Tab 3: 課程選擇與確認 -->
+            <section class="tab-content" id="course-selection">
+                <div class="form-card">
+                    <h2>🎯 課程選擇與確認</h2>
+                    <form id="courseSelectionForm">
+                        <div class="form-group">
+                            <label>課程類別 *</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="frontend" name="courseType" value="frontend" required>
+                                    <label for="frontend">
+                                        <strong>前端開發</strong>
+                                        <span>HTML, CSS, JavaScript, React</span>
+                                    </label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="backend" name="courseType" value="backend" required>
+                                    <label for="backend">
+                                        <strong>後端開發</strong>
+                                        <span>Node.js, Python, 資料庫設計</span>
+                                    </label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="uiux" name="courseType" value="uiux" required>
+                                    <label for="uiux">
+                                        <strong>UI/UX 設計</strong>
+                                        <span>使用者介面與體驗設計</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="timeSlot">上課時段偏好 *</label>
+                            <select id="timeSlot" name="timeSlot" required>
+                                <option value="">請選擇</option>
+                                <option value="weekday-morning">平日上午 (09:00-12:00)</option>
+                                <option value="weekday-afternoon">平日下午 (14:00-17:00)</option>
+                                <option value="weekday-evening">平日晚上 (19:00-22:00)</option>
+                                <option value="weekend-morning">假日上午 (09:00-12:00)</option>
+                                <option value="weekend-afternoon">假日下午 (14:00-17:00)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="certificate" name="certificate">
+                                <label for="certificate">我需要課程完成證書 (+NT$500)</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="specialRequests">特殊需求說明</label>
+                            <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="如有任何特殊需求或問題，請在此說明..."></textarea>
+                        </div>
+                        
+                        <div class="summary-section">
+                            <h3>📋 報名資訊確認</h3>
+                            <div id="summaryContent"></div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="back-btn" onclick="switchTab('basic-info')">返回修改</button>
+                            <button type="submit" class="submit-btn final-submit">確認報名</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <h3>🎉 報名成功！</h3>
+                <p>感謝您的報名，我們已收到您的申請。</p>
+                <p>確認郵件將在24小時內發送至您的信箱。</p>
+                <button onclick="closeModal()" class="modal-btn">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

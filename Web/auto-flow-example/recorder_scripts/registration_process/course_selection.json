@@ -1,0 +1,112 @@
+{
+    "title": "step2",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1905,
+            "height": 945,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/上課時段偏好 *"
+                ],
+                [
+                    "#timeSlot"
+                ],
+                [
+                    "xpath///*[@id=\"timeSlot\"]"
+                ],
+                [
+                    "pierce/#timeSlot"
+                ]
+            ],
+            "offsetY": 20.96875,
+            "offsetX": 206.5
+        },
+        {
+            "type": "change",
+            "value": "weekday-morning",
+            "selectors": [
+                [
+                    "aria/上課時段偏好 *"
+                ],
+                [
+                    "#timeSlot"
+                ],
+                [
+                    "xpath///*[@id=\"timeSlot\"]"
+                ],
+                [
+                    "pierce/#timeSlot"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/我需要課程完成證書 (+NT$500)"
+                ],
+                [
+                    "#certificate"
+                ],
+                [
+                    "xpath///*[@id=\"certificate\"]"
+                ],
+                [
+                    "pierce/#certificate"
+                ]
+            ],
+            "offsetY": 6.3125,
+            "offsetX": 7.5
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/特殊需求說明"
+                ],
+                [
+                    "#specialRequests"
+                ],
+                [
+                    "xpath///*[@id=\"specialRequests\"]"
+                ],
+                [
+                    "pierce/#specialRequests"
+                ]
+            ],
+            "offsetY": 39.34375,
+            "offsetX": 186.5
+        },
+        {
+            "type": "change",
+            "value": "qaz",
+            "selectors": [
+                [
+                    "aria/特殊需求說明"
+                ],
+                [
+                    "#specialRequests"
+                ],
+                [
+                    "xpath///*[@id=\"specialRequests\"]"
+                ],
+                [
+                    "pierce/#specialRequests"
+                ]
+            ],
+            "target": "main"
+        }
+    ]
+}
